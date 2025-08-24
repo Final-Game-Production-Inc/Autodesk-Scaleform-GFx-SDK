@@ -1,6 +1,6 @@
 /**************************************************************************
 
-Filename    :   Video_VideoPC.cpp
+Filename    :   Video_VideoWinAPI.cpp
 Content     :   GFx video for Windows based PC
 Created     :   Sep 2009
 Authors     :   Maxim Didenko, Vladislav Merker
@@ -13,7 +13,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 **************************************************************************/
 
-#include "Video/Video_VideoPC.h"
+#include "Video/Video_VideoWinAPI.h"
 
 #if defined(GFX_ENABLE_VIDEO) && defined(SF_OS_WIN32)
 
@@ -60,3 +60,4 @@ void VideoPC::ApplySystemSettings(VideoPlayer* pvideoPlayer)
 }}} // Scaleform::GFx::Video
 
 #endif // GFX_ENABLE_VIDEO && SF_OS_WIN32
+
