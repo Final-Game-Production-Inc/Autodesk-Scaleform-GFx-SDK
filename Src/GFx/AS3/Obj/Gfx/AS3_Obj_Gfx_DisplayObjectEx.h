@@ -84,7 +84,7 @@ namespace ClassTraits { namespace fl_gfx
         enum { ThunkInfoNum = 8 };
         static const ThunkInfo ti[ThunkInfoNum];
         // static const UInt16 tito[ThunkInfoNum];
-        static const TypeInfo* tit[15];
+        static const TypeInfo* tit[20];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 
