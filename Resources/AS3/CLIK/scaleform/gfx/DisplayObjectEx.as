@@ -24,5 +24,10 @@ package scaleform.gfx
 
        static public function setRendererFloat(o:DisplayObject, f:Number) : void { }
        static public function getRendererFloat(o:DisplayObject) : Number { return Number.NaN; }
+
+       // Scaleform 4.5.32 Using
+       static public function setInvertedMask(o:DisplayObject, b:Boolean)
+       static public function getInvertedMask(o:DisplayObject) : Boolean
    }
 }
+
