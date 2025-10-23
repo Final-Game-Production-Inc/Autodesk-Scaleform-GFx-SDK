@@ -19,6 +19,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include <fmod_errors.h>
 #include <stdio.h>
 
+#include "..\Include\iob_func_fix.h"
+
 #define ERR_NOSOUND     "FMOD error! (%d) %s. No sound will be playing.\n"
 #define ERR_OLDVERSION  "Error! You are using an old version of FMOD %08x. This program requires %08x\n"
 #define ERR_INITFAIL    "Error! Can not initialize sound system. No sound will be playing.\n"
@@ -456,3 +458,4 @@ bool FxSoundFMOD::Initialize()
 }} // namespace Scaleform::GFx
 
 #endif // GFX_ENABLE_SOUND && GFX_SOUND_FMOD
+
