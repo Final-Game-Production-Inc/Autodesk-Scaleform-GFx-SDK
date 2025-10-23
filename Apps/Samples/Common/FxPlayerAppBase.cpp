@@ -1631,7 +1631,7 @@ Sound::SoundRenderer* FxPlayerAppBase::GetSoundRenderer()
 // Install system-specific clipboard implementation on Win32. If this is not done
 // the clipboard will still work in FxPlayer, but it will be impossible to paste
 // text to external applications.
-class FxPlayerTextClipboard : public TextClipboard
+class FxPlayerTextClipboard : public Clipboard
 {
 public:
     void OnTextStore(const wchar_t* ptext, UPInt len)
@@ -2045,7 +2045,7 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
         }
     }
 #ifdef SF_OS_WIN32    
-    mLoader.SetTextClipboard(Ptr<TextClipboard>(*new FxPlayerTextClipboard()));
+    mLoader.SetClipboard(Ptr<Clipboard>(*new FxPlayerTextClipboard()));
 #endif    
     //mLoader.SetTranslator(Ptr<Translator>(*new TranslatorImpl()));
 
@@ -4256,7 +4256,7 @@ void FxPlayerAppBase::OnGestureEnd(unsigned, UInt32 gestureMask, const Point<int
 
 void FxPlayerAppBase::OnUpdateCliboard(const wchar_t* text) 
 {
-    Ptr<TextClipboard> pclipBoard = mLoader.GetTextClipboard();
+    Ptr<Clipboard> pclipBoard = mLoader.GetClipboard();
     if (pclipBoard)
         pclipBoard->SetText(text);
 }
