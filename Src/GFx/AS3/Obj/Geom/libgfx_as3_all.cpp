@@ -1,0 +1,8 @@
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_ColorTransform.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_Matrix.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_Matrix3D.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_PerspectiveProjection.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_Point.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_Rectangle.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_Transform.cpp"
+#include "GFx/AS3/Obj/Geom/AS3_Obj_Geom_Vector3D.cpp"

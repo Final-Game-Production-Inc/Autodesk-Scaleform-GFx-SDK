@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ReferencePath>$(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib;$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)\um;$(Console_SdkIncludeRoot)\shared;$(Console_SdkIncludeRoot)\winrt;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)\bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <SlashAI>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</SlashAI>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.7;..\..\..\..\..\..\3rdParty\jpeg-8d;..\..\..\..\..\..\3rdParty\libpng-1.5.13;..\..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\..\3rdParty\pcre;..\..\..\..\..\..\3rdParty\fmod\XboxOne\inc;..\..\..\..\..\..\3rdParty\cri\XboxOne\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DURANGO;__WRL_NO_DEFAULT_LIB__;WIN32_LEAN_AND_MEAN;SF_BUILD_STATICLIB</PreprocessorDefinitions>
+	  <AdditionalOptions></AdditionalOptions>
+	  <MultiProcessorCompilation>true</MultiProcessorCompilation>
+	  <StructMemberAlignment>8Bytes</StructMemberAlignment>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

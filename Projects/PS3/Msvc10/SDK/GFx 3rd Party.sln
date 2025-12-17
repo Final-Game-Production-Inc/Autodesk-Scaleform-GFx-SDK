@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\..\..\..\3rdParty\libpng-1.5.13\gfx_projects\PS3\Msvc10\libpng.vcxproj", "{388C1838-D297-4150-9E68-77861FFB6278}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\..\..\3rdParty\zlib-1.2.7\gfx_projects\PS3\Msvc10\zlib.vcxproj", "{0B09C4E0-B959-4190-A635-A4E4A2A1863D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{388C1838-D297-4150-9E68-77861FFB6278} = {388C1838-D297-4150-9E68-77861FFB6278}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "..\..\..\..\3rdParty\expat-2.1.0\gfx_projects\PS3\Msvc10\expat.vcxproj", "{002B6A89-3C47-4BE0-A5EA-5102DEFF9E3B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{388C1838-D297-4150-9E68-77861FFB6278} = {388C1838-D297-4150-9E68-77861FFB6278}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre", "..\..\..\..\3rdParty\pcre\gfx_projects\PS3\Msvc10\pcre.vcxproj", "{A0BF28DF-6FE8-471E-979E-AFD3A4BFC3E5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{388C1838-D297-4150-9E68-77861FFB6278} = {388C1838-D297-4150-9E68-77861FFB6278}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "..\..\..\..\3rdParty\jpeg-8d\gfx_projects\PS3\Msvc10\libjpeg.vcxproj", "{91670E41-FB81-40E5-BAF9-88404C364EEB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{388C1838-D297-4150-9E68-77861FFB6278} = {388C1838-D297-4150-9E68-77861FFB6278}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		PS3 SNC Release|PS3 = PS3 SNC Release|PS3
+		SNC Release|PS3 = SNC Release|PS3
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{388C1838-D297-4150-9E68-77861FFB6278}.PS3 SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{388C1838-D297-4150-9E68-77861FFB6278}.PS3 SNC Release|PS3.Build.0 = SNC Release|PS3
+		{388C1838-D297-4150-9E68-77861FFB6278}.SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{388C1838-D297-4150-9E68-77861FFB6278}.SNC Release|PS3.Build.0 = SNC Release|PS3
+		{0B09C4E0-B959-4190-A635-A4E4A2A1863D}.PS3 SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{0B09C4E0-B959-4190-A635-A4E4A2A1863D}.PS3 SNC Release|PS3.Build.0 = SNC Release|PS3
+		{0B09C4E0-B959-4190-A635-A4E4A2A1863D}.SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{0B09C4E0-B959-4190-A635-A4E4A2A1863D}.SNC Release|PS3.Build.0 = SNC Release|PS3
+		{002B6A89-3C47-4BE0-A5EA-5102DEFF9E3B}.PS3 SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{002B6A89-3C47-4BE0-A5EA-5102DEFF9E3B}.PS3 SNC Release|PS3.Build.0 = SNC Release|PS3
+		{002B6A89-3C47-4BE0-A5EA-5102DEFF9E3B}.SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{002B6A89-3C47-4BE0-A5EA-5102DEFF9E3B}.SNC Release|PS3.Build.0 = SNC Release|PS3
+		{A0BF28DF-6FE8-471E-979E-AFD3A4BFC3E5}.PS3 SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{A0BF28DF-6FE8-471E-979E-AFD3A4BFC3E5}.PS3 SNC Release|PS3.Build.0 = SNC Release|PS3
+		{A0BF28DF-6FE8-471E-979E-AFD3A4BFC3E5}.SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{A0BF28DF-6FE8-471E-979E-AFD3A4BFC3E5}.SNC Release|PS3.Build.0 = SNC Release|PS3
+		{91670E41-FB81-40E5-BAF9-88404C364EEB}.PS3 SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{91670E41-FB81-40E5-BAF9-88404C364EEB}.PS3 SNC Release|PS3.Build.0 = SNC Release|PS3
+		{91670E41-FB81-40E5-BAF9-88404C364EEB}.SNC Release|PS3.ActiveCfg = SNC Release|PS3
+		{91670E41-FB81-40E5-BAF9-88404C364EEB}.SNC Release|PS3.Build.0 = SNC Release|PS3
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

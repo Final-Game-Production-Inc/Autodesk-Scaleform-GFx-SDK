@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Define_Msvc90"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		WarningLevel="4"
+		WarnAsError="true"
+	/>
+	<UserMacro
+		Name="MsvcVer"
+		Value="Msvc90"
+		PerformEnvironmentSet="true"
+	/>
+	<UserMacro
+		Name="MsvcYear"
+		Value="2008"
+		PerformEnvironmentSet="true"
+	/>
+</VisualStudioPropertySheet>

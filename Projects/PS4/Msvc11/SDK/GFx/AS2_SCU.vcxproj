@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ORBIS">
+      <Configuration>Debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ORBIS">
+      <Configuration>Release</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|ORBIS">
+      <Configuration>Shipping</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8C0D2EE1-9B81-4C2B-BB0B-74D5E307E3E6}</ProjectGuid>
+    <RootNamespace>AS2_SCU</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_PS4.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">../../../../../Lib/PS4/Msvc11/$(Configuration)/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">../../../../../Obj/PS4/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">../../../../../Lib/PS4/Msvc11/$(Configuration)/</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">../../../../../Lib/PS4/Msvc11/$(Configuration)/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">../../../../../Obj/PS4/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">../../../../../Obj/PS4/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">libgfx_as2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">libgfx_as2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">libgfx_as2</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_All.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XMLShadowRef.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.h" />
+  </ItemGroup>
+  <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

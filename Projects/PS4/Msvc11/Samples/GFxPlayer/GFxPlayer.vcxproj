@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_LCUE|ORBIS">
+      <Configuration>Debug_LCUE</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_LCUE|ORBIS">
+      <Configuration>Release_LCUE</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_LCUE|ORBIS">
+      <Configuration>Shipping_LCUE</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_NonLCUE|ORBIS">
+      <Configuration>Debug_NonLCUE</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_NonLCUE|ORBIS">
+      <Configuration>Release_NonLCUE</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_NonLCUE|ORBIS">
+      <Configuration>Shipping_NonLCUE</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A95DB1C4-17C0-416A-854E-DC383E2FC021}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LCUE|ORBIS'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LCUE|ORBIS'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_LCUE|ORBIS'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NonLCUE|ORBIS'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_NonLCUE|ORBIS'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NonLCUE|ORBIS'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug_LCUE|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_LCUE.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release_LCUE|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_LCUE.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Shipping_LCUE|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_LCUE.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug_NonLCUE|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_NonLCUE.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release_NonLCUE|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_NonLCUE.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Shipping_NonLCUE|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_NonLCUE.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_PS4.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LCUE|ORBIS'">
+    <OutDir>$(SolutionDir)PS4_$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LCUE|ORBIS'">
+    <OutDir>$(SolutionDir)PS4_$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_LCUE|ORBIS'">
+    <OutDir>$(SolutionDir)PS4_$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NonLCUE|ORBIS'">
+    <OutDir>$(SolutionDir)PS4_$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_NonLCUE|ORBIS'">
+    <OutDir>$(SolutionDir)PS4_$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NonLCUE|ORBIS'">
+    <OutDir>$(SolutionDir)PS4_$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LCUE|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;SF_PS4_USE_LCUE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lfmodex;-lgfxplatform_ps4;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_LCUE|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lfmodex;-lgfxplatform_ps4;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_LCUE|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;SF_BUILD_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lfmodex;-lgfxplatform_ps4;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NonLCUE|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lfmodex;-lgfxplatform_ps4;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_NonLCUE|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lfmodex;-lgfxplatform_ps4;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NonLCUE|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;SF_BUILD_SHIPPING;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lfmodex;-lgfxplatform_ps4;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxPlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h" />
+  </ItemGroup>
+  <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

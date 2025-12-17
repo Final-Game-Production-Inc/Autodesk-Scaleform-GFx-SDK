@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GPA"
+	>
+<!-- Uncomment to enable GPA instrumentation
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="$(GPA_INCLUDE_DIR)\"
+		PreprocessorDefinitions="PROFILE_GPA"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="gpasdk_s$(ConfigLetter)_$(MsvcYear).lib"
+		AdditionalLibraryDirectories="$(GPA_LIBRARY_DIR)\x$(BitSet)"
+	/>
+-->
+
+</VisualStudioPropertySheet>

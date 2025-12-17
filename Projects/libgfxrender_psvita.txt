@@ -1,0 +1,14 @@
+Src/Render/PSVita/PSVita_HAL.cpp
+Src/Render/PSVita/PSVita_HAL.h
+Src/Render/PSVita/PSVita_MemoryManager.cpp
+Src/Render/PSVita/PSVita_MemoryManager.h
+Src/Render/PSVita/PSVita_MeshCache.cpp
+Src/Render/PSVita/PSVita_MeshCache.h
+Src/Render/PSVita/PSVita_Shader.cpp
+Src/Render/PSVita/PSVita_Shader.h
+Src/Render/PSVita/PSVita_ShaderDescs.cpp
+Src/Render/PSVita/PSVita_ShaderDescs.h
+Src/Render/PSVita/PSVita_Sync.h
+Src/Render/PSVita/PSVita_Texture.cpp
+Src/Render/PSVita/PSVita_Texture.h
+Src/Render/ShaderData.xml

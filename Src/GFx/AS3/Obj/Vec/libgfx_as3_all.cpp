@@ -1,0 +1,7 @@
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_Vector.cpp"
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_Vector_double.cpp"
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_Vector_int.cpp"
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_Vector_object.cpp"
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_Vector_String.cpp"
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_Vector_uint.cpp"
+#include "GFx/AS3/Obj/Vec/AS3_Obj_Vec_VectorBase.cpp"

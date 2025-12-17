@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Usage: SmpInstallSrc [src] [dest] [origdir]
+
+#echo "InstallSmp $1 -> $2 (orig $3)"
+
+mkdir -p `dirname "$3/$2"`
+if [ -e "$2" ]; then
+    if cmp -s "$2" "$3/$2"; then
+        cp -f "$1" "$3/$2"
+        cp -f "$1" "$2"
+    else
+        echo "Please merge the changes between $3/$2 and $1"
+        echo "into your file, $2, before building the App."
+    fi
+else
+    cp -f "$1" "$3/$2"
+    cp -f "$1" "$2"
+fi

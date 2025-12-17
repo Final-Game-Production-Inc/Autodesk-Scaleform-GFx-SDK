@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Tools\Timelock;..\..\..\..\..\Apps\Demos\Common;..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\3rdParty\zlib-1.2.7;..\..\..\..\..\3rdParty\jpeg-8d;..\..\..\..\..\3rdParty\libpng-1.5.13;..\..\..\..\..\3rdParty\fmod\PS4\inc;..\..\..\..\..\3rdParty\cri\PS4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;SF_BUILD_GFXSHADERMAKER;SF_BUILD_EVAL</PreprocessorDefinitions>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>-lgfxshaders;-lgfx;-lexpat;-lz;-ljpeg;-lpng;-lpcre;-lSceGnmDriver_stub_weak;-lScePm4Dump;-lSceGnf;-lSceShaderBinary;-lSceGpuAddress;-lSceGnmx;-lSceGnm;-lScePad_stub_weak;-lSceNet_stub_weak;-lSceVideoOut_stub_weak;-lSceAudioOut_stub_weak;-lSceUserService_stub_weak;-lScePosix_stub_weak;-lSceAjm_stub_weak;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\PS4\$(MsvcVer)\$(ConfigShort)$(ConfigLCUEShort);..\..\..\..\..\Lib\PS4\$(ConfigShort)$(ConfigLCUEShort);..\..\..\..\..\Lib\PS4\$(MsvcVer)\$(ConfigShort)_Eval;..\..\..\..\..\Lib\PS4\$(MsvcVer)\$(ConfigShort);..\..\..\..\..\3rdParty\expat-2.1.0\Lib\PS4\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\PS4\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\jpeg-8d\Lib\PS4\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\fmod\PS4\lib;..\..\..\..\..\3rdParty\cri\orbis\libs;..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\PS4\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\pcre\Lib\PS4\$(MsvcVer)\Release;"$(SCE_ORBIS_SDK_DIR)\target\lib";"$(SCE_ORBIS_SDK_DIR)\host_tools\lib";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

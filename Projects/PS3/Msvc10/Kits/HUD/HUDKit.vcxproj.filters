@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="FxPlayer Core">
+      <UniqueIdentifier>{8608a818-f056-4aac-bfa9-256266060775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameDelegate">
+      <UniqueIdentifier>{e11fa7ac-0d9f-46e5-9c21-025d97dbae1e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\GameDelegate\FxGameDelegate.h">
+      <Filter>GameDelegate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\Common\FxHUDKit.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\Common\FxHUDView.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\Common\FxMinimap.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\Common\FxMinimapView.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDAdapter.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDEntityController.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDSimulation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\GameDelegate\FxGameDelegate.cpp">
+      <Filter>GameDelegate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\HUD\Common\FxHUDView.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\HUD\Common\FxMinimapView.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDAdapter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDEntityController.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDKitDemo.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\HUD\HUDDemo\HUDSimulation.cpp" />
+  </ItemGroup>
+</Project>

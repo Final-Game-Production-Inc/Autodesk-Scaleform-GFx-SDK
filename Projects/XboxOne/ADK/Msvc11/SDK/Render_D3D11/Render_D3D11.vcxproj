@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_MonoD3D|Durango">
+      <Configuration>Debug_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_StockD3D|Durango">
+      <Configuration>Debug_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt_MonoD3D|Durango">
+      <Configuration>DebugOpt_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt_StockD3D|Durango">
+      <Configuration>DebugOpt_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_MonoD3D|Durango">
+      <Configuration>Release_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_StockD3D|Durango">
+      <Configuration>Release_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_MonoD3D|Durango">
+      <Configuration>Shipping_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_StockD3D|Durango">
+      <Configuration>Shipping_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_Config.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_HAL.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_MeshCache.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_Shader.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\XboxOne_ShaderDescs.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_Sync.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_HAL.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_MeshCache.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_Shader.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Render\D3D1x\XboxOne_ShaderBinary.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Render\D3D1x\XboxOne_ShaderDescs.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Render\D3D1x\D3D1x_Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+     <CustomBuild Include="..\..\..\..\..\..\Src\Render\ShaderData.xml">
+      <DeploymentContent>false</DeploymentContent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">Building GFx Shaders</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">Building GFx Shaders</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">Building GFx Shaders</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">Building GFx Shaders</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.cpp;%(RelativeDir)\D3D1x\XboxOne_ShaderDescs.h;%(RelativeDir)\D3D1x\XboxOne_$(ConfigShort)_ShaderBinary.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">Building GFx Shaders</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">Building GFx Shaders</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">Building GFx Shaders</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">Building GFx Shaders</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">..\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform XboxOne -xml %(Identity) -outdir %(RelativeDir)\D3D1x -config $(ConfigShort) -type Binary</Command>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>Render_D3D11</ProjectName>
+    <RootNamespace>Render_D3D11</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ProjectGuid>{669494E8-7834-0F10-A576-7F41FF451BF0}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/ADK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/ADK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxrender_d3d11</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_D3D_VERSION=11;SF_BUILD_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_D3D_VERSION=11;SF_BUILD_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_D3D_VERSION=11;SF_BUILD_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_D3D_VERSION=11;SF_BUILD_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_D3D_VERSION=11;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_D3D_VERSION=11;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;SF_D3D_VERSION=11;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;SF_D3D_VERSION=11;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>
+      </CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

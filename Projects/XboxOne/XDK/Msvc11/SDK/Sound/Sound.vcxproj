@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Durango">
+      <Configuration>Debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt|Durango">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Durango">
+      <Configuration>Release</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Durango">
+      <Configuration>Shipping</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <ProjectGuid>{FF722F3F-B9F3-195E-36FF-0ACCFE1008B5}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>Sound_FMOD</ProjectName>
+    <RootNamespace>Sound_FMOD</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxsound_fmod</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxsound_fmod</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxsound_fmod</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxsound_fmod</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Src\Sound\Sound_Sound.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Sound\Sound_SoundRenderer.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Sound\Sound_SoundRendererFMOD.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Src\Sound\Sound_Sound.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Sound\Sound_SoundEvent.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Sound\Sound_SoundEventFMOD.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Sound\Sound_SoundEventWwise.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Sound\Sound_SoundRenderer.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Sound\Sound_SoundRendererFMOD.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

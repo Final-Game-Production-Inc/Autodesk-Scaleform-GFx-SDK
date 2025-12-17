@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxPlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h" />
+  </ItemGroup>
+</Project>

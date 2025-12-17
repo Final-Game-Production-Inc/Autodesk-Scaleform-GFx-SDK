@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<level>
+  <gold>510</gold>
+  <priority>pos-x</priority>
+  <source-direction>2</source-direction>
+  <navpaths>
+	<navpath id="0">
+		<navpt name="path0"/>
+		<navpt name="path1"/>
+		<navpt name="path2"/>
+		<navpt name="path3"/>
+		<navpt name="path4"/>
+		<navpt name="path5"/>
+		<navpt name="path6"/>
+		<navpt name="path7"/>
+		<navpt name="path8"/>
+		<navpt name="path9"/>
+		<navpt name="path10"/>
+		<navpt name="path11"/>
+		<navpt name="path12"/>
+		<navpt name="path13"/>
+		<navpt name="path14"/>
+		<navpt name="path15"/>
+	</navpath>
+	<navpath id="1">
+		<navpt name="path0"/>
+		<navpt name="path1"/>
+		<navpt name="path16"/>
+		<navpt name="path17"/>
+		<navpt name="path18"/>
+		<navpt name="path19"/>
+		<navpt name="path20"/>
+		<navpt name="path21"/>
+		<navpt name="path22"/>
+		<navpt name="path23"/>
+		<navpt name="path24"/>
+		<navpt name="path25"/>
+		<navpt name="path26"/>
+		<navpt name="path27"/>
+		<navpt name="path14"/>
+		<navpt name="path15"/>
+	</navpath>	
+  </navpaths>
+  <waves>
+  
+	<wave id="0">
+		<wavedata spawndelay=" 0" spawntime="0.3" navpath="0" num=" 3" type="infantry"/>
+		<wavedata spawndelay=" 5" spawntime="0.3" navpath="1" num=" 3" type="infantry"/>
+		<wavedata spawndelay="10" spawntime="0.3" navpath="0" num=" 3" type="infantry"/>
+		<wavedata spawndelay="15" spawntime="0.3" navpath="1" num=" 3" type="infantry"/>
+	</wave>
+	<wave id="1" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="0.3" navpath="0" num=" 3" type="infantry"/>
+		<wavedata spawndelay=" 0" spawntime="0.3" navpath="1" num=" 3" type="infantry"/>
+		<wavedata spawndelay="10" spawntime="0.3" navpath="0" num=" 3" type="infantry"/>
+		<wavedata spawndelay="10" spawntime="0.3" navpath="1" num=" 3" type="infantry"/>
+		<wavedata spawndelay="20" spawntime="0.5" navpath="0" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="20" spawntime="0.5" navpath="1" num=" 2" type="armored-infantry"/>
+	</wave>
+	<wave id="2" startTime=" 5" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="1.0" navpath="0" num=" 3" type="drone"/>
+		<wavedata spawndelay=" 1" spawntime="1.0" navpath="1" num=" 3" type="drone"/>
+		<wavedata spawndelay="10" spawntime="1.0" navpath="0" num=" 3" type="drone"/>
+		<wavedata spawndelay="11" spawntime="1.0" navpath="1" num=" 3" type="drone"/>
+	</wave>
+	<wave id="3" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="2.0" navpath="0" num="10" type="infantry"/>
+		<wavedata spawndelay=" 1" spawntime="2.0" navpath="1" num="10" type="infantry"/>
+	</wave>
+	<wave id="4" startTime="15" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="1.0" navpath="0" num=" 4" type="drone"/>
+		<wavedata spawndelay=" 1" spawntime="1.0" navpath="1" num=" 4" type="drone"/>
+		<wavedata spawndelay="10" spawntime="0.3" navpath="0" num=" 4" type="infantry"/>
+		<wavedata spawndelay="10" spawntime="0.3" navpath="1" num=" 4" type="infantry"/>
+	</wave>	
+	<wave id="5" startTime="10" startBonus="25">
+		<wavedata spawndelay="12" spawntime="0.5" navpath="0" num=" 3" type="armored-infantry"/>
+		<wavedata spawndelay="12" spawntime="0.5" navpath="1" num=" 3" type="armored-infantry"/>
+		<wavedata spawndelay=" 0" spawntime="0.3" navpath="0" num=" 6" type="infantry"/>
+		<wavedata spawndelay=" 0" spawntime="0.3" navpath="1" num=" 6" type="infantry"/>
+	</wave>	
+	<wave id="6" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 5" spawntime="1.5" navpath="0" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 5" spawntime="1.5" navpath="1" num=" 1" type="mech"/>
+	</wave>
+	<wave id="7" startTime="15" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="1.0" navpath="0" num=" 4" type="drone"/>
+		<wavedata spawndelay=" 1" spawntime="1.0" navpath="1" num=" 4" type="drone"/>
+		<wavedata spawndelay="15" spawntime="1.0" navpath="0" num=" 4" type="drone"/>
+		<wavedata spawndelay="16" spawntime="1.0" navpath="1" num=" 4" type="drone"/>
+	</wave>
+	<wave id="8" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="1.5" navpath="0" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 0" spawntime="1.5" navpath="1" num=" 1" type="mech"/>
+		<wavedata spawndelay="10" spawntime="0.5" navpath="0" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="10" spawntime="0.5" navpath="1" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="20" spawntime="0.3" navpath="0" num=" 5" type="infantry"/>
+		<wavedata spawndelay="20" spawntime="0.3" navpath="1" num=" 5" type="infantry"/>
+	</wave>
+	<wave id="9" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="1.5" navpath="0" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 0" spawntime="1.5" navpath="1" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 5" spawntime="1.5" navpath="0" num=" 3" type="armored-infantry"/>
+		<wavedata spawndelay=" 5" spawntime="1.5" navpath="1" num=" 3" type="armored-infantry"/>
+		<wavedata spawndelay="10" spawntime="0.2" navpath="0" num=" 3" type="drone"/>
+		<wavedata spawndelay="10" spawntime="0.2" navpath="1" num=" 3" type="drone"/>
+		<wavedata spawndelay="25" spawntime="0.3" navpath="0" num=" 5" type="infantry"/>
+		<wavedata spawndelay="25" spawntime="0.3" navpath="1" num=" 5" type="infantry"/>
+	</wave>
+	<wave id="10" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="6.0" navpath="0" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 0" spawntime="6.0" navpath="1" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 5" spawntime="0.5" navpath="0" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay=" 5" spawntime="0.5" navpath="1" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="15" spawntime="0.5" navpath="0" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="15" spawntime="0.5" navpath="1" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="25" spawntime="0.3" navpath="0" num=" 6" type="infantry"/>
+		<wavedata spawndelay="25" spawntime="0.3" navpath="1" num=" 6" type="infantry"/>
+		<wavedata spawndelay="35" spawntime="0.5" navpath="0" num=" 4" type="armored-infantry"/>
+		<wavedata spawndelay="35" spawntime="0.5" navpath="1" num=" 4" type="armored-infantry"/>
+	</wave>
+	<wave id="11" startTime="10" startBonus="25">
+		<wavedata spawndelay=" 0" spawntime="1.5" navpath="0" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 0" spawntime="1.5" navpath="1" num=" 1" type="mech"/>
+		<wavedata spawndelay=" 4" spawntime="0.5" navpath="0" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay=" 4" spawntime="0.5" navpath="1" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay=" 8" spawntime="0.5" navpath="0" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay=" 8" spawntime="0.5" navpath="1" num=" 2" type="armored-infantry"/>
+		<wavedata spawndelay="16" spawntime="0.3" navpath="0" num=" 5" type="infantry"/>
+		<wavedata spawndelay="16" spawntime="0.3" navpath="1" num=" 5" type="infantry"/>
+		<wavedata spawndelay="24" spawntime="1.5" navpath="0" num=" 2" type="mech"/>
+		<wavedata spawndelay="24" spawntime="1.5" navpath="1" num=" 2" type="mech"/>
+		<wavedata spawndelay="30" spawntime="0.5" navpath="0" num=" 5" type="armored-infantry"/>
+		<wavedata spawndelay="30" spawntime="0.5" navpath="1" num=" 5" type="armored-infantry"/>
+	</wave>
+	
+  </waves>
+</level>

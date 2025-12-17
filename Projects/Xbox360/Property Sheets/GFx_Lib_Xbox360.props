@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\3rdParty\zlib-1.2.7;..\..\..\..\..\3rdParty\jpeg-8d;..\..\..\..\..\3rdParty\pcre;..\..\..\..\..\3rdParty\libpng-1.5.13;..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\3rdParty\cri\xbox360\include;..\..\..\..\..\3rdParty\fmod\xbox360\inc;..\..\..\..\..\3rdParty\freetype2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_XBOX;SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+	  <AdditionalOptions>/MP /w44264</AdditionalOptions>
+	  <MultiProcessorCompilation>true</MultiProcessorCompilation>
+	  <StructMemberAlignment>8Bytes</StructMemberAlignment>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

@@ -1,0 +1,862 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugOpt_Lite|Xbox 360">
+      <Configuration>DebugOpt_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt|Xbox 360">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Lite|Xbox 360">
+      <Configuration>Debug_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Lite|Xbox 360">
+      <Configuration>Release_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_Lite|Xbox 360">
+      <Configuration>Shipping_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Xbox 360">
+      <Configuration>Shipping</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C8942BB3-8CCE-4E14-BB4D-AFB1FF98B261}</ProjectGuid>
+    <RootNamespace>AS3</RootNamespace>
+    <Keyword>XenonProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">$(OutDir)libgfx_as3.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">$(OutDir)libgfx_as3.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">$(OutDir)libgfx_as3.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">$(OutDir)libgfx_as3.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">$(OutDir)libgfx_as3_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">$(OutDir)libgfx_as3_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">$(OutDir)libgfx_as3_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)/NonSCU/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">$(OutDir)libgfx_as3_lite.lib</OutputFile>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName)_lite.pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName)_lite.pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_ConstPool.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_Read.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Audio\AS3_SoundObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\IME\AS3_IMEManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_VectorBase.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_double.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_int.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_object.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_uint.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_String.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ActionScriptVersion.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_AVM1Movie.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Bitmap.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapDataChannel.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapData.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BlendMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_CapsStyle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObjectContainer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FrameLabel.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_GradientType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Graphics.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_IBitmapDrawable.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InteractiveObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InterpolationMethod.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_JointStyle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LineScaleMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Loader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LoaderInfo.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MorphShape.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MovieClip.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_PixelSnapping.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Scene.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shape.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SimpleButton.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SpreadMethod.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Sprite.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageAlign.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Stage.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageDisplayState.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageQuality.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageScaleMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SWFVersion.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ShaderData.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_EOFError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IllegalOperationError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_InvalidSWFError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IOError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_MemoryError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_ScriptTimeoutError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_StackOverflowError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ActivityEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AppLifecycleEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AsyncErrorEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ContextMenuEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DataEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ErrorEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_Event.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventDispatcher.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventPhase.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FocusEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FullScreenEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GestureEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GesturePhase.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTTPStatusEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IEventDispatcher.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IMEEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IOErrorEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_KeyboardEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_MouseEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NetStatusEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_PressAndTapGestureEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ProgressEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SecurityErrorEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StatusEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SyncEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TextEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TimerEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TouchEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TransformGestureEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientationEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientation.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BevelFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterQuality.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BlurFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ColorMatrixFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ConvolutionFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilterMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DropShadowFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GlowFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientBevelFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientGlowFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ShaderFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_ColorTransform.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix3D.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_PerspectiveProjection.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Point.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Rectangle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Transform.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Vector3D.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Camera.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_ID3Info.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Microphone.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundChannel.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Sound.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundLoaderContext.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundMixer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundTransform.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReference.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReferenceList.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyOutput.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyWriter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_LocalConnection.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetConnection.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_ObjectEncoding.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Responder.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObjectFlushStatus.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Socket.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoaderDataFormat.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequest.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestHeader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestMethod.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLStream.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLVariables.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_XMLSocket.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_ApplicationDomain.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Capabilities.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IMEConversionMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IME.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_LoaderContext.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Security.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityDomain.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityPanel.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_System.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_AntiAliasType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_CSMSettings.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_Font.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontStyle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_GridFitType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StaticText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StyleSheet.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextColorType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextDisplayMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldAutoSize.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextField.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormatAlign.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormat.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextLineMetrics.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextRenderer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextSnapshot.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuItem.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenu.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuBuiltInItems.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuClipboardItems.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Keyboard.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_KeyLocation.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Mouse.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MouseCursor.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Multitouch.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MultitouchInputMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_ByteArray.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Dictionary.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Endian.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataInput.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataOutput.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IExternalizable.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Proxy.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Timer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\External\AS3_Obj_External_ExternalInterface.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_DisplayObjectEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_SystemEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_Extensions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusEventEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePad.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePadAnalogEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_InteractiveObjectEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_KeyboardEventEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseEventEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseCursorEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextEventEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEventEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMECandidateListStyle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextFieldEx.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_Accessibility.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityImplementation.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityProperties.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISearchableText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISimpleTextSelection.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_XMLSignatureValidator.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLDocument.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNodeType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Activation.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ArgumentError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Array.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Boolean.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Catch.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ClassClass.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Date.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_DefinitionError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Error.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_EvalError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Function.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Global.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_int.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Math.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Namespace.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Number.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Object.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_QName.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RangeError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ReferenceError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RegExp.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SecurityError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_String.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SyntaxError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_TypeError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_uint.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UninitializedError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_URIError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UserDefined.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_VerifyError.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XML.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XMLList.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AbcDataBuffer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AOTC.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AsString.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmBitmap.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmButton.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObjContainer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObj.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmInteractiveObj.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmLoader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmSprite.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStage.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStaticText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmTextField.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_CodeExecute.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_GC.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_GFxValueImpl.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Index.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Instance.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_IntervalTimer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_MovieRoot.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Object.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_ObjCollector.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Slot.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_StringManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Tracer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Traits.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Value.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_VM.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_VMRead.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_VTable.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_XMLSupport.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_UDBase.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_ValueStack.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS3Support.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_ConstPool.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_Type.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Audio\AS3_SoundObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\IME\AS3_IMEManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_VectorBase.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_double.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_int.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_object.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_uint.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_String.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ActionScriptVersion.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_AVM1Movie.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapDataChannel.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapData.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Bitmap.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BlendMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_CapsStyle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObjectContainer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FrameLabel.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_GradientType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Graphics.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_IBitmapDrawable.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InteractiveObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InterpolationMethod.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_JointStyle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LineScaleMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Loader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LoaderInfo.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MorphShape.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MovieClip.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_PixelSnapping.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Scene.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shape.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SimpleButton.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SpreadMethod.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Sprite.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageAlign.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageDisplayState.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Stage.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageQuality.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageScaleMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SWFVersion.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ShaderData.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_EOFError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IllegalOperationError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_InvalidSWFError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IOError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_MemoryError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_ScriptTimeoutError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_StackOverflowError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ActivityEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AppLifecycleEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AsyncErrorEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ContextMenuEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DataEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ErrorEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventDispatcher.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_Event.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventPhase.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FocusEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FullScreenEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GestureEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GesturePhase.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTTPStatusEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IEventDispatcher.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IMEEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IOErrorEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_KeyboardEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_MouseEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NetStatusEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_PressAndTapGestureEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ProgressEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SecurityErrorEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StatusEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SyncEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TextEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TimerEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TouchEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TransformGestureEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientationEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientation.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BevelFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterQuality.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BlurFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ColorMatrixFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ConvolutionFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilterMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DropShadowFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GlowFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientBevelFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientGlowFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ShaderFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_ColorTransform.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix3D.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_PerspectiveProjection.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Point.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Rectangle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Transform.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Vector3D.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Camera.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_ID3Info.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Microphone.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundChannel.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Sound.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundLoaderContext.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundMixer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundTransform.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReference.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReferenceList.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyOutput.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyWriter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_LocalConnection.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetConnection.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_ObjectEncoding.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Responder.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObjectFlushStatus.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Socket.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoaderDataFormat.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequest.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestHeader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestMethod.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLStream.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLVariables.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_XMLSocket.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_ApplicationDomain.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Capabilities.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IMEConversionMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IME.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_LoaderContext.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityDomain.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Security.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityPanel.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_System.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_AntiAliasType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_CSMSettings.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_Font.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontStyle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_GridFitType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StaticText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StyleSheet.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextColorType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextDisplayMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldAutoSize.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextField.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormatAlign.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormat.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextLineMetrics.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextRenderer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextSnapshot.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuItem.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenu.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuBuiltInItems.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuClipboardItems.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Keyboard.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_KeyLocation.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MouseCursor.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Mouse.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Multitouch.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MultitouchInputMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_ByteArray.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Dictionary.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Endian.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataInput.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataOutput.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IExternalizable.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Proxy.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Timer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\External\AS3_Obj_External_ExternalInterface.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_DisplayObjectEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_SystemEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_Extensions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusEventEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePad.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePadAnalogEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_InteractiveObjectEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_KeyboardEventEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseEventEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseCursorEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextEventEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEventEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMECandidateListStyle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextFieldEx.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_Accessibility.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityImplementation.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityProperties.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISearchableText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISimpleTextSelection.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_XMLSignatureValidator.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLDocument.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNodeType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Activation.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ArgumentError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Array.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Boolean.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Catch.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ClassClass.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Date.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_DefinitionError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Error.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_EvalError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Function.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Global.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_int.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Math.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Namespace.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Number.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Object.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_QName.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RangeError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ReferenceError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RegExp.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SecurityError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_String.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SyntaxError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_TypeError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_uint.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UninitializedError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_URIError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UserDefined.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_VerifyError.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XML.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XMLList.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AbcDataBuffer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AOTC.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AsString.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmBitmap.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmButton.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObjContainer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObj.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmInteractiveObj.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmLoader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmSprite.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStage.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStaticText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmTextField.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_CodeExecute.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_FlashUI.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_GC.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Index.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Instance.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_IntervalTimer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Marshalling.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_MovieRoot.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Object.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_ObjCollector.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Slot.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_StringManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Tracer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Traits.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Value.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_VM.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_VMRead.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_VTable.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Global.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_UDBase.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_ValueStack.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS3Support.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

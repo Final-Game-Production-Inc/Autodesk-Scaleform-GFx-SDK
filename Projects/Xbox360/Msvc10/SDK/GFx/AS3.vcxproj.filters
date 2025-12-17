@@ -1,0 +1,1713 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{14523863-4995-4bcc-81cf-b181d9b79b54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3">
+      <UniqueIdentifier>{b1fbcd32-6680-45ef-8a24-dd1db73de5b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj">
+      <UniqueIdentifier>{6cccaded-fa59-44c7-bf73-28d335848ec6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Accessibility">
+      <UniqueIdentifier>{3cca511e-3395-4d08-a5d3-b5ea2c157ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Display">
+      <UniqueIdentifier>{2e6f7fc9-3cb4-49c6-9d80-c387a5436342}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Errors">
+      <UniqueIdentifier>{5ed481f0-5450-4579-a488-0e3e8575d49b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Events">
+      <UniqueIdentifier>{17b55c3a-4fa5-4fa8-93ad-384c2aa28995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\External">
+      <UniqueIdentifier>{f31f3ac6-a76d-4f40-814d-4aab6b059d14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Filters">
+      <UniqueIdentifier>{64687a1c-d719-4f80-8ceb-834fbaf09112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Geom">
+      <UniqueIdentifier>{77139a58-8d88-4b8e-bcca-859796c954b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\GFx">
+      <UniqueIdentifier>{7b62ad68-5dff-4adc-8af1-eeaece436bd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Media">
+      <UniqueIdentifier>{3d89e600-c8cb-4cdb-ae1a-8be344c71871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Net">
+      <UniqueIdentifier>{74bf48d5-58ad-45cc-a080-97a82ef9bba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Security">
+      <UniqueIdentifier>{3a232bf1-62d2-4ada-846c-288bbc928d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\System">
+      <UniqueIdentifier>{0b969c27-5cb6-4d04-b014-a0c92fd3408c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Text">
+      <UniqueIdentifier>{c4a9296e-8122-4ffa-830a-fff4b6c688d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Ui">
+      <UniqueIdentifier>{29e7858a-e8f1-4989-8a14-d2ecd9e5bf44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Utils">
+      <UniqueIdentifier>{b076c958-4958-43b2-be6c-a4d0dd7eacf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Vec">
+      <UniqueIdentifier>{c604b749-6930-443a-be82-fb1a3a8beab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Xml">
+      <UniqueIdentifier>{4c050306-c788-425c-a09e-0bb59875781b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Abc">
+      <UniqueIdentifier>{b3ec4572-4246-48c0-b6ef-46f826826471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Audio">
+      <UniqueIdentifier>{84427e77-5cee-4300-b610-de5c2ca55896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\IME">
+      <UniqueIdentifier>{f7a96762-a7bb-458c-a2e4-209939f6baf1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_ConstPool.cpp">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc.cpp">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_Read.cpp">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Audio\AS3_SoundObject.cpp">
+		<Filter>GFx\AS3\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\IME\AS3_IMEManager.cpp">
+		<Filter>GFx\AS3\IME</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_VectorBase.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_double.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_int.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_object.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_uint.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_String.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ActionScriptVersion.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_AVM1Movie.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Bitmap.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapDataChannel.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapData.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BlendMode.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_CapsStyle.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObjectContainer.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObject.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FrameLabel.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_GradientType.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Graphics.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_IBitmapDrawable.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InteractiveObject.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InterpolationMethod.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_JointStyle.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LineScaleMode.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Loader.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LoaderInfo.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MorphShape.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MovieClip.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_PixelSnapping.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Scene.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shape.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SimpleButton.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SpreadMethod.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Sprite.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageAlign.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Stage.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageDisplayState.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageQuality.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageScaleMode.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SWFVersion.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shader.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ShaderData.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_EOFError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IllegalOperationError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_InvalidSWFError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IOError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_MemoryError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_ScriptTimeoutError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_StackOverflowError.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ActivityEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AppLifecycleEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AsyncErrorEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ContextMenuEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DataEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ErrorEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_Event.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventDispatcher.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventPhase.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FocusEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FullScreenEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GestureEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GesturePhase.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTTPStatusEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IEventDispatcher.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IMEEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IOErrorEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_KeyboardEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_MouseEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NetStatusEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_PressAndTapGestureEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ProgressEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SecurityErrorEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StatusEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SyncEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TextEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TimerEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TouchEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TransformGestureEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientationEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientation.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BevelFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterQuality.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterType.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BlurFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ColorMatrixFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ConvolutionFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilterMode.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DropShadowFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GlowFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientBevelFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientGlowFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ShaderFilter.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_ColorTransform.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix3D.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_PerspectiveProjection.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Point.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Rectangle.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Transform.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Vector3D.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Camera.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_ID3Info.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Microphone.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundChannel.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Sound.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundLoaderContext.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundMixer.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundTransform.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileFilter.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReference.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReferenceList.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyOutput.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyWriter.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_LocalConnection.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetConnection.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_ObjectEncoding.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Responder.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObject.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObjectFlushStatus.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Socket.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoader.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoaderDataFormat.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequest.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestHeader.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestMethod.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLStream.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLVariables.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_XMLSocket.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_ApplicationDomain.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Capabilities.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IMEConversionMode.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IME.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_LoaderContext.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Security.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityDomain.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityPanel.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_System.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_AntiAliasType.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_CSMSettings.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_Font.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontStyle.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontType.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_GridFitType.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StaticText.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StyleSheet.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextColorType.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextDisplayMode.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldAutoSize.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextField.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldType.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormatAlign.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormat.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextLineMetrics.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextRenderer.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextSnapshot.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuItem.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenu.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuBuiltInItems.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuClipboardItems.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Keyboard.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_KeyLocation.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Mouse.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MouseCursor.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Multitouch.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MultitouchInputMode.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_ByteArray.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Dictionary.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Endian.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataInput.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataOutput.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IExternalizable.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Proxy.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Timer.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\External\AS3_Obj_External_ExternalInterface.cpp">
+		<Filter>GFx\AS3\Obj\External</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_DisplayObjectEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_SystemEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusManager.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_Extensions.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusEventEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePad.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePadAnalogEvent.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_InteractiveObjectEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_KeyboardEventEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseEventEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseCursorEvent.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextEventEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEventEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMECandidateListStyle.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextFieldEx.cpp">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_Accessibility.cpp">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityImplementation.cpp">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityProperties.cpp">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISearchableText.cpp">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISimpleTextSelection.cpp">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_XMLSignatureValidator.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLDocument.cpp">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNode.cpp">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNodeType.cpp">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Activation.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ArgumentError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Array.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Boolean.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Catch.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ClassClass.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Date.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_DefinitionError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Error.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_EvalError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Function.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Global.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_int.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Math.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Namespace.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Number.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Object.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_QName.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RangeError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ReferenceError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RegExp.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SecurityError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_String.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SyntaxError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_TypeError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_uint.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UninitializedError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_URIError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UserDefined.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_VerifyError.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XML.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XMLList.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AbcDataBuffer.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AOTC.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AsString.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmBitmap.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmButton.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObjContainer.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObj.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmInteractiveObj.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmLoader.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmSprite.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStage.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStaticText.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmTextField.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_CodeExecute.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_GC.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_GFxValueImpl.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Index.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Instance.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_IntervalTimer.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_MovieRoot.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Object.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_ObjCollector.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Slot.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_StringManager.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Tracer.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Traits.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_Value.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_VM.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_VMRead.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_VTable.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_XMLSupport.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_UDBase.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_ValueStack.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS3Support.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_ConstPool.h">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc.h">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_Type.h">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Audio\AS3_SoundObject.h">
+		<Filter>GFx\AS3\Audio</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\IME\AS3_IMEManager.h">
+		<Filter>GFx\AS3\IME</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_VectorBase.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_double.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_int.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_object.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_uint.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_Vector_String.h">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ActionScriptVersion.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_AVM1Movie.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapDataChannel.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BitmapData.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Bitmap.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_BlendMode.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_CapsStyle.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObjectContainer.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_DisplayObject.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FrameLabel.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_GradientType.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Graphics.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_IBitmapDrawable.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InteractiveObject.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_InterpolationMethod.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_JointStyle.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LineScaleMode.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Loader.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_LoaderInfo.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MorphShape.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_MovieClip.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_PixelSnapping.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Scene.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shape.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SimpleButton.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SpreadMethod.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Sprite.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageAlign.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageDisplayState.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Stage.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageQuality.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_StageScaleMode.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_SWFVersion.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Shader.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_ShaderData.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_EOFError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IllegalOperationError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_InvalidSWFError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_IOError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_MemoryError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_ScriptTimeoutError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_StackOverflowError.h">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ActivityEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AppLifecycleEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AsyncErrorEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ContextMenuEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DataEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ErrorEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventDispatcher.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_Event.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_EventPhase.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FocusEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FullScreenEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GestureEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_GesturePhase.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTTPStatusEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IEventDispatcher.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IMEEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_IOErrorEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_KeyboardEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_MouseEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NetStatusEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_PressAndTapGestureEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ProgressEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SecurityErrorEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StatusEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_SyncEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TextEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TimerEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TouchEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_TransformGestureEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientationEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_StageOrientation.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BevelFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterQuality.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BitmapFilterType.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_BlurFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ColorMatrixFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ConvolutionFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DisplacementMapFilterMode.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_DropShadowFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GlowFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientBevelFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_GradientGlowFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_ShaderFilter.h">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_ColorTransform.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Matrix3D.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_PerspectiveProjection.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Point.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Rectangle.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Transform.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_Vector3D.h">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Camera.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_ID3Info.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Microphone.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundChannel.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Sound.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundLoaderContext.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundMixer.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_SoundTransform.h">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileFilter.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReference.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_FileReferenceList.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyOutput.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_IDynamicPropertyWriter.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_LocalConnection.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetConnection.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_ObjectEncoding.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Responder.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObjectFlushStatus.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_SharedObject.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_Socket.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoaderDataFormat.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLLoader.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequest.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestHeader.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestMethod.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLStream.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLVariables.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_XMLSocket.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_ApplicationDomain.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Capabilities.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IMEConversionMode.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_IME.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_LoaderContext.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityDomain.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_Security.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_SecurityPanel.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_System.h">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_AntiAliasType.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_CSMSettings.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_Font.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontStyle.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_FontType.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_GridFitType.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StaticText.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_StyleSheet.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextColorType.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextDisplayMode.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldAutoSize.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextField.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFieldType.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormatAlign.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextFormat.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextLineMetrics.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextRenderer.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_TextSnapshot.h">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuItem.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenu.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuBuiltInItems.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_ContextMenuClipboardItems.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Keyboard.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_KeyLocation.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MouseCursor.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Mouse.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_Multitouch.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_MultitouchInputMode.h">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_ByteArray.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Dictionary.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Endian.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataInput.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IDataOutput.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_IExternalizable.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Proxy.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_Timer.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\External\AS3_Obj_External_ExternalInterface.h">
+		<Filter>GFx\AS3\Obj\External</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_DisplayObjectEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_SystemEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusManager.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_Extensions.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_FocusEventEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePad.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_GamePadAnalogEvent.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_InteractiveObjectEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_KeyboardEventEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseEventEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_MouseCursorEvent.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextEventEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEventEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMEEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_IMECandidateListStyle.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Gfx\AS3_Obj_Gfx_TextFieldEx.h">
+		<Filter>GFx\AS3\Obj\Gfx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_Accessibility.h">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityImplementation.h">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_AccessibilityProperties.h">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISearchableText.h">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_ISimpleTextSelection.h">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_XMLSignatureValidator.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLDocument.h">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNode.h">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_XMLNodeType.h">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Activation.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ArgumentError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Array.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Boolean.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Catch.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ClassClass.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Date.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_DefinitionError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Error.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_EvalError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Function.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Global.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_int.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Math.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Namespace.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Number.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_Object.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_QName.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RangeError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_ReferenceError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_RegExp.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SecurityError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_String.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_SyntaxError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_TypeError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_uint.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UninitializedError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_URIError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_UserDefined.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_VerifyError.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XML.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_XMLList.h">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AbcDataBuffer.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AOTC.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AsString.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmBitmap.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmButton.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObjContainer.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmDisplayObj.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmInteractiveObj.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmLoader.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmSprite.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStage.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmStaticText.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_AvmTextField.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_CodeExecute.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_FlashUI.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_GC.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Index.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Instance.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_IntervalTimer.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Marshalling.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_MovieRoot.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Object.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_ObjCollector.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Slot.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_StringManager.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Tracer.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Traits.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Value.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_VM.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_VMRead.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_VTable.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_Global.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_UDBase.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\AS3_ValueStack.h">
+		<Filter>GFx\AS3</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS3Support.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{41a76400-3f7c-4d38-9566-0f97f67ad454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2">
+      <UniqueIdentifier>{adc75904-2f2f-4388-b084-6d004f77ff85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2\Audio">
+      <UniqueIdentifier>{82f765fd-8e1d-4104-bc13-b2eb409e2456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2\XML">
+      <UniqueIdentifier>{9cd2e3f5-1635-4074-ac02-cb8c7673a746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2\IME">
+      <UniqueIdentifier>{745a267e-7a49-4092-b443-f1ae969b4377}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.h">
+		<Filter>GFx\AS2\Audio</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XMLShadowRef.h">
+		<Filter>GFx\AS2\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.h">
+		<Filter>GFx\AS2\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.h">
+		<Filter>GFx\AS2\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.h">
+		<Filter>GFx\AS2\IME</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.h">
+		<Filter>GFx\AS2\IME</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.cpp">
+		<Filter>GFx\AS2\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.cpp">
+		<Filter>GFx\AS2\XML</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.cpp">
+		<Filter>GFx\AS2\XML</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.cpp">
+		<Filter>GFx\AS2\IME</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.cpp">
+		<Filter>GFx\AS2\IME</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_All.cpp">
+		<Filter>GFx\AS2</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,1589 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="D3D10_DebugOpt_Static|Win32">
+      <Configuration>D3D10_DebugOpt_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_DebugOpt_Static|x64">
+      <Configuration>D3D10_DebugOpt_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_Debug_Static|Win32">
+      <Configuration>D3D10_Debug_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_Debug_Static|x64">
+      <Configuration>D3D10_Debug_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_Release_Static|Win32">
+      <Configuration>D3D10_Release_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_Release_Static|x64">
+      <Configuration>D3D10_Release_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_Shipping|Win32">
+      <Configuration>D3D10_Shipping</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D10_Shipping|x64">
+      <Configuration>D3D10_Shipping</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_DebugOpt_Static|Win32">
+      <Configuration>D3D11_DebugOpt_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_DebugOpt_Static|x64">
+      <Configuration>D3D11_DebugOpt_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_Debug_Static|Win32">
+      <Configuration>D3D11_Debug_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_Debug_Static|x64">
+      <Configuration>D3D11_Debug_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_Release_Static|Win32">
+      <Configuration>D3D11_Release_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_Release_Static|x64">
+      <Configuration>D3D11_Release_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_Shipping|Win32">
+      <Configuration>D3D11_Shipping</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D11_Shipping|x64">
+      <Configuration>D3D11_Shipping</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_DebugOpt_Static|Win32">
+      <Configuration>D3D9_DebugOpt_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_DebugOpt_Static|x64">
+      <Configuration>D3D9_DebugOpt_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_Debug_Static|Win32">
+      <Configuration>D3D9_Debug_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_Debug_Static|x64">
+      <Configuration>D3D9_Debug_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_Release_Static|Win32">
+      <Configuration>D3D9_Release_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_Release_Static|x64">
+      <Configuration>D3D9_Release_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_Shipping|Win32">
+      <Configuration>D3D9_Shipping</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="D3D9_Shipping|x64">
+      <Configuration>D3D9_Shipping</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_DebugOpt_Static|Win32">
+      <Configuration>GL_DebugOpt_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_DebugOpt_Static|x64">
+      <Configuration>GL_DebugOpt_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Debug_Static|Win32">
+      <Configuration>GL_Debug_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Debug_Static|x64">
+      <Configuration>GL_Debug_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Release_Static|Win32">
+      <Configuration>GL_Release_Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Release_Static|x64">
+      <Configuration>GL_Release_Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Shipping|Win32">
+      <Configuration>GL_Shipping</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Shipping|x64">
+      <Configuration>GL_Shipping</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F245741E-0AEC-4E93-BBEE-4980490FAB66}</ProjectGuid>
+    <RootNamespace>GFxPlayer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL2.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL2.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL2.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL2.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL2.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL2.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX9.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">libgfxplatform_d3d10</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">libgfxplatform_d3d11</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'">libgfxplatform_d3d9</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'">libgfxplatform_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">libgfxplatform_gl</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)libgfxplatform_gl2.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)libgfxplatform_gl2.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUGOPT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)libgfxplatform_gl2.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUGOPT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)libgfxplatform_gl2.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)libgfxplatform_gl2.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)libgfxplatform_gl2.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\..\..\..\Src\Sound;..\..\..\..\..\..\..\..\Src\Render;..\..\..\..\..\..\..\..\Src\GMain;..\..\..\..\..\..\..\..\Src\GFxPlayer;..\..\..\..\..\..\..\..\Src\GKernel;..\..\..\..\..\..\..\..\Src\GFxAudio;..\..\..\..\..\..\..\..\Src\Video;..\..\..\..\..\..\..\..\Src\GFxIME;..\..\..\..\..\..\..\..\Src\XML;..\..\..\..\..\..\..\..\Src\GFxLocalization;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\..\..\3rdParty\nvidia;$(VS80COMNTOOLS)..\..\VC\PlatformSDK\Include;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_CommandLine.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_CoreTest.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_RenderThread.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_RTCommandQueue.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_SystemCursorManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_RenderHALThread.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Platform\Platform_XInput.h" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_CommandLine.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_CoreTest.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_RenderThread.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_RTCommandQueue.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_SystemCursorManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_RenderHALThread.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_D3D9.cpp">
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Profiling|x64'">true</ExcludedFromBuild>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_D3D1x.cpp">
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GL2_Profiling|x64'">true</ExcludedFromBuild>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_WinAPI.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_WinAPI_GL.cpp">
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Profiling|Win32'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D9_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D10_Profiling|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Release_Static|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">true</ExcludedFromBuild>
+		<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='D3D11_Profiling|x64'">true</ExcludedFromBuild>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_XInput.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Render\Render_D3D1x.vcxproj">
+      <Project>{74139640-2624-4bbc-aa15-c4c6730e3665}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Render\Render_D3D9.vcxproj">
+      <Project>{f42830aa-2eee-472f-a622-f1aa1391106c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Render\Render_GL.vcxproj">
+      <Project>{22d59080-83f0-4a1a-b203-72f51b0a3417}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

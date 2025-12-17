@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="NoLink|Win32">
+      <Configuration>NoLink</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="NoLink|x64">
+      <Configuration>NoLink</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_DebugOpt|Win32">
+      <Configuration>GL_DebugOpt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_DebugOpt|x64">
+      <Configuration>GL_DebugOpt</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Debug|Win32">
+      <Configuration>GL_Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Debug|x64">
+      <Configuration>GL_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Release|Win32">
+      <Configuration>GL_Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Release|x64">
+      <Configuration>GL_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Shipping|Win32">
+      <Configuration>GL_Shipping</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL_Shipping|x64">
+      <Configuration>GL_Shipping</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{22D59080-83F0-4A1A-B203-72F51B0A3417}</ProjectGuid>
+    <RootNamespace>Render_GL</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\Internal\GFx_Lib_Logo.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_GL.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\Debug_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\DebugOpt_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\Release_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc10\Shipping_Logo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc10\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">libgfxrender_gl</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">libgfxrender_gl</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|Win32'">
+    <Link>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+    <ClCompile>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|x64'">
+    <Link>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+    <ClCompile>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_Common.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_HAL.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_MeshCache.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_Shader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_Texture.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_ExtensionMacros.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_Extensions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_ShaderDescs.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_ExtensionMacros.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_Extensions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_ShaderDescs.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_ExtensionMacros.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_Extensions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\GL\GL_ShaderDescs.h" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_HAL.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_MeshCache.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_Shader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_Texture.cpp" />
+	<CustomBuild Include="..\..\..\..\..\Src\Render\ShaderData.xml">
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_Debug|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_Release|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|Win32'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_Debug|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_DebugOpt|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_Release|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform GL -xml %(Identity) -outdir %(RelativeDir)\GL -type Source</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">%(RelativeDir)\GL\GL_ShaderDescs.cpp;%(RelativeDir)\GL\GL_ShaderDescs.h;%(RelativeDir)\GL\GL_ShaderSource.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='GL_Shipping|x64'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+	</CustomBuild>
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_Extensions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_ShaderDescs.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\GL\GL_ShaderSource.cpp" />
+  </ItemGroup>
+   <ItemGroup>
+	<CustomBuild Include="..\..\..\..\..\Src\Render\ShaderData.xml">
+	</CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

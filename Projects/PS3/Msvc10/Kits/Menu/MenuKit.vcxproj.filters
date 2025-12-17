@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="FxPlayer Core">
+      <UniqueIdentifier>{6cc39a0c-3b42-460c-9b2c-a1f782050f32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game States">
+      <UniqueIdentifier>{ba8f6a92-a45b-4244-a574-230c6f8f8a2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views">
+      <UniqueIdentifier>{21092bde-7aeb-4ef1-8046-4f063dbc2eae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{c9906f44-00d7-4850-8903-eaaf07d3a133}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h">
+      <Filter>FxPlayer Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_InGame.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Loading.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_MainMenu.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Splash.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Start.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_System.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameStateWidgetSupport.h">
+      <Filter>Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\MainMenuView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\ManagerView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuDialog.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\SettingsView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\StartGameView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\SystemUIDialog.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\UIView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Util\GFxClikWidget.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameMemoryFileCache.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameDataLoader.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Game.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\GameResourceManager.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\GameUIManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp">
+      <Filter>FxPlayer Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_InGame.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Loading.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_MainMenu.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Splash.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Start.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_System.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameStateWidgetSupport.cpp">
+      <Filter>Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\MainMenuView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\ManagerView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuDialog.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\SettingsView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\StartGameView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\SystemUIDialog.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\UIView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameMemoryFileCache.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameDataLoader.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Game.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\GameResourceManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\GameUIManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\MenuKitDemo.cpp" />
+  </ItemGroup>
+</Project>

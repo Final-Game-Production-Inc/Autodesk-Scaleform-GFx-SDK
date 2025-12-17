@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{619b31dc-b596-45db-9246-ef36b2b3ea69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3">
+      <UniqueIdentifier>{3b6df23a-f4ac-4569-9726-58ee78b38c3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj">
+      <UniqueIdentifier>{91fd8ab3-e3d3-496e-8b47-414e7f34d3e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Desktop">
+      <UniqueIdentifier>{8cc578bc-22b1-4b27-9100-8dd1491d13ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Display">
+      <UniqueIdentifier>{329361fe-5f5d-440d-9cd0-a5b103111ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Events">
+      <UniqueIdentifier>{296b3452-6380-4afa-b5a9-24cd6f6c42e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Filesystem">
+      <UniqueIdentifier>{588e434c-42b4-40d2-b474-daa2568aaf22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Html">
+      <UniqueIdentifier>{63046f31-ad41-40ea-b4a1-fdaf13d31407}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Net">
+      <UniqueIdentifier>{101b6300-846c-4ab6-9d7a-3e8ac2ac2a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Printing">
+      <UniqueIdentifier>{34a871a2-df7b-4873-ada4-1922c93d077e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Sampler">
+      <UniqueIdentifier>{4a131ba1-4042-4276-b385-8b0eff1c7ebd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Security">
+      <UniqueIdentifier>{6289e008-8a7f-48d3-af7e-ea3ef79c4f66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Utils">
+      <UniqueIdentifier>{36fd9eaa-6f56-48ca-b1ce-264fefc003bd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_AIR_All.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+  </ItemGroup>
+</Project>

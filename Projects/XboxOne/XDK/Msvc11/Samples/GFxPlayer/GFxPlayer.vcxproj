@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_MonoD3D|Durango">
+      <Configuration>Debug_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt_MonoD3D|Durango">
+      <Configuration>DebugOpt_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_MonoD3D|Durango">
+      <Configuration>Release_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_StockD3D|Durango">
+      <Configuration>Release_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_StockD3D|Durango">
+      <Configuration>Debug_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt_StockD3D|Durango">
+      <Configuration>DebugOpt_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_MonoD3D|Durango">
+      <Configuration>Shipping_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_StockD3D|Durango">
+      <Configuration>Shipping_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <RootNamespace>GFxPlayer</RootNamespace>
+    <ProjectGuid>{A7A57266-5E98-4C73-B19D-47154AFCEFB9}</ProjectGuid>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_App_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;dxguid.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;kernel32.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;dxguid.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;kernel32.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11_x.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;dxguid.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;kernel32.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11_x.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;dxguid.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;kernel32.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11i.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;dxguid.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;kernel32.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11_x.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;kernel32.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11_x.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;kernel32.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11i.lib;combase.lib;kernelx.lib;uuid.lib;xaudio2.lib;ws2_32.lib;dxguid.lib;fmodex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>$(IgnoreSpecificDefaultLibraries);LIBCMT.lib;advapi32.lib;atl.lib;atls.lib;atlsd.lib;atlsn.lib;atlsnd.lib;comctl32.lib;comsupp.lib;kernel32.lib;dbghelp.lib;gdi32.lib;gdiplus.lib;guardcfw.lib;mmc.lib;msimg32.lib;msvcole.lib;msvcoled.lib;mswsock.lib;ntstrsafe.lib;ole2.lib;ole2autd.lib;ole2auto.lib;ole2d.lib;ole2ui.lib;ole2uid.lib;ole32.lib;oleacc.lib;oleaut32.lib;oledlg.lib;oledlgd.lib;oldnames.lib;runtimeobject.lib;shell32.lib;shlwapi.lib;strsafe.lib;urlmon.lib;user32.lib;userenv.lib;uuid.lib;wlmole.lib;wlmoled.lib;ws2_32.lib;</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;SF_D3D_VERSION=11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Logo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="SmallLogo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="SplashScreen.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="StoreLogo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h" />
+    <ClInclude Include="..\..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Apps\Samples\FxPlayer\FxPlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\3rdParty\fmod\XboxOne\fmodex.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\..\3rdParty\fmod\XboxOne\fmodexL.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

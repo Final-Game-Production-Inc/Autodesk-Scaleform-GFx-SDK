@@ -1,0 +1,396 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{21f27c88-cd22-4691-adbb-35d14d702f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3">
+      <UniqueIdentifier>{0a08e28d-a778-4c04-9786-22787aeced22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj">
+      <UniqueIdentifier>{d6418d9b-1a02-4621-8281-146157ea6916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Desktop">
+      <UniqueIdentifier>{e11353ed-39ae-438b-8096-2a8bd56b893a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Display">
+      <UniqueIdentifier>{0696cb6b-2f62-41b9-b01e-248e1adcb0c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Events">
+      <UniqueIdentifier>{02333d5d-facb-48cd-baa3-feafc853c857}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Filesystem">
+      <UniqueIdentifier>{157304b8-e9e5-437a-beb8-5998f34b5259}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Html">
+      <UniqueIdentifier>{a3f874bf-816a-45d3-b7bf-a005e3cf8799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Net">
+      <UniqueIdentifier>{de60535d-77e2-4d2c-b332-fc60509e44e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Printing">
+      <UniqueIdentifier>{0a4f6025-08a4-4e6a-9f1e-21d05a460071}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Sampler">
+      <UniqueIdentifier>{5716ce6b-9373-4e19-bb5f-eea1412a5bb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Security">
+      <UniqueIdentifier>{530105ca-69f0-4873-b8e2-1af6fc7dd15b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Utils">
+      <UniqueIdentifier>{c60b1141-bade-43ca-9574-1cc5a3165310}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Clipboard.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardFormats.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardTransferMode.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Icon.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_InteractiveIcon.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_DockIcon.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeApplication.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragActions.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragManager.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragOptions.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NotificationType.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_SystemTrayIcon.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Updater.h">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FocusDirection.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenu.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenuItem.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindow.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowDisplayState.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowInitOptions.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowResize.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowSystemChrome.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowType.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Screen.h">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_BrowserInvokeEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMAuthenticateEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMErrorEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMStatusEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FileListEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTMLUncaughtScriptExceptionEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_InvokeEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeDragEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowBoundsEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowDisplayStateEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_OutputProgressEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ScreenMouseEvent.h">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_File.h">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileMode.h">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileStream.h">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHistoryItem.h">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHost.h">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLLoader.h">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLPDFCapability.h">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLWindowCreateOptions.h">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestDefaults.h">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJob.h">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOptions.h">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOrientation.h">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_DeleteObjectSample.h">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_NewObjectSample.h">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_Sample.h">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_StackFrame.h">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_IURIDereferencer.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_ReferencesValidationSetting.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_RevocationCheckSettings.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignatureStatus.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignerTrustSettings.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_XMLSignatureValidator.h">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_CompressionAlgorithm.h">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Clipboard.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardFormats.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardTransferMode.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Icon.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_InteractiveIcon.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_DockIcon.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeApplication.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragActions.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragManager.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragOptions.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NotificationType.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_SystemTrayIcon.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Updater.cpp">
+		<Filter>GFx\AS3\Obj\Desktop</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FocusDirection.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenu.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenuItem.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindow.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowDisplayState.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowInitOptions.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowResize.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowSystemChrome.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowType.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Screen.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_BrowserInvokeEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMAuthenticateEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMErrorEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMStatusEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FileListEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTMLUncaughtScriptExceptionEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_InvokeEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeDragEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowBoundsEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowDisplayStateEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_OutputProgressEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ScreenMouseEvent.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_File.cpp">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileMode.cpp">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileStream.cpp">
+		<Filter>GFx\AS3\Obj\Filesystem</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHistoryItem.cpp">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHost.cpp">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLLoader.cpp">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLPDFCapability.cpp">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLWindowCreateOptions.cpp">
+		<Filter>GFx\AS3\Obj\Html</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestDefaults.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJob.cpp">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOptions.cpp">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOrientation.cpp">
+		<Filter>GFx\AS3\Obj\Printing</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_DeleteObjectSample.cpp">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_NewObjectSample.cpp">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_Sample.cpp">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_StackFrame.cpp">
+		<Filter>GFx\AS3\Obj\Sampler</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_IURIDereferencer.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_ReferencesValidationSetting.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_RevocationCheckSettings.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignatureStatus.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignerTrustSettings.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_XMLSignatureValidator.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_CompressionAlgorithm.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+  </ItemGroup>
+</Project>

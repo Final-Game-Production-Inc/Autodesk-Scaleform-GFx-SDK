@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:mx="http://schemas.microsoft.com/appx/2013/xbox/manifest" IgnorableNamespaces="mx">
+  
+  <Identity Name="KinectInSWF"
+            Publisher="CN=Publisher"
+            Version="1.0.0.0" />
+  
+  <Properties>
+    <DisplayName>KinectInSWF</DisplayName>
+    <PublisherDisplayName>Autodesk Inc.</PublisherDisplayName>
+    <Logo>StoreLogo.png</Logo>
+    <Description>KinectInSWF</Description>
+  </Properties>
+  
+  <Prerequisites>
+    <OSMinVersion>6.2</OSMinVersion>
+    <OSMaxVersionTested>6.2</OSMaxVersionTested>
+  </Prerequisites>
+  
+  <Resources>
+    <Resource Language="en-us"/>
+  </Resources>
+  
+  <Applications>
+    <Application Id="KinectInSWF.App" 
+        Executable="$targetnametoken$.exe" 
+        EntryPoint="KinectInSWF.App">
+        <VisualElements 
+            DisplayName="KinectInSWF"
+            Logo="Logo.png"
+            SmallLogo="SmallLogo.png"
+            Description="KinectInSWF"
+            ForegroundText="light"
+            BackgroundColor="#6495ED">
+            <SplashScreen Image="SplashScreen.png" />
+        </VisualElements>
+      <Extensions>
+        <mx:Extension Category="windows.xbox.networking">
+          <mx:XboxNetworkingManifest>
+            <mx:SocketDescriptions>
+              <mx:SocketDescription Name="AMP" SecureIpProtocol="Tcp" BoundPort="7534">
+                <mx:AllowedUsages>
+                  <mx:SecureDeviceSocketUsage Type="SendDebug" />
+                  <mx:SecureDeviceSocketUsage Type="ReceiveDebug" />
+                </mx:AllowedUsages>
+              </mx:SocketDescription>
+            </mx:SocketDescriptions>
+          </mx:XboxNetworkingManifest>
+        </mx:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClientServer" />
+    <mx:Capability Name="kinectRequired" />
+    <mx:Capability Name="kinectVision"/>
+  </Capabilities>
+</Package>

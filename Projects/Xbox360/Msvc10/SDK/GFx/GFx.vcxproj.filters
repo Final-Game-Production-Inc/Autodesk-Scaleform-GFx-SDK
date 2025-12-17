@@ -1,0 +1,1548 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Kernel">
+      <UniqueIdentifier>{9f65a389-cb30-4622-b883-afb2276f5c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel\HeapPT">
+      <UniqueIdentifier>{2834957f-aed9-4665-ae5b-4fe124d1e34c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel\HeapMH">
+      <UniqueIdentifier>{1f40e901-2254-4c96-9ed1-a037636383d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{98ec73fa-117f-48b6-a9c3-03b0dede6158}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AMP">
+      <UniqueIdentifier>{42cd5f74-4f1d-4198-bfaf-4773893967b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\Audio">
+      <UniqueIdentifier>{85eedb96-f083-4fe5-a1e4-aa466fd6682f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\Text">
+      <UniqueIdentifier>{cacf26aa-5050-419c-86b0-3d6d87c62764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\XML">
+      <UniqueIdentifier>{f6b7ef23-0076-4857-bd6e-6549fe6a37a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\IME">
+      <UniqueIdentifier>{01642e36-fbe6-47ba-9654-bdb61b5104f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{9e2580a1-0ab9-48a0-8202-f2f7c7b431cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\FontProvider">
+      <UniqueIdentifier>{979dd5bf-706d-48d3-ac6e-1e5d9ab9fb85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\ImageFiles">
+      <UniqueIdentifier>{7da7d5d7-3cc3-4fd1-b44c-fee8ad45843a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Text">
+      <UniqueIdentifier>{e5f65ba1-cc91-417b-9254-c61456035c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{55ae8e46-f4b7-4f8e-90d8-843d7d3c32e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMalloc.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocWinAPI.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet1.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet2.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocEngine.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocLite.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_BitSet1.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Bookkeeper.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_DebugInfo.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_FreeBin.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Granulator.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_MemoryHeap.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_PageTable.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Root.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Starter.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMapper.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocStatic.cpp">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocBitSet2.cpp">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocEngine.cpp">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_DebugInfo.cpp">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_FreeBin.cpp">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_MemoryHeap.cpp">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_Root.cpp">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_FileFILE.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_ThreadsWinAPI.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Alg.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_AllocAddr.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_AmpInterface.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Atomic.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Debug.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_File.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Locale.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Log.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MemItem.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MemoryHeap.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MemReport.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MsgFormat.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Random.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_RefCount.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Stats.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Std.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_String.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_String_PathUtil.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_SysFile.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_System.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Threads.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Timer.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_UTF8Util.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_WString.cpp">
+		<Filter>Kernel</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Socket_X360.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Message.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_MessageRegistry.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ObjectsLog.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ProfileFrame.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Server.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ServerCallbacks.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Socket.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Stream.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ThreadMgr.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ViewStats.cpp">
+		<Filter>GFx\AMP</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_Sound.cpp">
+		<Filter>GFx\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundResource.cpp">
+		<Filter>GFx\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundTagsReader.cpp">
+		<Filter>GFx\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_Audio.cpp">
+		<Filter>GFx\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Text\Text_EditorKit.cpp">
+		<Filter>GFx\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Text\Text_StyleSheet.cpp">
+		<Filter>GFx\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_Document.cpp">
+		<Filter>GFx\XML</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_DOM.cpp">
+		<Filter>GFx\XML</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_Object.cpp">
+		<Filter>GFx\XML</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_Support.cpp">
+		<Filter>GFx\XML</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\IME\GFx_IMEManager.cpp">
+		<Filter>GFx\IME</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ASString.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ASUtils.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Button.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ButtonDef.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_CharacterDef.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DisplayList.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DisplayObjContainer.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DisplayObject.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DrawText.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DrawingContext.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Event.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FileOpener.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FilterDesc.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontCompactor.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontGlyphPacker.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontLib.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontProviderHUD.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontManager.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontMap.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontResource.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImageCreator.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImagePacker.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImageResource.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImageSupport.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Input.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_InteractiveObject.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_LoadProcess.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Loader.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_LoaderUtil.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_LoaderImpl.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Log.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_MorphCharacter.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_MovieDef.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_PlayerImpl.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_PlayerTasks.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Resource.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ResourceHandle.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Shape.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ShapeSwf.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Sprite.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_SpriteDef.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_StaticText.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Stream.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_String.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TagLoaders.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TaskManager.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TextField.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TextFieldDef.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TextureFont.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_WWHelper.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ZLibFile.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ZlibSupport.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderFT2.cpp">
+		<Filter>Render\FontProvider</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\FontProvider\Render_FT2Helper.cpp">
+		<Filter>Render\FontProvider</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderHUD.cpp">
+		<Filter>Render\FontProvider</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\DDS_ImageReader.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageCommon.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageReader.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageWriter.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\PNG_ImageReader.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\PVR_ImageReader.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFile.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFileUtil.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\TGA_ImageReader.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\TGA_ImageWriter.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\SIF_ImageReader.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\SIF_ImageWriter.cpp">
+		<Filter>Render\ImageFiles</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_Core.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_DocView.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_FilterDesc.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_Highlight.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_HTMLParser.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_LineBuffer.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_StyledText.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_WWHelper.cpp">
+		<Filter>Render\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_BufferGeneric.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Bundle.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_CacheEffect.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Color.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Context.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_CxForm.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage_HW.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage_Queue.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage_SW.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Filters.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Font.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_FontCacheHandle.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_GlyphCache.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_GlyphFitter.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_GlyphQueue.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Gradients.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_HAL.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Hairliner.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_HitTest.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Image.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Matrix2x4.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Matrix3x4.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Matrix4x4.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_MatrixPool.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_MeshCache.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_MeshKey.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_PathDataPacker.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Primitive.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_PrimitiveBundle.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_PrimitiveProcessor.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Queue.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Rasterizer.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_RectPacker.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ResizeImage.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Scale9Grid.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ScreenToWorld.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloat.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloatMP.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ShapeMeshProvider.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_SimpleMeshCache.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_StateBag.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_States.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Stats.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Stroker.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_StrokerAA.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Sync.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TessCurves.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Tessellator.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextLayout.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextMeshProvider.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextPrimitiveBundle.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextureCacheGeneric.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextureUtil.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeCacheNode.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeCacheText.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeLog.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeMesh.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeNode.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeShape.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeText.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Vertex.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_VertexPath.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Renderer2D.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\Render\Renderer2DImpl.cpp">
+		<Filter>Render</Filter>
+	</ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocWinAPI.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet1.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet2.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocEngine.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocLite.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_BitSet1.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_BitSet2.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Bookkeeper.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_DebugInfo.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_FreeBin.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Granulator.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_MemoryHeap.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_PageTable.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Root.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Starter.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMalloc.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMapper.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Types.h">
+		<Filter>Kernel\HeapPT</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocBitSet2.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocEngine.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_DebugInfo.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_FreeBin.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_MemoryHeap.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_Root.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_SysAllocMalloc.h">
+		<Filter>Kernel\HeapMH</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD_X360.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Alg.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AllocAddr.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Allocator.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AllocInfo.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AmpInterface.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Array.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ArrayPaged.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ArrayStaticBuff.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ArrayUnsafe.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Atomic.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AutoPtr.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_BitSet.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Debug.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_File.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Hash.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_HeapNew.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_HeapTypes.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_KeyCodes.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_List.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ListAlloc.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Locale.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Log.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Math.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_MemItem.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Memory.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_MemoryHeap.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_MsgFormat.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_RadixTree.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Random.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Range.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_RefCount.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_RefCountCollector.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD_Altivec.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD_SSE.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SplayTree.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_StackMemPool.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Stats.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Std.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_String.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_StringHash.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SysAlloc.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SysFile.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_System.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Threads.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Timer.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Types.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_UTF8Util.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_WString.h">
+		<Filter>Kernel</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderFT2.h">
+		<Filter>Render\FontProvider</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\FontProvider\Render_FT2Helper.h">
+		<Filter>Render\FontProvider</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderHUD.h">
+		<Filter>Render\FontProvider</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\DDS_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageCommon.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\PNG_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\PVR_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFileUtil.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\TGA_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\SIF_ImageFile.h">
+		<Filter>Render\ImageFiles</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_Core.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_DocView.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_FilterDesc.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_FontManager.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_Highlight.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_LineBuffer.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_SGMLParser.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_StyledText.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_WWHelper.h">
+		<Filter>Render\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_BoundBox.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Buffer.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_BufferGeneric.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Bundle.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_CacheEffect.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Color.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Constants.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Containers.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Context.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_CxForm.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_DrawableImage.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_DrawableImage_Queue.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Events.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Filters.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Font.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_FontCacheHandle.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphCache.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphCacheConfig.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphFitter.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphParam.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphQueue.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Gradients.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_HAL.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Hairliner.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_HitTest.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Image.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_JPEGUtil.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Math2D.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Matrix2x4.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Matrix3x4.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Matrix4x4.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MatrixPool.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MemoryManager.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MeshCache.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MeshCacheConfig.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MeshKey.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_PathDataInt.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_PathDataPacker.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Point3.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Primitive.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_PrimitiveBundle.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Queue.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Rasterizer.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_RectPacker.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ResizeImage.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Scale9Grid.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ScreenToWorld.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Shader.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShaderHAL.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloat.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloatMP.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShapeMeshProvider.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_SimpleMeshCache.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_StateBag.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_States.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Stats.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Stroker.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_StrokerAA.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Sync.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TessCurves.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TessDefs.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Tessellator.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextLayout.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextMeshProvider.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextPrimitiveBundle.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextureCache.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextureCacheGeneric.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextureUtil.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeCacheNode.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeCacheText.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeLog.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeMesh.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeNode.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeShape.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeText.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Twips.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Types2D.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Vertex.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Viewport.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Renderer2D.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\Render\Renderer2DImpl.h">
+		<Filter>Render</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFxCompat.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFxConfig.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFxConfigAddons.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFxConfigAddons_Blank.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFxVersion.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_AMP.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_FT2.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_PS3.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_Win32.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_HUD.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_PSVita.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Kernel.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Render.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_D3D9.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_GL.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_PS3.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_X360.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Sound_FMOD.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Sound_WWise.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Include\GFx_XML.h">
+		<Filter>Include</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Interfaces.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Message.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_MessageRegistry.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ObjectsLog.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ProfileFrame.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Server.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ServerCallbacks.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Socket.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Stream.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ThreadMgr.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ViewStats.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Visitors.h">
+		<Filter>GFx\AMP</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Audio\GFx_Sound.h">
+		<Filter>GFx\Audio</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundResource.h">
+		<Filter>GFx\Audio</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundTagsReader.h">
+		<Filter>GFx\Audio</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Text\Text_EditorKit.h">
+		<Filter>GFx\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Text\Text_SGMLParser.h">
+		<Filter>GFx\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Text\Text_StyleSheet.h">
+		<Filter>GFx\Text</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Document.h">
+		<Filter>GFx\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_DOM.h">
+		<Filter>GFx\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Object.h">
+		<Filter>GFx\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Parser.h">
+		<Filter>GFx\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Support.h">
+		<Filter>GFx\XML</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\IME\GFx_IMEManager.h">
+		<Filter>GFx\IME</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASMovieRootBase.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASIMEManager.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASSoundIntf.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASString.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASUtils.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Audio.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Button.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ButtonDef.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_CharPosInfo.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_CharacterDef.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DisplayList.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DisplayObjContainer.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DisplayObject.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DrawText.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DrawingContext.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Event.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FilterDesc.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontCompactor.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontGlyphPacker.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontLib.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontProviderHUD.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontManager.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontResource.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_GlyphParam.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImageCreator.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImagePacker.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImageResource.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImageSupport.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Input.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_InteractiveObject.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_LoadProcess.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Loader.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_LoaderImpl.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Log.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_MediaInterfaces.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_MorphCharacter.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_MovieDef.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PathDataStorage.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Player.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PlayerImpl.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PlayerStats.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PlayerTasks.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Resource.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ResourceHandle.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Shape.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ShapeSwf.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_SharedObject.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Sprite.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_SpriteDef.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StaticText.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Stats.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StatsDecl.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Stream.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StreamContext.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_String.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StringHash.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TagLoaders.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Tags.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TaskManager.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TextField.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TextFieldDef.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TextureFont.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Types.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_VideoBase.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_WWHelper.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ZLibFile.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+  </ItemGroup>
+</Project>

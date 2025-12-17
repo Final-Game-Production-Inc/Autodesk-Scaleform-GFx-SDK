@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_MonoD3D|Durango">
+      <Configuration>Debug_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt_MonoD3D|Durango">
+      <Configuration>DebugOpt_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_MonoD3D|Durango">
+      <Configuration>Release_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_StockD3D|Durango">
+      <Configuration>Release_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_StockD3D|Durango">
+      <Configuration>Debug_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt_StockD3D|Durango">
+      <Configuration>DebugOpt_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_MonoD3D|Durango">
+      <Configuration>Shipping_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_StockD3D|Durango">
+      <Configuration>Shipping_StockD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_CommandLine.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_CoreTest.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_RenderThread.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_RTCommandQueue.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_SystemCursorManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_RenderHALThread.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Platform\Platform_XboxOne.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform_CommandLine.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform_CoreTest.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform_RenderThread.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform_RTCommandQueue.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform_SystemCursorManager.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Platform\Platform_RenderHALThread.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>Platform</ProjectName>
+    <RootNamespace>Platform</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ProjectGuid>{B21C4972-7834-D6BF-5390-74BEF2536E38}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_StockD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_MonoD3D.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxplatform_xboxone</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_StockD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_MonoD3D|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(Console_SdkWindowsMetadataPath);$(VCInstallDir)vcpackages;$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\3rdParty\zlib-1.2.5;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-6b;..\..\..\..\..\..\3rdParty\libpng;..\..\..\..\..\..\3rdParty\expat-2.0.1\lib;..\..\..\..\..\..\3rdParty\glext;..\..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\..\3rdParty\cri\pc\include;..\..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

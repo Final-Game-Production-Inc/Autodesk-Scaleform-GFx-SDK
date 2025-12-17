@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_NoRTTI|PS3">
+      <Configuration>Debug_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_NoRTTI|PS3">
+      <Configuration>Release_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_NoRTTI|PS3">
+      <Configuration>Shipping_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{521D6A5E-21E0-4715-8087-76347F4C74D1}</ProjectGuid>
+    <RootNamespace>AS2</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\NonSCU\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\NonSCU\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\NonSCU\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-g -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../../../../../Src\Kernel;../../../../../Src;../../../../../Src\Sound;../../../../../Src\Render;../../../../../Src\GFx;../../../../../Src\GFxIME;../../../../../Src\XML;../../../../../Include;../../../../../Src\GFx\Audio;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;../../../../../3rdParty\include;../../../../../3rdParty\include\PS3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;_DEBUG;__SNC__;_VSI_ALTCONF_=PS3 Debug NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfx_as2.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../../../../../Src\Kernel;../../../../../Src;../../../../../Src\Sound;../../../../../Src\Render;../../../../../Src\GFx;../../../../../Src\GFxIME;../../../../../Src\XML;../../../../../Include;../../../../../Src\GFx\Audio;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;../../../../../3rdParty\include;../../../../../3rdParty\include\PS3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;NDEBUG;__SNC__;_VSI_ALTCONF_=PS3 Release NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfx_as2.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../../../../../Src\Kernel;../../../../../Src;../../../../../Src\Sound;../../../../../Src\Render;../../../../../Src\GFx;../../../../../Src\GFxIME;../../../../../Src\XML;../../../../../Include;../../../../../Src\GFx\Audio;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;../../../../../3rdParty\include;../../../../../3rdParty\include\PS3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;NDEBUG;__SNC__;_VSI_ALTCONF_=PS3 Release NoRTTI|PS3;SF_BUILD_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfx_as2.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XMLShadowRef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Action.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ActionTypes.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AmpMarker.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ArrayObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AsBroadcaster.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AsFunctionObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmButton.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmCharacter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmSprite.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmTextField.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BevelFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapData.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BlurFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BooleanObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Capabilities.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Color.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorMatrixFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorTransform.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Date.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_DropShadowFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ExternalInterface.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_FunctionRef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_FunctionRefImpl.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_GlowFilter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_KeyObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_LoadVars.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Math.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_MatrixObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Mouse.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieClipLoader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieRoot.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_NumberObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Object.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ObjectProto.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_PointObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_RectangleObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_RefCountCollector.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Selection.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_SharedObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Stage.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_StyleSheet.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextFormat.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextSnapshot.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Timers.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_TransformObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Value.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.h" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Action.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AmpMarker.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ArrayObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AsBroadcaster.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmButton.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmCharacter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmSprite.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmTextField.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BevelFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapData.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BlurFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BooleanObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Capabilities.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Color.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorMatrixFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorTransform.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Date.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_DropShadowFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ExternalInterface.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Function.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_GFxValueImpl.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_GlowFilter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_KeyObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_LoadVars.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Math.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_MatrixObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Mouse.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieClipLoader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieRoot.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_NumberObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Object.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_PointObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_RectangleObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Selection.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_SharedObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Stage.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_StyleSheet.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextFormat.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextSnapshot.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Timers.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_TransformObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Value.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="GFx.vcxproj">
+      <Project>{9ce582fb-23ad-4911-a368-0290503b2867}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

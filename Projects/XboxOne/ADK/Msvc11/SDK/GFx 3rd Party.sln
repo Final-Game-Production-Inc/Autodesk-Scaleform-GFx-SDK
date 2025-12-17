@@ -1,0 +1,43 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "..\..\..\..\..\3rdParty\expat-2.1.0\gfx_projects\XboxOne\ADK\Msvc11\expat.vcxproj", "{92991842-C13D-C3FB-864B-B313ED90AD13}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "..\..\..\..\..\3rdParty\jpeg-8d\gfx_projects\XboxOne\ADK\Msvc11\libjpeg.vcxproj", "{ED2732B3-F8C5-C59D-F751-DABC83E22285}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\..\..\..\..\3rdParty\libpng-1.5.13\gfx_projects\XboxOne\ADK\Msvc11\libpng.vcxproj", "{78950B2A-8FD2-4411-A5BD-872EE6199507}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libz", "..\..\..\..\..\3rdParty\zlib-1.2.7\gfx_projects\XboxOne\ADK\Msvc11\zlib.vcxproj", "{86DE8F31-3CD5-D263-CDC2-7EE4BFEA7D31}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre", "..\..\..\..\..\3rdParty\pcre\gfx_projects\XboxOne\ADK\Msvc11\pcre.vcxproj", "{9B67605D-834B-4AE0-94FD-0516502768DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Durango = Debug|Durango
+		Release|Durango = Release|Durango
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92991842-C13D-C3FB-864B-B313ED90AD13}.Debug|Durango.ActiveCfg = Debug|Durango
+		{92991842-C13D-C3FB-864B-B313ED90AD13}.Debug|Durango.Build.0 = Debug|Durango
+		{92991842-C13D-C3FB-864B-B313ED90AD13}.Release|Durango.ActiveCfg = Release|Durango
+		{92991842-C13D-C3FB-864B-B313ED90AD13}.Release|Durango.Build.0 = Release|Durango
+		{ED2732B3-F8C5-C59D-F751-DABC83E22285}.Debug|Durango.ActiveCfg = Debug|Durango
+		{ED2732B3-F8C5-C59D-F751-DABC83E22285}.Debug|Durango.Build.0 = Debug|Durango
+		{ED2732B3-F8C5-C59D-F751-DABC83E22285}.Release|Durango.ActiveCfg = Release|Durango
+		{ED2732B3-F8C5-C59D-F751-DABC83E22285}.Release|Durango.Build.0 = Release|Durango
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Debug|Durango.ActiveCfg = Debug|Durango
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Debug|Durango.Build.0 = Debug|Durango
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Release|Durango.ActiveCfg = Release|Durango
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Release|Durango.Build.0 = Release|Durango
+		{86DE8F31-3CD5-D263-CDC2-7EE4BFEA7D31}.Debug|Durango.ActiveCfg = Debug|Durango
+		{86DE8F31-3CD5-D263-CDC2-7EE4BFEA7D31}.Debug|Durango.Build.0 = Debug|Durango
+		{86DE8F31-3CD5-D263-CDC2-7EE4BFEA7D31}.Release|Durango.ActiveCfg = Release|Durango
+		{86DE8F31-3CD5-D263-CDC2-7EE4BFEA7D31}.Release|Durango.Build.0 = Release|Durango
+		{9B67605D-834B-4AE0-94FD-0516502768DC}.Debug|Durango.ActiveCfg = Debug|Durango
+		{9B67605D-834B-4AE0-94FD-0516502768DC}.Debug|Durango.Build.0 = Debug|Durango
+		{9B67605D-834B-4AE0-94FD-0516502768DC}.Release|Durango.ActiveCfg = Release|Durango
+		{9B67605D-834B-4AE0-94FD-0516502768DC}.Release|Durango.Build.0 = Release|Durango
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

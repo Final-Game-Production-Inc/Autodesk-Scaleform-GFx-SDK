@@ -1,0 +1,75 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{53DA3A9A-CB2A-4AE5-931E-BD6A3A8656DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Platform", "..\SDK\Platform\Platform.vcxproj", "{B21C4972-7834-D6BF-5390-74BEF2536E38}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Expat", "..\SDK\Expat\Expat.vcxproj", "{BD51B3F4-AF58-4113-BD01-1630B80D0A81}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GFxPlayer", "GFxPlayer\GFxPlayer.vcxproj", "{A7A57266-5E98-4C73-B19D-47154AFCEFB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B21C4972-7834-D6BF-5390-74BEF2536E38} = {B21C4972-7834-D6BF-5390-74BEF2536E38}
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81} = {BD51B3F4-AF58-4113-BD01-1630B80D0A81}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_MonoD3D|Durango = Debug_MonoD3D|Durango
+		Debug_StockD3D|Durango = Debug_StockD3D|Durango
+		Release_MonoD3D|Durango = Release_MonoD3D|Durango
+		Release_StockD3D|Durango = Release_StockD3D|Durango
+		Shipping_MonoD3D|Durango = Shipping_MonoD3D|Durango
+		Shipping_StockD3D|Durango = Shipping_StockD3D|Durango
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Debug_MonoD3D|Durango.ActiveCfg = Debug_MonoD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Debug_MonoD3D|Durango.Build.0 = Debug_MonoD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Debug_StockD3D|Durango.ActiveCfg = Release_StockD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Debug_StockD3D|Durango.Build.0 = Release_StockD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Release_MonoD3D|Durango.ActiveCfg = Release_MonoD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Release_MonoD3D|Durango.Build.0 = Release_MonoD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Release_StockD3D|Durango.ActiveCfg = Release_StockD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Release_StockD3D|Durango.Build.0 = Release_StockD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Shipping_MonoD3D|Durango.ActiveCfg = Shipping_MonoD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Shipping_MonoD3D|Durango.Build.0 = Shipping_MonoD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Shipping_StockD3D|Durango.ActiveCfg = Shipping_StockD3D|Durango
+		{B21C4972-7834-D6BF-5390-74BEF2536E38}.Shipping_StockD3D|Durango.Build.0 = Shipping_StockD3D|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Debug_MonoD3D|Durango.ActiveCfg = Debug|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Debug_MonoD3D|Durango.Build.0 = Debug|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Debug_StockD3D|Durango.ActiveCfg = Debug|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Debug_StockD3D|Durango.Build.0 = Debug|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Release_MonoD3D|Durango.ActiveCfg = Release|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Release_MonoD3D|Durango.Build.0 = Release|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Release_StockD3D|Durango.ActiveCfg = Release|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Release_StockD3D|Durango.Build.0 = Release|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Shipping_MonoD3D|Durango.ActiveCfg = Shipping|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Shipping_MonoD3D|Durango.Build.0 = Shipping|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Shipping_StockD3D|Durango.ActiveCfg = Shipping|Durango
+		{BD51B3F4-AF58-4113-BD01-1630B80D0A81}.Shipping_StockD3D|Durango.Build.0 = Shipping|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Debug_MonoD3D|Durango.ActiveCfg = Debug_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Debug_MonoD3D|Durango.Build.0 = Debug_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Debug_MonoD3D|Durango.Deploy.0 = Debug_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Debug_StockD3D|Durango.ActiveCfg = Debug_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Debug_StockD3D|Durango.Build.0 = Debug_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Debug_StockD3D|Durango.Deploy.0 = Debug_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Release_MonoD3D|Durango.ActiveCfg = Release_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Release_MonoD3D|Durango.Build.0 = Release_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Release_MonoD3D|Durango.Deploy.0 = Release_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Release_StockD3D|Durango.ActiveCfg = Release_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Release_StockD3D|Durango.Build.0 = Release_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Release_StockD3D|Durango.Deploy.0 = Release_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Shipping_MonoD3D|Durango.ActiveCfg = Shipping_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Shipping_MonoD3D|Durango.Build.0 = Shipping_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Shipping_MonoD3D|Durango.Deploy.0 = Shipping_MonoD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Shipping_StockD3D|Durango.ActiveCfg = Shipping_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Shipping_StockD3D|Durango.Build.0 = Shipping_StockD3D|Durango
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9}.Shipping_StockD3D|Durango.Deploy.0 = Shipping_StockD3D|Durango
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A7A57266-5E98-4C73-B19D-47154AFCEFB9} = {53DA3A9A-CB2A-4AE5-931E-BD6A3A8656DA}
+	EndGlobalSection
+EndGlobal

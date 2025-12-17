@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir>.\..\..\..\..\..\Bin\$(PlatformName)\$(MsvcVer)\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\..\..\..\Obj\$(PlatformName)\$(MsvcVer)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\3rdParty\zlib-1.2.7;..\..\..\..\..\3rdParty\glext;..\..\..\..\..\3rdParty\jpeg-8d;..\..\..\..\..\3rdParty\nvidia;..\..\..\..\..\3rdParty\pcre;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/w44264</AdditionalOptions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d9.lib;libgfx.lib;libgfx_as2.lib;libgfx_as3.lib;libgfx_air.lib;libjpeg.lib;libpng.lib;zlib.lib;pcre.lib;XInput.lib;winmm.lib;odbc32.lib;libcurl.lib;Wldap32.lib;odbccp32.lib;imm32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\$(MsvcVer)\$(ConfigShort)\;..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\curl-7.29.0\lib\$(Platform)\$(MsvcVer)\Release\;..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\jpeg-8d\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\cri\pc\libs\$(Platform);..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\pcre\Lib\$(Platform)\$(MsvcVer)\Release;$(DXSDK_DIR)\lib\x$(BitSet);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

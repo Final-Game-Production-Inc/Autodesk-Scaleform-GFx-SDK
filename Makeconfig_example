@@ -1,0 +1,56 @@
+# Makeconfig GFx sample
+#
+
+EPATH := $(PATH)
+
+# Linux
+ifeq ($(P1),local)
+PCFLAGS += -march=pentiumpro
+endif
+
+# PS3
+ifeq ($(P1),PS3)
+# change the following line
+export CELL_SDK = /cygdrive/c/path/to/cellsdk
+export PATH = $(CELL_SDK)/host-win32/bin:$(CELL_SDK)/host-win32/ppu/bin:$(CELL_SDK)/host-win32/spu/bin:$(CELL_SDK)/host-win32/sn/bin:$(CELL_SDK)/host-win32/Cg/bin:$(EPATH)
+endif
+
+# PSP
+ifeq ($(P1),psp)
+# change the following line
+export PSP_GCC_BASE = /cygdrive/c/path/to/psp
+export SCE_PSP_SDK_HOME = $(PSP_GCC_BASE)/devkit
+export PSPDEVKIT = $(SCE_PSP_SDK_HOME)
+export PATH = $(SCE_PSP_SDK_HOME)/bin:$(EPATH)
+endif
+
+# Wii
+ifeq ($(P1),wii)
+# change the following 3 lines
+WII_SDKDIR := /cygdrive/c/path/to/RVL_SDK
+WII_NDEVDIR := /cygdrive/c/path/to/NDEV
+WII_CWDIR := /cygdrive/c/path/to/CodeWarrior
+endif
+
+# Android
+ifeq ($(P1),Android)
+# change the following 3 lines
+export JAVA_HOME := /cygdrive/c/path/to/JDK
+ANDROID_SDK := /cygdrive/c/path/to/SDK
+ANDROID_NDK := /cygdrive/c/path/to/NDK
+export PATH := $(EPATH):$(JAVA_HOME)/bin:$(ANDROID_SDK)/tools:$(ANDROID_SDK)/platform-tools
+AUTODEPLOY := 0
+endif
+
+# CE4100
+ifeq ($(P1),CE4100)
+# change the following line
+export PDKROOT := /path/to/PDK
+export PATH := $(EPATH):$(PDKROOT)/build_i686/staging_dir/bin
+endif
+
+# 3DS
+ifeq ($(P),3DS)
+# change the following line
+CTR_SDKDIR := /cygdrive/c/path/to/CTR_SDKDIR
+endif

@@ -1,0 +1,5 @@
+#include "GFx/AS3/Obj/Html/AS3_Obj_Html_HTMLHistoryItem.cpp"
+#include "GFx/AS3/Obj/Html/AS3_Obj_Html_HTMLHost.cpp"
+#include "GFx/AS3/Obj/Html/AS3_Obj_Html_HTMLLoader.cpp"
+#include "GFx/AS3/Obj/Html/AS3_Obj_Html_HTMLPDFCapability.cpp"
+#include "GFx/AS3/Obj/Html/AS3_Obj_Html_HTMLWindowCreateOptions.cpp"

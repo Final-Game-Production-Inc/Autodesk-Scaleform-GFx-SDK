@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Unity_GL"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="libgfxrender_gl.lib libgfxsound_fmod.lib"
+	/>
+</VisualStudioPropertySheet>

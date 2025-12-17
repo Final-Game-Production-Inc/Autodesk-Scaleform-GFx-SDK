@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<stats>
+	<abilities>
+		<dropship duration="20" minDamage="15" maxDamage="20" range="75" attackSpeed="0.80" armorPen="1" health="200" armor="2" cooldown="30"/>
+		<strike duration="6" minDamage="75" maxDamage="100" attackSpeed="0.10" armorPen="10" splashRadius="100" cooldown="90"/>
+	</abilities>
+	<towers>
+		<apc infantrySpeed="100" infantryRange="175" infantryRegen="3" infantryRespawn="5" infantryMaxUnits="3">
+			<grade level="0" cost="70" refund="49" minDamage="6" maxDamage="10" range="75" attackSpeed="1.00" crit="1" armorPen="0" health="100" armor="0" effectValue="0"/>
+			<grade level="1" cost="120" refund="84" minDamage="10" maxDamage="15" range="75" attackSpeed="0.90" crit="2" armorPen="1" health="150" armor="1" effectValue="0"/>
+			<grade level="2" cost="150" refund="105" minDamage="15" maxDamage="20" range="75" attackSpeed="0.80" crit="3" armorPen="2" health="200" armor="2" effectValue="0"/>
+		</apc>
+		<mech>
+			<grade level="0" cost="100" refund="70" minDamage="6" maxDamage="10" range="200" attackSpeed="0.70" crit="1" armorPen="1" effectValue="5" effectDuration="6" effectTickSpeed="2" effectUpgradeCost="75"/>
+			<grade level="1" cost="150" refund="105" minDamage="8" maxDamage="12" range="200" attackSpeed="0.60" crit="1" armorPen="2" effectValue="10" effectDuration="8" effectTickSpeed="2" effectUpgradeCost="125"/>
+			<grade level="2" cost="210" refund="147" minDamage="10" maxDamage="14" range="200" attackSpeed="0.50" crit="2" armorPen="3" effectValue="15" effectDuration="10" effectTickSpeed="2" effectUpgradeCost="175"/>
+		</mech>	
+		<ost>
+			<grade level="0" cost="220" refund="154" minDamage="35" maxDamage="45" range="175" attackSpeed="4.00" crit="2" armorPen="1" splashRadius="100" effectValue="0.15" effectDuration="4" effectTickSpeed="0" effectUpgradeCost="75"/>
+			<grade level="1" cost="270" refund="189" minDamage="55" maxDamage="65" range="200" attackSpeed="3.80" crit="3" armorPen="2" splashRadius="100" effectValue="0.25" effectDuration="6" effectTickSpeed="0" effectUpgradeCost="125"/>
+			<grade level="2" cost="320" refund="224" minDamage="75" maxDamage="85" range="225" attackSpeed="3.60" crit="4" armorPen="3" splashRadius="100" effectValue="0.40" effectDuration="8" effectTickSpeed="0" effectUpgradeCost="175"/>
+		</ost>
+		<tank>
+			<grade level="0" cost="150" refund="105" minDamage="35" maxDamage="40" range="250" attackSpeed="2.00" crit="2" armorPen="1" effectValue="0.25" effectDuration="4" effectTickSpeed="0" effectUpgradeCost="75"/>
+			<grade level="1" cost="200" refund="137" minDamage="44" maxDamage="49" range="275" attackSpeed="1.80" crit="3" armorPen="2" effectValue="0.45" effectDuration="6" effectTickSpeed="0" effectUpgradeCost="125"/>
+			<grade level="2" cost="250" refund="172" minDamage="56" maxDamage="62" range="300" attackSpeed="1.60" crit="4" armorPen="3" effectValue="0.65" effectDuration="8" effectTickSpeed="0" effectUpgradeCost="175"/>
+		</tank>	
+	</towers>
+</stats>

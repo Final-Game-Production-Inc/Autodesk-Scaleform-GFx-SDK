@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Demos\Common;..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\3rdParty\zlib-1.2.7;..\..\..\..\..\3rdParty\jpeg-8d;..\..\..\..\..\3rdParty\libpng-1.5.13;..\..\...\..\..\3rdParty\cri\xbox360\include;..\..\..\..\..\3rdParty\fmod\xbox360\inc;..\..\..\..\..\3rdParty\freetype2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/MP /w44264</AdditionalOptions>
+      <PreprocessorDefinitions>_XBOX;SF_BUILD_STATICLIB;SF_BUILD_GFXSHADERMAKER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StructMemberAlignment>8Bytes</StructMemberAlignment>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libgfx.lib;libgfx_as2.lib;libgfx_as3.lib;libgfx_air.lib;d3d9$(LibConfig).lib;d3dx9$(LibConfig).lib;xgraphics$(LibConfig).lib;pcre.lib;xboxkrnl.lib;xnet$(LibConfig).lib;xaudio$(LibConfig)2.lib;xmcore$(LibConfig).lib;xbdm.lib;vcomp$(LibConfig).lib;xime$(LibConfig).lib;xmp$(LibConfig).lib;zlib.lib;libjpeg.lib;libpng.lib;freetype219$(LibFT2).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\Xbox360\$(MsvcVer)\$(ConfigShort);..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\Xbox360\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\pcre\Lib\Xbox360\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\Xbox360\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\jpeg-8d\Lib\Xbox360\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\cri\xbox360\libs;..\..\..\..\..\3rdParty\fmod\xbox360\lib;..\..\..\..\..\3rdParty\freetype2\lib\Xbox360\$(MsvcVer)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

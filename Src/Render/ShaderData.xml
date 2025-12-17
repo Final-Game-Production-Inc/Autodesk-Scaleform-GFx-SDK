@@ -1,0 +1,1225 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- 
+  "ShaderGroup" defines a group of shaders. Shaders within the group are differentiated by flags, which
+  correspond to particular options. All different permutations of ShaderFeatures are produced to create
+  the entire group of shaders.
+  
+  "ShaderFeature" is a stage in the shader's execution, which corresponds to a block of code. ShaderFeatures
+  can be individual, or, they can contain "ShaderFeatureFlavor" children, which specify a set of possible options
+  for the feature. Both ShaderFeature and ShaderFeatureFlavor tags support several attributes:
+  
+  id="Name"        : ID of the feature/flavor. This is used to link to "ShaderSource" tags (discussed later).
+  hide="bool"      : The feature/flavor will not contribute to the name of the final shader. This is useful
+                     for shortening names of shaders which have many features.
+  postlink="Name"  : Calls the function "PostLink_+Name" on the ShaderPlatform building the shaders, after the
+                     sources have been linked together. This is useful for features/flavors which contain platform 
+                     specific functionality, or that modify other sections of the final code, such as batching and 
+                     instancing (as their implementations are highly platform dependent). Note that this tag implies
+                     the flag attribute as well.
+  flag="Name"      : The prescence of this feature will cause a shader flag (named "Shader_+Name") to be included
+                     in the shader Desc structure.
+
+  The following are all for permutation controls:
+  
+  optional="bool"  : The feature/flavor is optional, and can be replaced with an empty block when permutations are created.
+  require="Name"   : This feature/flavor requires another feature/flavor. If the feature is not part of the current
+                     permutation, it is added at the end of the pipeline. Note that if multiple features require the
+                     same feature, it will only be added once. This is useful for adding features only if optional
+                     features are included, for example the passthrough of factors for EAlpha stages.
+  exclusive="Name" : If the named feature is included, do not select this feature for the permutation. This is useful
+                     to exclude certain inpermissable combinations of features.
+                     
+  "ShaderSource" is block of Source code that goes into making up the final shader. The id attribute of the ShaderSource
+  links with the id attribute of ShaderFeature/Flavor tags. The pipeline attribute (either "Vertex" or "Fragment" values
+  are acceptable), indicates which pipeline the Source is for. ShaderSource tags can exist with the same id, and different
+  pipeline values, each one will be linked into the correct pipeline.
+  
+  Language rules generally follow HLSL/Cg languages, there are some exceptions. These can be accounted for in the CreateFinalSource
+  method of a ShaderPlatform derived class. Also note that because this file is read as XML, any greaterthan/lessthan signs need
+  to be represented in XML markup.
+  
+  tex2Dlod - takes 3 parameters, the texture, 2D texture coordinates, and the level. This is different from the SM3.0- instrinsic,
+             which takes 2 parameters (texture, 4D coordinates ).
+                     
+-->
+
+<ShaderDefinitions>
+
+  <ShaderGroup id="base">
+
+    <ShaderFeature id="Duplication" optional="true">
+      <ShaderFeatureFlavor id="Batch"     postlink="Batch"/>
+      <ShaderFeatureFlavor id="Instanced" postlink="Instanced"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="Position">
+      <ShaderFeatureFlavor id="Position2d" hide="true"/>
+      <ShaderFeatureFlavor id="Position3d"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="ColorSource">
+      <ShaderFeatureFlavor id="TexTG"/>
+      <ShaderFeatureFlavor id="Vertex"/>
+      <ShaderFeatureFlavor id="TexTGTexTG"    require="Factors"/>
+      <ShaderFeatureFlavor id="TexTGVertex"   require="Factors"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="ColorTransform" optional="true">
+      <ShaderFeatureFlavor id="Cxform" />
+      <ShaderFeatureFlavor id="CxformAc"/>
+    </ShaderFeature>
+    
+    <ShaderFeature id="EAlpha" optional="true" require="Factors"/>
+    <ShaderFeature id="BlendModifier" optional="true">
+      <ShaderFeatureFlavor id="Mul"/>
+      <ShaderFeatureFlavor id="Inv"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="InverseGamma" hide="true"/>
+
+    <ShaderFeature id="Profiler" optional="true">
+      <ShaderFeatureFlavor id="TexDensity" exclusive="Vertex;Mul;Inv;Cxform;CxformAc" flag="Derivatives"/>
+    </ShaderFeature>
+
+  </ShaderGroup>
+
+  <ShaderGroup id="base_text">
+
+    <ShaderFeature id="Duplication" optional="true">
+      <ShaderFeatureFlavor id="Batch"     postlink="Batch"/>
+      <ShaderFeatureFlavor id="Instanced" postlink="Instanced"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="Position">
+      <ShaderFeatureFlavor id="Position2d" hide="true"/>
+      <ShaderFeatureFlavor id="Position3d"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="ColorSource">
+      <ShaderFeatureFlavor id="Solid" exclusive="Cxform"/>
+      <ShaderFeatureFlavor id="Text"  exclusive="Cxform"/>
+      <ShaderFeatureFlavor id="TexUV"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="Cxform" optional="true"/>
+    <ShaderFeature id="BlendModifier" optional="true">
+      <ShaderFeatureFlavor id="Mul"/>
+      <ShaderFeatureFlavor id="Inv"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="InverseGamma" hide="true"/>
+
+    <ShaderFeature id="Profiler" optional="true">
+      <ShaderFeatureFlavor id="TexDensity" exclusive="Solid;Mul;Inv;Cxform" flag="Derivatives"/>
+    </ShaderFeature>
+  </ShaderGroup>
+
+  <ShaderGroup id="base_video">
+
+    <ShaderFeature id="Duplication" optional="true">
+      <ShaderFeatureFlavor id="Batch"     postlink="Batch"/>
+      <ShaderFeatureFlavor id="Instanced" postlink="Instanced"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="Position">
+      <ShaderFeatureFlavor id="Position2d" hide="true"/>
+      <ShaderFeatureFlavor id="Position3d"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="TexTGVertexOnly" hide="true"/>
+    
+    <ShaderFeature id="ColorSource" flag="Video">
+      <ShaderFeatureFlavor id="YUV"/>
+      <ShaderFeatureFlavor id="YUVA"/>
+      <ShaderFeatureFlavor id="YUY2"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="ColorTransform" optional="true">
+      <ShaderFeatureFlavor id="Cxform" />
+      <ShaderFeatureFlavor id="CxformAc"/>
+    </ShaderFeature>
+    <ShaderFeature id="EAlpha" optional="true" require="Factors"/>
+
+    <ShaderFeature id="BlendModifier" optional="true">
+      <ShaderFeatureFlavor id="Mul"/>
+      <!-- Exclude Invert blend mode from non-alpha video, as it's not useful. The video shape will get a solid alpha channel,
+           which makes decoding video for it very wasteful. Also, the shader compiler will optimize out the tex sampling. -->
+      <ShaderFeatureFlavor id="Inv" exclusive="YUV;YUY2"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="InverseGamma" hide="true"/>
+
+    <ShaderFeature id="Profiler" optional="true">
+      <ShaderFeatureFlavor id="TexDensity" exclusive="Mul;Inv;Cxform;CxformAc" flag="Derivatives"/>
+    </ShaderFeature>
+  </ShaderGroup>
+
+  <ShaderGroup id="cmatrix">
+
+    <ShaderFeature id="Position2d" hide="true"/>
+    <!-- NOTE: all filter shaders share the batched vertex buffer (which is used in mask-clear rendering)
+         Because of this, they should all be 'batched', as that is the vertex buffer format. The same applies
+         to blurs/shadows/DisplacementMap and most of the Drawable* shaders below. -->
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    
+    <ShaderFeature id="TexTG"/>
+    <ShaderFeature id="CMatrixAc"/>
+    <ShaderFeature id="EAlpha" optional="true" require="Factors"/>
+    <ShaderFeature id="Mul"    optional="true"/>
+
+    <ShaderFeature id="InverseGamma" hide="true"/>
+
+  </ShaderGroup>
+
+  <ShaderGroup id="blurs">
+
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+
+    <ShaderFeature id="TexTGVertexOnly" hide="true"/>
+
+    <ShaderFeature id="BlurKernel" flag="DynamicLoop">
+      <ShaderFeatureFlavor id="Box1"/>
+      <ShaderFeatureFlavor id="Box2"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="Blur"/>
+    
+    <ShaderFeature id="CxformAc" hide="true"/>
+    <ShaderFeature id="Mul"      optional="true"/>
+
+    <ShaderFeature id="InverseGamma" hide="true"/>
+
+  </ShaderGroup>
+
+  <ShaderGroup id="shadows">
+
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+
+    <ShaderFeature id="TexTGVertexOnly" hide="true"/>
+
+    <ShaderFeature id="Box2" hide="true" flag="DynamicLoop"/>
+    
+    <ShaderFeature id="ShadowType" hide="true">
+      <ShaderFeatureFlavor id="ShadowBase"/>
+      <ShaderFeatureFlavor id="BevelBase"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="SourceColor">
+      <ShaderFeatureFlavor id="SColor" exclusive="BevelBase"/>
+      <ShaderFeatureFlavor id="SColor2" exclusive="ShadowBase"/>
+      <ShaderFeatureFlavor id="SGrad" exclusive="BevelBase"/>
+      <ShaderFeatureFlavor id="SGrad2" exclusive="ShadowBase"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="BaseOverlay">
+      <ShaderFeatureFlavor id="Base" hide="true"/>
+      <ShaderFeatureFlavor id="HideBase" />
+    </ShaderFeature>
+
+    <ShaderFeature id="ShadowFlavor" >
+      <ShaderFeatureFlavor id="OuterBevel"/>
+      <ShaderFeatureFlavor id="InnerBevel" exclusive="SColor"/>
+      <ShaderFeatureFlavor id="InnerShadow" exclusive="SColor2;SGrad;SGrad2"/>
+      <ShaderFeatureFlavor id="FullBevel"/>
+    </ShaderFeature>
+
+    <ShaderFeature id="CxformAc"    hide="true"/>
+    <ShaderFeature id="Mul"         optional="true"/>
+
+    <ShaderFeature id="InverseGamma" hide="true"/>
+
+  </ShaderGroup>
+
+  <ShaderGroup id="DisplacementMap">
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    <ShaderFeature id="TexTGVertexOnly" hide="true"/>
+    <ShaderFeature id="DisplacementMap"/>
+    <ShaderFeature id="OutOfBounds" optional="true">
+      <ShaderFeatureFlavor id="DMIgnore"/>
+      <ShaderFeatureFlavor id="DMColor"/>
+    </ShaderFeature>
+    <ShaderFeature id="InverseGamma" hide="true"/>
+  </ShaderGroup>
+  
+  <ShaderGroup id="DrawableCopyPixels">
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    <ShaderFeature id="AlphaSource">
+      <ShaderFeatureFlavor id="DrawableCopyPixels" require="TexTGTexTGVertexOnly"/>
+      <ShaderFeatureFlavor id="DrawableCopyPixelsAlpha" require="TexTGTexTGTexTGVertexOnly"/>
+    </ShaderFeature>
+      
+    <ShaderFeature id="AlphaType">
+      <ShaderFeatureFlavor id="InAlpha" hide="true"/>
+      <ShaderFeatureFlavor id="MergeAlpha"/>
+      <ShaderFeatureFlavor id="NoDestAlpha"/>
+    </ShaderFeature>
+    
+    <ShaderFeature id="CopyLerp" hide="true"/>
+  </ShaderGroup>
+  
+  <ShaderGroup id="DrawableMerge">
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    <ShaderFeature id="TexTGTexTGVertexOnly" hide="true"/>
+    <ShaderFeature id="DrawableMerge"/>
+  </ShaderGroup>
+
+  <ShaderGroup id="DrawableCompare">
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    <ShaderFeature id="DrawableCompare" require="TexTGTexTGVertexOnly"/>    
+  </ShaderGroup>
+
+  <ShaderGroup id="DrawablePaletteMap">
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    <ShaderFeature id="DrawablePaletteMap" require="TexTGVertexOnly"/>
+  </ShaderGroup>
+
+  <ShaderGroup id="blends">
+    <ShaderFeature id="Position2d" hide="true"/>
+    <ShaderFeature id="Batch"     postlink="Batch" hide="true"/>
+    <ShaderFeature id="TexTGTexTGVertexOnly" hide="true"/>
+    <ShaderFeature id="BlendMode">
+      <ShaderFeatureFlavor id="BlendLighten" />
+      <ShaderFeatureFlavor id="BlendDarken"/>
+      <ShaderFeatureFlavor id="BlendOverlay"/>
+      <ShaderFeatureFlavor id="BlendHardlight"/>
+      <ShaderFeatureFlavor id="BlendDifference"/>
+      <ShaderFeatureFlavor id="BlendLayer" require="CxformAc"/>
+    </ShaderFeature>
+  </ShaderGroup>
+
+  <ShaderSource id="Position2d" pipeline="Vertex">
+    Position2d(
+    attribute float4 pos    : POSITION,
+    varying   float4 vpos   : POSITION,
+    uniform   float4 mvp[2])
+    {
+    vpos = float4(0,0,0,1);
+    vpos.x = dot(pos, mvp[0]);
+    vpos.y = dot(pos, mvp[1]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Position3d" pipeline="Vertex">
+    Position3d (
+    attribute float4   pos    : POSITION,
+    varying   float4   vpos   : POSITION,
+    uniform   float4x4 mvp)
+    {
+    vpos = mul(pos, mvp);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTG" pipeline="Vertex">
+    TexTG (
+    uniform   float4 texgen[2],
+    attribute float4 pos : POSITION,
+    varying   half2  tc0 : TEXCOORD)
+    {
+    tc0.x = dot(pos, texgen[0]);
+    tc0.y = dot(pos, texgen[1]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTG" pipeline="Fragment">
+    TexTG (
+    uniform sampler2D tex,
+    varying half2     tc0    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+    fcolor = tex2D(tex,tc0);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Vertex" pipeline="Vertex">
+    Vertex (
+    attribute lowpf4  acolor  : COLOR,
+    varying   lowpf4  color : COLOR)
+    {
+    color = acolor;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Vertex" pipeline="Fragment">
+  Vertex (
+  varying lowpf4 color     : COLOR,
+  fragout lowpf4    fcolor : COLOR)
+  {
+  fcolor = color;
+  }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGVertex" pipeline="Fragment">
+    TexTGVertex(
+    uniform sampler2D tex,
+    varying half2     tc0     : TEXCOORD,
+    varying lowpf4    factor  : FACTOR,
+    varying lowpf4    color   : COLOR,
+    fragout lowpf4    fcolor  : COLOR)
+    {
+    lowpf4 fcolor0 = tex2D(tex,tc0);
+    lowpf4 fcolor1 = color;
+    fcolor = lerp(fcolor1, fcolor0, factor.r);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGVertex" pipeline="Vertex">
+    Vertex (
+    uniform   float4   texgen[2],
+    attribute float4   pos    : POSITION,
+    attribute lowpf4   acolor : COLOR,
+    varying   half2    tc0    : TEXCOORD,
+    varying   lowpf4   color  : COLOR )
+    {
+    color = acolor;
+    tc0.x = dot(pos, texgen[0]);
+    tc0.y = dot(pos, texgen[1]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGTexTG" pipeline="Fragment">
+    TexTGVertex(
+    uniform sampler2D tex[2],
+    varying half2    tc0  : TEXCOORD,
+    varying half2    tc1  : TEXCOORD,
+    varying lowpf4    factor : FACTOR,
+    fragout lowpf4    fcolor : COLOR)
+    {
+    lowpf4 fcolor0 = tex2D(tex[0], tc0);
+    lowpf4 fcolor1 = tex2D(tex[1], tc1);
+    fcolor = lerp(fcolor1, fcolor0, factor.r);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGTexTG" pipeline="Vertex">
+    Vertex (
+    uniform   float4   texgen[4],
+    attribute float4   pos   : POSITION,
+    varying   half2   tc0 : TEXCOORD,
+    varying   half2   tc1 : TEXCOORD)
+    {
+    tc0.x = dot(pos, texgen[0]);
+    tc0.y = dot(pos, texgen[1]);
+    tc1.x = dot(pos, texgen[2]);
+    tc1.y = dot(pos, texgen[3]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGTexTGVertexOnly" pipeline="Vertex">
+    Vertex (
+    uniform   float4   texgen[4],
+    attribute float4   pos   : POSITION,
+    varying   half2   tc0 : TEXCOORD,
+    varying   half2   tc1 : TEXCOORD)
+    {
+    tc0.x = dot(pos, texgen[0]);
+    tc0.y = dot(pos, texgen[1]);
+    tc1.x = dot(pos, texgen[2]);
+    tc1.y = dot(pos, texgen[3]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGTexTGTexTGVertexOnly" pipeline="Vertex">
+    Vertex (
+    uniform   float4   texgen[6],
+    attribute float4   pos   : POSITION,
+    varying   half2   tc0 : TEXCOORD,
+    varying   half2   tc1 : TEXCOORD,
+    varying   half2   tc2 : TEXCOORD)
+    {
+    tc0.x = dot(pos, texgen[0]);
+    tc0.y = dot(pos, texgen[1]);
+    tc1.x = dot(pos, texgen[2]);
+    tc1.y = dot(pos, texgen[3]);
+    tc2.x = dot(pos, texgen[4]);
+    tc2.y = dot(pos, texgen[5]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Cxform" pipeline="Vertex">
+    Cxform (
+    uniform lowpf4 cxadd,
+    uniform lowpf4 cxmul,
+    varying lowpf4 fucxadd      : TEXCOORD,
+    varying lowpf4 fucxmul      : TEXCOORD
+    )
+    {
+    fucxadd = cxadd;
+    fucxmul = cxmul;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Cxform" pipeline="Fragment">
+    Cxform (
+    varying float4 fucxadd   : TEXCOORD,
+    varying float4 fucxmul   : TEXCOORD,
+    fragout lowpf4 fcolor    : COLOR
+    )
+    {
+    fcolor = fcolor * fucxmul + fucxadd;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="CxformAc" pipeline="Vertex">
+    CxformAc (
+    uniform lowpf4 cxadd,
+    uniform lowpf4 cxmul,
+    varying float4 fucxadd      : TEXCOORD,
+    varying float4 fucxmul      : TEXCOORD
+    )
+    {
+    fucxadd = cxadd;
+    fucxmul = cxmul;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="CxformAc" pipeline="Fragment">
+    CxformAc (
+    varying float4 fucxadd   : TEXCOORD,
+    varying float4 fucxmul   : TEXCOORD,
+    fragout lowpf4 fcolor    : COLOR
+    )
+    {
+      fcolor = (fcolor * float4(fucxmul.rgb,1)) * fucxmul.a;
+      fcolor += fucxadd * fcolor.a;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Mul" pipeline="Fragment">
+    Mul (
+    fragout lowpf4    fcolor : COLOR)
+    {
+    fcolor.rgb = fcolor.rgb * fcolor.a;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Inv" pipeline="Fragment">
+    Mul (
+    fragout lowpf4    fcolor : COLOR)
+    {
+    fcolor.rgb = float3(fcolor.a, fcolor.a, fcolor.a);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="EAlpha" pipeline="Fragment">
+    EAlpha (
+    varying lowpf4 factor   : FACTOR,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    fcolor.a *= factor.a;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Factors" pipeline="Vertex">
+    Factors (
+    attribute half4 afactor  : FACTOR,
+    varying   half4 factor   : FACTOR)
+    {
+      factor = afactor;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Solid" pipeline="Fragment">
+    Solid (
+    uniform lowpf4 cxmul,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    fcolor = cxmul;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Text" pipeline="Vertex">
+    Text (
+    attribute lowpf4 acolor : COLOR, 
+    attribute half2 atc    : TEXCOORD, 
+    varying lowpf4 vcolor   : COLOR, 
+    varying half2    tc0    : TEXCOORD, 
+    uniform lowpf4 cxadd, 
+    uniform lowpf4 cxmul) 
+    {
+    vcolor = acolor * cxmul + cxadd;
+    tc0 = atc;
+    }
+  </ShaderSource>
+
+    <ShaderSource id="Text" pipeline="Fragment">
+    Text (
+    varying lowpf4 vcolor    : COLOR, 
+    varying half2     tc0       : TEXCOORD, 
+    uniform sampler2D tex,
+    fragout lowpf4 fcolor    : COLOR) 
+    {
+    lowpf4 c = vcolor;
+    c.a = c.a * tex2D(tex, tc0).a;
+    fcolor = c;
+    }
+  </ShaderSource>
+
+  <!--Change the sampler swizzle. A8 texture samplers in D3D1x/UE3/GLSL1.50 are switched to R8, because they don't support A8.-->
+  <ShaderSource id="Text" pipeline="Fragment" platform="XboxOne;D3D1x;RHI" version="GLSL150">
+    Text (
+    varying lowpf4 vcolor    : COLOR,
+    varying half2     tc0       : TEXCOORD,
+    uniform sampler2D tex,
+    fragout lowpf4 fcolor    : COLOR)
+    {
+    lowpf4 c = vcolor;
+    c.a = c.a * tex2D(tex, tc0).r;
+    fcolor = c;
+    }
+  </ShaderSource>
+
+
+  <ShaderSource id="TextColor" pipeline="Vertex">
+    TextColor (
+    attribute half2 atc : TEXCOORD,
+    varying   half2 tc  : TEXCOORD)
+    {
+      tc = atc;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="InverseGamma" pipeline="Fragment" platform="RHI">
+    Gamma (
+    uniform float InverseGamma,
+    fragout lowpf4    fcolor : COLOR)
+    {
+      fcolor = RETURN_COLOR (float4(pow(saturate(fcolor.rgb), InverseGamma),fcolor.a));
+    }
+  </ShaderSource>
+
+  <ShaderSource id="InverseGamma" pipeline="Fragment">
+    Gamma (
+    fragout lowpf4    fcolor : COLOR)
+    {
+      fcolor = fcolor;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexUV" pipeline="Vertex">
+    TextColor (
+    attribute half2 atc : TEXCOORD,
+    varying   half2 tc0  : TEXCOORD)
+    {
+      tc0 = atc;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexUV" pipeline="Fragment">
+    TextColor (
+    uniform sampler2D tex,
+    varying half2     tc0    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+    fcolor = tex2D(tex,tc0);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="TexTGVertexOnly" pipeline="Vertex">
+    YUV (
+    uniform   float4 texgen[2],
+    attribute float4 pos : POSITION,
+    varying   half2  tc0  : TEXCOORD)
+    {
+    tc0.x = dot(pos, texgen[0]);
+    tc0.y = dot(pos, texgen[1]);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="YUV" pipeline="Fragment">
+    YUV (
+    varying float2    tc0        : TEXCOORD,
+    uniform sampler2D tex[3],
+    fragout float4 fcolor    : COLOR )
+    {
+    lowpf c0 = float((tex2D(tex[0], tc0).a - 16./255.) * 1.164);
+    lowpf U0 = float(tex2D(tex[1], tc0).a - 128./255.);
+    lowpf V0 = float(tex2D(tex[2], tc0).a - 128./255.);
+    lowpf4 c = float4(c0,c0,c0,c0);
+    lowpf4 U = float4(U0,U0,U0,U0);
+    lowpf4 V = float4(V0,V0,V0,V0);
+    c += V * float4(1.596, -0.813, 0, 0);
+    c += U * float4(0, -0.392, 2.017, 0);
+    c.a = 1.0;
+    fcolor = c;
+    }
+  </ShaderSource>
+
+  <!--Change the sampler swizzle. A8 texture samplers in D3D1x/GLSL1.50 are switched to R8, because 10level9 doesn't support A8.-->
+  <ShaderSource id="YUV" pipeline="Fragment" platform="XboxOne;D3D1x" version="GLSL150">
+    YUV (
+    varying float2    tc0        : TEXCOORD,
+    uniform sampler2D tex[3],
+    fragout float4 fcolor    : COLOR )
+    {
+    lowpf c0 = float((tex2D(tex[0], tc0).r - 16./255.) * 1.164);
+    lowpf U0 = float(tex2D(tex[1], tc0).r - 128./255.);
+    lowpf V0 = float(tex2D(tex[2], tc0).r - 128./255.);
+    lowpf4 c = float4(c0,c0,c0,c0);
+    lowpf4 U = float4(U0,U0,U0,U0);
+    lowpf4 V = float4(V0,V0,V0,V0);
+    c += V * float4(1.596, -0.813, 0, 0);
+    c += U * float4(0, -0.392, 2.017, 0);
+    c.a = 1.0;
+    fcolor = c;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="YUVA" pipeline="Fragment">
+    YUV (
+    varying float2    tc0        : TEXCOORD,
+    uniform sampler2D tex[4],
+    fragout float4 fcolor    : COLOR )
+    {
+    lowpf c0 = float((tex2D(tex[0], tc0).a - 16./255.) * 1.164);
+    lowpf U0 = float(tex2D(tex[1], tc0).a - 128./255.);
+    lowpf V0 = float(tex2D(tex[2], tc0).a - 128./255.);
+    lowpf4 c = float4(c0,c0,c0,c0);
+    lowpf4 U = float4(U0,U0,U0,U0);
+    lowpf4 V = float4(V0,V0,V0,V0);
+    c += V * float4(1.596, -0.813, 0, 0);
+    c += U * float4(0, -0.392, 2.017, 0);
+    c.a = tex2D(tex[3], tc0).a;
+    fcolor = c;
+    }
+  </ShaderSource>
+
+  <!--Change the sampler swizzle. A8 texture samplers in D3D1x/GLSL1.50 are switched to R8, because 10level9 doesn't support A8.-->
+  <ShaderSource id="YUVA" pipeline="Fragment" platform="XboxOne;D3D1x" version="GLSL150">
+    YUV (
+    varying float2    tc0        : TEXCOORD,
+    uniform sampler2D tex[4],
+    fragout float4 fcolor    : COLOR )
+    {
+    lowpf c0 = float((tex2D(tex[0], tc0).r - 16./255.) * 1.164);
+    lowpf U0 = float(tex2D(tex[1], tc0).r - 128./255.);
+    lowpf V0 = float(tex2D(tex[2], tc0).r - 128./255.);
+    lowpf4 c = float4(c0,c0,c0,c0);
+    lowpf4 U = float4(U0,U0,U0,U0);
+    lowpf4 V = float4(V0,V0,V0,V0);
+    c += V * float4(1.596, -0.813, 0, 0);
+    c += U * float4(0, -0.392, 2.017, 0);
+    c.a = tex2D(tex[3], tc0).r;
+    fcolor = c;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="CMatrixAc" pipeline="Fragment">
+    CMatrixAc(
+    uniform float4x4 cxmul, 
+    uniform lowpf4   cxadd,
+    fragout lowpf4   fcolor : COLOR) 
+    {
+    fcolor = mul(fcolor,cxmul) + cxadd * (fcolor.a + cxadd.a);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Box1" pipeline="Fragment">
+    Box1 (
+    uniform sampler2D tex, 
+    uniform float4 texscale, 
+    varying float2    tc0       : TEXCOORD, 
+    uniform float4 fsize,
+    fragout lowpf4 fcolor   : COLOR) 
+    {
+      fcolor       = float4(0, 0, 0, 0);
+      float4 color = float4(0, 0, 0, 0);
+      float  i = 0;
+      for (i = -fsize.x; i &lt;= fsize.x; i++)
+      {{
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Box2" pipeline="Fragment">
+    Box2 (
+    uniform sampler2D tex,
+    uniform float4 texscale,
+    varying float2    tc0        : TEXCOORD,
+    uniform float4 fsize,
+    fragout lowpf4 fcolor    : COLOR)
+    {
+    fcolor       = float4(0, 0, 0, 0);
+    float4 color = float4(0, 0, 0, 0);
+    float2 i = float2(0, 0);
+    for (i.x = -fsize.x; i.x &lt;= fsize.x; i.x++)
+    {
+      for (i.y = -fsize.y; i.y &lt;= fsize.y; i.y++)
+      {
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Blur" pipeline="Fragment">
+    Blur (
+    uniform sampler2D tex,
+    uniform float4    texscale,
+    uniform float4    fsize,
+    varying float2    tc0       : TEXCOORD,
+    fragout lowpf4    fcolor    : COLOR)
+    {
+    color += tex2Dlod(tex, tc0 + i * texscale.xy, 0.0f);
+    }} // EndBox1/2.
+    fcolor = color * fsize.w;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="EndBox1" pipeline="Fragment">
+    EndBox1 ( )
+    {
+      }
+    }
+  </ShaderSource>
+
+  <ShaderSource id="EndBox2" pipeline="Fragment">
+    EndBox1 ( )
+    {
+        }
+      }
+    }
+  </ShaderSource>
+
+  <ShaderSource id="ShadowBase" pipeline="Fragment">
+    ShadowBase (
+    uniform sampler2D tex,
+    uniform float4    texscale,
+    uniform float4    offset,
+    uniform float4    fsize,
+    varying half2     tc0        : TEXCOORD,
+    fragout lowpf4    fcolor     : COLOR)
+    {
+    color += tex2Dlod(tex, tc0 + (offset.xy + i) * texscale.xy, 0.0f);
+    }
+    } // EndBox2.
+
+    fcolor = color * fsize.w;
+    }
+  </ShaderSource>
+  
+  <ShaderSource id="BevelBase" pipeline="Fragment">
+    Highlight (
+    uniform sampler2D tex,
+    uniform float4    texscale,
+    uniform float4    offset,
+    uniform float4    fsize,
+    varying half2     tc0        : TEXCOORD,
+    fragout lowpf4    fcolor     : COLOR)
+    {
+    color.a += tex2Dlod(tex, tc0 + (offset.xy + i) * texscale.xy, 0.0f).a;
+    color.r += tex2Dlod(tex, tc0 - (offset.xy + i) * texscale.xy, 0.0f).a;
+    }
+    } // EndBox2.
+    fcolor = color * fsize.w;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="SColor" pipeline="Fragment">
+    ShadowColor(
+    uniform float4 scolor)
+    {
+    lowpf4 shadowColor = scolor;
+    lowpf4 shadowColor2 = float4(0,0,0,0);
+    fcolor.a = fcolor.a * fsize.z;
+    fcolor.r = 0.0f;
+    }
+  </ShaderSource>
+  <ShaderSource id="SColor2" pipeline="Fragment">
+    ShadowColor(
+    uniform float4 scolor,
+    uniform float4 scolor2)
+    {
+    lowpf4 shadowColor = scolor;
+    lowpf4 shadowColor2 = scolor2;
+    fcolor.ar = (1.0 - fcolor.ar * fsize.z) - (1.0 - fcolor.ra * fsize.z);
+    }
+  </ShaderSource>
+  
+  <ShaderSource id="SGrad" pipeline="Fragment">
+    ShadowColor(
+    uniform sampler2D gradtex,
+    uniform float4 fsize)
+    {
+    lowpf4 shadowColor = tex2D(gradtex, float2(clamp(fcolor.a* fsize.z,0.0f,1.0f), 0.0f));
+    lowpf4 shadowColor2 = float4(0,0,0,0);
+    fcolor.a = shadowColor.a;
+    fcolor.r = 0.0f;
+    shadowColor.a = 1.0f;
+    }
+  </ShaderSource>
+  <ShaderSource id="SGrad2" pipeline="Fragment">
+    ShadowColor(
+    uniform sampler2D gradtex,
+    uniform float4 fsize)
+    {
+    fcolor.ar = (1.0 - fcolor.ar) - (1.0 - fcolor.ra);
+    lowpf4 shadowColor = tex2D(gradtex,  float2(clamp(0.0f + 0.5f * (1.0f-fcolor.r * fsize.z) , 0.0f, 0.5f), 0.0f));
+    lowpf4 shadowColor2 = tex2D(gradtex, float2(clamp(0.5f + 0.5f * fcolor.a * fsize.z, 0.5f, 1.0f), 0.0f));
+    fcolor.a = shadowColor.a;
+    fcolor.r = shadowColor2.a;
+    shadowColor.a = 1.0f;
+    shadowColor2.a = 1.0f;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="Base" pipeline="Fragment">
+    Shadow (
+    uniform sampler2D srctex,
+    uniform float4 srctexscale,
+    varying half2     tc0       : TEXCOORD,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    lowpf4 base = tex2Dlod(srctex, tc0 * srctexscale.xy, 0.0f);
+    lowpf4 baseValue = base;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="HideBase" pipeline="Fragment">
+    Shadow (
+    uniform sampler2D srctex,
+    uniform float4 srctexscale,
+    varying half2     tc0       : TEXCOORD,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    lowpf4 base = tex2Dlod(srctex, tc0 * srctexscale.xy, 0.0f);
+    lowpf4 baseValue = float4(0,0,0,base.a*0.0001); // Blend a miniscule amount of base in, so it doesn't get compiled out.
+    }
+  </ShaderSource>
+
+  <ShaderSource id="OuterBevel" pipeline="Fragment">
+    OuterShadow (
+    uniform float4 fsize,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    float2 alphas = float2(shadowColor.a, shadowColor2.a);
+    fcolor.ar = clamp(fcolor.ar, 0.0f, 1.0f) * alphas;
+    fcolor = (shadowColor * fcolor.a + shadowColor2 * fcolor.r)*(1.0-base.a) + baseValue;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="InnerBevel" pipeline="Fragment">
+    InnerShadow (
+    uniform float4 fsize,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    float2 alphas = float2(shadowColor.a, shadowColor2.a);
+    fcolor.ar = clamp(fcolor.ar, 0.0f, 1.0f) * alphas;
+    fcolor = (shadowColor * fcolor.a + shadowColor2 * fcolor.r + baseValue * (1.0 - fcolor.a - fcolor.r)) * base.a;
+    }
+  </ShaderSource>
+  <ShaderSource id="InnerShadow" pipeline="Fragment">
+    InnerShadow (
+    uniform float4 fsize,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    lowpf lerpval = clamp((base.a*fsize.z - fcolor.a), 0.0f, 1.0f);
+    lerpval *= shadowColor.a;
+    fcolor = lerp(baseValue, shadowColor, lerpval) * base.a;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="FullBevel" pipeline="Fragment">
+    FullShadow (
+    uniform float4 fsize,
+    fragout lowpf4 fcolor   : COLOR)
+    {
+    float2 alphas = float2(shadowColor.a, shadowColor2.a);
+    fcolor.ar = clamp(fcolor.ar, 0.0f, 1.0f) * alphas;
+    fcolor = (shadowColor * fcolor.a + shadowColor2 * fcolor.r + baseValue * (1.0 - fcolor.a - fcolor.r));
+    }
+  </ShaderSource>
+
+  <ShaderSource id="DisplacementMap" pipeline="Fragment">
+    DisplacementMap(
+    uniform sampler2D tex,
+    uniform sampler2D maptex,
+    uniform float4    compx,
+    uniform float4    compy,
+    uniform float4    mapScale,
+    uniform float2    scale,
+    varying half2     tc0         : TEXCOORD,
+    fragout lowpf4    fcolor      : COLOR)
+    {
+    float2 mapTC = tc0*mapScale.xy - mapScale.zw;
+    float mapInBoundsLow  = dot(step(mapTC, float2(0,0)), float2(1,1));
+    float mapInBoundsHigh = dot(step(float2(1,1), mapTC), float2(1,1));
+    float mapInBounds = 1 - clamp(mapInBoundsLow + mapInBoundsHigh, 0.0, 1.0f);
+    fcolor = tex2D(maptex,mapTC) * mapInBounds + float4(0.5,0.5,0.5,0.5) * (1-mapInBounds);
+
+    float2 tc1;
+    float2 componentChannel;
+    componentChannel.x = dot(float4(1,1,1,1), compx * fcolor);
+    componentChannel.y = dot(float4(1,1,1,1), compy * fcolor);
+    tc1 = tc0 + (componentChannel - 0.5f) * scale;
+    fcolor = tex2D(tex, tc1);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="DMIgnore" pipeline="Fragment">
+    DMIgnore(
+    fragout lowpf4    fcolor      : COLOR)
+    {
+    float srcInBoundsLow  = dot(step(tc1, float2(0,0)), float2(1,1));
+    float srcInBoundsHigh = dot(step(float2(1,1), tc1), float2(1,1));
+    float srcInBounds     = 1 - clamp(srcInBoundsLow + srcInBoundsHigh, 0.0, 1.0f);
+    fcolor = (fcolor * srcInBounds) + tex2D(tex, tc0) * (1-srcInBounds);
+    }
+  </ShaderSource>
+  
+  <ShaderSource id="DMColor" pipeline="Fragment">
+    DMColor(
+    uniform float4  boundColor
+    fragout lowpf4    fcolor      : COLOR)
+    {
+    float srcInBoundsLow  = dot(step(tc1, float2(0,0)), float2(1,1));
+    float srcInBoundsHigh = dot(step(float2(1,1), tc1), float2(1,1));
+    float srcInBounds     = 1 - clamp(srcInBoundsLow + srcInBoundsHigh, 0.0, 1.0f);
+    fcolor = (fcolor * srcInBounds) + boundColor * (1-srcInBounds);
+    }
+  </ShaderSource>
+
+    <ShaderSource id="DrawableCopyPixels" pipeline="Fragment">
+    TexTG (
+    uniform sampler2D tex[2],
+    varying float2    tc0     : TEXCOORD,
+    varying float2    tc1     : TEXCOORD,
+    fragout float4    fcolor  : COLOR)
+    {
+    float4 fcolor_org = tex2D(tex[0], tc0);
+    float4 fcolor_src = tex2D(tex[1], tc1);
+    float inAlpha = fcolor_src.a;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="DrawableCopyPixelsAlpha" pipeline="Fragment">
+    TexTG (
+    uniform sampler2D tex[3],
+    varying float2    tc0  : TEXCOORD,
+    varying float2    tc1  : TEXCOORD,
+    varying float2    tc2  : TEXCOORD,
+    fragout float4    fcolor : COLOR)
+    {
+    float4 fcolor_org = tex2D(tex[0], tc0);
+    float4 fcolor_src = tex2D(tex[1], tc1);
+    float4 fcolor_alp = tex2D(tex[2], tc2);
+    float inAlpha = fcolor_src.a * fcolor_alp.a;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="InAlpha" pipeline="Fragment">
+    InAlpha (fragout float4    fcolor : COLOR)
+    {
+    fcolor.a = inAlpha;
+    }
+  </ShaderSource>
+  <ShaderSource id="MergeAlpha" pipeline="Fragment">
+    MergeAlpha (fragout float4    fcolor : COLOR)
+    {
+    fcolor.a = lerp(inAlpha, 1.0f, fcolor_org.a);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="NoDestAlpha" pipeline="Fragment">
+    NoDestAlpha (fragout float4    fcolor : COLOR)
+    {
+    fcolor.a = 1.0f;
+    }
+  </ShaderSource>
+
+  <ShaderSource id="CopyLerp" pipeline="Fragment">
+    CopyLerp (fragout float4    fcolor : COLOR)
+    {
+    fcolor.rgb = lerp(fcolor_org.rgb, fcolor_src.rgb, inAlpha / fcolor.a);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="DrawableMerge" pipeline="Fragment">
+    DrawableMerge (
+    uniform sampler2D tex[2],
+    uniform float4x4  cxmul,
+    uniform float4x4  cxmul1,
+    varying float2    tc0    : TEXCOORD,
+    varying float2    tc1    : TEXCOORD,
+    fragout float4    fcolor : COLOR)
+    {
+    float4 fcolor_original = tex2D(tex[0], tc0);
+    float4 fcolor_source   = tex2D(tex[1], tc1);
+    fcolor = mul(fcolor_original, cxmul) + mul(fcolor_source, cxmul1);
+    }
+  </ShaderSource>
+
+  <ShaderSource id="DrawableCompare" pipeline="Fragment">
+    DrawableCompare(
+    uniform sampler2D tex[2],
+    varying float2    tc0  : TEXCOORD,
+    varying float2    tc1  : TEXCOORD,
+    fragout float4    fcolor : COLOR)
+    {
+    float4 fcolor0 = tex2D(tex[0], tc0);
+    float4 fcolor1 = tex2D(tex[1], tc1);
+
+    float4 diff = fcolor0 - fcolor1;
+    float4 oneValue = float4(1.0f/255.0f, 1.0f/255.0f, 1.0f/255.0f, 1.0f/255.0f );
+    float4 ltZero = (sign(diff)+float4(1,1,1,1))*-0.25f;
+    float4 partDiff = oneValue * (sign(ltZero)+float4(1,1,1,1));
+    float4 wrapDiff = frac(diff + float4(1,1,1,1)) + partDiff;
+    float rgbdiff = sign(dot(wrapDiff.rgb, float3(1,1,1)));
+    fcolor = lerp( float4(1,1,1, wrapDiff.a), float4(wrapDiff.rgb, 1), rgbdiff );
+    }
+  </ShaderSource>
+
+  <ShaderSource id="DrawablePaletteMap" pipeline="Fragment">
+    DrawablePaletteMap(
+    uniform sampler2D tex,
+    uniform sampler2D srctex,
+    varying float2    tc0    : TEXCOORD,
+    fragout float4    fcolor : COLOR )
+    {
+    float4 fchannels = tex2D(tex, tc0);
+    fcolor  = tex2D(srctex, float2(fchannels.r, 0.125f));
+    fcolor += tex2D(srctex, float2(fchannels.g, 0.375f));
+    fcolor += tex2D(srctex, float2(fchannels.b, 0.625f));
+    fcolor += tex2D(srctex, float2(fchannels.a, 0.875f));
+    }
+  </ShaderSource>
+
+  <!-- HSV conversion from http://www.chilliant.com/rgb2hsv.html.
+       Remap/clamp the Hue values from 0-80 (Red->Green), corresponding to density of 3.0+ -> 1.0 texels per pixel !-->
+  <ShaderSource id="TexDensity" pipeline="Fragment">
+    TextureDensity(
+    uniform float2  textureDims,
+    uniform float   mipLevels,
+    varying float2  tc0    : TEXCOORD,
+    fragout float4  fcolor : COLOR)
+    {
+    float2 dx = ddx(tc0 * textureDims.x);
+    float2 dy = ddy(tc0 * textureDims.y);
+    float d  = max(dot(dx, dx), dot(dy, dy));
+    float mip = clamp(0.5f * log2(d) - 1, 0, mipLevels-1); // [0..mip-1]
+    dx /= pow(2, mip);
+    dy /= pow(2, mip);
+    float H = clamp(1.0f - 0.5f * sqrt( max(dot(dx, dx), dot(dy, dy)) ), 0.0f, 1.0f) * (80.0f/255.0f);
+    float R = abs(H * 6 - 3) - 1;
+    float G = 2 - abs(H * 6 - 2);
+    float B = 2 - abs(H * 6 - 4);
+    // NOTE: must blend in a little bit of the original fcolor, otherwise the shader compiler might optimize the original block out,
+    // because it would no longer contribute to the outputs of the shader.
+    fcolor = fcolor*0.001f + clamp(float4(R,G,B, 1), 0.0f, 1.0f);
+    }
+
+  </ShaderSource>
+
+  <ShaderSource id="BlendLighten" pipeline="Fragment">
+    Blend(
+    uniform sampler2D srctex,
+    uniform sampler2D dsttex,
+    varying half2     tc0    : TEXCOORD,
+    varying half2     tc1    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+        float4 src = tex2D(srctex, tc0);
+        float4 dst = tex2D(dsttex, tc1);
+        fcolor     = max(src,dst) * src.a + (1-src.a)*dst;
+        fcolor.a   = src.a + (1.0-src.a)*dst.a;
+    }
+  </ShaderSource>
+  
+  <ShaderSource id="BlendDarken" pipeline="Fragment">
+    Blend(
+    uniform sampler2D srctex,
+    uniform sampler2D dsttex,
+    varying half2     tc0    : TEXCOORD,
+    varying half2     tc1    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+        float4 src = tex2D(srctex, tc0);
+        float4 dst = tex2D(dsttex, tc1);
+        float3 clr = min(src.rgb, dst.rgb);
+        fcolor.rgb = clr * (dst.a) + (1-dst.a)*src.rgb + dst.rgb*(1-src.a);        
+        fcolor.a   = src.a + (1.0-src.a)*dst.a;
+    }
+  </ShaderSource>
+  <ShaderSource id="BlendOverlay" pipeline="Fragment">
+    Blend(
+    uniform sampler2D srctex,
+    uniform sampler2D dsttex,
+    varying half2     tc0    : TEXCOORD,
+    varying half2     tc1    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+        float4 src = tex2D(srctex, tc0);
+        float4 dst = tex2D(dsttex, tc1);
+        float3 screen = 1.0f - 2.0*(1.0f - src.rgb)*(1.0f - dst.rgb);
+        float3 mult = 2.0 * src.rgb * dst.rgb;
+        float3 select = step(float3(0.5, 0.5, 0.5), dst.rgb);
+        fcolor.rgb = (screen * select + mult * (float3(1,1,1) - select)) * src.a + src.rgb * (1 - dst.a) + dst.rgb * (1 - src.a);
+        fcolor.a   = src.a + (1.0-src.a)*dst.a;
+    }
+  </ShaderSource>
+  <ShaderSource id="BlendHardlight" pipeline="Fragment">
+    Blend(
+    uniform sampler2D srctex,
+    uniform sampler2D dsttex,
+    varying half2     tc0    : TEXCOORD,
+    varying half2     tc1    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+        float4 src = tex2D(srctex, tc0);
+        float4 dst = tex2D(dsttex, tc1);
+        float3 screen = 1.0f - 2.0*(1.0f - src.rgb)*(1.0f - dst.rgb);
+        float3 mult = 2.0 * src.rgb * dst.rgb;
+        float3 select = step(float3(0.5, 0.5, 0.5), dst.rgb);
+        fcolor.rgb = (mult * select + screen * (float3(1,1,1) - select)) * src.a + src.rgb * (1 - dst.a) + dst.rgb * (1 - src.a);
+        fcolor.a   = src.a + (1.0-src.a)*dst.a;
+    }
+  </ShaderSource>
+  <ShaderSource id="BlendDifference" pipeline="Fragment">
+    Blend(
+    uniform sampler2D srctex,
+    uniform sampler2D dsttex,
+    varying half2     tc0    : TEXCOORD,
+    varying half2     tc1    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+    float4 src = tex2D(srctex, tc0);
+    float4 dst = tex2D(dsttex, tc1);
+    fcolor     = max(src - dst, dst - src);
+    fcolor.a   = src.a + (1.0-src.a)*dst.a;
+    }
+  </ShaderSource>
+  <ShaderSource id="BlendLayer" pipeline="Fragment">
+    Blend(
+    uniform sampler2D srctex,
+    uniform sampler2D alphatex,
+    varying half2     tc0    : TEXCOORD,
+    varying half2     tc1    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+    float alp = tex2D(alphatex, tc1).a;
+    fcolor    = tex2D(srctex, tc0);
+    fcolor    *= alp;
+    }
+  </ShaderSource>
+
+  <!-- The following shader fragment is adapted from the XboxOne XDK sample for Kinect. -->
+  <ShaderSource id="YUY2" pipeline="Fragment">
+    float4 YUY2(
+    uniform sampler2D tex,
+    varying half2     tc0    : TEXCOORD,
+    fragout lowpf4    fcolor : COLOR)
+    {
+    float4 yuv = tex2D(tex, tc0);
+    const float4 g_YuvOffset = float4( 0.501961, 0, 0.501961, 0);
+    float4 offset = yuv - g_YuvOffset;
+
+    fcolor.r = clamp( offset.g + 1.568648 * offset.b, 0.0, 1.0 );
+    fcolor.g = clamp( offset.g - 0.186593 * offset.r - 0.466296 * offset.b, 0.0, 1.0 );
+    fcolor.b = clamp( offset.g + 1.848352 * offset.r, 0.0, 1.0 );
+    fcolor.a = 1.0;
+    }
+  </ShaderSource>
+</ShaderDefinitions>

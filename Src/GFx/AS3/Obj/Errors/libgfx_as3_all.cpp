@@ -1,0 +1,7 @@
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_EOFError.cpp"
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_IllegalOperationError.cpp"
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_InvalidSWFError.cpp"
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_IOError.cpp"
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_MemoryError.cpp"
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_ScriptTimeoutError.cpp"
+#include "GFx/AS3/Obj/Errors/AS3_Obj_Errors_StackOverflowError.cpp"

@@ -1,0 +1,35 @@
+[FontConfig "English"]
+fontlib "fonts_en.swf"
+map "$TitleFont" = "Times New Roman" Bold
+map "$NormalFont" = "Arial Unicode MS" Normal
+map "$SmallFont" = "Tahoma" Normal
+
+[FontConfig "Spanish"] 
+fontlib "fonts_enext.swf"
+map "$TitleFont" = "Times New Roman" Bold
+map "$NormalFont" = "Arial Unicode MS" Normal
+map "$SmallFont" = "Tahoma" Normal
+tr  "Good Morning!" = "¡Buenos Días!" 
+tr  "How Are You?" = "¿Cómo Estás?"
+tr  "I Missed You So Much!" = "¡Te Extraño Mucho!"
+tr  "English" = "Spanish (En español)"
+
+[FontConfig "French"] 
+fontlib "fonts_enext.swf"
+map "$TitleFont" = "Times New Roman" Bold
+map "$NormalFont" = "Arial Unicode MS" Normal
+map "$SmallFont" = "Tahoma" Normal
+tr  "Good Morning!" = "Bonjour!" 
+tr  "How Are You?" = "Comment allez-vous?"
+tr  "I Missed You So Much!" = "Tu m'as tellement manqué!"
+tr  "English" = "French (En français)"
+
+[FontConfig "German"] 
+fontlib "fonts_enext.swf"
+map "$TitleFont" = "Times New Roman" Bold
+map "$NormalFont" = "Arial Unicode MS" Normal
+map "$SmallFont" = "Tahoma" Normal
+tr  "Good Morning!" = "Guten Morgen! " 
+tr  "How Are You?" = "Wie geht's dir?"
+tr  "I Missed You So Much!" = "Sie haben mir so gefehlt!"
+tr  "English" = "German (Auf deutsch)"

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Config_Profiling"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="NDEBUG; SF_BUILD_PROFILING"
+        BufferSecurityCheck="false"
+		InlineFunctionExpansion="2"
+		Optimization="3"
+		FavorSizeOrSpeed="1"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		GenerateMapFile="true"
+	/>
+	<UserMacro
+		Name="ConfigShort"
+		Value="Shipping"
+	/>
+	<UserMacro
+		Name="ConfigLetter"
+		Value="r"
+	/>
+</VisualStudioPropertySheet>

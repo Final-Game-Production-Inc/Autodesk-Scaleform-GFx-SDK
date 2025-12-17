@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_App_Xbox360"
+	>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				AdditionalOptions="/MP /w44264"
+				AdditionalIncludeDirectories="..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Demos\Common;&quot;..\..\..\..\..\3rdParty\expat-2.1.0\lib&quot;;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7&quot;;&quot;..\..\..\..\..\3rdParty\jpeg-8d&quot;;..\..\..\..\..\3rdParty\libpng-1.5.13;..\..\...\..\..\3rdParty\cri\xbox360\include;&quot;..\..\..\..\..\3rdParty\fmod\xbox360\inc&quot;;..\..\..\..\..\3rdParty\freetype2\include&quot;"
+				PreprocessorDefinitions="_XBOX;SF_BUILD_STATICLIB;SF_BUILD_GFXSHADERMAKER"
+				StructMemberAlignment="4"
+			/>
+			<Tool
+				Name="VCX360LinkerTool"
+				AdditionalDependencies="libgfx.lib libgfx_as2.lib libgfx_as3.lib libgfx_air.lib d3d9$(LibConfig).lib d3dx9$(LibConfig).lib pcre.lib xgraphics$(LibConfig).lib xboxkrnl.lib xnet$(LibConfig).lib xaudio$(LibConfig)2.lib xmcore$(LibConfig).lib xbdm.lib vcomp$(LibConfig).lib xime$(LibConfig).lib xmp$(LibConfig).lib zlib.lib libjpeg.lib libpng-1.5.13.lib freetype219$(LibFT2).lib"
+				AdditionalLibraryDirectories="..\..\..\..\..\Lib\Xbox360\$(MsvcVer)\$(ConfigShort);&quot;..\..\..\..\..\3rdParty\pcre\Lib\Xbox360\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\Xbox360\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\Xbox360\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\jpeg-8d\Lib\Xbox360\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\cri\xbox360\libs&quot;;&quot;..\..\..\..\..\3rdParty\fmod\xbox360\lib&quot;;&quot;..\..\..\..\..\3rdParty\freetype2\lib\Xbox360\$(MsvcVer)\&quot;"
+			/>
+</VisualStudioPropertySheet>

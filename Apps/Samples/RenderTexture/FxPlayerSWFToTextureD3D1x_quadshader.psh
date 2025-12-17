@@ -1,0 +1,10 @@
+Texture2D RenderedTexture : register(t0);
+SamplerState RenderedTextureSampler
+{
+  Filter = MIN_MAG_MIP_LINEAR;
+};
+void main(in  float2 InUV       : TEXCOORD0,
+          out float4 FragColor  : SV_Target)
+{
+   FragColor = RenderedTexture.Sample(RenderedTextureSampler, InUV);
+};

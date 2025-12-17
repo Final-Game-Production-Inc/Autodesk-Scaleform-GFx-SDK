@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Lib"
+	OutputDirectory=".\..\..\..\..\..\Lib\$(PlatformName)\$(MsvcVer)\$(ConfigurationName)\"
+	IntermediateDirectory=".\..\..\..\..\..\Obj\$(PlatformName)\$(MsvcVer)\$(ConfigurationName)\$(ProjectName)\"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalOptions="/MP /w44264 /w44062 /w44265 /w44287 /w44289 /w44296 /w44431 /w44545 /w44546 /w44547 /w44548 /w44549 /w44623"
+		AdditionalIncludeDirectories="..\..\..\..\..\Include;..\..\..\..\..\Src;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7&quot;;&quot;..\..\..\..\..\3rdParty\jpeg-8d&quot;;..\..\..\..\..\3rdParty\libpng-1.5.13;&quot;..\..\..\..\..\3rdParty\expat-2.1.0\lib&quot;;&quot;..\..\..\..\..\3rdParty\pcre&quot;;..\..\..\..\..\3rdParty\glext;..\..\..\..\..\3rdParty\PlatformSDK;..\..\..\..\..\3rdParty\cri\pc\include;;..\..\..\..\..\3rdParty\curl-7.29.0\include;&quot;..\..\..\..\..\3rdParty\fmod\pc\$(PlatformName)\inc&quot;;&quot;$(DXSDK_DIR)\Include&quot;;"
+		PreprocessorDefinitions="WIN32;_WINDOWS;SF_BUILD_STATICLIB;CURL_STATICLIB"
+		StructMemberAlignment="4"
+	/>
+</VisualStudioPropertySheet>

@@ -1,0 +1,5 @@
+glGenerateMipmapOES glGenerateMipmapEXT
+glBlendFuncSeparateOES
+glBlendEquationOES
+? glUnmapBufferOES
+? glMapBufferOES

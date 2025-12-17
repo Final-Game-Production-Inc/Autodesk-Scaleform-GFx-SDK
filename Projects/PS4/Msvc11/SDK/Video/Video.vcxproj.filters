@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="AS2">
+      <UniqueIdentifier>{6a603353-4108-4a55-9803-ee004c92d456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AS3">
+      <UniqueIdentifier>{adfb9497-5854-4395-9443-712ac79d2f53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AS3\Obj">
+      <UniqueIdentifier>{30c84c44-6dd4-4701-bf13-aad0825bb1f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AS3\Obj\Media">
+      <UniqueIdentifier>{3b67b355-ca68-48c4-ace3-c3836787b40e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AS3\Obj\Net">
+      <UniqueIdentifier>{e7ddfd3f-ec8c-46c2-bf62-19a45c07fafa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS2\AS2_NetConnection.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS2\AS2_NetStream.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS2\AS2_VideoObject.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.h">
+      <Filter>AS3\Obj\Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.h">
+      <Filter>AS3\Obj\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoProviderNetStream.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoCharacter.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriHeap.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriMvFileReader.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriMvSoundGateway.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriMvSystemTimer.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_SystemSoundInterface.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_Video.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoPlayerImpl.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoImage.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoPS4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS2\AS2_NetConnection.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS2\AS2_NetStream.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS2\AS2_VideoObject.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.cpp">
+      <Filter>AS3\Obj\Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.cpp">
+      <Filter>AS3\Obj\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoProviderNetStream.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoCharacter.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoAS2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoAS3.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriHeap.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriMvFileReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriMvSoundGateway.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriMvSystemTimer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_SystemSoundInterface.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_Video.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoCharacter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoPlayerImpl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoImage.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoPS4.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoSoundSystemPS4.cpp" />
+  </ItemGroup>
+</Project>

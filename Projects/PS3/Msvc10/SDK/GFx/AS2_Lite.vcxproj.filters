@@ -1,0 +1,345 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{1bd55f51-6dfd-4478-98f8-6ea56ac813ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2">
+      <UniqueIdentifier>{e9991014-596f-41e4-9523-064b46b59fe2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2\Audio">
+      <UniqueIdentifier>{0b965b68-0eb3-4370-90d7-c19e12571839}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2\XML">
+      <UniqueIdentifier>{5f6efe56-a570-4496-8989-8ca3b310138d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS2\IME">
+      <UniqueIdentifier>{ef28fc7f-6efb-4ebb-aef9-c6f889689e93}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.h">
+      <Filter>GFx\AS2\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XMLShadowRef.h">
+      <Filter>GFx\AS2\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.h">
+      <Filter>GFx\AS2\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.h">
+      <Filter>GFx\AS2\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.h">
+      <Filter>GFx\AS2\IME</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.h">
+      <Filter>GFx\AS2\IME</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Action.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ActionTypes.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AmpMarker.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ArrayObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AsBroadcaster.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AsFunctionObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmButton.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmCharacter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmSprite.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmTextField.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BevelFilter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapData.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapFilter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BlurFilter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_BooleanObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Capabilities.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Color.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorMatrixFilter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorTransform.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Date.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_DropShadowFilter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ExternalInterface.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_FunctionRef.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_FunctionRefImpl.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_GlowFilter.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_KeyObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_LoadVars.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Math.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_MatrixObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Mouse.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieClipLoader.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieRoot.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_NumberObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Object.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_ObjectProto.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_PointObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_RectangleObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_RefCountCollector.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Selection.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_SharedObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Stage.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringManager.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_StyleSheet.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextFormat.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextSnapshot.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Timers.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_TransformObject.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS2\AS2_Value.h">
+      <Filter>GFx\AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.h">
+      <Filter>GFx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.cpp">
+      <Filter>GFx\AS2\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.cpp">
+      <Filter>GFx\AS2\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.cpp">
+      <Filter>GFx\AS2\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\GASIme.cpp">
+      <Filter>GFx\AS2\IME</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.cpp">
+      <Filter>GFx\AS2\IME</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Action.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AmpMarker.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ArrayObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AsBroadcaster.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmButton.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmCharacter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmSprite.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_AvmTextField.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BevelFilter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapData.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BitmapFilter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BlurFilter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_BooleanObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Capabilities.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Color.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorMatrixFilter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ColorTransform.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Date.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_DropShadowFilter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_ExternalInterface.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Function.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_GFxValueImpl.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_GlowFilter.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_KeyObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_LoadVars.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Math.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_MatrixObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Mouse.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieClipLoader.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_MovieRoot.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_NumberObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Object.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_PointObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_RectangleObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Selection.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_SharedObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Stage.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringManager.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_StringObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_StyleSheet.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextFormat.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_TextSnapshot.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Timers.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_TransformObject.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS2\AS2_Value.cpp">
+      <Filter>GFx\AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS2Support.cpp">
+      <Filter>GFx</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

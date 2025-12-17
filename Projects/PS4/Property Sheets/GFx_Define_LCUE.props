@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <ConfigLCUEShort>_LCUE</ConfigLCUEShort>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+      <ClCompile>
+      <PreprocessorDefinitions>SF_PS4_USE_LCUE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="ConfigLCUEShort">
+      <Value>$(ConfigLCUEShort)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

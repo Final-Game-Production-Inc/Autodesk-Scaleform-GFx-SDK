@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir>.\..\..\..\..\..\Bin\$(PlatformName)\$(MsvcVer)\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\..\..\..\Obj\$(PlatformName)\$(MsvcVer)\$(Configuration)\$(ProjectName)\</IntDir>
+    <_PropertySheetDisplayName>GFx_App_VS17</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\3rdParty\zlib-1.3.1;..\..\..\..\..\3rdParty\glext;..\..\..\..\..\3rdParty\jpeg-9f;..\..\..\..\..\3rdParty\pcre;..\..\..\..\..\3rdParty\nvidia;$(IncludePath);$(WindowsSDK_IncludePath_x86);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/MP /w44264</AdditionalOptions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StructMemberAlignment>8Bytes</StructMemberAlignment>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libgfx.lib;libgfx_air.lib;libgfx_as2.lib;libgfx_as3.lib;libjpeg.lib;expat.lib;libpng.lib;libcurl.lib;Wldap32.lib;zlib.lib;pcre.lib;Xinput9_1_0.lib;winmm.lib;odbc32.lib;odbccp32.lib;imm32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\$(MsvcVer)\$(ConfigShort)\;..\..\..\..\..\3rdParty\curl-7.29.0\lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\expat-2.1.0\lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\libpng-1.6.53\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\pcre\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\cri\pc\libs\$(Platform);..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;$(LibraryPath);$(DXSDK_DIR)\lib\x$(BitSet);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

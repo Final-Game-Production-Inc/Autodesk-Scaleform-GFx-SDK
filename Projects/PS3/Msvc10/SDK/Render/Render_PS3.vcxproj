@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_NoRTTI|PS3">
+      <Configuration>Debug_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_NoRTTI|PS3">
+      <Configuration>Release_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_NoRTTI|PS3">
+      <Configuration>Shipping_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{44730174-53A4-4C68-9514-2C4CFA40AAD7}</ProjectGuid>
+    <RootNamespace>Render_PS3</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">libgfxrender_ps3</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">libgfxrender_ps3</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">libgfxrender_ps3</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-g -O0 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(IntDir);../../../../../Src/Kernel;../../../../../Src;../../../../../Src/Sound;../../../../../Src/Render;../../../../../Src/GFx;../../../../../Src/GFx/IME;../../../../../Src/XML;../../../../../Include;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;_DEBUG;__SNC__;SF_BUILD_DEBUG;_VSI_ALTCONF_=PS3 Debug NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfxrender_ps3.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(IntDir);../../../../../Src/Kernel;../../../../../Src;../../../../../Src/Sound;../../../../../Src/Render;../../../../../Src/GFx;../../../../../Src/GFx/IME;../../../../../Src/XML;../../../../../Include;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;NDEBUG;__SNC__;_VSI_ALTCONF_=PS3 Release NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfxrender_ps3.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(IntDir);../../../../../Src/Kernel;../../../../../Src;../../../../../Src/Sound;../../../../../Src/Render;../../../../../Src/GFx;../../../../../Src/GFx/IME;../../../../../Src/XML;../../../../../Include;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;NDEBUG;__SNC__;_VSI_ALTCONF_=PS3 Release NoRTTI|PS3;SF_BUILD_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfxrender_ps3.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_HAL.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_MemoryManager.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_MeshCache.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_ShaderDescs.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_Shader.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_Sync.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Render\PS3\PS3_Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\Render\PS3\PS3_HAL.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Render\PS3\PS3_MeshCache.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Render\PS3\PS3_ShaderDescs.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Render\PS3\PS3_Shader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Render\PS3\PS3_Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\..\Src\Render\ShaderData.xml">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">Building GFx Shaders</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform PS3 -xml "%(FullPath)" -outdir "%(RootDir)%(Directory)PS3" -type Binary -config $(Configuration) -libdir $(OutDir) -objdir $(IntDir)
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">$(OutDir)libgfxshaders.a;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">Building GFx Shaders</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform PS3 -xml "%(FullPath)" -outdir "%(RootDir)%(Directory)PS3" -type Binary -config $(Configuration) -libdir $(OutDir) -objdir $(IntDir)
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">$(OutDir)libgfxshaders.a;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">Building GFx Shaders</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform PS3 -xml "%(FullPath)" -outdir "%(RootDir)%(Directory)PS3" -type Binary -config $(Configuration) -libdir $(OutDir) -objdir $(IntDir)
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">\..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">$(OutDir)libgfxshaders.a</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

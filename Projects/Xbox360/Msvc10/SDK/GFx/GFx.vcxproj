@@ -1,0 +1,821 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugOpt_Lite|Xbox 360">
+      <Configuration>DebugOpt_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt|Xbox 360">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Lite|Xbox 360">
+      <Configuration>Debug_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Lite|Xbox 360">
+      <Configuration>Release_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_Lite|Xbox 360">
+      <Configuration>Shipping_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Xbox 360">
+      <Configuration>Shipping</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1686EA77-8BB4-4F30-90BE-C072751FF45B}</ProjectGuid>
+    <RootNamespace>GFx</RootNamespace>
+    <Keyword>XenonProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">$(OutDir)libgfx.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">$(OutDir)libgfx.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">$(OutDir)libgfx.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">$(OutDir)libgfx.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">$(OutDir)libgfx_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">$(OutDir)libgfx_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">$(OutDir)libgfx_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">$(OutDir)libgfx_lite.lib</OutputFile>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMalloc.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocWinAPI.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet1.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet2.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocEngine.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocLite.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_BitSet1.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Bookkeeper.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_DebugInfo.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_FreeBin.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Granulator.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_MemoryHeap.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_PageTable.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Root.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Starter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMapper.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocStatic.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocBitSet2.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocEngine.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_DebugInfo.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_FreeBin.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_MemoryHeap.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_Root.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_FileFILE.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_ThreadsWinAPI.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Alg.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_AllocAddr.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_AmpInterface.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Atomic.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Debug.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_File.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Locale.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Log.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MemItem.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MemoryHeap.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MemReport.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_MsgFormat.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Random.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_RefCount.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Stats.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Std.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_String.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_String_PathUtil.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_SysFile.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_System.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Threads.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_Timer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_UTF8Util.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Kernel\SF_WString.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Socket_X360.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Message.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_MessageRegistry.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ObjectsLog.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ProfileFrame.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Server.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ServerCallbacks.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Socket.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_Stream.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ThreadMgr.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AMP\Amp_ViewStats.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_Sound.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundResource.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundTagsReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Audio\GFx_Audio.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Text\Text_EditorKit.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\Text\Text_StyleSheet.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_Document.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_DOM.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_Object.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\XML\XML_Support.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\IME\GFx_IMEManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ASString.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ASUtils.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Button.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ButtonDef.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_CharacterDef.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DisplayList.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DisplayObjContainer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DisplayObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DrawText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_DrawingContext.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Event.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FileOpener.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FilterDesc.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontCompactor.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontGlyphPacker.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontLib.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontProviderHUD.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontMap.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_FontResource.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImageCreator.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImagePacker.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImageResource.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ImageSupport.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Input.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_InteractiveObject.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_LoadProcess.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Loader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_LoaderUtil.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_LoaderImpl.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Log.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_MorphCharacter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_MovieDef.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_PlayerImpl.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_PlayerTasks.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Resource.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ResourceHandle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Shape.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ShapeSwf.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Sprite.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_SpriteDef.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_StaticText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_Stream.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_String.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TagLoaders.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TaskManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TextField.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TextFieldDef.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_TextureFont.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_WWHelper.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ZLibFile.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_ZlibSupport.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderFT2.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\FontProvider\Render_FT2Helper.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderHUD.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\DDS_ImageReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageCommon.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageWriter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\PNG_ImageReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\PVR_ImageReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFile.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFileUtil.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\TGA_ImageReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\TGA_ImageWriter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\SIF_ImageReader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\ImageFiles\SIF_ImageWriter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_Core.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_DocView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_FilterDesc.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_Highlight.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_HTMLParser.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_LineBuffer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_StyledText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Text\Text_WWHelper.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_BufferGeneric.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Bundle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_CacheEffect.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Color.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Context.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_CxForm.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage_HW.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage_Queue.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_DrawableImage_SW.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Filters.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Font.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_FontCacheHandle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_GlyphCache.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_GlyphFitter.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_GlyphQueue.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Gradients.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_HAL.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Hairliner.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_HitTest.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Image.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Matrix2x4.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Matrix3x4.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Matrix4x4.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_MatrixPool.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_MeshCache.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_MeshKey.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_PathDataPacker.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Primitive.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_PrimitiveBundle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_PrimitiveProcessor.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Queue.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Rasterizer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_RectPacker.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ResizeImage.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Scale9Grid.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ScreenToWorld.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloat.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloatMP.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_ShapeMeshProvider.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_SimpleMeshCache.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_StateBag.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_States.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Stats.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Stroker.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_StrokerAA.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Sync.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TessCurves.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Tessellator.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextLayout.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextMeshProvider.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextPrimitiveBundle.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextureCacheGeneric.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TextureUtil.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeCacheNode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeCacheText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeLog.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeMesh.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeNode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeShape.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_TreeText.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_Vertex.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Render_VertexPath.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Renderer2D.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\Renderer2DImpl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocWinAPI.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet1.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocBitSet2.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocEngine.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_AllocLite.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_BitSet1.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_BitSet2.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Bookkeeper.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_DebugInfo.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_FreeBin.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Granulator.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_MemoryHeap.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_PageTable.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Root.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Starter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMalloc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_SysAllocMapper.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapPT\HeapPT_Types.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocBitSet2.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_AllocEngine.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_DebugInfo.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_FreeBin.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_MemoryHeap.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_Root.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\HeapMH\HeapMH_SysAllocMalloc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD_X360.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Alg.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AllocAddr.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Allocator.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AllocInfo.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AmpInterface.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Array.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ArrayPaged.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ArrayStaticBuff.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ArrayUnsafe.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Atomic.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_AutoPtr.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_BitSet.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Debug.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_File.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Hash.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_HeapNew.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_HeapTypes.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_KeyCodes.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_List.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_ListAlloc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Locale.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Log.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Math.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_MemItem.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Memory.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_MemoryHeap.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_MsgFormat.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_RadixTree.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Random.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Range.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_RefCount.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_RefCountCollector.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD_Altivec.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SIMD_SSE.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SplayTree.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_StackMemPool.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Stats.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Std.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_String.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_StringHash.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SysAlloc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_SysFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_System.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Threads.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Timer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_Types.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_UTF8Util.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Kernel\SF_WString.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderFT2.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\FontProvider\Render_FT2Helper.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\FontProvider\Render_FontProviderHUD.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\DDS_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageCommon.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\JPEG_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\PNG_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\PVR_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\Render_ImageFileUtil.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\TGA_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\ImageFiles\SIF_ImageFile.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_Core.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_DocView.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_FilterDesc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_FontManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_Highlight.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_LineBuffer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_SGMLParser.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_StyledText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Text\Text_WWHelper.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_BoundBox.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Buffer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_BufferGeneric.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Bundle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_CacheEffect.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Color.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Constants.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Containers.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Context.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_CxForm.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_DrawableImage.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_DrawableImage_Queue.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Events.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Filters.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Font.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_FontCacheHandle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphCache.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphCacheConfig.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphFitter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphParam.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_GlyphQueue.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Gradients.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_HAL.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Hairliner.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_HitTest.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Image.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_JPEGUtil.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Math2D.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Matrix2x4.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Matrix3x4.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Matrix4x4.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MatrixPool.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MemoryManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MeshCache.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MeshCacheConfig.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_MeshKey.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_PathDataInt.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_PathDataPacker.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Point3.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Primitive.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_PrimitiveBundle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Queue.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Rasterizer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_RectPacker.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ResizeImage.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Scale9Grid.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ScreenToWorld.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Shader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShaderHAL.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloat.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShapeDataFloatMP.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_ShapeMeshProvider.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_SimpleMeshCache.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_StateBag.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_States.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Stats.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Stroker.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_StrokerAA.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Sync.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TessCurves.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TessDefs.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Tessellator.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextLayout.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextMeshProvider.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextPrimitiveBundle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextureCache.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextureCacheGeneric.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TextureUtil.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeCacheNode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeCacheText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeLog.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeMesh.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeNode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeShape.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_TreeText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Twips.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Types2D.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Vertex.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Render_Viewport.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Renderer2D.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\Renderer2DImpl.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFxCompat.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFxConfig.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFxConfigAddons.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFxConfigAddons_Blank.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFxVersion.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_AMP.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_FT2.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_PS3.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_Win32.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_HUD.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_FontProvider_PSVita.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Kernel.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Render.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_D3D9.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_GL.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_PS3.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Renderer_X360.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Sound_FMOD.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_Sound_WWise.h" />
+	<ClInclude Include="..\..\..\..\..\Include\GFx_XML.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Interfaces.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Message.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_MessageRegistry.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ObjectsLog.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ProfileFrame.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Server.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ServerCallbacks.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Socket.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Stream.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ThreadMgr.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_ViewStats.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AMP\Amp_Visitors.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Audio\GFx_Sound.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundResource.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Audio\GFx_SoundTagsReader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Text\Text_EditorKit.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Text\Text_SGMLParser.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\Text\Text_StyleSheet.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Document.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_DOM.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Object.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Parser.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\XML\XML_Support.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\IME\GFx_IMEManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASMovieRootBase.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASIMEManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASSoundIntf.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASString.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ASUtils.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Audio.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Button.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ButtonDef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_CharPosInfo.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_CharacterDef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DisplayList.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DisplayObjContainer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DisplayObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DrawText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_DrawingContext.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Event.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FilterDesc.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontCompactor.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontGlyphPacker.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontLib.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontProviderHUD.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_FontResource.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_GlyphParam.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImageCreator.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImagePacker.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImageResource.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ImageSupport.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Input.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_InteractiveObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_LoadProcess.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Loader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_LoaderImpl.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Log.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_MediaInterfaces.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_MorphCharacter.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_MovieDef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PathDataStorage.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Player.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PlayerImpl.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PlayerStats.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_PlayerTasks.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Resource.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ResourceHandle.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Shape.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ShapeSwf.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_SharedObject.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Sprite.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_SpriteDef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StaticText.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Stats.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StatsDecl.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Stream.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StreamContext.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_String.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_StringHash.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TagLoaders.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Tags.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TaskManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TextField.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TextFieldDef.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_TextureFont.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_Types.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_VideoBase.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_WWHelper.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_ZLibFile.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

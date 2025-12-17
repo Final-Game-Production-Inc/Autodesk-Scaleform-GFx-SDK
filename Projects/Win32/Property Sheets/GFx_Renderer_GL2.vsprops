@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Renderer_OpenGL2"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="FXPLAYER_RENDER_OPENGL2"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="opengl32.lib glu32.lib"
+	/>
+</VisualStudioPropertySheet>

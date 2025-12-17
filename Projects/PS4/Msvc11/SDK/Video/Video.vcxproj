@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ORBIS">
+      <Configuration>Debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ORBIS">
+      <Configuration>Release</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|ORBIS">
+      <Configuration>Shipping</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{003614C2-F53F-491A-8127-8A15BE352784}</ProjectGuid>
+    <RootNamespace>Video</RootNamespace>
+    <ProjectName>Video</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_PS4.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_PS4.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">../../../../../Lib/PS4/Msvc11/$(Configuration)/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">../../../../../Obj/PS4/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">../../../../../Lib/PS4/Msvc11/$(Configuration)/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">../../../../../Obj/PS4/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">../../../../../Lib/PS4/Msvc11/$(Configuration)/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">../../../../../Obj/PS4/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">libgfxvideo</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">libgfxvideo</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">libgfxvideo</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>../../../../../3rdParty/cri/PS4/libs/libcri_base_ps4.a;../../../../../3rdParty/cri/PS4/libs/libcri_movie_ps4.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../3rdParty/cri/PS4/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>../../../../../3rdParty/cri/PS4/libs/libcri_base_ps4.a;../../../../../3rdParty/cri/PS4/libs/libcri_movie_ps4.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../3rdParty/cri/PS4/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <AdditionalIncludeDirectories>$(SCE_ORBIS_SDK_DIR)\target\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>../../../../../3rdParty/cri/PS4/libs/libcri_base_ps4.a;../../../../../3rdParty/cri/PS4/libs/libcri_movie_ps4.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../3rdParty/cri/PS4/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS2\AS2_NetConnection.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS2\AS2_NetStream.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS2\AS2_VideoObject.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.h" />
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoProviderNetStream.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriHeap.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriMvFileReader.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriMvSoundGateway.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_CriMvSystemTimer.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_SystemSoundInterface.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_Video.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoPlayerImpl.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoImage.h" />
+    <ClInclude Include="..\..\..\..\..\Src\Video\Video_VideoPS4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoAS2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoAS3.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriHeap.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriMvFileReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriMvSoundGateway.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_CriMvSystemTimer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_SystemSoundInterface.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_Video.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoCharacter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoPlayerImpl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoImage.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS2\AS2_NetConnection.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS2\AS2_NetStream.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS2\AS2_VideoObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoProviderNetStream.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\AS3\AS3_VideoCharacter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoPS4.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\Video\Video_VideoSoundSystemPS4.cpp" />
+  </ItemGroup>
+  <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

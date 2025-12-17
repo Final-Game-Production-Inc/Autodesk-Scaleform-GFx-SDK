@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugOpt|Xbox 360">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Xbox 360">
+      <Configuration>Shipping</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0DDC59B6-2C8E-401E-B644-AD91EA9E736E}</ProjectGuid>
+    <RootNamespace>MenuKit</RootNamespace>
+    <Keyword>XenonProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Kits_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Kits_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Kits_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Kits_Xbox360.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Bin/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">true</LinkIncremental>
+    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">xe:\$(SolutionName)</RemoteRoot>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Bin/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">false</LinkIncremental>
+    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">xe:\$(SolutionName)</RemoteRoot>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Bin/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">false</LinkIncremental>
+    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">xe:\$(SolutionName)</RemoteRoot>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Bin/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">true</LinkIncremental>
+    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">xe:\$(SolutionName)</RemoteRoot>
+    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">xe:\$(SolutionName)</RemoteRoot>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">$(OutDir)\MenuKit_$(Configuration).exe</OutputFile>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">$(OutDir)\MenuKit_$(Configuration).exe</OutputFile>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">$(OutDir)\MenuKit_$(Configuration).exe</OutputFile>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">$(OutDir)\MenuKit_$(Configuration).exe</OutputFile>
+    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">$(OutDir)\$(ProjectName).xex</ImageXexOutput>
+    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">$(OutDir)\$(ProjectName).xex</ImageXexOutput>
+    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">$(OutDir)\$(ProjectName).xex</ImageXexOutput>
+    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">$(OutDir)\$(ProjectName).xex</ImageXexOutput>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Apps\Samples\FxPlayer;..\..\..\..\..\Apps\Samples\GameDelegate;..\..\..\..\..\Apps\Samples\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmodxbox360L.lib;xmicd.lib;xwmadecoded.lib;xmahald.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+    <Deploy>
+      <DeploymentFiles>$(RemoteRoot)=..\..\..\..\..\Bin\Data\AS2\Kits\Menu;$(RemoteRoot)=$(ImagePath)</DeploymentFiles>
+      <DeploymentType>CopyToHardDrive</DeploymentType>
+    </Deploy>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Apps\Samples\FxPlayer;..\..\..\..\..\Apps\Samples\GameDelegate;..\..\..\..\..\Apps\Samples\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmodxbox360.lib;xmic.lib;xwmadecode.lib;xmahal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SetChecksum>true</SetChecksum>
+    </Link>
+    <Deploy>
+      <DeploymentFiles>$(RemoteRoot)=..\..\..\..\..\Bin\Data\AS2\Kits\Menu;$(RemoteRoot)=$(ImagePath)</DeploymentFiles>
+      <DeploymentType>CopyToHardDrive</DeploymentType>
+    </Deploy>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Apps\Samples\FxPlayer;..\..\..\..\..\Apps\Samples\GameDelegate;..\..\..\..\..\Apps\Samples\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmodxbox360.lib;xmic.lib;xwmadecode.lib;xmahal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SetChecksum>true</SetChecksum>
+    </Link>
+    <Deploy>
+      <DeploymentFiles>$(RemoteRoot)=..\..\..\..\..\Bin\Data\AS2\Kits\Menu;$(RemoteRoot)=$(ImagePath)</DeploymentFiles>
+      <DeploymentType>CopyToHardDrive</DeploymentType>
+    </Deploy>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Apps\Samples\FxPlayer;..\..\..\..\..\Apps\Samples\GameDelegate;..\..\..\..\..\Apps\Samples\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmodxbox360L.lib;xmicd.lib;xwmadecoded.lib;xmahald.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+    <Deploy>
+      <DeploymentFiles>$(RemoteRoot)=..\..\..\..\..\Bin\Data\AS2\Kits\Menu;$(RemoteRoot)=$(ImagePath)</DeploymentFiles>
+      <DeploymentType>CopyToHardDrive</DeploymentType>
+    </Deploy>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\GameDelegate\FxGameDelegate.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_InGame.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Loading.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_MainMenu.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Splash.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Start.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_System.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\States\GameStateWidgetSupport.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\MainMenuView.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\ManagerView.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuDialog.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuView.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\SettingsView.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\StartGameView.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\SystemUIDialog.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Views\UIView.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Util\GFxClikWidget.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameMemoryFileCache.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameDataLoader.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\Game.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\GameResourceManager.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Kits\Menu\GameUIManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\GameDelegate\FxGameDelegate.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_InGame.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Loading.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_MainMenu.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Splash.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_Start.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameState_System.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\States\GameStateWidgetSupport.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\MainMenuView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\ManagerView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuDialog.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\MenuView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\SettingsView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\StartGameView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\SystemUIDialog.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Views\UIView.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameMemoryFileCache.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Util\GameDataLoader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\Game.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\GameResourceManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\GameUIManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Kits\Menu\MenuKitDemo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SDK\Expat\Expat.vcxproj">
+      <Project>{9cd6c30d-b724-4ec5-a63e-0c4fcca9503a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Platform\Platform.vcxproj">
+      <Project>{a7d92def-1692-46cf-b640-a9460c838ef2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Render\Render_X360.vcxproj">
+      <Project>{4fc51f80-3574-42d5-be4c-f843a7ef0f47}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Sound\Sound.vcxproj">
+      <Project>{2536dbbd-68a0-43d7-9269-cb62ae3e51aa}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

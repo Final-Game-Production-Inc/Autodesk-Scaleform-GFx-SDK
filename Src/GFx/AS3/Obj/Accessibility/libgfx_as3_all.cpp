@@ -1,0 +1,5 @@
+#include "GFx/AS3/Obj/Accessibility/AS3_Obj_Accessibility_Accessibility.cpp"
+#include "GFx/AS3/Obj/Accessibility/AS3_Obj_Accessibility_AccessibilityImplementation.cpp"
+#include "GFx/AS3/Obj/Accessibility/AS3_Obj_Accessibility_AccessibilityProperties.cpp"
+#include "GFx/AS3/Obj/Accessibility/AS3_Obj_Accessibility_ISearchableText.cpp"
+#include "GFx/AS3/Obj/Accessibility/AS3_Obj_Accessibility_ISimpleTextSelection.cpp"

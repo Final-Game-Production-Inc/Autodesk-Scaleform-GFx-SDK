@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Renderer_GLESv2PVR"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="$(PVRSDK_GLES2_DIR)\Builds\OGLES2\Include"
+		PreprocessorDefinitions="FXPLAYER_RENDER_OPENGL;SF_USE_GLES2;SF_USE_EGL"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="libEGL.lib libGLESv2.lib"
+		AdditionalLibraryDirectories="$(PVRSDK_GLES2_DIR)\Builds\OGLES2\WindowsX86\Lib"
+	/>
+</VisualStudioPropertySheet>

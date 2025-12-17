@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_App_Kits"
+	OutputDirectory=".\..\..\..\..\..\Bin\$(PlatformName)\$(MsvcVer)\$(ProjectName)"
+	IntermediateDirectory=".\..\..\..\..\..\Obj\$(PlatformName)\$(MsvcVer)\$(ConfigurationName)\$(ProjectName)\"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalOptions="/MP /w44264"
+		AdditionalIncludeDirectories="..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Samples\Common;&quot;..\..\..\..\..\3rdParty\fmod\pc\$(PlatformName)\inc&quot;;&quot;..\..\..\..\..\3rdParty\expat-2.1.0\lib&quot;;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7&quot;;..\..\..\..\..\3rdParty\glext;&quot;..\..\..\..\..\3rdParty\jpeg-8d&quot;;..\..\..\..\..\3rdParty\nvidia;&quot;$(DXSDK_DIR)\Include&quot;;&quot;..\..\..\..\..\3rdParty\pcre&quot;"
+		PreprocessorDefinitions="WIN32;_WINDOWS;SF_BUILD_STATICLIB"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="libgfx.lib libgfx_as2.lib libgfx_as3.lib libgfx_air.lib libjpeg.lib libpng.lib zlib.lib XInput.lib libcurl.lib Wldap32.lib winmm.lib pcre.lib odbc32.lib odbccp32.lib imm32.lib Ws2_32.lib Msacm32.lib dbghelp.lib"
+		AdditionalLibraryDirectories="&quot;..\..\..\..\..\Lib\$(PlatformName)\$(MsvcVer)\$(ConfigShort)\&quot;;&quot;..\..\..\..\..\3rdParty\curl-7.29.0\lib\$(PlatformName)\$(MsvcVer)\Release\&quot;;&quot;..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\jpeg-8d\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\cri\pc\libs\$(PlatformName)&quot;;&quot;..\..\..\..\..\3rdParty\pcre\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\fmod\pc\$(PlatformName)\lib&quot;;&quot;$(DXSDK_DIR)\lib\x$(BitSet)&quot;"
+	/>
+</VisualStudioPropertySheet>

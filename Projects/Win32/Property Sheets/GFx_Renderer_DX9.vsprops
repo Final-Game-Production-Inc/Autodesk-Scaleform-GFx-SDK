@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Renderer_DX9"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="SF_D3D_VERSION=9;FXPLAYER_RENDER_DIRECT3D;SF_BUILD_GFXSHADERMAKER"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="d3d9.lib d3dx9.lib libgfxrender_d3d9.lib"
+	/>
+</VisualStudioPropertySheet>

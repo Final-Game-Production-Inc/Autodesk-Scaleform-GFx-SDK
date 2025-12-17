@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Durango">
+      <Configuration>Debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt|Durango">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Durango">
+      <Configuration>Release</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Durango">
+      <Configuration>Shipping</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>AS2</ProjectName>
+    <RootNamespace>AS2</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ProjectGuid>{2303E821-01BF-D249-A8CF-D2CB33AD2B88}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/$(ProjectName)/</IntDir>
+    <TargetName>libgfx_as2</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/$(ProjectName)/</IntDir>
+    <TargetName>libgfx_as2</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/$(ProjectName)/</IntDir>
+    <TargetName>libgfx_as2</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/NonSCU/$(ProjectName)/</IntDir>
+    <TargetName>libgfx_as2</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\IME\GASIme.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Action.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AmpMarker.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ArrayObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AsBroadcaster.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmButton.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmCharacter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmSprite.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmTextField.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BevelFilter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BitmapData.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BitmapFilter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BlurFilter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BooleanObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Capabilities.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Color.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ColorMatrixFilter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ColorTransform.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Date.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_DropShadowFilter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ExternalInterface.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Function.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_GFxValueImpl.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_GlowFilter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_KeyObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_LoadVars.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Math.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_MatrixObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Mouse.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_MovieClipLoader.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_MovieRoot.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_NumberObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Object.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_PointObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_RectangleObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Selection.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_SharedObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Stage.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_StringManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_StringObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_StyleSheet.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_TextFormat.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_TextSnapshot.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Timers.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_TransformObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Value.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\GFx_AS2Support.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\Audio\AS2_SoundObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\XML\AS2_XMLShadowRef.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\XML\AS2_Xml.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\XML\AS2_XmlNode.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\IME\GASIme.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\IME\AS2_IMEManager.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Action.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ActionTypes.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AmpMarker.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ArrayObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AsBroadcaster.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AsFunctionObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmButton.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmSprite.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_AvmTextField.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BevelFilter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BitmapData.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BitmapFilter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BlurFilter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_BooleanObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Capabilities.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Color.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ColorMatrixFilter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ColorTransform.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Date.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_DropShadowFilter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ExternalInterface.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_FunctionRef.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_FunctionRefImpl.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_GlowFilter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_KeyObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_LoadVars.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Math.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_MatrixObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Mouse.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_MovieClipLoader.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_MovieRoot.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_NumberObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Object.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_ObjectProto.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_PointObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_RectangleObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_RefCountCollector.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Selection.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_SharedObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Stage.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_StringManager.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_StringObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_StyleSheet.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_TextFormat.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_TextSnapshot.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Timers.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_TransformObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS2\AS2_Value.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\GFx_AS2Support.h" />
+  </ItemGroup>
+</Project>

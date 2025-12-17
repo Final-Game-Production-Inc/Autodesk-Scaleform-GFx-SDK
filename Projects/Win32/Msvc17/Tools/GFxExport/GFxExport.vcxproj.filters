@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\ImageFormats\DXTHelper.cpp">
+      <Filter>ImageFormats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\ImageFormats\PVRHelper.cpp">
+      <Filter>ImageFormats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\ImageFormats\SIFHelper.cpp">
+      <Filter>ImageFormats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\ConsoleSupport.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\ExportImageHelper.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExport.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportFsCommands.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportMain.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportPluginHandler.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportVisitors.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxImageExporters.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxSoundExporterFMOD.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\JPEGUtil.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Tools\GFxExport\JPEGUtil_jpeglib.cpp" />
+    <ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSettings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\ImageFormats\DXTHelper.h">
+      <Filter>ImageFormats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\ImageFormats\PVRHelper.h">
+      <Filter>ImageFormats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\ImageFormats\SIFHelper.h">
+      <Filter>ImageFormats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\ConsoleSupport.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\ExportImageHelper.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExport.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportPlugin.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportPluginHandler.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\GFxExportVisitors.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Tools\GFxExport\JPEGUtil.h" />
+    <ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSettings.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ImageFormats">
+      <UniqueIdentifier>{aff294ad-293c-4556-98e9-ccc930cab27d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GFxExport.rc" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,43 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\..\..\3rdParty\zlib-1.2.7\gfx_projects\PS4\Msvc11\zlib.vcxproj", "{B4BC0D6C-6E0B-4FE1-BE3E-82F93B78D138}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "..\..\..\..\3rdParty\expat-2.1.0\gfx_projects\PS4\Msvc11\expat.vcxproj", "{00DC2DED-4EEB-4FCE-8913-155560DC304C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "..\..\..\..\3rdParty\jpeg-8d\gfx_projects\PS4\Msvc11\libjpeg.vcxproj", "{D79287E6-7ED3-47C9-B62A-F5AF6DC70B08}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\..\..\..\3rdParty\libpng-1.5.13\gfx_projects\PS4\Msvc11\libpng.vcxproj", "{78950B2A-8FD2-4411-A5BD-872EE6199507}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre", "..\..\..\..\3rdParty\pcre\gfx_projects\PS4\Msvc11\pcre.vcxproj", "{1686EA77-8BB4-4F30-90BE-C072751FF45B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ORBIS = Debug|ORBIS
+		Release|ORBIS = Release|ORBIS
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4BC0D6C-6E0B-4FE1-BE3E-82F93B78D138}.Debug|ORBIS.ActiveCfg = Debug|ORBIS
+		{B4BC0D6C-6E0B-4FE1-BE3E-82F93B78D138}.Debug|ORBIS.Build.0 = Debug|ORBIS
+		{B4BC0D6C-6E0B-4FE1-BE3E-82F93B78D138}.Release|ORBIS.ActiveCfg = Release|ORBIS
+		{B4BC0D6C-6E0B-4FE1-BE3E-82F93B78D138}.Release|ORBIS.Build.0 = Release|ORBIS
+		{00DC2DED-4EEB-4FCE-8913-155560DC304C}.Debug|ORBIS.ActiveCfg = Debug|ORBIS
+		{00DC2DED-4EEB-4FCE-8913-155560DC304C}.Debug|ORBIS.Build.0 = Debug|ORBIS
+		{00DC2DED-4EEB-4FCE-8913-155560DC304C}.Release|ORBIS.ActiveCfg = Release|ORBIS
+		{00DC2DED-4EEB-4FCE-8913-155560DC304C}.Release|ORBIS.Build.0 = Release|ORBIS
+		{D79287E6-7ED3-47C9-B62A-F5AF6DC70B08}.Debug|ORBIS.ActiveCfg = Debug|ORBIS
+		{D79287E6-7ED3-47C9-B62A-F5AF6DC70B08}.Debug|ORBIS.Build.0 = Debug|ORBIS
+		{D79287E6-7ED3-47C9-B62A-F5AF6DC70B08}.Release|ORBIS.ActiveCfg = Release|ORBIS
+		{D79287E6-7ED3-47C9-B62A-F5AF6DC70B08}.Release|ORBIS.Build.0 = Release|ORBIS
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Debug|ORBIS.ActiveCfg = Debug|ORBIS
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Debug|ORBIS.Build.0 = Debug|ORBIS
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Release|ORBIS.ActiveCfg = Release|ORBIS
+		{78950B2A-8FD2-4411-A5BD-872EE6199507}.Release|ORBIS.Build.0 = Release|ORBIS
+		{1686EA77-8BB4-4F30-90BE-C072751FF45B}.Debug|ORBIS.ActiveCfg = Debug|ORBIS
+		{1686EA77-8BB4-4F30-90BE-C072751FF45B}.Debug|ORBIS.Build.0 = Debug|ORBIS
+		{1686EA77-8BB4-4F30-90BE-C072751FF45B}.Release|ORBIS.ActiveCfg = Release|ORBIS
+		{1686EA77-8BB4-4F30-90BE-C072751FF45B}.Release|ORBIS.Build.0 = Release|ORBIS
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

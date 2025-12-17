@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_NoRTTI|PS3">
+      <Configuration>Debug_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_NoRTTI|PS3">
+      <Configuration>Release_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_NoRTTI|PS3">
+      <Configuration>Shipping_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EEF6F697-5263-42A9-85CD-3F3FC2B8C937}</ProjectGuid>
+    <RootNamespace>AIR</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\NonSCU\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\NonSCU\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Lib\PS3\snc\Msvc10\$(Configuration)\NonSCU\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\Msvc10\$(ProjectName)\$(Configuration)_SNC\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-g -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../../../../../Src\Kernel;../../../../../Src;../../../../../Src\Sound;../../../../../Src\Render;../../../../../Src\GFx;../../../../../Src\GFxIME;../../../../../Src\XML;../../../../../Include;../../../../../Src\GFx\Audio;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;../../../../../3rdParty\include;../../../../../3rdParty\include\PS3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;_DEBUG;__SNC__;SF_BUILD_DEBUG;_VSI_ALTCONF_=PS3 Debug NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfx_air.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../../../../../Src\Kernel;../../../../../Src;../../../../../Src\Sound;../../../../../Src\Render;../../../../../Src\GFx;../../../../../Src\GFxIME;../../../../../Src\XML;../../../../../Include;../../../../../Src\GFx\Audio;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;../../../../../3rdParty\include;../../../../../3rdParty\include\PS3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;NDEBUG;__SNC__;_VSI_ALTCONF_=PS3 Release NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfx_air.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../../../../../Src\Kernel;../../../../../Src;../../../../../Src\Sound;../../../../../Src\Render;../../../../../Src\GFx;../../../../../Src\GFxIME;../../../../../Src\XML;../../../../../Include;../../../../../Src\GFx\Audio;../../../../../3rdParty\jpeg-8d;../../../../../3rdParty\libpng-1.5.13;../../../../../3rdParty\zlib-1.2.7;../../../../../3rdParty\include;../../../../../3rdParty\include\PS3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;NDEBUG;__SNC__;_VSI_ALTCONF_=PS3 Release NoRTTI|PS3;SF_BUILD_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)libgfx_air.a</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Clipboard.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardFormats.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardTransferMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Icon.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_InteractiveIcon.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_DockIcon.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeApplication.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragActions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragOptions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NotificationType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_SystemTrayIcon.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Updater.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FocusDirection.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenu.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenuItem.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindow.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowDisplayState.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowInitOptions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowResize.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowSystemChrome.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowType.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Screen.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_BrowserInvokeEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMAuthenticateEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMErrorEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMStatusEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FileListEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTMLUncaughtScriptExceptionEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_InvokeEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeDragEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowBoundsEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowDisplayStateEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_OutputProgressEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ScreenMouseEvent.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_File.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileMode.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileStream.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHistoryItem.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHost.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLLoader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLPDFCapability.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLWindowCreateOptions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestDefaults.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJob.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOptions.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOrientation.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_DeleteObjectSample.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_NewObjectSample.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_Sample.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_StackFrame.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_IURIDereferencer.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_ReferencesValidationSetting.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_RevocationCheckSettings.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignatureStatus.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignerTrustSettings.h" />
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_CompressionAlgorithm.h" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Clipboard.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardFormats.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_ClipboardTransferMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Icon.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_InteractiveIcon.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_DockIcon.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeApplication.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragActions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NativeDragOptions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_NotificationType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_SystemTrayIcon.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Desktop\AS3_Obj_Desktop_Updater.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_FocusDirection.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenu.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeMenuItem.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindow.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowDisplayState.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowInitOptions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowResize.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowSystemChrome.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_NativeWindowType.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_Screen.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_BrowserInvokeEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMAuthenticateEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMErrorEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_DRMStatusEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_FileListEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_HTMLUncaughtScriptExceptionEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_InvokeEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeDragEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowBoundsEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_NativeWindowDisplayStateEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_OutputProgressEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_ScreenMouseEvent.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_File.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileMode.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filesystem\AS3_Obj_Filesystem_FileStream.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHistoryItem.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLHost.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLLoader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLPDFCapability.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Html\AS3_Obj_Html_HTMLWindowCreateOptions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_URLRequestDefaults.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJob.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOptions.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Printing\AS3_Obj_Printing_PrintJobOrientation.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_DeleteObjectSample.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_NewObjectSample.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_Sample.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Sampler\AS3_Obj_Sampler_StackFrame.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_IURIDereferencer.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_ReferencesValidationSetting.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_RevocationCheckSettings.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignatureStatus.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_SignerTrustSettings.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_CompressionAlgorithm.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="GFx.vcxproj">
+      <Project>{9ce582fb-23ad-4911-a368-0290503b2867}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

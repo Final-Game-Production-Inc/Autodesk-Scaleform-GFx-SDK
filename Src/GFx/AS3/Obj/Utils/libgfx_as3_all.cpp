@@ -1,0 +1,8 @@
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_ByteArray.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_Dictionary.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_Endian.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_IDataInput.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_IDataOutput.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_IExternalizable.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_Proxy.cpp"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_Timer.cpp"

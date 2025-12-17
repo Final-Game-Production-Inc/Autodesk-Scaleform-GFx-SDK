@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Test"
+	OutputDirectory=".\..\..\..\..\..\Bin\$(PlatformName)\$(MsvcVer)\$(ProjectName)"
+	IntermediateDirectory=".\..\..\..\..\..\Obj\$(PlatformName)\$(MsvcVer)\$(ConfigurationName)\$(ProjectName)\"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Samples\Common;&quot;..\..\..\..\..\3rdParty\fmod\pc\$(PlatformName)\inc&quot;;&quot;..\..\..\..\..\3rdParty\expat-2.1.0\lib&quot;;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7&quot;;&quot;..\..\..\..\..\3rdParty\curl-7.29.0\include&quot;;&quot;..\..\..\..\..\3rdParty\pcre&quot;;..\..\..\..\..\3rdParty\glext;&quot;..\..\..\..\..\3rdParty\jpeg-8d&quot;;..\..\..\..\..\3rdParty\nvidia;&quot;..\..\..\..\..\3rdParty\gtest-1.6.0\include&quot;;&quot;$(DXSDK_DIR)\Include&quot;"
+		PreprocessorDefinitions="WIN32;_WINDOWS"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="libjpeg.lib libpng.lib zlib.lib expat.lib pcre.lib libcurl.lib Wldap32.lib XInput.lib winmm.lib odbc32.lib odbccp32.lib imm32.lib gtest$(ConfigLetter).lib dbghelp.lib"
+		AdditionalLibraryDirectories="&quot;..\..\..\..\..\Lib\$(PlatformName)\$(MsvcVer)\$(ConfigShort)\&quot;;&quot;..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\curl-7.29.0\lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\jpeg-8d\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\pcre\Lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\cri\pc\libs\$(PlatformName)&quot;;&quot;..\..\..\..\..\3rdParty\fmod\pc\$(PlatformName)\lib&quot;;&quot;..\..\..\..\..\3rdParty\expat-2.1.0\lib\$(PlatformName)\$(MsvcVer)\Release&quot;;&quot;..\..\..\..\..\3rdParty\gtest-1.6.0\lib\$(PlatformName)\$(MsvcVer)\$(ConfigShort)\&quot;;&quot;$(DXSDK_DIR)\lib\x$(BitSet)&quot;"
+	/>
+</VisualStudioPropertySheet>

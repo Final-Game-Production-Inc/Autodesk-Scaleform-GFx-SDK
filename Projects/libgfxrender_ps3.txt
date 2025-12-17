@@ -1,0 +1,13 @@
+Src/Render/PS3/PS3_HAL.cpp
+Src/Render/PS3/PS3_HAL.h
+Src/Render/PS3/PS3_MemoryManager.h
+Src/Render/PS3/PS3_MeshCache.cpp
+Src/Render/PS3/PS3_MeshCache.h
+Src/Render/PS3/PS3_ShaderDescs.cpp
+Src/Render/PS3/PS3_ShaderDescs.h
+Src/Render/PS3/PS3_Shader.cpp
+Src/Render/PS3/PS3_Shader.h
+Src/Render/PS3/PS3_Sync.h
+Src/Render/PS3/PS3_Texture.cpp
+Src/Render/PS3/PS3_Texture.h
+Src/Render/ShaderData.xml

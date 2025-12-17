@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ReferencePath>$(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib;$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)\um;$(Console_SdkIncludeRoot)\shared;$(Console_SdkIncludeRoot)\winrt;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)\bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Include;..\..\..\..\..\..\Src;..\..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\..\3rdParty\expat-2.1.0\lib;..\..\..\..\..\..\3rdParty\zlib-1.2.7;..\..\..\..\..\..\3rdParty\jpeg-8d;..\..\..\..\..\..\3rdParty\libpng-1.5.13;..\..\..\..\..\..\3rdParty\fmod\XboxOne\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_DURANGO;_DURANGO_ADK;WIN32_LEAN_AND_MEAN;SF_BUILD_STATICLIB;SF_BUILD_GFXSHADERMAKER</PreprocessorDefinitions>
+      <StructMemberAlignment>8Bytes</StructMemberAlignment>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libgfx.lib;libgfx_as2.lib;libgfx_as3.lib;libgfx_air.lib;libgfxexpat.lib;libgfxrender_d3d11.lib;libgfxplatform_durango.lib;zlib.lib;libjpeg.lib;libpng.lib;pcre.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\Lib\XboxOne\ADK\$(MsvcVer)\$(ConfigShort)$(ConfigMonoShort);..\..\..\..\..\..\Lib\XboxOne\ADK\$(MsvcVer)\$(ConfigShort);..\..\..\..\..\..\3rdParty\zlib-1.2.7\Lib\XboxOne\ADK\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\jpeg-8d\Lib\XboxOne\ADK\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\libpng-1.5.13\Lib\XboxOne\ADK\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\pcre\Lib\XboxOne\ADK\$(MsvcVer)\Release;..\..\..\..\..\..\3rdParty\fmod\XboxOne\lib;..\..\..\..\..\..\3rdParty\cri\XboxOne\libs;$(DurangoXdkKitPath)\Lib\amd64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

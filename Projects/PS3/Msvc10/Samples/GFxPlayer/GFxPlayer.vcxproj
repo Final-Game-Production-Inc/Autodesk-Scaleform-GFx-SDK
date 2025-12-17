@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_NoRTTI|PS3">
+      <Configuration>Debug_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_NoRTTI|PS3">
+      <Configuration>Release_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_NoRTTI|PS3">
+      <Configuration>Shipping_NoRTTI</Configuration>
+      <Platform>PS3</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{21269B54-B4D8-43C1-8D8E-2CD7D9EB0032}</ProjectGuid>
+    <RootNamespace>GFxPlayer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Bin\PS3\snc\Msvc10\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\$(ProjectName)\$(Configuration)\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)%3b$(TargetDir)$(TargetName).self</ExtensionsToDeleteOnClean>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">false</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Bin\PS3\snc\Msvc10\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\$(ProjectName)\$(Configuration)\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)%3b$(TargetDir)$(TargetName).self</ExtensionsToDeleteOnClean>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">false</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Bin\PS3\snc\Msvc10\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">..\..\..\..\..\Obj\PS3\$(ProjectName)\$(Configuration)\</IntDir>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">*.obj%3b*.d%3b*.map%3b*.lst%3b*.pch%3b$(TargetPath)%3b$(TargetDir)$(TargetName).self</ExtensionsToDeleteOnClean>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">false</GenerateManifest>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">FxPlayerGCM_$(Configuration)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">FxPlayerGCM_$(Configuration)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">FxPlayerGCM_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-g -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SCE_PS3_ROOT)\target\ppu\include;$(SCE_PS3_ROOT)\target\common\include;../../../../../Src;../../../../../Src/Kernel;../../../../../Src/Render;../../../../../Src/GFx;../../../../../Src/GFx/IME;../../../../../Src/GFx/XML;../../../../../Src/GFxVideo;../../../../../Src/GFx/Audio;../../../../../Src/Sound;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;../../../../../3rdParty/fmod/PS3/inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_PS3_MSVC_BUILD;SN_TARGET_PS3;_DEBUG;__SNC__;CELL_SDK_VER=410;SF_BUILD_DEBUG;REMOTE_PATH=SYS_HOST_ROOT "/usr/local/cell/FxPlayer/";FXPLAYER_RENDER_GCM;_VSI_ALTCONF_=Debug_NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>-S -strip-unused-data -Map="$(OutDir)$(TargetName).map" -oformat=fself -no-exceptions %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>../../../../../3rdParty/fmod/PS3/lib/fmodexL_SPURS.a;$(SCE_PS3_ROOT)\target\ppu\lib\libm.a;$(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libfs_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libspurs_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libaudio_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libkey2char_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libnet_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsync_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libgcm_cmd.a;$(SCE_PS3_ROOT)\target\ppu\lib\libgcm_sys_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysmodule_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libresc_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysutil_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\librtc_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libnetctl_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysutil_np_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libpthread.a;-lgfx;-lgfx_as2;-lgfx_as3;-lgfx_air;-lgfxexpat;-lgfxplatform;-lgfxrender_ps3;-lgfxshaders;-lpcre;-lexpat;-lz;-lpng;-ljpeg;-laudio_stub;-lnet_stub;-lnetctl_stub;-lspurs_stub;-lsync_stub;-lmic_stub;-lsysutil_avconf_ext_stub;-lfios;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)FxPlayerGCM_$(Configuration).self</OutputFile>
+      <AdditionalLibraryDirectories>../../../../../3rdParty/fmod/PS3/lib/;../../../../../Lib/PS3/snc/Msvc10/$(Configuration);../../../../../Lib/PS3/snc/;../../../../../Lib/PS3/snc/Msvc10;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SCE_PS3_ROOT)\target\ppu\include ;$(SCE_PS3_ROOT)\target\common\include;../../../../../Src/Kernel;../../../../../Src;../../../../../Src/Render;../../../../../Src/GFx;../../../../../Src/GFx/IME;../../../../../Src/GFx/XML;../../../../../Src/GFxVideo;../../../../../Src/GFx/Audio;../../../../../Src/Sound;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;../../../../../3rdParty/fmod/PS3/inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SF_PS3_MSVC_BUILD;SN_TARGET_PS3;NDEBUG;__SNC__;CELL_SDK_VER=410;REMOTE_PATH=SYS_HOST_ROOT "/usr/local/cell/FxPlayer/";FXPLAYER_RENDER_GCM;_VSI_ALTCONF_=Release_NoRTTI|PS3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>-S -strip-unused-data -Map="$(OutDir)$(TargetName).map" -oformat=fself -no-exceptions %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>../../../../../3rdParty/fmod/PS3/lib/fmodexL_SPURS.a;$(SCE_PS3_ROOT)\target\ppu\lib\libm.a;$(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libfs_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libspurs_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libaudio_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libkey2char_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libnet_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsync_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libgcm_cmd.a;$(SCE_PS3_ROOT)\target\ppu\lib\libgcm_sys_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysmodule_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libresc_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysutil_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\librtc_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libnetctl_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysutil_np_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libpthread.a;-lgfx;-lgfx_as2;-lgfx_as3;-lgfx_air;-lgfxexpat;-lgfxplatform;-lgfxrender_ps3;-lgfxshaders;-lpcre;-lexpat;-lz;-lpng;-ljpeg;-laudio_stub;-lnet_stub;-lnetctl_stub;-lspurs_stub;-lsync_stub;-lmic_stub;-lsysutil_avconf_ext_stub;-lfios;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)FxPlayerGCM_$(Configuration).self</OutputFile>
+      <AdditionalLibraryDirectories>../../../../../3rdParty/fmod/PS3/lib/;../../../../../Lib/PS3/snc/Msvc10/$(Configuration);../../../../../Lib/PS3/snc/;../../../../../Lib/PS3/snc/Msvc10;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_NoRTTI|PS3'">
+    <ClCompile>
+      <AdditionalOptions>-O2 -Xc-=rtti %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SCE_PS3_ROOT)\target\ppu\include ;$(SCE_PS3_ROOT)\target\common\include;../../../../../Src/Kernel;../../../../../Src;../../../../../Src/Render;../../../../../Src/GFx;../../../../../Src/GFx/IME;../../../../../Src/GFx/XML;../../../../../Src/GFxVideo;../../../../../Src/GFx/Audio;../../../../../Src/Sound;..\..\..\..\..\Include;..\..\..\..\..\Apps\Samples\Common;../../../../../3rdParty/fmod/PS3/inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SN_TARGET_PS3;SF_PS3_MSVC_BUILD;NDEBUG;__SNC__;CELL_SDK_VER=410;REMOTE_PATH=SYS_HOST_ROOT "/usr/local/cell/FxPlayer/";FXPLAYER_RENDER_GCM;_VSI_ALTCONF_=Shipping_NoRTTI|PS3;SF_BUILD_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>-S -strip-unused-data -Map="$(OutDir)$(TargetName).map" -oformat=fself -no-exceptions %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>../../../../../3rdParty/fmod/PS3/lib/fmodexL_SPURS.a;$(SCE_PS3_ROOT)\target\ppu\lib\libm.a;$(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libfs_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libspurs_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libaudio_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libkey2char_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libnet_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsync_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libgcm_cmd.a;$(SCE_PS3_ROOT)\target\ppu\lib\libgcm_sys_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysmodule_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libresc_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysutil_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\librtc_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libnetctl_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libsysutil_np_stub.a;$(SCE_PS3_ROOT)\target\ppu\lib\libpthread.a;-lgfx;-lgfx_as2;-lgfx_as3;-lgfx_air;-lgfxexpat;-lgfxplatform;-lgfxrender_ps3;-lgfxshaders;-lpcre;-lexpat;-lz;-lpng;-ljpeg;-laudio_stub;-lnet_stub;-lnetctl_stub;-lspurs_stub;-lsync_stub;-lmic_stub;-lsysutil_avconf_ext_stub;-lfios;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)FxPlayerGCM_$(Configuration).self</OutputFile>
+      <AdditionalLibraryDirectories>../../../../../3rdParty/fmod/PS3/lib/;../../../../../Lib/PS3/snc/Msvc10/$(Configuration);../../../../../Lib/PS3/snc/;../../../../../Lib/PS3/snc/Msvc10;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GFxPlayer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_PS3.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Platform\Platform_PS3_GCM.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.cpp" />
+	<ClCompile Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxPlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FontConfigParser.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxAmpAppControlCallback.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAppBase.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerAutotest.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxPlayerLog.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxRenderThread.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSharedObjectManager.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\Common\FxSoundFMOD.h" />
+	<ClInclude Include="..\..\..\..\..\Apps\Samples\FxPlayer\FxHUD.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SDK\Expat\Expat.vcxproj">
+      <Project>{c7aed435-02fd-41c0-b5b6-0a67c3025e7d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Platform\Platform.vcxproj">
+      <Project>{b7d89db1-f564-4043-b0c6-d1ef9fecfa7a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Render\Render_PS3.vcxproj">
+      <Project>{44730174-53a4-4c68-9514-2c4cfa40aad7}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Sound\Sound.vcxproj">
+      <Project>{4922cf8d-1f5b-4909-9675-7de76d58172f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

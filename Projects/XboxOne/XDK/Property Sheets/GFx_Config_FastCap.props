@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="UserMacros">
+    <ConfigShort>Release</ConfigShort>
+    <LibFT2>MT</LibFT2>
+    <LibConfig />
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CallAttributedProfiling>Fastcap</CallAttributedProfiling>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="ConfigShort">
+      <Value>$(ConfigShort)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LibFT2">
+      <Value>$(LibFT2)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LibConfig">
+      <Value>$(LibConfig)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

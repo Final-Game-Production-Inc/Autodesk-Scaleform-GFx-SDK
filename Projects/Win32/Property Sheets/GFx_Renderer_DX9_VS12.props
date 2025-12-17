@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>SF_D3D_VERSION=9;FXPLAYER_RENDER_DIRECT3D;SF_BUILD_GFXSHADERMAKER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+	<Link>
+      <AdditionalDependencies>d3d9.lib;libgfxrender_d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		<AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(PlatformName)\$(MsvcVer)\$(ConfigShort);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

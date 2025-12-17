@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="GFx_Renderer_DX11"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="SF_D3D_VERSION=11;FXPLAYER_RENDER_DIRECT3D"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib libgfxrender_d3d11.lib"
+	/>
+</VisualStudioPropertySheet>

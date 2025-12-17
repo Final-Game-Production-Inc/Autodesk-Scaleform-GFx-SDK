@@ -1,0 +1,105 @@
+# Extensions beginning with ? are not required. For instance, glDrawArraysInstanced is a method used 
+# for instancing; however, it is not required for proper operation, it may just be more optimal. If
+# an optional extension has a second name on the same line, that is the #define used to compile in/out that
+# definition. For example, with glDrawArraysInstanced, GL_ARB_draw_instanced is the #define extension. This
+# is to protect compilation against systems with incomplete/out of date glext.h files. 
+
+# Extensions beginning with ! are allowed to fail. This means that (unlike all other commands) glGetError
+# is not called after execution, so it can be called externally to check for failures. Note: ! must come after ?
+
+glBlendEquation
+glBlendEquationSeparate
+glBlendFuncSeparate
+glActiveTexture
+glEnableVertexAttribArray
+glDisableVertexAttribArray
+glVertexAttribPointer
+glDeleteShader
+glDeleteProgram
+glCreateShader
+glShaderSource
+glCompileShader
+glCreateProgram
+glAttachShader
+glLinkProgram
+glUseProgram
+glIsProgram
+glGetShaderiv
+glGetShaderInfoLog
+glGetProgramiv
+glGetProgramInfoLog
+glGetActiveUniform
+glGetAttribLocation
+glGetUniformLocation
+glBindAttribLocation
+glUniform1i
+glUniform1iv
+glUniform1f
+glUniform2f
+glUniform1fv
+glUniform2fv
+glUniform3fv
+glUniform4fv
+glUniformMatrix4fv
+glCompressedTexImage2D
+glGenBuffers
+glDeleteBuffers
+glBindBuffer
+glBufferData
+glBufferSubData
+glMapBuffer
+glUnmapBuffer
+glBindRenderbuffer                          
+glDeleteRenderbuffers                       
+glGenRenderbuffers                          
+glBindFramebuffer                           
+glDeleteFramebuffers                        
+glGenFramebuffers                           
+! glRenderbufferStorage                     
+glFramebufferTexture2D                      
+glFramebufferRenderbuffer                   
+glCheckFramebufferStatus                    
+glGetFramebufferAttachmentParameteriv       
+glGetRenderbufferParameteriv                
+glIsFramebuffer                             
+glIsRenderbuffer                            
+glGenerateMipmap
+? glDrawElementsInstanced                   GL_ARB_draw_instanced
+? glStringMarkerGREMEDY                     GL_GREMEDY_string_marker
+? glGenVertexArrays                         GL_ARB_vertex_array_object
+? glDeleteVertexArrays                      GL_ARB_vertex_array_object
+? glBindVertexArray                         GL_ARB_vertex_array_object
+? glBindFragDataLocation                    GL_EXT_gpu_shader4
+? glGetFragDataLocation                     GL_EXT_gpu_shader4
+?! glGetStringi                             GL_VERSION_3_0
+?! glGetProgramBinary                       GL_ARB_get_program_binary
+? glProgramBinary                           GL_ARB_get_program_binary
+? glProgramParameteri                       GL_ARB_get_program_binary
+? glFenceSync                               GL_ARB_sync
+? glClientWaitSync                          GL_ARB_sync
+? glGetSynciv                               GL_ARB_sync
+? glDeleteSync                              GL_ARB_sync
+? glFlushMappedBufferRange                  GL_ARB_map_buffer_range
+? glMapBufferRange                          GL_ARB_map_buffer_range
+? glGenProgramPipelines                     GL_ARB_separate_shader_objects
+? glDeleteProgramPipelines                  GL_ARB_separate_shader_objects
+? glUseProgramStages                        GL_ARB_separate_shader_objects
+? glGetProgramPipelineInfoLog               GL_ARB_separate_shader_objects
+? glGetProgramPipelineiv                    GL_ARB_separate_shader_objects
+? glProgramParameteri                       GL_ARB_separate_shader_objects
+? glBindProgramPipeline                     GL_ARB_separate_shader_objects
+? glProgramUniformMatrix4fv                 GL_ARB_separate_shader_objects
+? glProgramUniform4fv                       GL_ARB_separate_shader_objects
+? glProgramUniform3fv                       GL_ARB_separate_shader_objects
+? glProgramUniform2fv                       GL_ARB_separate_shader_objects
+? glProgramUniform1fv                       GL_ARB_separate_shader_objects
+? glProgramUniform1iv                       GL_ARB_separate_shader_objects
+? glProgramUniformMatrix4fvEXT              GL_EXT_direct_state_access
+? glProgramUniform4fvEXT                    GL_EXT_direct_state_access
+? glProgramUniform3fvEXT                    GL_EXT_direct_state_access
+? glProgramUniform2fvEXT                    GL_EXT_direct_state_access
+? glProgramUniform1fvEXT                    GL_EXT_direct_state_access
+? glProgramUniform1ivEXT                    GL_EXT_direct_state_access
+? glDebugMessageControlARB                  GL_ARB_debug_output
+? glDebugMessageCallbackARB                 GL_ARB_debug_output
+? glBlitFramebufferEXT                      GL_EXT_framebuffer_blit

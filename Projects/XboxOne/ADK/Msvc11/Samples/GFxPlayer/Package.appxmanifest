@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:mx="http://schemas.microsoft.com/appx/2013/xbox/manifest" IgnorableNamespaces="mx">
+  
+  <Identity Name="GFxPlayer"
+            Publisher="CN=Publisher"
+            Version="1.0.0.0" />
+  
+  <Properties>
+    <DisplayName>GFxPlayer</DisplayName>
+    <PublisherDisplayName>PublisherDisplayName</PublisherDisplayName>
+    <Logo>StoreLogo.png</Logo>
+    <Description>GFxPlayer</Description>
+  </Properties>
+  
+  <Prerequisites>
+    <OSMinVersion>6.2</OSMinVersion>
+    <OSMaxVersionTested>6.2</OSMaxVersionTested>
+  </Prerequisites>
+  
+  <Resources>
+    <Resource Language="en-us"/>
+  </Resources>
+  
+  <Applications>
+    <Application Id="GFxPlayer.App" 
+        Executable="$targetnametoken$.exe" 
+        EntryPoint="GFxPlayer.App">
+        <VisualElements 
+            DisplayName="GFxPlayer"
+            Logo="Logo.png"
+            SmallLogo="SmallLogo.png"
+            Description="GFxPlayer"
+            ForegroundText="light"
+            BackgroundColor="#6495ED">
+            <SplashScreen Image="SplashScreen.png" />
+        </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugOpt|Durango">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Durango">
+      <Configuration>Debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Durango">
+      <Configuration>Release</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Durango">
+      <Configuration>Shipping</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <ProjectGuid>{F4675621-0026-403D-A8A9-A24AB677599A}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>Video</ProjectName>
+    <RootNamespace>Video</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_XboxOne.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc11.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxvideo</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxvideo</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxvideo</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'">
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>../../../../../../Lib/XboxOne/XDK/Msvc11/$(Configuration)/</OutDir>
+    <IntDir>../../../../../../Obj/XboxOne/XDK/Msvc11/$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>libgfxvideo</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>../../../../../../3rdParty/cri/XboxOne/libs/cri_base_xboxone.lib;../../../../../../3rdParty/cri/XboxOne/libs/cri_movie_xboxone.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../../3rdParty/cri/XboxOne/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>../../../../../../3rdParty/cri/XboxOne/libs/cri_base_xboxone.lib;../../../../../../3rdParty/cri/XboxOne/libs/cri_movie_xboxone.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../../3rdParty/cri/XboxOne/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_BUILD_SHIPPING;SF_OS_WINMETRO;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>../../../../../../3rdParty/cri/XboxOne/libs/cri_base_xboxone.lib;../../../../../../3rdParty/cri/XboxOne/libs/cri_movie_xboxone.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../../3rdParty/cri/XboxOne/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Durango'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>SF_OS_WINMETRO;SF_BUILD_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <Lib>
+      <Verbose>true</Verbose>
+      <AdditionalDependencies>../../../../../../3rdParty/cri/XboxOne/libs/cri_base_xboxone.lib;../../../../../../3rdParty/cri/XboxOne/libs/cri_movie_xboxone.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../../../3rdParty/cri/XboxOne/libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\AS2\AS2_NetConnection.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\AS2\AS2_NetStream.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\AS2\AS2_VideoObject.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\AS3\AS3_VideoProviderNetStream.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\AS3\AS3_VideoCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_CriHeap.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_CriMvFileReader.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_CriMvSoundGateway.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_CriMvSystemTimer.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_SystemSoundInterface.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_Video.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_VideoCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_VideoPlayerImpl.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_VideoImage.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_VideoSoundSystemXA2.h" />
+    <ClInclude Include="..\..\..\..\..\..\Src\Video\Video_VideoXboxOne.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoAS2.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoAS3.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_CriHeap.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_CriMvFileReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_CriMvSoundGateway.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_CriMvSystemTimer.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_SystemSoundInterface.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_Video.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoCharacter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoPlayerImpl.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoImage.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\AS2\AS2_NetConnection.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\AS2\AS2_NetStream.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\AS2\AS2_VideoObject.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\AS3\AS3_VideoProviderNetStream.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\AS3\AS3_VideoCharacter.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoSoundSystemXA2.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Src\Video\Video_VideoXboxOne.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

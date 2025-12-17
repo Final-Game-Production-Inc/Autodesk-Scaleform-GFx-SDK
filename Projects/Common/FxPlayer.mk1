@@ -1,0 +1,10 @@
+
+NEWFXPLAYER_SRCS += Apps/Samples/Common/FontConfigParser.cpp \
+                    Apps/Samples/Common/FxPlayerAppBase.cpp \
+					Apps/Samples/Common/FxPlayerAutotest.cpp \
+					Apps/Samples/Common/FxRenderThread.cpp \
+                    Apps/Samples/FxPlayer/FxHUD.cpp \
+					Apps/Samples/Common/FxSharedObjectManager.cpp \
+                    Apps/Samples/Common/FxAmpAppControlCallback.cpp \
+                    Apps/Samples/Common/FxSoundFMOD.cpp
+					

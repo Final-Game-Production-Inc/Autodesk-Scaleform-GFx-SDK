@@ -1,0 +1,363 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugOpt_Lite|Xbox 360">
+      <Configuration>DebugOpt_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOpt|Xbox 360">
+      <Configuration>DebugOpt</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Lite|Xbox 360">
+      <Configuration>Debug_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Lite|Xbox 360">
+      <Configuration>Release_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_Lite|Xbox 360">
+      <Configuration>Shipping_Lite</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping|Xbox 360">
+      <Configuration>Shipping</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4FC51F80-3574-42D5-BE4C-F843A7EF0F47}</ProjectGuid>
+    <RootNamespace>Render_X360</RootNamespace>
+    <Keyword>XenonProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Lite.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc10.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Xbox360.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">$(OutDir)libgfxrender_x360.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">$(OutDir)libgfxrender_x360.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">$(OutDir)libgfxrender_x360.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">$(OutDir)libgfxrender_x360.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">$(OutDir)libgfxrender_x360_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">$(OutDir)libgfxrender_x360_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">$(OutDir)libgfxrender_x360_lite.lib</OutputFile>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">../../../../../Lib/Xbox360/Msvc10/$(ConfigShort)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">../../../../../Obj/Xbox360/Msvc10/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutputFile Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">$(OutDir)libgfxrender_x360_lite.lib</OutputFile>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">
+    <ClCompile>
+      <AdditionalOptions> /callcap %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_BufferMemory.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_HAL.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_MemoryManager.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_MeshCache.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_Shader.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_ShaderDescs.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_Sync.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_Texture.h" />
+	<ClInclude Include="..\..\..\..\..\Src\Render\X360\X360_Types.h" />
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_BufferMemory.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_HAL.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_MeshCache.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_Shader.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_ShaderDescs.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_ShaderBinary.cpp" />
+	<ClCompile Include="..\..\..\..\..\Src\Render\X360\X360_Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+	<CustomBuild Include="..\..\..\..\..\Src\Render\ShaderData.xml">
+		<Command Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Shipping|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+		<Command Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe -platform X360 -xml %(Identity) -outdir %(RelativeDir)\X360 -type Binary</Command>
+		<Message Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">Building GFx Shaders</Message>
+		<Outputs Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">%(RelativeDir)\X360\X360_ShaderDescs.cpp;%(RelativeDir)\X360\X360_ShaderDescs.h;%(RelativeDir)\X360\X360_ShaderBinary.cpp</Outputs>
+		<AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Shipping_Lite|Xbox 360'">..\..\..\..\..\Bin\Tools\GFxShaderMaker\GFxShaderMaker.exe</AdditionalInputs>
+	</CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

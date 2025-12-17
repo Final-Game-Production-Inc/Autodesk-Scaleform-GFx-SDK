@@ -1,0 +1,5 @@
+#include "GFx/AS3/Obj/Security/AS3_Obj_Security_IURIDereferencer.cpp"
+#include "GFx/AS3/Obj/Security/AS3_Obj_Security_ReferencesValidationSetting.cpp"
+#include "GFx/AS3/Obj/Security/AS3_Obj_Security_RevocationCheckSettings.cpp"
+#include "GFx/AS3/Obj/Security/AS3_Obj_Security_SignatureStatus.cpp"
+#include "GFx/AS3/Obj/Security/AS3_Obj_Security_SignerTrustSettings.cpp"
