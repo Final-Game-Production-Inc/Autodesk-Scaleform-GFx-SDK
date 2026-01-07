@@ -30,14 +30,15 @@ This Publish Will Separate To --
  * GFxLib-MSVC17.7z
  * Official ToolSets.zip
  * ScaleForm3.3.94.7z
-(Tips: ScaleForm3.3.94.7z Is Scaleform GFx SDK 3.3.94 Source Code In Grand Theft Auto V Source Code
+ * (Tips: ScaleForm3.3.94.7z Is Scaleform GFx SDK 3.3.94 Source Code In Grand Theft Auto V Source Code
 And Combine With Scaleform GFx SDK 3.3.93 Full Project, I Tested It's Working For No Warning[/W4] In VS2005)
 
 
 Copyright © By Final Game Production Inc. All Rights reserved. 
+
 Please Obey The GPL-3.0, LGPL-3.0 And AGPL-3.0 License, And Enjoy Everyday!
 
 Special Thanks:
-RetiredSDK: Provide The Scaleform GFx 4.2 Full Source Code, View In [Here](https://github.com/RetiredSDK/scaleform_sdk)
-Amber-Studios: Add Scaleform CRIWARE Video Tools, View In [Here](https://github.com/amber-studios/bo-sfui)
-8fm And Dartpower Team LLC. Provide The Scaleform GFx 4.3 Full Source Code, View In [8fm](https://github.com/8fm/openw3) and [Dartpower Team LLC.](https://files.dartpower.xyz/pub_f/Code/GameDev/_CDPR/SlivWitcher3/)
+ * RetiredSDK: Provide The Scaleform GFx 4.2 Full Source Code, View In [Here](https://github.com/RetiredSDK/scaleform_sdk)
+ * Amber-Studios: Add Scaleform CRIWARE Video Tools, View In [Here](https://github.com/amber-studios/bo-sfui)
+ * 8fm And Dartpower Team LLC. Provide The Scaleform GFx 4.3 Full Source Code, View In [8fm](https://github.com/8fm/openw3) and [Dartpower Team LLC.](https://files.dartpower.xyz/pub_f/Code/GameDev/_CDPR/SlivWitcher3/)
