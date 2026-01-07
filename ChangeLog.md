@@ -1,7 +1,7 @@
 Autodesk Scaleform GFx SDK: Post It's Cost $$$ For Money With BIG Enterprise Game Developer, But Now, It's Open-Source Advanced Flash Player Implementation
 
 Version NEXT Preview (4.6.34-Leslie, In Developing):
- * Complement ActionScript 3 Functions For Full In This(https://help.autodesk.com/view/SCLFRM/ENU/?guid=__scaleform_help_flash_support_as3_class_html)
+ * Complement ActionScript 3 Functions For Full In [Autodesk Official Help](https://help.autodesk.com/view/SCLFRM/ENU/?guid=__scaleform_help_flash_support_as3_class_html)
  * Complement GFxIME Support.
  * Add Vulkan Render Support.
  * Fix Compiler Other Bugs.
