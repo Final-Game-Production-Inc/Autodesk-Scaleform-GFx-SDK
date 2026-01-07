@@ -23,13 +23,13 @@ zlib-1.2.7 -> zlib-1.3.1
 Add Missing Files (GFxExport Source Code) For Scaleform 4.3 FULL SDK
 
 This Publish Will Separate To --
-Source Code
-3rdParty-Updated.7z
-Bin-Others.zip
-GFxExport-Collection.zip
-GFxLib-MSVC17.7z
-Official ToolSets.zip
-ScaleForm3.3.94.7z
+ * Source Code
+ * 3rdParty-Updated.7z
+ * Bin-Others.zip
+ * GFxExport-Collection.zip
+ * GFxLib-MSVC17.7z
+ * Official ToolSets.zip
+ * ScaleForm3.3.94.7z
 (Tips: ScaleForm3.3.94.7z Is Scaleform GFx SDK 3.3.94 Source Code In Grand Theft Auto V Source Code
 And Combine With Scaleform GFx SDK 3.3.93 Full Project, I Tested It's Working For No Warning[/W4] In VS2005)
 
