@@ -16,9 +16,9 @@ The Uncertained This Migrated Is A Big Challenge For ME.
 Fix Compiler Warnings For All.
 
 Update 3rdParty:
-libpng-1.5.13 -> libpng-1.6.53
-jpeg-8d -> jpeg-9f
-zlib-1.2.7 -> zlib-1.3.1
+ * libpng-1.5.13 -> libpng-1.6.53
+ * jpeg-8d -> jpeg-9f
+ * zlib-1.2.7 -> zlib-1.3.1
 
 Add Missing Files (GFxExport Source Code) For Scaleform 4.3 FULL SDK
 
