@@ -7,7 +7,7 @@ Version NEXT Preview (4.6.34-Leslie, In Developing):
  * Fix Compiler Other Bugs.
  * And Welcome Everyone And Lover To Join US Organization, To Carry Out This Big Steak Together. (And If You Have Newest Scaleform Source Code, Audacity TO Pull Request IT!)
 
-EVERYONE, CHAAAAAAAAARRRRRRRRRRRGEEEEEEEEEEEEEEEEEE!!!!!!!!!! AND FREEDOM PULL REQUEST YOURSELVES!
+EVERYONE COME FROM THE WORLD, NO WAY TO BACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHAAAAAAAAARRRRRRRRRRRGEEEEEEEEEEEEEEEEEE!!!!!!!!!! AND FREEDOM PULL REQUEST YOURSELVES!
 
 Version 4.5.32-Leslie:
 Support C17 And C++ 17 Standard, And Support Visual Studio 2026(Files Location: Projects\Win32\Msvc17)
