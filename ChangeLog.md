@@ -6,6 +6,7 @@ Version NEXT Preview (4.6.34-Leslie, In Developing):
  * Add Vulkan Render Support.
  * Fix Compiler Other Bugs.
  * And Welcome Everyone And Lover To Join US Organization, To Carry Out This Big Steak Together. (And If You Have Newest Scaleform Source Code, Audacity TO Pull Request IT!)
+   EVERYONE, CHAAAAAAAAARRRRRRRRRRRGEEEEEEEEEEEEEEEEEE!!!!!!!!!!
 
 AND FREEDOM PULL REQUEST YOURSELVES!
 
