@@ -12,6 +12,7 @@ EVERYONE COME FROM THE WORLD, NO WAY TO BACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! C
 Version 4.5.32-Leslie:
 
 Support C17 And C++ 17 Standard, And Support Visual Studio 2026(Files Location: Projects\Win32\Msvc17)
+
 The Uncertained This Migrated Is A Big Challenge For ME.
 
 Fix Compiler Warnings For All.
