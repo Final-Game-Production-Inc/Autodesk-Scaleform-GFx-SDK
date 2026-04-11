@@ -62,4 +62,4 @@ Special Thanks:
  * RetiredSDK: Provide The Scaleform GFx 4.2 Full Source Code, View In [Here](https://github.com/RetiredSDK/scaleform_sdk)
  * Amber-Studios: Add Scaleform CRIWARE Video Tools, View In [Here](https://github.com/amber-studios/bo-sfui)
  * 8fm And Dartpower Team LLC. Provide The Scaleform GFx 4.3 Full Source Code, View In [8fm](https://github.com/8fm/openw3) and [Dartpower Team LLC.](https://files.dartpower.xyz/pub_f/Code/GameDev/_CDPR/SlivWitcher3/)
- * TimbreUnda: Add Scaleform CRI MANA Support View In [Here](https://github.com/TimbreUnda/scaleform_sdk)
+ * TimbreUnda(Monstrofil And Claude): Add Scaleform Criware 2019 And Vulkan Render Support View In [Here](https://github.com/TimbreUnda/scaleform_sdk)
