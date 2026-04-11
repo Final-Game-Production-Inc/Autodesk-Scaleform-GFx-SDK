@@ -18,12 +18,14 @@ Because It's Support C++ 20 Standard.
 
 All 3rdparty Is Updated New Version.
 
+And, Add Vulkan Render Code Support(From https://github.com/TimbreUnda/scaleform_sdk).
+
 Update 3rdParty:
  * curl-7.29.0 -> curl-8.19.0
  * expat-2.1.0 -> expat-2.7.5
  * pcre -> pcre2-10.47
  * nvtt -> nvtt-2.1.2
- * cri -> cri2019 (Add H.264 And CRIMANA Support, But It's Has Problem For H.264 To Fix.......)
+ * cri -> cri2019 (Add H.264 And CRIMANA Support, But It's Has Problem For H.264 To Fix, From [TimbreUnda]https://github.com/TimbreUnda/scaleform_sdk.......)
 
 Version 4.5.32-Leslie:
 
@@ -60,3 +62,4 @@ Special Thanks:
  * RetiredSDK: Provide The Scaleform GFx 4.2 Full Source Code, View In [Here](https://github.com/RetiredSDK/scaleform_sdk)
  * Amber-Studios: Add Scaleform CRIWARE Video Tools, View In [Here](https://github.com/amber-studios/bo-sfui)
  * 8fm And Dartpower Team LLC. Provide The Scaleform GFx 4.3 Full Source Code, View In [8fm](https://github.com/8fm/openw3) and [Dartpower Team LLC.](https://files.dartpower.xyz/pub_f/Code/GameDev/_CDPR/SlivWitcher3/)
+ * TimbreUnda: Add Scaleform CRI MANA Support View In [Here](https://github.com/TimbreUnda/scaleform_sdk)
