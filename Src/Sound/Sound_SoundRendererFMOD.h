@@ -22,10 +22,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifdef GFX_ENABLE_SOUND
 
 #if defined(SF_OS_WIN32) && !defined(SF_OS_WINMETRO) && !defined(_DURANGO)
-#if defined(_WIN64)         // Windows PC x64/x86
-    #pragma comment(lib, "fmodex64_vc.lib")
-#else
-    #pragma comment(lib, "fmodex_vc.lib")
+    #pragma comment(lib, "fmod_vc.lib")
 #endif
 #elif defined(SF_OS_WINMETRO) && !defined(_DURANGO)
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
@@ -109,5 +106,3 @@ public:
 }} // Scaleform::Sound
 
 #endif // GFX_ENABLE_SOUND
-
-#endif

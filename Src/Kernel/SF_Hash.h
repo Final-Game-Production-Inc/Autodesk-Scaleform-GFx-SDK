@@ -1222,24 +1222,36 @@ public:
     UPInt HashValue;
     C     Value;
 
+    // 1. 默认构造函数：显式初始化 HashValue 为 0
     HashsetCachedNodeEntry()
-        : NextInChain(-2) { }
-    HashsetCachedNodeEntry(const HashsetCachedNodeEntry& e)
-        : NextInChain(e.NextInChain), HashValue(e.HashValue), Value(e.Value) { }
-    HashsetCachedNodeEntry(const C& key, SPInt next)
-        : NextInChain(next), Value(key) { }
-    HashsetCachedNodeEntry(const typename C::NodeRef& keyRef, SPInt next)
-        : NextInChain(next), Value(keyRef) { }
+        : NextInChain(-2), HashValue(0) {
+    }
 
-    bool    IsEmpty() const            { return NextInChain == -2;  }
-    bool    IsEndOfChain() const       { return NextInChain == -1;  }
-    UPInt   GetCachedHash(UPInt maskValue) const  { SF_UNUSED(maskValue); return HashValue; }
-    void    SetCachedHash(UPInt hashValue)        { HashValue = hashValue; }
+    // 2. 拷贝构造函数：原有逻辑已初始化 HashValue，保留
+    HashsetCachedNodeEntry(const HashsetCachedNodeEntry& e)
+        : NextInChain(e.NextInChain), HashValue(e.HashValue), Value(e.Value) {
+    }
+
+    // 3. 接收 const C& 的构造函数：显式初始化 HashValue 为 0
+    HashsetCachedNodeEntry(const C& key, SPInt next)
+        : NextInChain(next), HashValue(0), Value(key) {
+    }
+
+    // 4. 接收 NodeRef 的构造函数：显式初始化 HashValue 为 0
+    HashsetCachedNodeEntry(const typename C::NodeRef& keyRef, SPInt next)
+        : NextInChain(next), HashValue(0), Value(keyRef) {
+    }
+
+    bool    IsEmpty() const { return NextInChain == -2; }
+    bool    IsEndOfChain() const { return NextInChain == -1; }
+    UPInt   GetCachedHash(UPInt maskValue) const { SF_UNUSED(maskValue); return HashValue; }
+    void    SetCachedHash(UPInt hashValue) { HashValue = hashValue; }
 
     void    Clear()
     {
         Value.~C();
         NextInChain = -2;
+        HashValue = 0; // 可选：Clear 时也重置 HashValue，增强安全性
     }
     // Free is only used from dtor of hash; Clear is used during regular operations:
     // assignment, hash reallocations, value reassignments, so on.

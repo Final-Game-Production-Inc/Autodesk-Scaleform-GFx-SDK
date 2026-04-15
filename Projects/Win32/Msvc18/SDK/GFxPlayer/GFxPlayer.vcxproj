@@ -911,7 +911,7 @@
       <StructMemberAlignment>8Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -940,7 +940,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -970,7 +970,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1000,7 +1000,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1030,11 +1030,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1064,11 +1064,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1098,11 +1098,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1132,7 +1132,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1162,11 +1162,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1196,7 +1196,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1225,7 +1225,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1253,12 +1253,12 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1287,11 +1287,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1325,7 +1325,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1354,7 +1354,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1382,11 +1382,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1415,7 +1415,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1444,7 +1444,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1473,7 +1473,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1502,11 +1502,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1535,12 +1535,12 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1570,11 +1570,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1603,7 +1603,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1632,11 +1632,11 @@
       <WarningLevel>Level4</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1664,7 +1664,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1694,7 +1694,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1722,7 +1722,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1750,11 +1750,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1784,11 +1784,11 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1805,7 +1805,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VS110COMNTOOLS)..\..\VC\PlatformSDK\Include;.\..\..\..\..\..\3rdParty\libpng-1.6.53;.\..\..\..\..\..\3rdParty\jpeg-9f;.\..\..\..\..\..\3rdParty\fmod\pc\x64\inc;.\..\..\..\..\..\3rdParty\pcre;.\..\..\..\..\..\3rdParty\glext;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VS110COMNTOOLS)..\..\VC\PlatformSDK\Include;.\..\..\..\..\..\3rdParty\libpng-1.6.53;.\..\..\..\..\..\3rdParty\jpeg-9f;.\..\..\..\..\..\3rdParty\fmod-2.03.13\core\inc;.\..\..\..\..\..\3rdParty\pcre;.\..\..\..\..\..\3rdParty\glext;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -1817,11 +1817,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>msvcrt.lib;libucrt.lib;fmodex64_vc.lib;libjpeg.lib;libcmt.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msvcrt.lib;libucrt.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;libcmt.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1853,7 +1853,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1881,11 +1881,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1915,7 +1915,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1943,7 +1943,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1971,7 +1971,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1999,12 +1999,12 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -2033,11 +2033,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;mfplat.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -2066,11 +2066,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -2099,7 +2099,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -2128,11 +2128,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;libjpeg.lib;LIBCMT.lib;dsound.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

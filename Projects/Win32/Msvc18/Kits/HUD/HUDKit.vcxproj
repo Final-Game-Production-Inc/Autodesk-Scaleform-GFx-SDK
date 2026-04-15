@@ -771,11 +771,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -839,11 +839,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -904,11 +904,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -972,11 +972,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1043,11 +1043,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1108,11 +1108,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1170,11 +1170,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1236,7 +1236,7 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1294,11 +1294,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1358,11 +1358,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1422,11 +1422,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1486,11 +1486,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1551,11 +1551,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1615,11 +1615,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1679,11 +1679,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1743,11 +1743,11 @@ call .\..\..\..\..\..\Bin\Data\AS3\Kits\HUD\export_hudAS3.bat .\..\..\..\..\..\B
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

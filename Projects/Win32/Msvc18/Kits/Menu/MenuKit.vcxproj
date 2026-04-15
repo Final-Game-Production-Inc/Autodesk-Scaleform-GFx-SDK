@@ -768,11 +768,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -830,11 +830,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -892,11 +892,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -954,11 +954,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1016,11 +1016,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1078,11 +1078,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1140,11 +1140,11 @@
       <CompileAs>Default</CompileAs>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1206,7 +1206,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1264,11 +1264,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1328,11 +1328,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1392,11 +1392,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1456,11 +1456,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1521,11 +1521,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1585,11 +1585,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1649,11 +1649,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1713,11 +1713,11 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;Msacm32.lib;Ws2_32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

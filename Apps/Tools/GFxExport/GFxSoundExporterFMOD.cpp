@@ -25,41 +25,54 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_MsgFormat.h"
 using namespace Scaleform;
 
+#include "fmod.h"
 #include "fmod.hpp"
+
+#include "fmod_common.h"
 #include "fmod_errors.h"
 
 
 #define CHUNKSIZE 4096
 
-FMOD_RESULT F_CALLBACK DecodeOpen(const char *sd, int unicode, unsigned int *filesize, void **handle, void **userdata)
+FMOD_RESULT F_CALL DecodeOpen(const char* name, unsigned int* filesize, void** handle, void* userdata)
 {
-    SF_UNUSED2(unicode, handle);
-    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)sd;
+    (void)name;
+    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)userdata;
+
     psd->SeekPos(0);
-    *userdata = psd;
-    *filesize = 0x0FFFFFFF;
+
+    *handle = psd;              // ✅ handle 存你自己的对象
+    *filesize = 0x0FFFFFFF;     // 或者真实长度
+
     return FMOD_OK;
 }
-FMOD_RESULT F_CALLBACK DecodeClose(void *handle, void *userdata)
+
+FMOD_RESULT F_CALL DecodeClose(void* handle, void* userdata)
 {
-    SF_UNUSED2(userdata, handle);
-    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)userdata;
+    (void)userdata;
+    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)handle;
     psd->SeekPos(0);
     return FMOD_OK;
 }
-FMOD_RESULT F_CALLBACK DecodeRead(void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata)
+
+FMOD_RESULT F_CALL DecodeRead(void* handle, void* buffer, unsigned int sizebytes, unsigned int* bytesread, void* userdata)
 {
-    SF_UNUSED(handle);
-    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)userdata;
+    (void)userdata;
+    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)handle;
+
     *bytesread = psd->GetData((UByte*)buffer, sizebytes);
+
     return FMOD_OK;
 }
-FMOD_RESULT F_CALLBACK DecodeSeek(void *handle, unsigned int pos, void *userdata)
+
+FMOD_RESULT F_CALL DecodeSeek(void* handle, unsigned int pos, void* userdata)
 {
-    SF_UNUSED(handle);
-    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)userdata;
+    (void)userdata;
+    Sound::AppendableSoundData* psd = (Sound::AppendableSoundData*)handle;
+
     if (!psd->SeekPos(pos))
         return FMOD_ERR_FILE_COULDNOTSEEK;
+
     return FMOD_OK;
 }
 
@@ -152,7 +165,7 @@ public:
             attrs->Bits = (UInt16)bits;
 
             float frequency;
-            result = sound->getDefaults(&frequency, NULL, NULL, NULL);
+            result = sound->getDefaults(&frequency, NULL);
             if (result != FMOD_OK)
                 return false;
 
@@ -219,12 +232,12 @@ public:
             memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
             exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
             exinfo.length = psound->GetDataSize();    
-            exinfo.useropen = &DecodeOpen;
-            exinfo.userclose= &DecodeClose;
-            exinfo.userread = &DecodeRead;
-            exinfo.userseek = &DecodeSeek;
+            exinfo.fileuseropen = &DecodeOpen;
+            exinfo.fileuserclose= &DecodeClose;
+            exinfo.fileuserread = &DecodeRead;
+            exinfo.fileuserseek = &DecodeSeek;
             exinfo.decodebuffersize = 1024*8;
-            int flags = FMOD_OPENONLY | FMOD_SOFTWARE | FMOD_IGNORETAGS; 
+            int flags = FMOD_OPENONLY | FMOD_DEFAULT | FMOD_IGNORETAGS; 
             FMOD::Sound      *sound;
             FMOD_RESULT       result;
             result = pSystem->createStream((const char*)psound, flags, &exinfo, &sound);
@@ -249,7 +262,7 @@ public:
             attrs->Bits = (UInt16)bits;
 
             float frequency;
-            result = sound->getDefaults(&frequency, NULL, NULL, NULL);
+            result = sound->getDefaults(&frequency, NULL);
             if (result != FMOD_OK)
                 return false;
 

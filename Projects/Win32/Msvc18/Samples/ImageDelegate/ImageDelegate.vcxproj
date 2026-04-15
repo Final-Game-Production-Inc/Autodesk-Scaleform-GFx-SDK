@@ -773,7 +773,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -801,11 +801,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -833,7 +833,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -861,11 +861,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -893,7 +893,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -921,11 +921,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -953,7 +953,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -981,11 +981,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1013,7 +1013,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -1045,7 +1045,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1073,7 +1073,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -1101,11 +1101,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1133,7 +1133,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -1161,11 +1161,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1193,7 +1193,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -1221,11 +1221,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1252,7 +1252,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1281,11 +1281,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1314,7 +1314,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1343,11 +1343,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1376,7 +1376,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1405,11 +1405,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1438,7 +1438,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1467,11 +1467,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1501,7 +1501,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1530,11 +1530,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1563,7 +1563,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1592,11 +1592,11 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1625,7 +1625,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1654,11 +1654,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1687,7 +1687,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1716,11 +1716,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodex64_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;legacy_stdio_definitions.lib;mfplat.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -3933,7 +3933,7 @@ void GFxDataExporter::ShowVersion(GFxExportListener *logger)
     String msg;
     Format(msg, "GFxExport v{0}.{1:2.2d} for SDK v{2}.{3}.{4}-Leslie,\n \
         (c) 2006-2011 Scaleform Corporation,\n \
-        (c) 2004-2017 Firelight Technologies Pty Ltd.\n \
+        (c) 2004-2026 Firelight Technologies Pty Ltd.\n \
         (c) 2011-2019 Autodesk Inc.\n \
         (c) 2008-2017 CRI MIDDLEWARE Co., Ltd.\n \
         (c) 2026 Final Game Producion Inc.",
@@ -3943,6 +3943,7 @@ void GFxDataExporter::ShowVersion(GFxExportListener *logger)
 
     logger->OnMessage(GFxExportListener::MSG_Version, "This program uses:");
     logger->OnMessage(GFxExportListener::MSG_Version, "\tNVIDIA Texture Tools 2.1.2, (c) 2020 NVIDIA Corporation");
+    logger->OnMessage(GFxExportListener::MSG_Version, "\tFMOD 2.03.13, (c) 2020 NVIDIA Corporation");
     logger->OnMessage(GFxExportListener::MSG_Version, "\tPVRTexLib (c) 2010, Imagination Technologies Ltd.");
 
 #ifdef SF_TIFF_SUPPORT

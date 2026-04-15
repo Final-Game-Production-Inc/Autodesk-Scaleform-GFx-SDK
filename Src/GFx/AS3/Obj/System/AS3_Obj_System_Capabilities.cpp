@@ -233,7 +233,7 @@ namespace Classes { namespace fl_system
     {
 //##protect##"class_::Capabilities::versionGet()"
         
-        // Specifies the Flash Player or Adobe® AIR® platform and version information. The format of the 
+        // Specifies the Flash Player or AdobeÂ® AIRÂ® platform and version information. The format of the 
         // version number is: platform majorVersion,minorVersion,buildNumber,internalBuildNumber. Possible 
         // values for platform are "WIN", ` "MAC", "LNX", and "AND". Here are some examples of version 
         // information:

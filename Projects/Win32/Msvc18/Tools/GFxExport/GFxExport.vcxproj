@@ -256,7 +256,7 @@
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -297,7 +297,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
@@ -306,10 +306,10 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;bc6h.lib;bc7.lib;nvcore.lib;nvimage.lib;nvmath.lib;nvthread.lib;squish.lib;expat.lib;winmm.lib;imm32.lib;fmodex64_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;legacy_stdio_definitions.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;bc6h.lib;bc7.lib;nvcore.lib;nvimage.lib;nvmath.lib;nvthread.lib;squish.lib;expat.lib;winmm.lib;imm32.lib;fmod_vc.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;legacy_stdio_definitions.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\$(Platform);..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\$(Platform);..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -351,10 +351,10 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodexL_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -399,10 +399,10 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex64L_vc_dll.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -450,7 +450,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
@@ -499,10 +499,10 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex64_vc_dll.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmod_vc.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
@@ -551,7 +551,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -587,7 +587,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <ResourceCompile>
@@ -595,10 +595,10 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex64_vc_dll.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmod_vc.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>

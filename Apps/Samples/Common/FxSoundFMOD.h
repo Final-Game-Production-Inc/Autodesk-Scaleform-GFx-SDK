@@ -21,6 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #if defined(GFX_ENABLE_SOUND) && defined(GFX_SOUND_FMOD)
 
 #include <fmod.hpp>
+#include <fmod_common.h>
 #include "Sound/Sound_SoundRendererFMOD.h"
 
 #include "GFx/GFx_Loader.h"

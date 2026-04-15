@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\inc;..\..\..\..\..\3rdParty\expat-2.7.5\lib;..\..\..\..\..\3rdParty\zlib-1.3.1;;..\..\..\..\..\3rdParty\curl-8.19.0\include;..\..\..\..\..\3rdParty\pcre;..\..\..\..\..\3rdParty\glext;..\..\..\..\..\3rdParty\jpeg-9f;..\..\..\..\..\3rdParty\nvidia;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Include;..\..\..\..\..\Src;..\..\..\..\..\Apps\Samples\Common;..\..\..\..\..\3rdParty\fmod-2.03.13\core\inc;..\..\..\..\..\3rdParty\expat-2.7.5\lib;..\..\..\..\..\3rdParty\zlib-1.3.1;;..\..\..\..\..\3rdParty\curl-8.19.0\include;..\..\..\..\..\3rdParty\pcre;..\..\..\..\..\3rdParty\glext;..\..\..\..\..\3rdParty\jpeg-9f;..\..\..\..\..\3rdParty\nvidia;$(DXSDK_DIR)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/w44264</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;SF_BUILD_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -17,7 +17,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libjpeg.lib;libpng.lib;zlib.lib;expat.lib;pcre.lib;libcurl.lib;Wldap32.lib;XInput.lib;winmm.lib;odbc32.lib;odbccp32.lib;imm32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\$(MsvcVer)\$(ConfigShort)\;..\..\..\..\..\3rdParty\libpng-1.6.53\Lib\$(Platform)\$(MsvcVer)\Release;;..\..\..\..\..\3rdParty\curl-8.19.0\lib\$(PlatformName)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\expat-2.7.5\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\pcre\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\cri2019\pc\libs\$(Platform);..\..\..\..\..\3rdParty\fmod\pc\$(Platform)\lib;$(DXSDK_DIR)\lib\x$(BitSet);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\$(MsvcVer)\$(ConfigShort)\;..\..\..\..\..\3rdParty\libpng-1.6.53\Lib\$(Platform)\$(MsvcVer)\Release;;..\..\..\..\..\3rdParty\curl-8.19.0\lib\$(PlatformName)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\expat-2.7.5\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\pcre\Lib\$(Platform)\$(MsvcVer)\Release;..\..\..\..\..\3rdParty\cri2019\pc\libs\$(Platform);..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);$(DXSDK_DIR)\lib\x$(BitSet);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>

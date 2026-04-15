@@ -168,8 +168,8 @@ public:
     virtual void     SetTransforms(const Array<Transform>& transforms);
     virtual void     SetSpatialInfo(const Array<Vector> []) {}
 
-    static FMOD_RESULT F_CALLBACK CallBackFunc(
-        FMOD_CHANNEL* pchan, FMOD_CHANNEL_CALLBACKTYPE cb, void* cmddata1, void* cmddata2);
+    static FMOD_RESULT F_CALL CallBackFunc(
+        FMOD_CHANNELCONTROL* pchan, FMOD_CHANNELCONTROL_TYPE ct, FMOD_CHANNELCONTROL_CALLBACK_TYPE cb, void* cmddata1, void* cmddata2);
 };
 
 
@@ -184,6 +184,7 @@ class SoundRendererFMODImpl : public SoundRendererFMOD
 {
 public:
     FMOD::System*                   pDevice;
+    FMOD::ChannelControl*        pChanCtl;
 #if defined(GFX_SOUND_FMOD_DESIGNER) && (defined(SF_OS_WIN32) || defined(SF_OS_MAC))
     FMOD::EventSystem*              pEventSys;
 #endif
@@ -254,17 +255,18 @@ public:
 //////////////////////////////////////////////////////////////////////////
 //
 
-FMOD_RESULT F_CALLBACK DecodeOpen(const char *sd, int unicode, unsigned int *filesize, void **handle, void **userdata)
+//(const char *name, unsigned int *filesize, void **handle, void *userdata);
+FMOD_RESULT F_CALL DecodeOpen(const char *sd, unsigned int *filesize, void **handle, void *userdata)
 {
-    SF_UNUSED2(unicode, handle);
+    SF_UNUSED(handle);
     AppendableSoundData* psd = (AppendableSoundData*)sd;
     psd->SeekPos(0);
-    *userdata = psd;
+    userdata = psd;
     *filesize = 0x0FFFFFFF;
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK DecodeClose(void *handle, void *userdata)
+FMOD_RESULT F_CALL DecodeClose(void *handle, void *userdata)
 {
     SF_UNUSED2(userdata, handle);
     AppendableSoundData* psd = (AppendableSoundData*)userdata;
@@ -272,7 +274,7 @@ FMOD_RESULT F_CALLBACK DecodeClose(void *handle, void *userdata)
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK DecodeRead(void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata)
+FMOD_RESULT F_CALL DecodeRead(void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata)
 {
     SF_UNUSED(handle);
     AppendableSoundData* psd = (AppendableSoundData*)userdata;
@@ -280,7 +282,7 @@ FMOD_RESULT F_CALLBACK DecodeRead(void *handle, void *buffer, unsigned int sizeb
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK DecodeSeek(void *handle, unsigned int pos, void *userdata)
+FMOD_RESULT F_CALL DecodeSeek(void *handle, unsigned int pos, void *userdata)
 {
     SF_UNUSED(handle);
     AppendableSoundData* psd = (AppendableSoundData*)userdata;
@@ -298,9 +300,9 @@ FMOD_RESULT CreateSubSound(SoundRendererFMODImpl* prenderer, AppendableSoundData
 
     FMOD_MODE flags = FMOD_OPENONLY | FMOD_IGNORETAGS;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	flags |= FMOD_HARDWARE;
+	flags |= FMOD_OPENUSER;
 #else
-	flags |= FMOD_SOFTWARE;
+	flags |= FMOD_OPENUSER;
 #endif
     switch (psd->GetFormat() & SoundData::Sample_Format)
     {
@@ -311,16 +313,17 @@ FMOD_RESULT CreateSubSound(SoundRendererFMODImpl* prenderer, AppendableSoundData
         flags |= FMOD_OPENRAW;
         break;
     case SoundData::Sample_MP3:
-        exinfo.format = FMOD_SOUND_FORMAT_MPEG;
+        // FMOD_SOUND_FORMAT_MPEG in Fmod 2.03.12 Is BITSTREAM.....
+        exinfo.format = FMOD_SOUND_FORMAT_BITSTREAM;
         break;
     default:
         return FMOD_ERR_FORMAT;
     }
 
-    exinfo.useropen = &DecodeOpen;
-    exinfo.userclose= &DecodeClose;
-    exinfo.userread = &DecodeRead;
-    exinfo.userseek = &DecodeSeek;
+    exinfo.fileuseropen = &DecodeOpen;
+    exinfo.fileuserclose= &DecodeClose;
+    exinfo.fileuserread = &DecodeRead;
+    exinfo.fileuserseek = &DecodeSeek;
     exinfo.decodebuffersize = 1024*8;
 
     FMOD_RESULT result = prenderer->pDevice->createStream((const char*)psd,flags, &exinfo, psound);
@@ -393,7 +396,7 @@ bool SwfSoundStreamer::SetPosition(float seconds)
     {
         unsigned latency = pSoundData ? pSoundData->GetSeekSample() : 0;
         float sample_rate;
-        pSound->getDefaults(&sample_rate,NULL,NULL,NULL);
+        pSound->getDefaults(&sample_rate,NULL);
         unsigned sample = unsigned(seconds * sample_rate);
         FMOD_RESULT res = pSound->seekData(sample + latency);
         return res == FMOD_OK;
@@ -420,7 +423,7 @@ bool SwfSoundStreamer::GetSoundFormat(SoundRenderer::AuxStreamer::PCMFormat* fmt
         return false;
     *channels = chans;
     float frequency = 0.0;
-    ret = pSound->getDefaults(&frequency, NULL, NULL, NULL);
+    ret = pSound->getDefaults(&frequency, NULL);
     if (ret != FMOD_OK)
         return false;
     *samplerate = (UInt32)frequency;
@@ -524,9 +527,9 @@ SoundSampleFMODImplAux::SoundSampleFMODImplAux(SoundRendererFMODImpl* pp,
 
     FMOD_MODE flags = FMOD_OPENUSER | FMOD_LOOP_NORMAL;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	flags |= FMOD_HARDWARE;
+	flags |= FMOD_OPENUSER;
 #else
-	flags |= FMOD_SOFTWARE;
+	flags |= FMOD_OPENUSER;
 #endif
     FMOD_RESULT result = pPlayer->pDevice->createSound(0, flags, &exinfo, &pSound);
     if (result != FMOD_OK)
@@ -550,10 +553,16 @@ SoundChannelFMODImplAux* SoundSampleFMODImplAux::Start(bool paused)
 {
     if (!pSound)
         return NULL;
-    FMOD::Channel* pchannel;
+    FMOD::Channel* pchannel{};
 
     FMOD_RESULT result;
-    result = pPlayer->pDevice->playSound(FMOD_CHANNEL_REUSE, pSound, paused, &pchannel);
+    if (pchannel != nullptr)
+    {
+        pchannel->stop();
+        pchannel = nullptr;
+    }
+    // 调用新版 playSound，channelgroup 传 NULL 复用主通道组逻辑
+    result = pPlayer->pDevice->playSound(pSound, NULL, paused, &pchannel);
     if (result != FMOD_OK)
     {
         pPlayer->LogError(result);
@@ -1001,9 +1010,9 @@ SoundSampleFMODImpl* SoundRendererFMODImpl::CreateSampleFromFile(const char* fna
 
     FMOD_MODE flags = FMOD_LOOP_OFF | FMOD_2D;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	flags |= FMOD_HARDWARE;
+	flags |= FMOD_OPENUSER;
 #else
-	flags |= FMOD_SOFTWARE;
+	flags |= FMOD_OPENUSER;
 #endif
 #if defined(SF_OS_WINMETRO)
     flags |= FMOD_NONBLOCKING;
@@ -1039,7 +1048,7 @@ bool  SoundRendererFMODImpl::Initialize(FMOD::System* pd, bool call_fmod_update,
     if (pDevice)
     {
         int rate = 0;
-        pDevice->getSoftwareFormat(&rate,0,0,0,0,0);
+        pDevice->getSoftwareFormat(&rate,NULL,NULL);
         SystemBitRate = rate * 1.0f;
 
 #if defined(GFX_SOUND_FMOD_DESIGNER) && (defined(SF_OS_WIN32) || defined(SF_OS_MAC))
@@ -1324,9 +1333,9 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(SoundData* psd, FMOD::Sound** ps
 
     FMOD_MODE flags = FMOD_LOWMEM | FMOD_IGNORETAGS;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	flags |= FMOD_HARDWARE;
+	flags |= FMOD_OPENUSER;
 #else
-	flags |= FMOD_SOFTWARE;
+	flags |= FMOD_OPENUSER;
 #endif
 #if defined(SF_OS_IPHONE) || defined(SF_OS_ANDROID)
     flags |= FMOD_OPENMEMORY;
@@ -1343,7 +1352,8 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(SoundData* psd, FMOD::Sound** ps
         break;
     case SoundData::Sample_MP3:
         flags |= FMOD_CREATECOMPRESSEDSAMPLE;
-        exinfo.format = FMOD_SOUND_FORMAT_MPEG;
+        // FMOD_SOUND_FORMAT_MPEG in Fmod 2.03.12 Is BITSTREAM.....
+        exinfo.format = FMOD_SOUND_FORMAT_BITSTREAM;
         break;
     default:
         return FMOD_ERR_FORMAT;
@@ -1358,17 +1368,17 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(AppendableSoundData* psd, FMOD::
     FMOD_CREATESOUNDEXINFO exinfo;
     Alg::MemUtil::Set(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
     exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    exinfo.useropen = &DecodeOpen;
-    exinfo.userclose= &DecodeClose;
-    exinfo.userread = &DecodeRead;
-    exinfo.userseek = &DecodeSeek;
+    exinfo.fileuseropen = &DecodeOpen;
+    exinfo.fileuserclose = &DecodeClose;
+    exinfo.fileuserread = &DecodeRead;
+    exinfo.fileuserseek = &DecodeSeek;
     exinfo.decodebuffersize = 1024 * 4;
 
     FMOD_MODE flags = FMOD_LOWMEM | FMOD_CREATESTREAM | FMOD_IGNORETAGS;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	flags |= FMOD_HARDWARE;
+	flags |= FMOD_OPENUSER;
 #else
-	flags |= FMOD_SOFTWARE;
+	flags |= FMOD_OPENUSER;
 #endif
     switch (psd->GetFormat() & SoundData::Sample_Format)
     {
@@ -1380,7 +1390,8 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(AppendableSoundData* psd, FMOD::
         break;
     case SoundData::Sample_MP3:
         exinfo.defaultfrequency = psd->GetRate();
-        exinfo.format = FMOD_SOUND_FORMAT_MPEG;
+        // FMOD_SOUND_FORMAT_MPEG in Fmod 2.03.12 Is BITSTREAM.....
+        exinfo.format = FMOD_SOUND_FORMAT_BITSTREAM;
         break;
     default:
         return FMOD_ERR_FORMAT;
@@ -1394,9 +1405,9 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(AppendableSoundData* psd, FMOD::
 FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(SoundFile* psd, FMOD::Sound** psound)
 {
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	FMOD_MODE flags = FMOD_HARDWARE;
+	FMOD_MODE flags = FMOD_OPENUSER;
 #else
-	FMOD_MODE flags = FMOD_SOFTWARE;
+	FMOD_MODE flags = FMOD_OPENUSER;
 #endif
     if (psd->IsStreamSample())
         flags |= FMOD_CREATESTREAM;
@@ -1423,22 +1434,21 @@ SoundChannelFMODImpl* SoundSampleFMODImpl::Start(bool paused)
             pSound->getLength(&scount, FMOD_TIMEUNIT_PCM);
 
         float sample_rate;
-        pSound->getDefaults(&sample_rate,NULL,NULL,NULL);
+        pSound->getDefaults(&sample_rate,NULL);
 
         FMOD::Channel* pchan;
         FMOD_RESULT    r;
-        r = pPlayer->pDevice->playSound(FMOD_CHANNEL_FREE, pSound, true, &pchan);
+        r = pPlayer->pDevice->playSound(pSound, NULL, paused, &pchan);
         if (r == FMOD_OK)
         {
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
             FMOD_WiiU_SetControllerSpeaker((FMOD_CHANNEL *)pchan, FMOD_WIIU_CONTROLLER_DRC);
 #endif
-            unsigned hi = 0;
-            unsigned lo = 0;
-            r = pPlayer->pDevice->getDSPClock(&hi, &lo);
+            unsigned long long current_dspclock = 0, parent_dspclock = 0;
+            r = pPlayer->pChanCtl->getDSPClock(&current_dspclock, &parent_dspclock);
             scount = unsigned(scount * pPlayer->SystemBitRate/sample_rate);
-            FMOD_64BIT_ADD(hi, lo, 0, scount); 
-            r = pchan->setDelay(FMOD_DELAYTYPE_DSPCLOCK_END, hi, lo);
+            unsigned long long target_clock = current_dspclock + scount;
+            r = pchan->setDelay(0, target_clock, false);
             if (latency > 0)
             {
                 r = pchan->setPosition(latency, FMOD_TIMEUNIT_PCM);
@@ -1579,7 +1589,7 @@ void SoundChannelFMODImpl::Loop(int count, float start, float end)
     unsigned slen = 0;
     pSample->pSound->getLength(&slen, FMOD_TIMEUNIT_PCM);
     float sample_rate;
-    pSample->pSound->getDefaults(&sample_rate,NULL,NULL,NULL);
+    pSample->pSound->getDefaults(&sample_rate,NULL);
 
     unsigned start_pcm = start > 0.0f ? unsigned(start * sample_rate) : seekpos;
     unsigned end_pcm = unsigned(end * sample_rate);
@@ -1593,12 +1603,12 @@ void SoundChannelFMODImpl::Loop(int count, float start, float end)
     result = pChan->setPosition(start_pcm, FMOD_TIMEUNIT_PCM);
     result = pChan->setLoopPoints(start_pcm, FMOD_TIMEUNIT_PCM, end_pcm, FMOD_TIMEUNIT_PCM);
 
-    unsigned hi = 0;
-    unsigned lo = 0;
-    result = pPlayer->pDevice->getDSPClock(&hi, &lo);
+    unsigned long long current_dspclock = 0;   // 新版直接用64位时钟
+    unsigned long long parent_dspclock = 0;
+    result = pPlayer->pChanCtl->getDSPClock(&current_dspclock, &parent_dspclock);
     slen = unsigned((end_pcm - start_pcm) * count * (pPlayer->SystemBitRate/sample_rate));
-    FMOD_64BIT_ADD(hi, lo, 0, slen); 
-    result = pChan->setDelay(FMOD_DELAYTYPE_DSPCLOCK_END, hi, lo);
+    unsigned long long end_clock = current_dspclock + slen;
+    result = pChan->setDelay(0, end_clock, false);
     SF_UNUSED(result);
 }
 
@@ -1625,11 +1635,75 @@ float SoundChannelFMODImpl::GetVolume()
 float SoundChannelFMODImpl::GetPan()
 {
     float pan = 0.0f;
-    if (pChan)
+    if (!pChan)
+        return pan;
+
+    // ========== 核心逻辑：通过混音矩阵反推Pan值 ==========
+    // 1. 初始化混音矩阵缓冲区（适配立体声输出，最多支持8声道）
+    const int MAX_CHANNELS = 8;
+    float mixMatrix[MAX_CHANNELS * MAX_CHANNELS] = { 0.0f };
+    int outChannels = 0, inChannels = 0;
+
+    // 2. 调用新版getMixMatrix获取混音矩阵
+    FMOD_RESULT r = pChan->getMixMatrix(mixMatrix, &outChannels, &inChannels);
+    if (r != FMOD_OK)
     {
-        FMOD_RESULT r = pChan->getPan(&pan);
         pPlayer->LogError(r);
+        // 降级逻辑：若获取矩阵失败，尝试直接调用旧版getPan（部分版本仍兼容，但不推荐）
+#if defined(FMOD_VERSION) && (FMOD_VERSION < 0x020312)
+        r = pChan->getPan(&pan);
+        pPlayer->LogError(r);
+#endif
+        return pan;
     }
+
+    // 3. 处理声道布局，计算等效Pan值（优先处理立体声场景，覆盖99%场景）
+    // 场景1：单声道输入 → 立体声输出（最常见，比如音效素材是单声道）
+    if (inChannels == 1 && outChannels >= 2)
+    {
+        float leftLevel = mixMatrix[0];   // 单声道输入 → 左输出 的增益
+        float rightLevel = mixMatrix[1];  // 单声道输入 → 右输出 的增益
+
+        // 避免除零错误
+        if (leftLevel + rightLevel == 0.0f)
+            return 0.0f;
+
+        // 计算Pan值：(右 - 左) / (左 + 右) （匹配FMOD setPan的线性逻辑）
+        pan = (rightLevel - leftLevel) / (leftLevel + rightLevel);
+    }
+    // 场景2：立体声输入 → 立体声输出（素材本身是立体声）
+    else if (inChannels == 2 && outChannels >= 2)
+    {
+        // 左输入→左输出 + 右输入→左输出 = 最终左声道增益
+        float totalLeft = mixMatrix[0] + mixMatrix[2];
+        // 左输入→右输出 + 右输入→右输出 = 最终右声道增益
+        float totalRight = mixMatrix[1] + mixMatrix[3];
+
+        if (totalLeft + totalRight == 0.0f)
+            return 0.0f;
+
+        pan = (totalRight - totalLeft) / (totalLeft + totalRight);
+    }
+    // 场景3：多声道（5.1/7.1），仅取前左右声道近似Pan值
+    else if (outChannels >= 2)
+    {
+        // 取前左/前右声道的总增益（忽略环绕/中置/LFE）
+        float frontLeft = 0.0f, frontRight = 0.0f;
+        for (int in = 0; in < inChannels; ++in)
+        {
+            frontLeft += mixMatrix[in * outChannels + 0];  // 第in个输入 → 前左输出
+            frontRight += mixMatrix[in * outChannels + 1]; // 第in个输入 → 前右输出
+        }
+
+        if (frontLeft + frontRight == 0.0f)
+            return 0.0f;
+
+        pan = (frontRight - frontLeft) / (frontLeft + frontRight);
+    }
+
+    // 4. 限制Pan值范围在[-1.0, 1.0]（防止浮点精度问题导致越界）
+    pan = Alg::Clamp(pan, -1.0f, 1.0f);
+
     return pan;
 }
 
@@ -1637,6 +1711,8 @@ void SoundChannelFMODImpl::SetPan(float pan)
 {
     if (pChan)
     {
+        // 限制pan范围，避免传入非法值导致FMOD报错
+        pan = Alg::Clamp(pan, -1.0f, 1.0f);
         FMOD_RESULT r = pChan->setPan(pan);
         pPlayer->LogError(r);
     }
@@ -1710,10 +1786,16 @@ void SoundChannelFMODImpl::SetTransforms(const Array<Transform>& transforms)
     }
 }
 
-FMOD_RESULT F_CALLBACK SoundChannelFMODImpl::CallBackFunc(
-    FMOD_CHANNEL* pchan, FMOD_CHANNEL_CALLBACKTYPE cb, void* cmddata1, void *cmddata2)
+// FMOD_RESULT F_CALLBACK CallBackFunc(
+// FMOD_CHANNELCONTROL* chancontrol,
+// FMOD_CHANNELCONTROL_TYPE controltype,
+// FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype,
+// void* commanddata1,
+// void* commanddata2)
+FMOD_RESULT F_CALL SoundChannelFMODImpl::CallBackFunc(
+    FMOD_CHANNELCONTROL* pchan, FMOD_CHANNELCONTROL_TYPE ct, FMOD_CHANNELCONTROL_CALLBACK_TYPE cb, void* cmddata1, void *cmddata2)
 {
-    SF_UNUSED(cmddata2);
+    SF_UNUSED2(cmddata2, ct);
     void *vp;
     ((FMOD::Channel *)pchan)->getUserData(&vp);
     if (!vp)
@@ -1722,7 +1804,7 @@ FMOD_RESULT F_CALLBACK SoundChannelFMODImpl::CallBackFunc(
     SoundChannelFMODImpl* pChan = (SoundChannelFMODImpl *)vp;
     FMOD_RESULT r;
 
-    if (cb == FMOD_CHANNEL_CALLBACKTYPE_SYNCPOINT)
+    if (cb == FMOD_CHANNELCONTROL_CALLBACK_SYNCPOINT)
     {
         if (pChan && pChan->pSample && pChan->pSample->pSound)
         {
@@ -1738,7 +1820,7 @@ FMOD_RESULT F_CALLBACK SoundChannelFMODImpl::CallBackFunc(
                 pChan->pPlayer->LogError(r);
         }
     }
-    else if (cb == FMOD_CHANNEL_CALLBACKTYPE_END)
+    else if (cb == FMOD_CHANNELCONTROL_CALLBACK_END)
     {
     }
     return FMOD_OK;

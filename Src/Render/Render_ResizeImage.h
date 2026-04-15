@@ -98,22 +98,25 @@ class ImageFilterLut
 {
 public:
     template<class FilterF> void Calculate(const FilterF& filter,
-                                           bool normalization=true)
+        bool normalization = true)
     {
         float r = filter.GetRadius();
         reallocLut(r);
         unsigned i;
-        unsigned pivot = GetDiameter() << (ImgSubpixelShift - 1);
+        // 核心修改：显式转换枚举为int
+        unsigned pivot = GetDiameter() << (static_cast<int>(ImgSubpixelShift) - 1);
         for (i = 0; i < pivot; i++)
         {
-            float x = float(i) / float(ImgSubpixelScale);
+            // 可选：枚举转int
+            float x = float(i) / float(static_cast<int>(ImgSubpixelScale));
             float y = filter.GetWeight(x);
-            WeightArray[pivot + i] = 
-            WeightArray[pivot - i] = SInt16(Alg::IRound(y * ImgFilterScale));
+            WeightArray[pivot + i] =
+                WeightArray[pivot - i] = SInt16(Alg::IRound(y * static_cast<float>(ImgFilterScale)));;
         }
-        unsigned end = (GetDiameter() << ImgSubpixelShift) - 1;
+        // 核心修改：显式转换枚举为int
+        unsigned end = (GetDiameter() << static_cast<int>(ImgSubpixelShift)) - 1;
         WeightArray[0] = WeightArray[end];
-        if (normalization) 
+        if (normalization)
             Normalize();
     }
 

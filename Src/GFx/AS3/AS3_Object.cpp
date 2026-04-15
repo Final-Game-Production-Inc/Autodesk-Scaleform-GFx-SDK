@@ -683,7 +683,7 @@ void FindScopeProperty(
     )
 {
     // [2.3.6]
-    // Typically, the order of the search for resolving multinames is the object’s declared traits, 
+    // Typically, the order of the search for resolving multinames is the objectâ€™s declared traits, 
     // its dynamic properties, and finally the prototype chain.
     // The dynamic properties and prototype chain search will only happen if the
     // multiname contains the public namespace (dynamic properties are always in the public namespace in

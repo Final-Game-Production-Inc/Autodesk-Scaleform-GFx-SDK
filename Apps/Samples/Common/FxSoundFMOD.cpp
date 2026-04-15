@@ -37,21 +37,21 @@ MemoryHeap *FxSoundFMOD::pFMODHeap = 0;
 FileOpenerBase *FxSoundFMOD::pFileOpener = 0;
 
 // Custom heap callbacks
-void* F_CALLBACK FMOD_AllocCallback(unsigned int size, FMOD_MEMORY_TYPE, const char*)
+void* F_CALL FMOD_AllocCallback(unsigned int size, FMOD_MEMORY_TYPE, const char*)
 {
     return FxSoundFMOD::pFMODHeap->Alloc(size);
 }
-void* F_CALLBACK FMOD_ReallocCallback(void* ptr, unsigned int size, FMOD_MEMORY_TYPE, const char*)
+void* F_CALL FMOD_ReallocCallback(void* ptr, unsigned int size, FMOD_MEMORY_TYPE, const char*)
 {
     return FxSoundFMOD::pFMODHeap->Realloc(ptr, size);
 }
-void F_CALLBACK FMOD_FreeCallback(void* ptr, FMOD_MEMORY_TYPE, const char*)
+void F_CALL FMOD_FreeCallback(void* ptr, FMOD_MEMORY_TYPE, const char*)
 {
     FxSoundFMOD::pFMODHeap->Free(ptr);
 }
 
 // Custom file system callbacks
-FMOD_RESULT F_CALLBACK FileOpenCallback(const char *name, int unicode, unsigned int *filesize, void **handle, void **userdata)
+FMOD_RESULT F_CALL FileOpenCallback(const char *name, int unicode, unsigned int *filesize, void **handle, void **userdata)
 {
     SF_UNUSED2(unicode, userdata);
     if (name)
@@ -66,7 +66,7 @@ FMOD_RESULT F_CALLBACK FileOpenCallback(const char *name, int unicode, unsigned 
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK FileCloseCallback(void *handle, void *userdata)
+FMOD_RESULT F_CALL FileCloseCallback(void *handle, void *userdata)
 {
     SF_UNUSED(userdata);
     if (!handle)
@@ -77,7 +77,7 @@ FMOD_RESULT F_CALLBACK FileCloseCallback(void *handle, void *userdata)
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK FileReadCallback(void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata)
+FMOD_RESULT F_CALL FileReadCallback(void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata)
 {
     SF_UNUSED(userdata);
     if (!handle)
@@ -92,7 +92,7 @@ FMOD_RESULT F_CALLBACK FileReadCallback(void *handle, void *buffer, unsigned int
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK FileSeekCallback(void *handle, unsigned int pos, void *userdata)
+FMOD_RESULT F_CALL FileSeekCallback(void *handle, unsigned int pos, void *userdata)
 {
     SF_UNUSED(userdata);
     if (!handle)
@@ -140,15 +140,20 @@ bool FxSoundFMOD::Initialize()
         return false;
     }
 
+    FMOD_OUTPUTTYPE output;
+    result = pFMOD->getOutput(&output);
+    FMOD_ERRCHK(result);
+
     FMOD_SPEAKERMODE speakermode;
-    FMOD_CAPS caps;
-    result = pFMOD->getDriverCaps(0, &caps, 0, &speakermode);
+
+    int rate, channels;
+    result = pFMOD->getSoftwareFormat(&rate, &speakermode, &channels);
     FMOD_ERRCHK(result);
 
-    result = pFMOD->setSpeakerMode(speakermode);        // Set the user selected speaker mode.
+    result = pFMOD->setSoftwareFormat(rate, speakermode, channels);        // Set the user selected speaker mode.
     FMOD_ERRCHK(result);
 
-    if (caps & FMOD_CAPS_HARDWARE_EMULATED)             // The user has the 'Acceleration' slider set to off! This is really
+    if (output == FMOD_OUTPUTTYPE_WASAPI || output == FMOD_OUTPUTTYPE_ALSA || output == FMOD_OUTPUTTYPE_AUDIOOUT)             // The user has the 'Acceleration' slider set to off! This is really
     {                                                   // bad for latency!. You might want to warn the user about this.
         result = pFMOD->setDSPBufferSize(1024, 10);     // At 48khz, the latency between issuing an fmod command and hearing
         FMOD_ERRCHK(result);                            // it will now be about 213ms.
@@ -157,7 +162,7 @@ bool FxSoundFMOD::Initialize()
     result = pFMOD->init(100, FMOD_INIT_NORMAL, 0);     // Replace with whatever channel count and flags you use!
     if (result == FMOD_ERR_OUTPUT_CREATEBUFFER)         // Ok, the speaker mode selected isn't supported by this soundcard.
     {                                                   // Switch it back to stereo...
-        result = pFMOD->setSpeakerMode(FMOD_SPEAKERMODE_STEREO);
+        result = pFMOD->setSoftwareFormat(48000, FMOD_SPEAKERMODE_STEREO, 0);
         FMOD_ERRCHK(result);
         result = pFMOD->init(100, FMOD_INIT_NORMAL, 0); // Replace with whatever channel count and flags you use!
         FMOD_ERRCHK(result);
