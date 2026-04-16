@@ -26,6 +26,7 @@ Update 3rdParty:
  * pcre -> pcre2-10.47
  * nvtt -> nvtt-2.1.2
  * cri -> cri2019 (Add H.264 And CRIMANA Support, But It's Has Problem For H.264 To Fix, From [TimbreUnda]https://github.com/TimbreUnda/scaleform_sdk.......)
+ * fmod -> fmod-2.03.13 (By FINALZ, But Not Make Sound.......)
 
 Version 4.5.32-Leslie:
 
