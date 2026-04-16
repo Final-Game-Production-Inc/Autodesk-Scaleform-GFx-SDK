@@ -6,7 +6,7 @@ Version NEXT Preview (4.6.34-Leslie, In Developing):
  * Add Vulkan Render Support.
  * Fix Compiler Other Bugs.
  * And Welcome Everyone And Lover To Join US Organization, To Carry Out This Big Steak Together. (And If You Have Autodesk Official 4.6.34 Full Scaleform Source Code, Audacity TO Pull Request IT!)
- * Tips: 4.3.27 Version Is Support C17 And C++ 17 Standard, So 4.6.34 Must Fix Like This, Then Pull Request.
+ * Tips: 4.5.32-Leslie-MSVC18 Version Is Support C17 And C++ 20 Standard, So 4.6.34 Must Fix Like This, Then Pull Request.
 
 EVERYONE COME FROM THE WORLD, NO WAY TO BACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHAAAAAAAAARRRRRRRRRRRGEEEEEEEEEEEEEEEEEE!!!!!!!!!! AND FREEDOM PULL REQUEST YOURSELVES!
 
