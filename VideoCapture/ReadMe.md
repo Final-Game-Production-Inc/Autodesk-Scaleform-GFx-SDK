@@ -1,3 +1,3 @@
-This Video For Test1.png-Test4.png H.264 For Girls Frontline 2 Exilium(PC/Android, H.264 USM),
+This Video For Test1.png-Test4.png H.264 For Girls Frontline 2 Exilium(PC/Android, H.264 USM, Uses Sofdec2),
 
-And Test5.png-Test6.png For Kung Fu Panda 2 (PS3, MPEG1 USM) Test.
+And Test5.png-Test6.png For Kung Fu Panda 2 (PS3, MPEG1 USM, Use ScaleformVideoEncoder) Test.
