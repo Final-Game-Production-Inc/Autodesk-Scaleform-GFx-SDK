@@ -5,7 +5,7 @@ Content     :   Used to include Addon support in applications
 Created     :   Jan 23, 2007
 Authors     :   John Webb
 
-Notes       :   This Function Is For CRIWARE, CRI MANA, SOFDEC2 For Video Suooprt
+Notes       :   This Function Is For CRIWARE, CRIMANA, SOFDEC2 For Video Suooprt
 History     :
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
                      Copyright 2026 Final Game Production Inc. All Rights reserved.
