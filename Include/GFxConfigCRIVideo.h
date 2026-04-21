@@ -3,7 +3,7 @@
 Filename    :   GFxConfigAddons.h
 Content     :   Used to include Addon support in applications
 Created     :   Jan 23, 2007
-Authors     :   John Webb
+Authors     :   John Webb, FINALZ-27980
 
 Notes       :   This Function Is For CRIWARE, CRIMANA, SOFDEC2 For Video Suooprt
 History     :
