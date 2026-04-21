@@ -7,14 +7,14 @@ Authors     :   John Webb
 
 Notes       :
 History     :
-Copyright   :   (c) 1998-2008 Scaleform Corp. All Rights Reserved.
-Licensees may use this file in accordance with the valid Scaleform
-Commercial License Agreement provided with the software.
+Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
-This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING
-THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR ANY PURPOSE.
+Use of this software is subject to the terms of the Autodesk license
+agreement provided at the time of installation or download, or which
+otherwise accompanies this software in either electronic or hard copy form.
 
-**********************************************************************/
+**************************************************************************/
 
 #define GFX_USE_VIDEO_WIN32
 #define GFX_USE_VIDEO_XBOXONE
