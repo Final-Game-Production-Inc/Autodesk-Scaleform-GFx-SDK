@@ -1,6 +1,6 @@
 
 /**********************************************************************
-Filename    :   GFxConfigAddons.h
+Filename    :   GFxConfigCRIVideo.h
 Content     :   Used to include Addon support in applications
 Created     :   Jan 23, 2007
 Authors     :   John Webb, FINALZ-27980
