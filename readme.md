@@ -73,7 +73,7 @@ Analyzer for Memory and Performance - profiler tool used to analyze memory and p
 Scaleform also provided two optional add-ons for GFx:
 
 Scaleform Video
-Fully integrated video codec for Flash Video workflow support (currently powered by CRI Movie.)
+Fully integrated video codec for Flash Video workflow support (currently powered by CRI Movie Or Sofdec2.)
 
 Scaleform 3Di
 Fully integrated Input Method Editor (IME) for Asian chat support.
