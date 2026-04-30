@@ -24,3 +24,4 @@
 *.exe binary
 *.ico binary
 *.dll binary
+*.gfx binary
