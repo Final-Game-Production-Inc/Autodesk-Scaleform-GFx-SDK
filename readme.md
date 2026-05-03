@@ -37,7 +37,7 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 <p style="margin:0; line-height:1.2;"> · Tales Of Vesperia Definitive Edition - Scaleform 4.6.34 </p>
 <p style="margin:0; line-height:1.2;"> · Red Dead Redemption 2 - Scaleform 4.6.34????/Or Not???(Not Confirm) </p>
 <p style="margin:0; line-height:1.2;"> · NieR: Automata - Scaleform 4.6.34(Cuz Uses H.264 For Video.) </p>
-<p style="margin:0; line-height:1.2;"> · World of Tanks - Scaleform 3.?.?? / 4.?.?? </p>
+<p style="margin:0; line-height:1.2;"> · World of Tanks - Scaleform 3.?.?? / 4.5.31 </p>
 
 <b><p style="margin:0; line-height:1.1;">But, This SDK Showcase Version(With Source Code) Is Modifyed By 4.3.27 Version(From Witcher 3, Including 4.4.29 Android C++ Official Header Files And Libs.)</p></b>
 <b><p style="margin:0; line-height:1.1;">And Appendix 3.3.94 Full Version Lib(In Archive.org) And 3.3.94 Source Code(From Grand Theft Auto V Source Code) To Scaleform 3.3.94.7z</p></b>
