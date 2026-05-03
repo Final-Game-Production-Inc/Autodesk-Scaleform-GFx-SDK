@@ -41,7 +41,8 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 <p style="margin:0; line-height:1.2;"> · Ducktales Remastered - Scaleform 4.2.22(Source Code Exist For Leaked.)</p>
 
 <b><p style="margin:0; line-height:1.1;">But, This SDK Showcase Version(With Source Code) Is Modifyed By 4.3.27 Version(From Witcher 3, Including 4.4.29 Android C++ Official Header Files And Libs.)</p></b>
-<b><p style="margin:0; line-height:1.1;">And Ducktales Remastered Uses Scaleform 4.2.22 Version. But We Never Get Up The 4.4+ Full Source Code(https://github.com/AutodeskGames/scaleform-gfx) For Fully,</p></b>
+<b><p style="margin:0; line-height:1.1;">And Ducktales Remastered Uses Scaleform 4.2.22 Version.</p></b>
+<b><p style="margin:0; line-height:1.1;">But We Never Get Up The 4.4+ Full Source Code(https://github.com/AutodeskGames/scaleform-gfx) For Fully,</p></b>
 <b><p style="margin:0; line-height:1.1;">So 4.4+ Version Full Source Code Is Inner The Company Version.</p></b>
 <b><p style="margin:0; line-height:1.1;">And Appendix 3.3.94 Full Version Lib(In Archive.org) And 3.3.94 Source Code(From Grand Theft Auto V Source Code) To Scaleform 3.3.94.7z</p></b>
 <b><p style="margin:0; line-height:1.1;">Download In [Here](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases)</p></b>
