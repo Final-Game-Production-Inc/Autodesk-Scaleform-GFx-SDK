@@ -10,6 +10,13 @@
     <img src="https://raw.githubusercontent.com/FINALZ-27980/Autodesk-Scaleform-GFx-SDK/143de649b09ee839572404b1a658a6b058618d71/Autodesk Scaleform Company.svg" alt="Screenshot">
 </p>
 
+<p style="margin:0; line-height:1.2;"> · CRI MIDDLEWARE CO., LTD. </p>
+<p style="margin:0; line-height:1.2;"> · Autodesk Inc. </p>
+<p style="margin:0; line-height:1.2;"> · Scaleform Corpration </p>
+<p style="margin:0; line-height:1.2;"> · Firelight Technologies PTY. Ltd. </p>
+<p style="margin:0; line-height:1.2;"> · Audiokinetic Inc. </p>
+<p style="margin:0; line-height:1.2;"> · Adobe Inc. </p>
+
 # Scaelform Interduction
 
 Scaleform GFx is a discontinued game development middleware package, a vector graphics rendering engine used to display Adobe Flash-based user interfaces and HUDs for video games. In March 2011, Autodesk acquired Scaleform Corporation and Scaleform GFx became part of the Autodesk Gameware line of middleware. On July 12, 2017, Autodesk discontinued Scaleform GFx, and it is no longer available for purchase. Here's [Why](https://www.autodesk.com/products/scaleform?cjdata=MXxOfDB8WXww&AID=10282382&PID=9069228&SID=oc5A05L8E_cFrofF6SHThM5LNlu60fs8yLgO2tdUP-PjsuBycUomjmoTC2iJ5m0h&mktvar002=afc_us_deeplink&cjevent=ad1e9fc4ac2611f0800a00680a82b820&affname=9069228_10282382)
