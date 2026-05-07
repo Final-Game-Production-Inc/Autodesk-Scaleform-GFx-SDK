@@ -4,8 +4,8 @@ Version NEXT Preview (4.6.34-Leslie, In Developing):
  * Complement ActionScript 3 Functions For Full In [Autodesk Official Help](https://help.autodesk.com/view/SCLFRM/ENU/?guid=__scaleform_help_flash_support_as3_class_html), And Support Adobe Flash 34 Final Version.
  * Complement GFxIME Support.
  * Fix Compiler Other Bugs.
- * Support .s2dproj(StingRay Scaleform Studio) Convert To .gfx File
- * And gfxexport2 source code.
+ * Support .s2dproj(StingRay Scaleform Studio) Convert To .gfx File And gfxexport2 source code.
+ * Add Lua Script, GDScript, HaxeScript Support, And Add hxScaleform(Haxe Scaleform GFx) Support.
  * And Welcome Everyone And Lover To Join US Organization, To Carry Out This Big Steak Together. (And If You Have Autodesk Official 4.6.34 Full Scaleform Source Code, Audacity TO Pull Request IT!)
  * Tips: 4.5.32-Leslie-MSVC18 Version Is Support C17 And C++ 20 Standard, So 4.6.34 Must Fix Like This, Then Pull Request.
 
