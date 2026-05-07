@@ -47,6 +47,7 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 <p style="margin:0; line-height:1.2;"> · World of Tanks - Scaleform 3.?.?? / 4.5.31 </p>
 <p style="margin:0; line-height:1.2;"> · The Elder Scrolls V: Skyrim - Scaleform 3.x.xx</p>
 <b><p style="margin:0; line-height:1.2;"> · Ducktales Remastered - Scaleform 4.2.22(Source Code Exist For Wayforward Database Leaked[Abandoned hard drive Leaks Event].)</p></b>
+<b><p style="margin:0; line-height:1.2;"> ~~ · New G*ds: Warz*rd - Ro*d Of Re*ell*on - Modified Scaleform 4.3.27(When Is Published In 203X....... By FGP Inc.)~~</p></b>
 
 <b><p style="margin:0; line-height:1.1;">But, This SDK Showcase Version(With Source Code) Is Modifyed By 4.3.27 Version(Legacy From Ducktales Remastered 4.2.22 Version, Now From Witcher 3, Including 4.4.29 Android C++ Official Header Files And Libs.)</p></b>
 <b><p style="margin:0; line-height:1.1;">And Ducktales Remastered Uses Scaleform 4.2.22 Version.</p></b>
