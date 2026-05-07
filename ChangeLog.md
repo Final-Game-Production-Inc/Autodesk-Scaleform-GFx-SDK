@@ -11,6 +11,8 @@ Version NEXT Preview (4.6.34-Leslie, In Developing):
 
 EVERYONE COME FROM THE WORLD, NO WAY TO BACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHAAAAAAAAARRRRRRRRRRRGEEEEEEEEEEEEEEEEEE!!!!!!!!!! AND FREEDOM PULL REQUEST YOURSELVES!
 
+PLZ SAVE THE SCALEFORM GFX SDK 4.6.34 FULL SOURCE CODE FROM IN https://github.com/AutodeskGames/scaleform-gfx FOR PRIVATE REPOSITORY! QUICKLY!
+
 Version 4.5.32-Leslie-MSVC18 BIG UPDATE:
 
 From Now On, Scaleform Just Support x64 Version.
