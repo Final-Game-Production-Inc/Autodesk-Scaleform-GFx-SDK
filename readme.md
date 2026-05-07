@@ -51,7 +51,8 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 
 <b><p style="margin:0; line-height:1.1;">But, This SDK Showcase Version(With Source Code) Is Modifyed By 4.3.27 Version(Legacy From Ducktales Remastered 4.2.22 Version, Now From Witcher 3, Including 4.4.29 Android C++ Official Header Files And Libs.)</p></b>
 <b><p style="margin:0; line-height:1.1;">And Ducktales Remastered Uses Scaleform 4.2.22 Version.</p></b>
-<b><p style="margin:0; line-height:1.1;">But I Never Get The 4.4+(4.5.32, 4.6.33, 4.6.34, master, develop) Full Source Code(https://github.com/AutodeskGames/scaleform-gfx) For Fully, Cuz It's Althugh It's The Full Source Code But It's Autodesk Private Repositories!</p></b>
+<b><p style="margin:0; line-height:1.1;">But I Never Get The 4.4+(4.5.32, 4.6.33, 4.6.34, master, develop) Full Source Code(https://github.com/AutodeskGames/scaleform-gfx) For Fully, Cuz It's Althugh It's The Full Source Code But It's Autodesk Private Repositories!
+So The URGENT REQUIRMENTS IS IN [HERE](https://www.youtube.com/channel/UC9BSZcwpkaPZPV7Rw9oavFw/community)</p></b>
 <b><p style="margin:0; line-height:1.1;">[Here's](https://help.autodesk.com/view/SCLFRM/ENU/?guid=__scaleform_help_source_access_html) Why</p></b>
 <b><p style="margin:0; line-height:1.1;">So 4.4+(4.5.32, 4.6.33, 4.6.34, master, develop) Version Full Source Code Is Inner The Company Version. Cuz It's Has make.rb File To Generate Project Files.</p></b>
 <b><p style="margin:0; line-height:1.1;">(4.6.33, 4.6.34, master, develop) Version Support D3D12, Vulkan(My Vulkan For 4.3.27 Version Support Is Form [TimbreUnda](https://github.com/TimbreUnda/scaleform_sdk)), Not Support D3D12 For 4.3.27</p></b>
