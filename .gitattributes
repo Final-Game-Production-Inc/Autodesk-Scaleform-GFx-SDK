@@ -25,3 +25,5 @@
 *.ico binary
 *.dll binary
 *.gfx binary
+*.swf binary
+*.fla binary
