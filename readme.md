@@ -10,12 +10,12 @@
     <img src="https://raw.githubusercontent.com/FINALZ-27980/Autodesk-Scaleform-GFx-SDK/143de649b09ee839572404b1a658a6b058618d71/Autodesk Scaleform Company.svg" alt="Screenshot">
 </p>
 
-<p style="margin:0; line-height:1.2;"> · CRI MIDDLEWARE CO., LTD. </p>
+<p style="margin:0; line-height:1.2;"> · CRI MIDDLEWARE CO., LTD. (For CRI USM[Sofdec / Sofdec2 Supporting]) </p>
 <p style="margin:0; line-height:1.2;"> · Autodesk Inc. </p>
 <p style="margin:0; line-height:1.2;"> · Scaleform Corpration </p>
-<p style="margin:0; line-height:1.2;"> · Firelight Technologies PTY. Ltd. </p>
-<p style="margin:0; line-height:1.2;"> · Audiokinetic Inc. </p>
-<p style="margin:0; line-height:1.2;"> · Adobe Inc. </p>
+<p style="margin:0; line-height:1.2;"> · Firelight Technologies PTY. Ltd. (FMOD Support)</p>
+<p style="margin:0; line-height:1.2;"> · Audiokinetic Inc. (WWISE Support)</p>
+<p style="margin:0; line-height:1.2;"> · Adobe Inc. (SWF SUPPORT)</p>
 
 # Scaelform Interduction
 
