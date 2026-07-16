@@ -46,7 +46,7 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 <p style="margin:0; line-height:1.2;"> · NieR: Automata - Scaleform 4.6.34(Cuz Uses H.264 For Video.) </p>
 <p style="margin:0; line-height:1.2;"> · World of Tanks - Scaleform 3.?.?? / 4.5.31 </p>
 <p style="margin:0; line-height:1.2;"> · The Elder Scrolls V: Skyrim - Scaleform 3.x.xx</p>
-<b><p style="margin:0; line-height:1.2;"> · Ducktales Remastered - Scaleform 4.2.22(Source Code Exist For Wayforward Database Leaked[Abandoned hard drive Leaks Event].)</p></b>
+<b><p style="margin:0; line-height:1.2;"> · Ducktales Remastered - Scaleform 4.1.19/4.2.22(Source Code Exist For Wayforward Database Leaked[Abandoned hard drive Leaks Event].)</p></b>
 <del><b><p style="margin:0; line-height:1.2;"> · Canton(Kwangtung): A Record of Work - Modified Scaleform 4.3.27: 4.5.32-leslie(aXMgYSB0ZXN0IGdhbWUgcHJvamVjdCBieSBGR1AgSW5jLg==)</p></b></del>
 <b><p style="margin:0; line-height:1.5;"><del> · New G*ds: Warz*rd - Ro*d Of Re*ell*on - Scaleform 5.0.**(V2hlbiBJcyBQdWJsaXNoZWQgSW4gMjAzWC4uLi4uLi4gQnkgRkdQIEluYy4=)</del></p></b>
 
