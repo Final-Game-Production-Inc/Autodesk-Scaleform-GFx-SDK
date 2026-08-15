@@ -32,7 +32,7 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 <p><b>Example Like(My Knows): </b></p>
 <p style="margin:0; line-height:1.2;"> · Kung Fu Panda 2 - Scaleform 3 </p>
 <p style="margin:0; line-height:1.2;"> · LEGO Universe - Scaleform 3? (Cuz GameByro Engine?) </p>
-<p style="margin:0; line-height:1.2;"> · Counter Strike 2 - Scaleform 4.6.?? </p> 
+<p style="margin:0; line-height:1.2;"> · Counter Strike 2? Counter Strike: Global Offensive? - Scaleform 4.6.?? </p> 
 <p style="margin:0; line-height:1.2;"> · The King Of Fighters XII/XIII/XIV - Scaleform 3(XII/XIII)/4.4.29(XIV)? </p>
 <p style="margin:0; line-height:1.2;"> · Dark Souls 3 - Scaleform 4.4?/4.5.32? </p>
 <p style="margin:0; line-height:1.2;"> · Sekiro - Scaleform 4.6.33 </p>
