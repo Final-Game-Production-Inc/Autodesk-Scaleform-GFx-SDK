@@ -398,7 +398,7 @@ void* AllocEngineMH::Alloc(UPInt size, PageInfoMH* info, bool globalLocked)
 //------------------------------------------------------------------------
 void* AllocEngineMH::Alloc(UPInt size, UPInt alignSize, PageInfoMH* info, bool globalLocked)
 {
-    SF_ASSERT(((alignSize - 1) & alignSize) == 0); // Must be a power of two
+    SF_ASSERT(((alignSize-1) & alignSize) == 0); // Must be a power of two
 
     if (size <= PageMH::MaxBytes)
     {
@@ -409,7 +409,7 @@ void* AllocEngineMH::Alloc(UPInt size, UPInt alignSize, PageInfoMH* info, bool g
         return allocFromPage(size, alignSize, info, globalLocked);
     }
 
-    void* ptr = 0;  // 外部ptr声明
+    void* ptr = 0;
     {
         if (alignSize < sizeof(void*))
             alignSize = sizeof(void*);
@@ -417,19 +417,19 @@ void* AllocEngineMH::Alloc(UPInt size, UPInt alignSize, PageInfoMH* info, bool g
         if (size < alignSize)
             size = alignSize;
 
-        size = (size + sizeof(void*) - 1) & ~UPInt(sizeof(void*) - 1);
-        // 删除内部的 void* ptr = 0; 声明，直接使用外部ptr
+        size = (size + sizeof(void*)-1) & ~UPInt(sizeof(void*)-1);
+        void* innerptr = 0;
         {
             if (globalLocked)
             {
                 bool limHandlerOK = false;
                 do
                 {
-                    ptr = allocDirect(size, alignSize, &limHandlerOK, info);  // 使用外部ptr
-                    if (ptr)
-                        return ptr;
+                    innerptr = allocDirect(size, alignSize, &limHandlerOK, info);
+                    if (innerptr)
+                        return innerptr;
                 }
-                while (limHandlerOK);
+                while(limHandlerOK);
             }
             else
             {
@@ -437,11 +437,11 @@ void* AllocEngineMH::Alloc(UPInt size, UPInt alignSize, PageInfoMH* info, bool g
                 bool limHandlerOK = false;
                 do
                 {
-                    ptr = allocDirect(size, alignSize, &limHandlerOK, info);  // 使用外部ptr
-                    if (ptr)
-                        return ptr;
+                    innerptr = allocDirect(size, alignSize, &limHandlerOK, info);
+                    if (innerptr)
+                        return innerptr;
                 }
-                while (limHandlerOK);
+                while(limHandlerOK);
             }
         }
     }
@@ -508,16 +508,15 @@ void* AllocEngineMH::reallocInNodeNoLock(NodeMH* node, void* oldPtr, UPInt newSi
     if (newPtr)
     {
         SF_ASSERT((UPInt(newPtr) & (oldAlign-1)) == 0);
-        // 重命名内部node为newNode，避免隐藏参数
-        NodeMH* newNode =
-            GlobalRootMH->AddToGlobalTree((UByte*)newPtr, newSize - nodeSize, oldAlign, pHeap);
+        NodeMH* nodemh = 
+            GlobalRootMH->AddToGlobalTree((UByte*)newPtr, newSize-nodeSize, oldAlign, pHeap);
 #ifdef SF_MEMORY_ENABLE_DEBUG_INFO
         newInfo->DebugHeaders[0] = newInfo->DebugHeaders[1] = 0;
-        newInfo->DebugHeaders[2] = &(node->DebugHeader);
+        newInfo->DebugHeaders[2] = &(nodemh->DebugHeader);
 #endif
         newInfo->UsableSize = newSize-nodeSize;
         newInfo->Page = 0;
-        newInfo->Node = newNode;
+        newInfo->Node = nodemh;
 
         Footprint -= oldSize;
         Footprint += newSize;
