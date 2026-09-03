@@ -41,7 +41,7 @@ dependencies instead of reloading only modified files. This is not a very effici
 The solution for this problem could be to hold a list of {MovieDefImpl,timestamp} objects
 for each MovieDataDef in the Resource lib. When this list is retrieved from Resource Lib
 we would take its last item and then go over all imports in a MovieDataDef find theirs
-MovieDefImpl in that item抯 ImportedMovieSource vector and check if any of imported movies
+MovieDefImpl in that item's ImportedMovieSource vector and check if any of imported movies
 is changed. If no changes are found we return this last MovieDefImpl to the user. If we 
 find a change we will need to create a new MovieDefImpl for a given MovieDataDef add it
 to the list that we got from the Resource Lib and return this new object to the user. 
