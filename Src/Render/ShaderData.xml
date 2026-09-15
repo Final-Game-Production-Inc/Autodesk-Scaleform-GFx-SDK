@@ -563,7 +563,7 @@
   </ShaderSource>
 
   <!--Change the sampler swizzle. A8 texture samplers in D3D1x/UE3/GLSL1.50/Vulkan are switched to R8, because they don't support A8.-->
-  <ShaderSource id="Text" pipeline="Fragment" platform="XboxOne;D3D1x;RHI;Vulkan" version="GLSL150">
+  <ShaderSource id="Text" pipeline="Fragment" platform="XboxOne;D3D1x;D3D12;RHI;Vulkan" version="GLSL150">
     Text (
     varying lowpf4 vcolor    : COLOR,
     varying half2     tc0       : TEXCOORD,
@@ -653,7 +653,7 @@
   </ShaderSource>
 
   <!--Change the sampler swizzle. A8 texture samplers in D3D1x/GLSL1.50/Vulkan are switched to R8, because 10level9 doesn't support A8.-->
-  <ShaderSource id="YUV" pipeline="Fragment" platform="XboxOne;D3D1x;Vulkan" version="GLSL150">
+  <ShaderSource id="YUV" pipeline="Fragment" platform="XboxOne;D3D1x;D3D12;Vulkan" version="GLSL150">
     YUV (
     varying float2    tc0        : TEXCOORD,
     uniform sampler2D tex[3],
@@ -692,7 +692,7 @@
   </ShaderSource>
 
   <!--Change the sampler swizzle. A8 texture samplers in D3D1x/GLSL1.50/Vulkan are switched to R8, because 10level9 doesn't support A8.-->
-  <ShaderSource id="YUVA" pipeline="Fragment" platform="XboxOne;D3D1x;Vulkan" version="GLSL150">
+  <ShaderSource id="YUVA" pipeline="Fragment" platform="XboxOne;D3D1x;D3D12;Vulkan" version="GLSL150">
     YUV (
     varying float2    tc0        : TEXCOORD,
     uniform sampler2D tex[4],
