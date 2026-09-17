@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<language name="English">
-	<translations>
-       <entry key="$HUDKitDesc" value="This kit demonstrates how to create a AAA quality, high-performance optimized game/first-person shooter (FPS) UI using the Scaleform GFx Direct Access API with ActionScript 2 content." />
-	   <entry key="$HUDKitDesc2" value="This kit demonstrates how to create a AAA quality, high-performance optimized game/first-person shooter (FPS) UI using the Scaleform GFx Direct Access API with ActionScript 3 content." />
-	</translations>
-</language>

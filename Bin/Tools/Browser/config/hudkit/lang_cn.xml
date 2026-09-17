@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<language name="Simplified">
-	<translations>
-       <entry key="$HUDKitDesc" value="这个内容包演示如何使用Scaleform GFx的复杂对象API (Direct Access API)开发高性能动作游戏（FPS）用户界面。以后有更多的高质量优化内容包例子。" />
-	    <entry key="$HUDKitDesc2" value="这个内容包演示如何使用Scaleform GFx的复杂对象API (Direct Access API)开发高性能动作游戏（FPS）用户界面。以后有更多的高质量优化内容包例子。" />
-	</translations>
-</language>

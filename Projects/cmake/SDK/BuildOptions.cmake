@@ -39,7 +39,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     "../../../../Include"
     "../../../../Src"
     "../../../../3rdParty/zlib-1.3.1"
-    "../../../../3rdParty/jpeg-9f"
+    "../../../../3rdParty/jpeg-10"
     "../../../../3rdParty/libpng-1.6.53"
     "../../../../3rdParty/expat-2.1.0/lib"
     "../../../../3rdParty/pcre"

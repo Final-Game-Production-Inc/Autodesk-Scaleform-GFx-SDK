@@ -80,7 +80,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 // Enable/disable addons for MSVC builds
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360) || defined(SF_OS_PS3) || defined(SF_OS_ORBIS) || defined(SF_OS_WIIU)
-    #include "GFxConfigAddons.h"
+    #include "GFxConfigCRIVideo.h"
 
 #if defined(SF_OS_WIN32) && defined(GFX_USE_VIDEO_WIN32)
     #define GFX_USE_VIDEO

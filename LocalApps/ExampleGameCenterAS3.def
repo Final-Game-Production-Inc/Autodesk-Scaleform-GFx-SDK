@@ -45,6 +45,11 @@ RESOURCES :=
 ORIENTATIONS := portrait landscape reversePortrait reverseLandscape
 
 
+# Use the Scaleform internal gesture recognizer. Otherwise, gesture events will only be triggered by the native platform.
+
+RECOGNIZE_GESTURES := 1
+
+
 # EdgeAA (0: off; 1: on)
 
 EDGEAA := 1

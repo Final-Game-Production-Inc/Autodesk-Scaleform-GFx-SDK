@@ -13,7 +13,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 
 class GLView extends GLSurfaceView
@@ -48,7 +47,7 @@ class GLView extends GLSurfaceView
      public InputConnection onCreateInputConnection(EditorInfo outAttrs) 
      {
         // PPS: This can be forced via InputMethodManager.restartInput()
-        if (Debug.ENABLED){ Log.d("GFxPlayer", "onCreateInputConnection"); }
+        if (BuildConfig.DEBUG){ Log.d("GFxPlayer", "onCreateInputConnection"); }
          outAttrs.initialCapsMode = 0;
         outAttrs.initialSelEnd = outAttrs.initialSelStart = -1;
         outAttrs.inputType = (InputType.TYPE_CLASS_TEXT |
@@ -90,7 +89,7 @@ class GLView extends GLSurfaceView
         public boolean sendKeyEvent(KeyEvent event) 
         {
             int c = event.getKeyCode();
-            if (Debug.ENABLED){ Log.d("GFxPlayer", "sendKeyEvent - code = " + event.getKeyCode()); }
+            if (BuildConfig.DEBUG){ Log.d("GFxPlayer", "sendKeyEvent - code = " + event.getKeyCode()); }
             
             switch (event.getAction()) 
             {
@@ -111,7 +110,7 @@ class GLView extends GLSurfaceView
                     else 
                     {
                         c = event.getUnicodeChar(event.getMetaState());
-                        if (Debug.ENABLED){ Log.d("GFxPlayer", "sendKeyEvent - ACTION_DOWN (char) - " + c); }
+                        if (BuildConfig.DEBUG){ Log.d("GFxPlayer", "sendKeyEvent - ACTION_DOWN (char) - " + c); }
                         mActivity.onChar(c);
                         return true;
                     }
@@ -139,7 +138,7 @@ class GLView extends GLSurfaceView
                     if (event.getKeyCode() == KeyEvent.KEYCODE_UNKNOWN) 
                     {
                         String chars = event.getCharacters();
-                        if (Debug.ENABLED){ Log.d("GFxPlayer", "sendKeyEvent - ACTION_MULTIPLE - " + chars); }
+                        if (BuildConfig.DEBUG){ Log.d("GFxPlayer", "sendKeyEvent - ACTION_MULTIPLE - " + chars); }
                         if (chars != null) 
                         {
                             for (int i = 0; i < chars.length(); i++) 

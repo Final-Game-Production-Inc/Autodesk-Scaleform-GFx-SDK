@@ -2,6 +2,9 @@
 # Source file lists match the original .vcxproj files.
 # Files marked 'not in vcxproj' were added to resolve link errors.
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 17)
+
 # ---------------------------------------------------------------------------
 # libgfx -- core SDK library (Kernel + GFx + Render)
 # ---------------------------------------------------------------------------
@@ -842,6 +845,24 @@ if(SF_RENDERER_VULKAN)
 endif()
 
 # ---------------------------------------------------------------------------
+# libgfxrender_d3d12 -- Direct3D 12 renderer
+# ---------------------------------------------------------------------------
+if(SF_RENDERER_D3D12)
+    add_library(gfxrender_d3d12 STATIC
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_HAL.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_MeshCache.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_Shader.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_ShaderDescs.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_ShaderBinary.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_Texture.cpp
+    )
+    sf_apply_compile_flags(gfxrender_d3d12)
+    target_compile_definitions(gfxrender_d3d12 PUBLIC SF_D3D_VERSION=12 FXPLAYER_RENDER_DIRECT3D)
+    target_link_libraries(gfxrender_d3d12 PUBLIC d3d12 dxgi d3dcompiler dxguid)
+    set_target_properties(gfxrender_d3d12 PROPERTIES OUTPUT_NAME "libgfxrender_d3d12")
+endif()
+
+# ---------------------------------------------------------------------------
 # libgfxrender_d3d1x -- Direct3D 10/11 renderer
 # ---------------------------------------------------------------------------
 if(SF_RENDERER_D3D11)
@@ -928,6 +949,24 @@ set(SF_PLATFORM_COMMON_SOURCES
     ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_WinAPI.cpp
     ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_XInput.cpp
 )
+
+# D3D12 platform
+if(SF_RENDERER_D3D12)
+    set(_d3d12_platform_sources ${SF_PLATFORM_COMMON_SOURCES}
+        ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_D3D1x.cpp
+    )
+    # Platform_WinAPI_GL.cpp instantiates GL::HAL — only include when GL renderer is available
+    if(SF_RENDERER_GL)
+        list(APPEND _d3d12_platform_sources ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_WinAPI_GL.cpp)
+    endif()
+    add_library(gfxplatform_d3d12 STATIC ${_d3d12_platform_sources})
+    sf_apply_compile_flags(gfxplatform_d3d12)
+    target_compile_definitions(gfxplatform_d3d12 PUBLIC SF_D3D_VERSION=12)
+    if(SF_RENDERER_GL)
+        target_link_libraries(gfxplatform_d3d12 INTERFACE opengl32 gfxrender_gl)
+    endif()
+    set_target_properties(gfxplatform_d3d12 PROPERTIES OUTPUT_NAME "libgfxplatform_d3d12")
+endif()
 
 # D3D11 platform
 if(SF_RENDERER_D3D11)

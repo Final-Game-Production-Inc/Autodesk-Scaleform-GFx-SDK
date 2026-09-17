@@ -1,0 +1,36 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="DebugOpt_Static" />
+    <BuildType Name="Debug_Static" />
+    <BuildType Name="D3D10_Release_Static" />
+    <BuildType Name="D3D10_Shipping" />
+    <BuildType Name="D3D11_DebugOpt_Static" />
+    <BuildType Name="D3D11_Debug_Static" />
+    <BuildType Name="D3D11_Release_Static" />
+    <BuildType Name="D3D11_Shipping" />
+    <BuildType Name="D3D9_DebugOpt_Static" />
+    <BuildType Name="D3D9_Debug_Static" />
+    <BuildType Name="D3D9_Release_Static" />
+    <BuildType Name="D3D9_Shipping" />
+    <BuildType Name="GL_DebugOpt_Static" />
+    <BuildType Name="GL_Debug_Static" />
+    <BuildType Name="GL_Release_Static" />
+    <BuildType Name="GL_Shipping" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Kits/">
+    <Project Path="../Kits/HUD/HUDKit.vcxproj" Id="0c9ceb5b-7e6e-4a6f-92c4-649b033b4841" />
+    <Project Path="../Kits/Menu/MenuKit.vcxproj" Id="60c96fe1-24d3-4cbc-89db-e7b507a34f64" />
+    <Project Path="../Kits/MMO/MMOKit.vcxproj" Id="83c26252-a772-4e7e-b9cc-fbd9b4ea4efc" />
+  </Folder>
+  <Folder Name="/Samples/">
+    <Project Path="../Samples/DrawText/DrawText.vcxproj" Id="b657fbb5-34b2-4cb5-b359-10897cc06b4b" />
+    <Project Path="../Samples/ImageDelegate/ImageDelegate.vcxproj" Id="6707a0aa-70c9-4e95-936f-306ff46b857a" />
+    <Project Path="../Samples/PlayerTiny/PlayerTiny.vcxproj" Id="b28dd5de-ec1e-4097-9cc2-e3b1b4f5b5d7" />
+    <Project Path="../Samples/PlayerTiny/PlayerTinyCompat.vcxproj" Id="f9ef7257-d82b-4159-ae56-46534407e3d2" />
+    <Project Path="../Samples/SWFToTexture/SWFToTexture.vcxproj" Id="6935fc7b-d5a3-42d4-9abc-a06e7d1a4eeb" />
+    <Project Path="../Samples/TextureInSWF/TextureInSWF.vcxproj" Id="0ff16a41-3c43-4c8c-8434-f4ea3c46723c" />
+    <Project Path="../Samples/Video/VideoBGLoad.vcxproj" Id="3f6579af-5ffa-4290-8e26-61d69f42a4eb" />
+    <Project Path="GFxPlayer/GFxPlayer.vcxproj" Id="1804709b-fe17-49ea-aad8-875385628beb" />
+  </Folder>
+</Solution>

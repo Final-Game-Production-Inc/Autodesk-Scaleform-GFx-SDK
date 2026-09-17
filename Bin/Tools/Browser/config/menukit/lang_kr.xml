@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<language name="Korean">
-	<translations>
-       <entry key="$MenuKitDesc" value="본 Kit은 PC 및 콘솔 게임에 모든 기능이 구현된 AAA급 UI 솔루션에 대한 데모를 보여줍니다. Splash부터 in-game 컨텐츠의 흐름, 화면 자원 관리, 배경화면 데이터 불러오기, 비디오 스트리밍 그리고 PC 및 콘솔 입력 핸들링 등을 보여줍니다."/>
-	   <entry key="$MenuKitDesc2" value="본 Kit은 PC 및 콘솔 게임에 모든 기능이 구현된 AAA급 UI 솔루션에 대한 데모를 보여줍니다. Splash부터 in-game 컨텐츠의 흐름, 화면 자원 관리, 배경화면 데이터 불러오기, 비디오 스트리밍 그리고 PC 및 콘솔 입력 핸들링 등을 보여줍니다."/>
-	</translations>
-</language>

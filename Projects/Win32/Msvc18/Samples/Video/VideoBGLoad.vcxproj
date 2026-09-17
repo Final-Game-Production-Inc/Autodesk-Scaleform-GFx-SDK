@@ -804,7 +804,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -836,7 +836,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -864,7 +864,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -896,7 +896,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -956,7 +956,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1016,7 +1016,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1076,7 +1076,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1136,7 +1136,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1196,7 +1196,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1256,7 +1256,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -1283,7 +1283,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmod_vc.lib;xaudio2.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(VS110COMNTOOLS)..\..\VC\PlatformSDK\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1316,7 +1316,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1378,7 +1378,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1440,7 +1440,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1502,7 +1502,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1565,7 +1565,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1627,7 +1627,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1689,7 +1689,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1751,7 +1751,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;xaudio2.lib;Msacm32.lib;mfplat.lib;legacy_stdio_definitions.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

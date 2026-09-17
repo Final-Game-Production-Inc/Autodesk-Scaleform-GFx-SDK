@@ -25,7 +25,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_MsgFormat.h"
 
 #ifdef SF_ENABLE_ZLIB
-#include "../../../3rdParty/zlib-1.3.1/zlib.h"
+#include "../../../3rdParty/zlib-1.3.2/zlib.h"
 #endif
 
 namespace Scaleform {

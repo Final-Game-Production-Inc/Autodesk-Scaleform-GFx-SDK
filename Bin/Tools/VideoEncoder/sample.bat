@@ -1,1 +1,0 @@
-"F:\SDKS\Autodesk-Scaleform-GFx-SDK\Bin\Tools\VideoEncoder\medianocheH264.exe"    -target=xboxone -h264_profile=high -video00="F:\SDKS\Autodesk-Scaleform-GFx-SDK\Bin\Tools\VideoEncoder\sample.avi" -output="F:\SDKS\Autodesk-Scaleform-GFx-SDK\Bin\Tools\VideoEncoder\sample.usm" -bitrate=16000000 -audio00="F:\SDKS\Autodesk-Scaleform-GFx-SDK\Bin\Tools\VideoEncoder\sample.avi"

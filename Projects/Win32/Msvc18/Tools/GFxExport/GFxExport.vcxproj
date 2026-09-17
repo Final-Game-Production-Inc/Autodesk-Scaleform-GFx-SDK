@@ -1,33 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="DebugOpt_Static|Win32">
-      <Configuration>DebugOpt_Static</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="DebugOpt_Static|x64">
       <Configuration>DebugOpt_Static</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug_Static|Win32">
-      <Configuration>Debug_Static</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_Static|x64">
       <Configuration>Debug_Static</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_Static|Win32">
-      <Configuration>Release_Static</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_Static|x64">
       <Configuration>Release_Static</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Shipping|Win32">
-      <Configuration>Shipping</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Shipping|x64">
       <Configuration>Shipping</Configuration>
@@ -41,30 +25,6 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -91,39 +51,6 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GPA.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -161,111 +88,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">.\..\..\..\..\..\Bin\$(Platform)\Msvc18\$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">false</LinkIncremental>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'" />
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'">$(ProjectName)_$(Configuration)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'">$(ProjectName)_$(Configuration)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'">$(ProjectName)_$(Configuration)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Static|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>$(IntDir)GFxExport.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/w44264 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\3rdParty\nvtt-2.1.2\src\;..\..\..\..\..\3rdParty\PVRTexLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)GFxExport.pch</PrecompiledHeaderOutputFile>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Static|x64'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -309,7 +160,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;bc6h.lib;bc7.lib;nvcore.lib;nvimage.lib;nvmath.lib;nvthread.lib;squish.lib;expat.lib;winmm.lib;imm32.lib;fmod_vc.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;legacy_stdio_definitions.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\$(Platform);..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-10\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\$(Platform);..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -317,51 +168,6 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Static|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>$(IntDir)GFxExport.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/w44264 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\3rdParty\nvtt-2.1.2\src\;..\..\..\..\..\3rdParty\PVRTexLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeaderOutputFile>$(IntDir)GFxExport.pch</PrecompiledHeaderOutputFile>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Static|x64'">
@@ -402,7 +208,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodL_vc.lib;fsbank_vc.lib;fmodstudioL_vc.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-10\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -410,55 +216,6 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>$(IntDir)GFxExport.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/w44264 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\3rdParty\nvtt-2.1.2\src\;..\..\..\..\..\3rdParty\PVRTexLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUGOPT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)GFxExport.pch</PrecompiledHeaderOutputFile>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugOpt_Static|x64'">
@@ -502,7 +259,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmod_vc.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt;..\..\..\..\..\3rdParty\zlib-1.3.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-10\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
@@ -511,51 +268,6 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>$(IntDir)GFxExport.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/w44264 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\3rdParty\nvtt-2.1.2\src\;..\..\..\..\..\3rdParty\PVRTexLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)GFxExport.pch</PrecompiledHeaderOutputFile>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmodex_vc_dll.lib;Msacm32.lib;Ws2_32.lib;PVRTexLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_32\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\PVRTexLib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">
@@ -598,7 +310,7 @@ NVTT_NO_ZOH=1;NVTT_NO_AVPCL=1
       <AdditionalDependencies>libgfx.lib;libjpeg.lib;zlib.lib;nvtt.lib;expat.lib;winmm.lib;imm32.lib;fmod_vc.lib;Msacm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.1\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-9f\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping;..\..\..\..\..\3rdParty\PVRTexLib\Windows_x86_64\Lib\;..\..\..\..\..\3rdParty\zlib-1.3.2\Lib\$(Platform)\Msvc18\Release;..\..\..\..\..\3rdParty\jpeg-10\Lib\$(Platform)\Msvc18\Release;$(DXSDK_DIR)\lib\x86;..\..\..\..\..\3rdParty\fmod-2.03.13\core\lib\$(Platform);..\..\..\..\..\3rdParty\nvtt-2.1.2\Lib\$(Platform)\Msvc18\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(IntDir)GFxExport.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>

@@ -26,7 +26,7 @@ PACKAGE := com.scaleform
 # The Flash file to load at startup. This will be copied to flash.swf in this App's development
 # directory (only during setup for iOS).
 
-STARTUP_FLASH := Bin/Data/AS2/Samples/3DGenerator.swf
+STARTUP_FLASH := Bin/Data/AS3/Samples/GestureDemos.swf
 
 
 # Other files needed by the app (extra swfs, image files, etc.)
@@ -43,6 +43,11 @@ RESOURCES :=
 #ORIENTATIONS := portrait landscape reversePortrait reverseLandscape
 
 ORIENTATIONS := portrait landscape reversePortrait reverseLandscape
+
+
+# Use the Scaleform internal gesture recognizer. Otherwise, gesture events will only be triggered by the native platform.
+
+RECOGNIZE_GESTURES := 1
 
 
 # EdgeAA (0: off; 1: on)

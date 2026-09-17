@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<language name="English">
-	<translations>
-       <entry key="$MenuKitDesc" value="This kit demonstrates a fully-featured, AAA user interface solution for PC and console games. It shows splash to in-game content flow, screen resource management, background data loading, video streaming and PC/console input handling with ActionScript 2 content." />
-	   <entry key="$MenuKitDesc2" value="This kit demonstrates a fully-featured, AAA user interface solution for PC and console games. It shows splash to in-game content flow, screen resource management, background data loading, video streaming and PC/console input handling with ActionScript 3 content." />
-	</translations>
-</language>

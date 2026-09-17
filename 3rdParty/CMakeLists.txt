@@ -1,9 +1,9 @@
 # 3rdParty dependencies — built from source as static libraries.
 
 # ---------------------------------------------------------------------------
-# curl 8.19.0
+# curl 8.22.0
 # ---------------------------------------------------------------------------
-set(CURL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/curl-8.19.0)
+set(CURL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/curl-8.22.0)
 
 add_library(curl STATIC
     ${CURL_DIR}/libmak/amigaos.c
@@ -123,9 +123,9 @@ target_compile_definitions(curl PRIVATE WIN32 $<$<CONFIG:Debug>:_DEBUG> $<$<NOT:
 set_target_properties(curl PROPERTIES OUTPUT_NAME "libcurl")
 
 # ---------------------------------------------------------------------------
-# zlib 1.3.1
+# zlib 1.3.2
 # ---------------------------------------------------------------------------
-set(ZLIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zlib-1.3.1)
+set(ZLIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zlib-1.3.2)
 
 add_library(zlib STATIC
     ${ZLIB_DIR}/adler32.c
@@ -194,9 +194,9 @@ target_compile_definitions(expat PRIVATE WIN32 COMPILED_FROM_DSP
 set_target_properties(expat PROPERTIES OUTPUT_NAME "expat")
 
 # ---------------------------------------------------------------------------
-# libjpeg 9f
+# libjpeg 10
 # ---------------------------------------------------------------------------
-set(JPEG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/jpeg-9f)
+set(JPEG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/jpeg-10)
 
 add_library(libjpeg STATIC
     ${JPEG_DIR}/jaricom.c
@@ -253,117 +253,81 @@ target_compile_definitions(libjpeg PRIVATE WIN32 _LIB _CRT_SECURE_NO_WARNINGS
 set_target_properties(libjpeg PROPERTIES OUTPUT_NAME "libjpeg")
 
 # ---------------------------------------------------------------------------
-# pcre
+# pcre2-10.47
 # ---------------------------------------------------------------------------
-set(PCRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pcre2)
+set(PCRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pcre2-10.47)
 
-add_library(pcre2 STATIC
-    ${PCRE_DIR}/pcre2.h
-    ${PCRE_DIR}/pcre2_auto_possess.c
-    ${PCRE_DIR}/pcre2_chartables.c
-    ${PCRE_DIR}/pcre2_chkdint.c
-    ${PCRE_DIR}/pcre2_compile.c
-    ${PCRE_DIR}/pcre2_compile_cgroup.c
-    ${PCRE_DIR}/pcre2_compile_class.c
-    ${PCRE_DIR}/pcre2_config.c
-    ${PCRE_DIR}/pcre2_context.c
-    ${PCRE_DIR}/pcre2_convert.c
-    ${PCRE_DIR}/pcre2_dfa_match.c
-    ${PCRE_DIR}/pcre2_error.c
-    ${PCRE_DIR}/pcre2_extuni.c
-    ${PCRE_DIR}/pcre2_find_bracket.c
-    ${PCRE_DIR}/pcre2_jit_compile.c
-    ${PCRE_DIR}/pcre2_maketables.c
-    ${PCRE_DIR}/pcre2_match.c
-    ${PCRE_DIR}/pcre2_match_data.c
-    ${PCRE_DIR}/pcre2_match_next.c
-    ${PCRE_DIR}/pcre2_newline.c
-    ${PCRE_DIR}/pcre2_ord2utf.c
-    ${PCRE_DIR}/pcre2_pattern_info.c
-    ${PCRE_DIR}/pcre2_script_run.c
-    ${PCRE_DIR}/pcre2_serialize.c
-    ${PCRE_DIR}/pcre2_string_utils.c
-    ${PCRE_DIR}/pcre2_study.c
-    ${PCRE_DIR}/pcre2_substitute.c
-    ${PCRE_DIR}/pcre2_substring.c
-    ${PCRE_DIR}/pcre2_tables.c
-    ${PCRE_DIR}/pcre2_ucd.c
-    ${PCRE_DIR}/pcre2_valid_utf.c
-    ${PCRE_DIR}/pcre2_xclass.c
+add_library(pcre STATIC
+    ${PCRE_DIR}/src/pcre2.h
+    ${PCRE_DIR}/src/pcre2_auto_possess.c
+    ${PCRE_DIR}/src/pcre2_chartables.c
+    ${PCRE_DIR}/src/pcre2_chkdint.c
+    ${PCRE_DIR}/src/pcre2_compile.c
+    ${PCRE_DIR}/src/pcre2_compile_cgroup.c
+    ${PCRE_DIR}/src/pcre2_compile_class.c
+    ${PCRE_DIR}/src/pcre2_config.c
+    ${PCRE_DIR}/src/pcre2_context.c
+    ${PCRE_DIR}/src/pcre2_convert.c
+    ${PCRE_DIR}/src/pcre2_dfa_match.c
+    ${PCRE_DIR}/src/pcre2_error.c
+    ${PCRE_DIR}/src/pcre2_extuni.c
+    ${PCRE_DIR}/src/pcre2_find_bracket.c
+    ${PCRE_DIR}/src/pcre2_jit_compile.c
+    ${PCRE_DIR}/src/pcre2_maketables.c
+    ${PCRE_DIR}/src/pcre2_match.c
+    ${PCRE_DIR}/src/pcre2_match_data.c
+    ${PCRE_DIR}/src/pcre2_match_next.c
+    ${PCRE_DIR}/src/pcre2_newline.c
+    ${PCRE_DIR}/src/pcre2_ord2utf.c
+    ${PCRE_DIR}/src/pcre2_pattern_info.c
+    ${PCRE_DIR}/src/pcre2_script_run.c
+    ${PCRE_DIR}/src/pcre2_serialize.c
+    ${PCRE_DIR}/src/pcre2_string_utils.c
+    ${PCRE_DIR}/src/pcre2_study.c
+    ${PCRE_DIR}/src/pcre2_substitute.c
+    ${PCRE_DIR}/src/pcre2_substring.c
+    ${PCRE_DIR}/src/pcre2_tables.c
+    ${PCRE_DIR}/src/pcre2_ucd.c
+    ${PCRE_DIR}/src/pcre2_valid_utf.c
+    ${PCRE_DIR}/src/pcre2_xclass.c
 )
 target_include_directories(pcre PUBLIC ${PCRE_DIR})
 target_compile_definitions(pcre PRIVATE WIN32 HAVE_CONFIG_H _CRT_SECURE_NO_WARNINGS PCRE2_CODE_UNIT_WIDTH=8 PCRE2_STATIC
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
-set_target_properties(pcre PROPERTIES OUTPUT_NAME "pcre2")
+set_target_properties(pcre PROPERTIES OUTPUT_NAME "pcre")
 
 # ---------------------------------------------------------------------------
 # fmod (prebuilt vendor library — IMPORTED target)
 # ---------------------------------------------------------------------------
-set(FMOD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fmod/pc)
+set(FMOD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fmod-2.03.13/core)
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(FMOD_PLATFORM "x64")
-    set(FMOD_LIB_NAME "fmodex64_vc")
+    set(FMOD_LIB_NAME "fmod_vc")
 else()
     set(FMOD_PLATFORM "Win32")
-    set(FMOD_LIB_NAME "fmodex_vc")
+    set(FMOD_LIB_NAME "fmod_vc")
 endif()
 
 add_library(fmod STATIC IMPORTED GLOBAL)
 set_target_properties(fmod PROPERTIES
-    IMPORTED_LOCATION "${FMOD_DIR}/${FMOD_PLATFORM}/lib/${FMOD_LIB_NAME}.lib"
-    INTERFACE_INCLUDE_DIRECTORIES "${FMOD_DIR}/${FMOD_PLATFORM}/inc"
+    IMPORTED_LOCATION "${FMOD_DIR}/lib/${FMOD_PLATFORM}/${FMOD_LIB_NAME}.lib"
+    INTERFACE_INCLUDE_DIRECTORIES "${FMOD_DIR}/inc"
 )
 
 # ---------------------------------------------------------------------------
 # nvtt-2.1.2 (NVIDIA Texture Tools — texture compression)
 # ---------------------------------------------------------------------------
-set(NVTT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/nvtt)
-add_library(nvtt STATIC
-    ${NVTT_DIR}/src/nvcore/Debug.cpp
-    ${NVTT_DIR}/src/nvcore/Memory.cpp
-    ${NVTT_DIR}/src/nvcore/StrLib.cpp
-    ${NVTT_DIR}/src/nvimage/BlockDXT.cpp
-    ${NVTT_DIR}/src/nvimage/ColorBlock.cpp
-    ${NVTT_DIR}/src/nvimage/DirectDrawSurface.cpp
-    ${NVTT_DIR}/src/nvimage/Filter.cpp
-    ${NVTT_DIR}/src/nvimage/FloatImage.cpp
-    ${NVTT_DIR}/src/nvimage/Image.cpp
-    ${NVTT_DIR}/src/nvimage/ImageIO.cpp
-    ${NVTT_DIR}/src/nvimage/NormalMap.cpp
-    ${NVTT_DIR}/src/nvimage/NormalMipmap.cpp
-    ${NVTT_DIR}/src/nvimage/Quantize.cpp
-    ${NVTT_DIR}/src/nvtt/CompressDXT.cpp
-    ${NVTT_DIR}/src/nvtt/CompressRGB.cpp
-    ${NVTT_DIR}/src/nvtt/CompressionOptions.cpp
-    ${NVTT_DIR}/src/nvtt/Compressor.cpp
-    ${NVTT_DIR}/src/nvtt/InputOptions.cpp
-    ${NVTT_DIR}/src/nvtt/OptimalCompressDXT.cpp
-    ${NVTT_DIR}/src/nvtt/OutputOptions.cpp
-    ${NVTT_DIR}/src/nvtt/QuickCompressDXT.cpp
-    ${NVTT_DIR}/src/nvtt/cuda/CudaCompressDXT.cpp
-    ${NVTT_DIR}/src/nvtt/cuda/CudaUtils.cpp
-    ${NVTT_DIR}/src/nvtt/nvtt.cpp
-    ${NVTT_DIR}/src/nvtt/nvtt_wrapper.cpp
-    ${NVTT_DIR}/src/nvtt/squish/alpha.cpp
-    ${NVTT_DIR}/src/nvtt/squish/clusterfit.cpp
-    ${NVTT_DIR}/src/nvtt/squish/colourblock.cpp
-    ${NVTT_DIR}/src/nvtt/squish/colourfit.cpp
-    ${NVTT_DIR}/src/nvtt/squish/colourset.cpp
-    ${NVTT_DIR}/src/nvtt/squish/fastclusterfit.cpp
-    ${NVTT_DIR}/src/nvtt/squish/maths.cpp
-    ${NVTT_DIR}/src/nvtt/squish/weightedclusterfit.cpp
-)
-target_include_directories(nvtt PUBLIC
-    ${NVTT_DIR}/src
-    ${NVTT_DIR}/src/nvtt/squish
-)
-target_compile_definitions(nvtt PRIVATE
-    WIN32 NVTT_EXPORTS NVTT_SHARED __SSE2__ __SSE__ __MMX__
-    $<$<CONFIG:Debug>:_DEBUG>
-    $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
-)
+set(NVTT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/nvtt-2.1.2)
+
+add_subdirectory(${NVTT_DIR})
+
+#target_compile_definitions(nvtt PRIVATE
+#    WIN32 NVTT_EXPORTS NVTT_SHARED __SSE2__ __SSE__ __MMX__
+#    $<$<CONFIG:Debug>:_DEBUG>
+#    $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
+#)
 set_target_properties(nvtt PROPERTIES OUTPUT_NAME "nvtt")
 
 # ---------------------------------------------------------------------------
@@ -377,5 +341,5 @@ if(MSVC)
     target_compile_options(expat PRIVATE "/W4")
     target_compile_options(libjpeg PRIVATE "/W4")
     target_compile_options(pcre PRIVATE "/W4")
-    target_compile_options(nvtt PRIVATE "/W0")
+    target_compile_options(nvtt PRIVATE "/W4")
 endif()

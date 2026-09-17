@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<language name="Japanese">
-    <translations>
-        <entry key="$HUDKitDesc" value="このキットは新しいScaleform GFx の Direct Access APIを使って高いパフォーマンスのゲームやファーストパーソンシューター（FPS）のUIの作成の仕方をデモンストレーションしています。これは、高いパフォーマンスの、十分な機能を有した、AAAクオリティの、再利用可能なScaleform GFx UIソリューションの第一号です。" />
-         <entry key="$HUDKitDesc2" value="このキットはActionScript3コンテンツでScaleform GFx の DirectAccess APIを使ってAAAクオリティの、高いパフォーマンスの最適化されたゲームやファーストパーソンシューター（FPS）のUIの作成の仕方をデモンストレーションしています。" />
-   </translations>
-</language>

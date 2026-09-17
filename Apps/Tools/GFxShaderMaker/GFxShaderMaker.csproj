@@ -4,12 +4,13 @@
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <OutputType>Exe</OutputType>
     <!-- ReleaseOnly=true: build only net8.0 (no net35 restore). Used by CI and release scripts. -->
-    <TargetFrameworks Condition="'$(ReleaseOnly)' == 'true'">net8.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(ReleaseOnly)' != 'true'">net35;net8.0</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RootNamespace>GFxShaderMaker</RootNamespace>
     <Nullable>disable</Nullable>
+	<PublishAOT>True</PublishAOT>
+	<TrimMode>partial</TrimMode>
+	<Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
     <PlatformTarget>x86</PlatformTarget>
@@ -18,9 +19,15 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <ApplicationIcon>GFxShaderMaker.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GFxShaderMaker.ico" />
   </ItemGroup>
 </Project>

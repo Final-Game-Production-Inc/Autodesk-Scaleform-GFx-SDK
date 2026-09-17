@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Assets\**" />
+    <Compile Remove="Design\**" />
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <EmbeddedResource Remove="Design\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Assets\**" />
+    <None Remove="Design\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Src\SubtitleSettingSubPanel.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SubtitleSettingSubPanel.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Src\SubtitleSettingSubPanel.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubtitleSettingSubPanel.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

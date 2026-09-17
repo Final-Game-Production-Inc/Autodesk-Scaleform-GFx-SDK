@@ -11,7 +11,7 @@ add_subdirectory(3rdParty/expat-2.1.0)
 else()
 # use CMakeLists.txt from dev/external/gfx4/3rdParty/expat-2.1.0
 endif()
-add_subdirectory(3rdParty/jpeg-9f)
+add_subdirectory(3rdParty/jpeg-10)
 add_subdirectory(3rdParty/libpng-1.6.53)
 add_subdirectory(3rdParty/pcre)
 add_subdirectory(3rdParty/zlib-1.3.1)

@@ -1,0 +1,24 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/nvidia/">
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/bc6h.vcxproj" Id="16aa6382-edc2-4265-acf3-cd26492ebe47" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/bc7.vcxproj" Id="716372b3-7c91-4704-8643-7d6216dd6d8b" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvcore.vcxproj" Id="beab3254-d72d-480d-9508-56bd9d07d37d" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvimage.vcxproj" Id="09ef9367-48a3-4d56-9f74-5fa722883a7b" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvmath.vcxproj" Id="b9c187a6-46ac-44b6-994d-a894a937f81f" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvthread.vcxproj" Id="2e66aca5-f6d9-446e-8615-96f15e965c98" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvtt.vcxproj" Id="ab241511-0917-4e43-a335-62407367c1ab" />
+    <Project Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/squish.vcxproj" Id="4564be1f-e96b-4325-bf34-995238be7cea" />
+  </Folder>
+  <Folder Name="/nvidia/Solution Items/">
+    <File Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvconfig.h" />
+  </Folder>
+  <Project Path="../../../../3rdParty/curl-8.22.0/gfx_projects/Win32/Msvc18/libcurl.vcxproj" Id="87ee9da4-de1e-4448-8324-183c98dca588" />
+  <Project Path="../../../../3rdParty/expat-2.8.4/gfx_projects/Win32/Msvc18/expat.vcxproj" Id="00dc2ded-4eeb-4fce-8913-155560dc304c" />
+  <Project Path="../../../../3rdParty/jpeg-10/gfx_projects/Win32/Msvc18/libjpeg.vcxproj" Id="d79287e6-7ed3-47c9-b62a-f5af6dc70b08" />
+  <Project Path="../../../../3rdParty/libpng-1.6.53/gfx_projects/Win32/Msvc18/libpng.vcxproj" Id="78950b2a-8fd2-4411-a5bd-872ee6199507" />
+  <Project Path="../../../../3rdParty/pcre2-10.48/gfx_projects/Win32/Msvc18/pcre.vcxproj" Id="9b67605d-834b-4ae0-94fd-0516502768dc" />
+  <Project Path="../../../../3rdParty/zlib-1.3.2/gfx_projects/win32/Msvc18/zlib.vcxproj" Id="b4bc0d6c-6e0b-4fe1-be3e-82f93b78d138" />
+</Solution>

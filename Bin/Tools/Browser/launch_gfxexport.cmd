@@ -1,1 +1,0 @@
-cmd /K "..\..\gfxexport.exe"
