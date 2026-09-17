@@ -6,6 +6,7 @@ Created     :
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -93,8 +94,8 @@ void    GameServerConnectedClient::OnPawnInventoryChange(GamePawn* pawn, Game::I
             GameItem* ei = entity->GetSlotContainer()->GetSlot(j)->GetEntity();
             if (ei)
                 createEntityDesc(&idesc, ei);
-            GameServerEvent* e = GameServerEvent::CreatePlayerBagItemChangeEvent(inv, idesc, j);
-            Connection->SendEvent(e);
+            GameServerEvent* ese = GameServerEvent::CreatePlayerBagItemChangeEvent(inv, idesc, j);
+            Connection->SendEvent(ese);
         }
     }
 }
@@ -224,11 +225,11 @@ void    GameServerConnectedClient::broadcastInfoAll(bool target /* = false */)
 {
     if (target)
     {
-        GamePawn* target = PawnRef->GetTarget();
-        if (!target) return;
+        GamePawn* gpTarget = PawnRef->GetTarget();
+        if (!gpTarget) return;
         for (unsigned i = 0; i < Game::NumInfoTypes; i++)
         {
-            GameServerEvent* e = GameServerEvent::CreatePlayerTargetInfoChangeEvent((Game::InfoType)i, target->GetInfo((Game::InfoType)i));
+            GameServerEvent* e = GameServerEvent::CreatePlayerTargetInfoChangeEvent((Game::InfoType)i, gpTarget->GetInfo((Game::InfoType)i));
             Connection->SendEvent(e);
         }
     }
@@ -246,11 +247,11 @@ void    GameServerConnectedClient::broadcastStatAll(bool target /* = false */)
 {
     if (target)
     {
-        GamePawn* target = PawnRef->GetTarget();
-        if (!target) return;
+        GamePawn* gpTarget = PawnRef->GetTarget();
+        if (!gpTarget) return;
         for (unsigned i = 0; i < Game::NumStatTypes; i++)
         {
-            GameServerEvent* e = GameServerEvent::CreatePlayerTargetStatChangeEvent((Game::StatType)i, target->GetStat((Game::StatType)i));
+            GameServerEvent* e = GameServerEvent::CreatePlayerTargetStatChangeEvent((Game::StatType)i, gpTarget->GetStat((Game::StatType)i));
             Connection->SendEvent(e);
         }
     }
@@ -309,8 +310,8 @@ void    GameServerConnectedClient::broadcastInventoryAll()
                 GameItem* ei = entity->GetSlotContainer()->GetSlot(j)->GetEntity();
                 if (ei)
                     createEntityDesc(&idesc, ei);
-                GameServerEvent* e = GameServerEvent::CreatePlayerBagItemChangeEvent((Game::InventorySlotType)i, idesc, j);
-                Connection->SendEvent(e);
+                GameServerEvent* ese = GameServerEvent::CreatePlayerBagItemChangeEvent((Game::InventorySlotType)i, idesc, j);
+                Connection->SendEvent(ese);
             }
         }
     }

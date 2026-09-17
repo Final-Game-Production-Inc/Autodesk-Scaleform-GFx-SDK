@@ -6,6 +6,7 @@ Created     :   July 14, 2008
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -136,6 +137,8 @@ public:
 
     void FreeAll();
 
+    unsigned GetStatId(UPInt parentAddr, const AllocInfo* info);
+
     bool AddAlloc(UPInt parentAddr, bool autoHeap, UPInt thisAddr, 
                   UPInt size, UPInt usable, const AllocInfo* info);
 
@@ -172,10 +175,12 @@ private:
 
     void            reportViolation(DebugData* data, const char* msg);
 
+#ifdef SF_ENABLE_STATS
     void            getStatNode(const DebugData* node, 
                                 AllocEngine* allocator, 
                                 StatBag* bag,
                                 unsigned& count ) const;
+#endif
 
     void            dumpMemoryLeaks(DebugData* data, MemLeaksSummary* leaks);
 

@@ -177,7 +177,10 @@ void ASRefCountCollector::AdvanceFrame
 
         // MaxRootCount has been updated every collection event
         //MaxRootCount = Alg::Max(PresetMaxRootCount, PeakRootCount - stats.RootsFreedTotal);
-        MaxRootCount = Alg::Max(MaxRootCount, curRootCount - stats.RootsFreedTotal);
+        if (curRootCount > stats.RootsFreedTotal)  // avoid unsigned underflow
+        {
+            MaxRootCount = Alg::Max(MaxRootCount, curRootCount - stats.RootsFreedTotal);
+        }
 
         if (PeakRootCount < (unsigned)(MaxRootCount * 0.7))
             MaxRootCount = (unsigned)(MaxRootCount * 0.7);

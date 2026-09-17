@@ -6,6 +6,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -218,6 +219,8 @@ public:
         UPInt largestSize = 0;
         for (UPInt i = 0; i< Buffers.GetSize(); i++)
         {
+            if (!Buffers[i])
+                continue;
             if (Buffers[i]->Size > size)
                 return true;
             if (Buffers[i]->Size > largestSize)
@@ -397,8 +400,6 @@ class MeshCache : public Render::MeshCache
     Ptr<IDirect3DDeviceX>       pDevice;    
     MeshCacheListSet            CacheList;
 
-    // Handles synchronization between CPU writing of GPU resources (only with dynamic meshes)
-    RenderSync                  RSync;
     unsigned                    BufferCreateFlags;
 
     // Allocators managing the buffers. 
@@ -473,7 +474,6 @@ public:
     virtual void    ClearCache();
     virtual bool    SetParams(const MeshCacheParams& params);
 
-    virtual void    BeginFrame();
     virtual void    EndFrame();
     // Adds a fixed-size buffer to cache reserve; expected to be released at Release.
     //virtual bool    AddReserveBuffer(unsigned size, unsigned arena = 0);
@@ -498,7 +498,6 @@ public:
 
     virtual void GetStats(Stats* stats);
 
-    RenderSync*     GetRenderSync()     { return &RSync; }
     bool            UsesDynamicMeshes() { return (BufferCreateFlags & Buffer_Dynamic) != 0; }
 };
 

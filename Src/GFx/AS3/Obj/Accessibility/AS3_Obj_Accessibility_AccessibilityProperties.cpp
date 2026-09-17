@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_accessibility
 {
@@ -70,11 +65,10 @@ namespace InstanceTraits { namespace fl_accessibility
 
 
     AccessibilityProperties::AccessibilityProperties(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::AccessibilityProperties::AccessibilityProperties()"
 //##protect##"InstanceTraits::AccessibilityProperties::AccessibilityProperties()"
-        SetMemSize(sizeof(Instances::fl_accessibility::AccessibilityProperties));
 
     }
 
@@ -91,24 +85,27 @@ namespace InstanceTraits { namespace fl_accessibility
 
 namespace ClassTraits { namespace fl_accessibility
 {
-    AccessibilityProperties::AccessibilityProperties(VM& vm)
-    : Traits(vm, AS3::fl_accessibility::AccessibilityPropertiesCI)
+
+    AccessibilityProperties::AccessibilityProperties(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::AccessibilityProperties::AccessibilityProperties()"
 //##protect##"ClassTraits::AccessibilityProperties::AccessibilityProperties()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_accessibility::AccessibilityProperties(vm, AS3::fl_accessibility::AccessibilityPropertiesCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> AccessibilityProperties::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) AccessibilityProperties(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) AccessibilityProperties(vm, AS3::fl_accessibility::AccessibilityPropertiesCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_accessibility::AccessibilityPropertiesCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -119,6 +116,11 @@ namespace fl_accessibility
 {
     const TypeInfo AccessibilityPropertiesTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_accessibility::AccessibilityProperties::InstanceType),
+        0,
+        0,
+        0,
+        InstanceTraits::fl_accessibility::AccessibilityProperties::MemberInfoNum,
         "AccessibilityProperties", "flash.accessibility", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -126,10 +128,6 @@ namespace fl_accessibility
     const ClassInfo AccessibilityPropertiesCI = {
         &AccessibilityPropertiesTI,
         ClassTraits::fl_accessibility::AccessibilityProperties::MakeClassTraits,
-        0,
-        0,
-        0,
-        InstanceTraits::fl_accessibility::AccessibilityProperties::MemberInfoNum,
         NULL,
         NULL,
         NULL,

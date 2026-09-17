@@ -6,6 +6,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -64,12 +65,6 @@ bool MeshCache::Initialize(IDirect3DDevice9* pdevice, bool dynamicMeshes)
     SF_ASSERT(!pDevice);    
     adjustMeshCacheParams(&Params, pdevice);
 
-    // If SetDevice fails, it means that creating queries failed, fallback to using static meshes.
-    if ( !RSync.SetDevice(pdevice))
-    {
-        SF_DEBUG_WARNING(1, "RenderSync initialization failed. Using static buffers in MeshCache.");
-        dynamicMeshes = false;
-    }
     BufferCreateFlags = dynamicMeshes ? Buffer_Dynamic : 0;
 
     if (!StagingBuffer.Initialize(pHeap, Params.StagingBufferSize))
@@ -94,10 +89,6 @@ bool MeshCache::Initialize(IDirect3DDevice9* pdevice, bool dynamicMeshes)
 
 void MeshCache::Reset()
 {
-    // This must happen before destroying buffers. If the device is lost, then the WaitFence implementation
-    // depends on the RenderSync to be reset before any meshes are destroy. Otherwise and infinite wait may occur.
-    RSync.SetDevice(0);
-
     if (pDevice)
         destroyBuffers();
     // Unconditional to simplify Initialize fail logic:
@@ -111,6 +102,8 @@ void MeshCache::Reset()
 void MeshCache::ClearCache()
 {
     destroyBuffers(MeshBuffer::AT_Chunk);
+    StagingBuffer.Reset();
+    StagingBuffer.Initialize(pHeap, Params.StagingBufferSize);
     SF_ASSERT(BatchCacheItemHash.GetSize() == 0);
 }
 
@@ -188,11 +181,6 @@ void MeshCache::adjustMeshCacheParams(MeshCacheParams* p, IDirect3DDevice9* pdev
         // batches which are too large.
         if (p->MaxBatchInstances > SF_RENDER_MAX_BATCHES)
             p->MaxBatchInstances = SF_RENDER_MAX_BATCHES;
-
-        // TEMP
-        // -1, because we use one VS register for a solid color constant.
-        //unsigned maxInstances = (caps.MaxVertexShaderConst-1) / SF_RENDER_D3D9_ROWS_PER_INSTANCE;
-        //p->MaxBatchInstances = Alg::Min(p->MaxBatchInstances, maxInstances);
     }
 
     if (p->VBLockEvictSizeLimit < 1024 * 256)
@@ -240,16 +228,9 @@ void MeshCache::destroyPendingBuffers()
     PendingDestructionBuffers.PushListToFront(remainingBuffers);
 }
 
-void MeshCache::BeginFrame()
-{
-    RSync.BeginFrame();
-}
-
 void MeshCache::EndFrame()
 {
     SF_AMP_SCOPE_RENDER_TIMER(__FUNCTION__, Amp_Profile_Level_Medium);
-
-    RSync.EndFrame();
 
     CacheList.EndFrame();
 
@@ -498,31 +479,38 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
 {
     SF_UNUSED(waitForCache);
 
+    // 前置校验：分配尺寸不能超过粒度/内存上限
+    if (size > mbs.GetGranularity() || size > Params.MemLimit)
+    {
+        SF_DEBUG_ERROR3(1, "allocBuffer failed: size(%llu) exceed granularity(%llu)/MemLimit(%llu)",
+            size, mbs.GetGranularity(), Params.MemLimit);
+        return false;
+    }
+
+    // 首次尝试分配
     if (mbs.Alloc(size, pbuffer, poffset))
         return true;
 
-    // If allocation failed... need to apply swapping or grow buffer.
-    MeshCacheItem* pitems;
+    // #1. 回收已销毁但未释放的内存
+    bool memoryFreed = CacheList.EvictPendingFree(mbs.Allocator);
+    if (memoryFreed)
+    {
+        if (mbs.Alloc(size, pbuffer, poffset))
+            return true;
+    }
 
-    // #1. Try and reclaim memory from items that have already been destroyed, but not freed.
-    //     These cannot be reused, so it is best to evict their memory first, if possible.
-    if (CacheList.EvictPendingFree(mbs.Allocator))
-        goto alloc_size_available;
-
-    // #2. Then, apply LRU (least recently used) swapping from data stale in
-    //    earlier frames until the total size 
-  
+    // #2. LRU 驱逐（LRUTail 区域）
     if ((getTotalSize() + MinSupportedGranularity) <= Params.MemLimit)
     {
         if (CacheList.EvictLRUTillLimit(MCL_LRUTail, mbs.GetAllocator(),
-                                        size, Params.LRUTailSize))
-            goto alloc_size_available;
+            size, Params.LRUTailSize))
+        {
+            if (mbs.Alloc(size, pbuffer, poffset))
+                return true;
+        }
 
-        // TBD: May cause spinning? Should we have two error codes?
+        // 尝试扩容缓存块
         SF_ASSERT(size <= mbs.GetGranularity());
-        if (size > mbs.GetGranularity())
-            return false;
-
         UPInt allocSize = Alg::PMin(Params.MemLimit - getTotalSize(), mbs.GetGranularity());
         if (size <= allocSize)
         {
@@ -533,57 +521,76 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
 #ifdef SF_RENDER_LOG_CACHESIZE
                 LogDebugMessage(Log_Message, "Cache grew to %dK\n", getTotalSize() / 1024);
 #endif
-                goto alloc_size_available;
+                if (mbs.Alloc(size, pbuffer, poffset))
+                    return true;
             }
         }
     }
 
+    // #3. 再次尝试 LRU 驱逐
     if (CacheList.EvictLRU(MCL_LRUTail, mbs.GetAllocator(), size))
-        goto alloc_size_available;
+    {
+        if (mbs.Alloc(size, pbuffer, poffset))
+            return true;
+    }
 
+    // 检查驱逐上限，避免过度驱逐
     if (VBSizeEvictedInLock > Params.VBLockEvictSizeLimit)
+    {
+        SF_DEBUG_WARNING2(1, "allocBuffer failed: VBSizeEvictedInLock(%u) exceed limit(%u)",
+            VBSizeEvictedInLock, Params.VBLockEvictSizeLimit);
         return false;
+    }
 
-    // #3. Apply MRU (most recently used) swapping to the current frame content.
-    // NOTE: MRU (GetFirst(), pNext iteration) gives
-    //       2x improvement here with "Stars" test swapping.
+    // #4. MRU 驱逐（PrevFrame 区域）
     MeshCacheListSet::ListSlot& prevFrameList = CacheList.GetSlot(MCL_PrevFrame);
-    pitems = (MeshCacheItem*)prevFrameList.GetFirst();
-    while(!prevFrameList.IsNull(pitems))
+    MeshCacheItem* pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+    while (!prevFrameList.IsNull(pitems))
     {
         if (!UsesDynamicMeshes() || !pitems->GPUFence || !pitems->GPUFence->IsPending(FenceType_Vertex))
         {
             if (Evict(pitems, &mbs.GetAllocator()) >= size)
-                goto alloc_size_available;
+            {
+                if (mbs.Alloc(size, pbuffer, poffset))
+                    return true;
+                else
+                {
+                    SF_DEBUG_ERROR1(1, "allocBuffer failed: Evict MRU but alloc still fail, size=%llu", size);
+                    return false;
+                }
+            }
+            pitems = (MeshCacheItem*)prevFrameList.GetFirst(); // 驱逐后重置遍历
         }
-        pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+        else
+        {
+            pitems = (MeshCacheItem*)prevFrameList.GetNext(pitems);
+        }
     }
 
-    // #4. If MRU swapping didn't work for ThisFrame items due to them still
-    // being processed by the GPU and we are being asked to wait, wait
-    // until fences are passed to evict items.
+    // #5. 等待 GPU 完成后驱逐 ThisFrame 区域（仅 waitForCache 为 true 时）
     MeshCacheListSet::ListSlot& thisFrameList = CacheList.GetSlot(MCL_ThisFrame);
     pitems = (MeshCacheItem*)thisFrameList.GetFirst();
-    while(waitForCache && !thisFrameList.IsNull(pitems))
+    while (waitForCache && !thisFrameList.IsNull(pitems))
     {
-        if ( UsesDynamicMeshes() && pitems->GPUFence )
+        if (UsesDynamicMeshes() && pitems->GPUFence)
             pitems->GPUFence->WaitFence(FenceType_Vertex);
+
         if (Evict(pitems, &mbs.GetAllocator()) >= size)
-            goto alloc_size_available;
+        {
+            if (mbs.Alloc(size, pbuffer, poffset))
+                return true;
+            else
+            {
+                SF_DEBUG_ERROR1(1, "allocBuffer failed: Evict ThisFrame but alloc still fail, size=%llu", size);
+                return false;
+            }
+        }
         pitems = (MeshCacheItem*)thisFrameList.GetFirst();
     }
-    return false;
     
-    // At this point we know we have a large enough block either due to
-    // swapping or buffer growth, so allocation shouldn't fail.
-alloc_size_available:
-    if (!mbs.Alloc(size, pbuffer, poffset))
-    {
-        SF_ASSERT(0);
-        return false;
-    }
-
-    return true;
+    // 所有驱逐策略均失败
+    SF_DEBUG_ERROR1(1, "allocBuffer failed: no memory available after all eviction, size=%llu", size);
+    return false;
 }
 
 
@@ -610,6 +617,11 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
         return true;
     }
 
+    // Prepare and Pin mesh data with the StagingBuffer. NOTE: this must happen before calculating mesh sizes.
+    // This stage updates the mesh vertex/index counts, so calculating them first, it could be incorrect, for
+    // example in the case of MeshCache::ClearCache, and changing ToleranceParams.
+    StagingBufferPrep   meshPrep(this, mc, prim->GetVertexFormat(), false);
+
     // NOTE: We always know that meshes in one batch fit into Mesh Staging Cache.
     unsigned totalVertexCount, totalIndexCount;
     pbatch->CalcMeshSizes(&totalVertexCount, &totalIndexCount);
@@ -635,8 +647,10 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
 
     pbatch->SetCacheItem(batchData);
 
-    // Prepare and Pin mesh data with the StagingBuffer.
-    StagingBufferPrep meshPrep(this, mc, prim->GetVertexFormat(), false);
+    // This step either generates the mesh into the staging buffer, or locates an existing MeshCacheItem
+    // that we can copy the mesh from. It must be done after creating the cache item, because that may
+    // evict the item that would be copied from.
+    meshPrep.GenerateMeshes(batchData);
 
     // Copy meshes into the Vertex/Index buffers.
 

@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,9 +30,15 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/ImageFiles/PNG_ImageFile.h"
 #include "Render/ImageFiles/PVR_ImageFile.h" // PVR, ETC.
 #include "Render/ImageFiles/TGA_ImageFile.h"
-#ifdef SF_OS_ANDROID
-#include "Render/ImageFiles/KTX_ImageFile.h" // ETC
-#include "Render/ImageFiles/DDS_ImageFile.h" // ATC
+#if defined (SF_OS_ANDROID)
+  #include "Render/ImageFiles/KTX_ImageFile.h" // ETC
+  #include "Render/ImageFiles/DDS_ImageFile.h" // ATC
+#endif
+#if defined (SF_OS_WIIU)
+#include "Render/ImageFiles/GTX_ImageFile.h"
+#endif
+#if defined (SF_OS_PSVITA)
+#include "Render/ImageFiles/GXT_ImageFile.h"
 #endif
 
 #include "GFx/AS3/AS3_Global.h"
@@ -49,6 +56,13 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #if FXSMP_IPHONE_GAMEKIT
 #include "Platform/iPhone/FxOnlineGameSystem.h" // GameKit / OpenFeint integration
+#endif
+
+#if defined (SF_OS_ANDROID) && !defined (SF_ANDROID_NDK_BUILD)
+extern "C" {
+      extern void *__dso_handle __attribute__((__visibility__ ("hidden")));
+        void *__dso_handle;
+}
 #endif
 
 namespace SF = Scaleform;
@@ -111,6 +125,37 @@ public:
     }
 };
 
+#ifdef SF_USE_ANE
+class FxPlayerExtensionContextInterface : public ExtensionContextInterface
+{
+public:
+    FxPlayerExtensionContextInterface(FxShippingPlayer* papp) : pApp(papp) 
+	{
+#if defined(SF_OS_IPHONE)
+        ArrayLH<Extension*> *freExtensionArray = SF_NEW ArrayLH<Extension*>();
+        
+		/* Native Extensions init. */
+		pApp->GetAppImpl()->InitNativeExtensionManager(freExtensionArray);
+#endif
+	}
+
+	bool Call(const char* extensionID, const char* contextID, const char* functionName, unsigned argc, const Scaleform::GFx::Value* const argv, Scaleform::GFx::Value* const result)
+	{
+		return pApp->GetAppImpl()->Call(extensionID, contextID, functionName, argc, argv, result);
+    }
+
+	const char* GetExtensionDirectory(const char* extensionID)									{ return pApp->GetAppImpl()->GetExtensionDirectory(extensionID); }
+	void FinalizeExtensionContext(const char* extensionID, const char* contextID)				{ pApp->GetAppImpl()->FinalizeExtensionContext(extensionID, contextID); }
+	void InitializeExtensionContext(const char* extensionID, const char* contextID)				{ pApp->GetAppImpl()->InitializeExtensionContext(extensionID, contextID); }
+	GFx::Value* GetActionScriptData(const char* extensionID, const char* contextID)				{ return pApp->GetAppImpl()->GetActionScriptData(extensionID, contextID); }
+	void SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data)	{ pApp->GetAppImpl()->SetActionScriptData(extensionID, contextID, data); }
+	void SetMovie(Movie* pmovie)																{ pApp->GetAppImpl()->SetMovie(pmovie);	}
+
+protected:
+    FxShippingPlayer*    pApp;
+};
+#endif //SF_USE_ANE
+
 class FxPlayerMultitouchInterface : public MultitouchInterface
 {
 public:
@@ -145,6 +190,39 @@ public:
     }
 };
 
+// Implementation of Accelerometer interface
+class FxPlayerAccelerometerInterface : public AccelerometerInterface
+{
+public:
+    FxPlayerAccelerometerInterface(FxShippingPlayer* papp) : pApp(papp) {}
+
+    bool    RegisterAccelerometer(int accelerometerId)      { return pApp->GetAppImpl()->RegisterAccelerometer(accelerometerId); }
+    bool    UnregisterAccelerometer(int accelerometerId)    { return pApp->GetAppImpl()->UnregisterAccelerometer(accelerometerId); }
+    bool    IsAccelerometerMuted() const                    { return pApp->GetAppImpl()->IsAccelerometerMuted(); }
+    bool    IsAccelerometerSupported() const    { return pApp->GetAppImpl()->IsAccelerometerSupported(); };
+    void    SetAccelerometerInterval(int accelerometerId, int interval)    { pApp->GetAppImpl()->SetAccelerometerInterval(accelerometerId, interval); }
+
+
+protected:
+    FxShippingPlayer*    pApp;
+};
+
+// Implementation of Geolocation interface
+class FxPlayerGeolocationInterface : public GeolocationInterface
+{
+public:
+    FxPlayerGeolocationInterface(FxShippingPlayer* papp) : pApp(papp) {}
+
+	bool	RegisterGeolocation(int geolocationId)		{ return pApp->GetAppImpl()->RegisterGeolocation(geolocationId); }
+	bool	UnregisterGeolocation(int geolocationId)	{ return pApp->GetAppImpl()->UnregisterGeolocation(geolocationId); }
+	bool	IsGeolocationMuted() const 					{ return pApp->GetAppImpl()->IsGeolocationMuted(); }
+	bool	IsGeolocationSupported() const 	{ return pApp->GetAppImpl()->IsGeolocationSupported(); };
+	void	SetGeolocationInterval(int geolocationId, int interval)	   { pApp->GetAppImpl()->SetGeolocationInterval(geolocationId, interval); }
+
+protected:
+    FxShippingPlayer*    pApp;
+};
+
 // Default implementation of UrlNavigator
 class FxPlayerUrlNavigator : public UrlNavigator
 {
@@ -159,7 +237,7 @@ public:
     }
 };
 
-static const float CurveTolerances[] = {1.0f, 3.0f, 5.0f, 10.0f};
+static const float CurveTolerances[] = {1.0f, 5.0f, 10.0f, 50.0f, 250.0f};
 
 void FxShippingPlayer::FsCommand(Movie* pmovie, const char* pcommand, const char* parg)
 {
@@ -173,6 +251,10 @@ bool FxShippingPlayer::PrepareMovie(MovieDef* pmoviedef, Movie* pview)
     pview->SetMultitouchInterface(Ptr<MultitouchInterface>(*new FxPlayerMultitouchInterface()));
 
     pview->SetVirtualKeyboardInterface(Ptr<VirtualKeyboardInterface>(*new FxPlayerVirtualKeyboardInterface()));
+
+    pview->SetAccelerometerInterface(Ptr<AccelerometerInterface>(*new FxPlayerAccelerometerInterface(this)));
+
+	pview->SetGeolocationInterface(Ptr<GeolocationInterface>(*new FxPlayerGeolocationInterface(this)));
 
     return 1;
 }
@@ -207,6 +289,9 @@ void FxShippingPlayer::OnDropFiles(const String& NextFile)
     // Unload current movie. If it fails we will see blank screen.
     pMovieDef = 0;
     pMovie = 0;
+#ifdef SF_USE_ANE
+	mLoader.GetExtensionContextInterface()->SetMovie(0);
+#endif
 
     if (!mLoader.GetMovieInfo(NextFile, &NewMovieInfo))
     {
@@ -217,7 +302,7 @@ error:
     }
     if (!(pNewMovieDef = *mLoader.CreateMovie(NextFile, Loader::LoadAll|Loader::LoadWaitFrame1)))
         goto error;
-    if (!(pNewMovie = *pNewMovieDef->CreateInstance(false, 0, 0, pRenderThread)))
+    if (!(pNewMovie = *pNewMovieDef->CreateInstance(false, 0, NULL, pRenderThread)))
         goto error;
 
     // Tell the directory implementation of the current filename.
@@ -237,6 +322,10 @@ error:
     pMovieDef = pNewMovieDef;
     pMovie = pNewMovie;
     mMovieInfo = NewMovieInfo;
+    
+#ifdef SF_USE_ANE
+	mLoader.GetExtensionContextInterface()->SetMovie(pMovie);
+#endif
 
     // init the first frame
     ResetViewport();
@@ -255,23 +344,30 @@ error:
     SetFrameTime(0.001f);
 
 #ifdef FXSMP_ENABLE_HUD
-    const char *p = FileName.ToCStr();
-    const char *pname = p;
-    while (*p)
+    if (pMovie != NULL && pMovie->IsValid())
     {
-        if (*p == '/' || *p == '\\')
-            pname = p+1;
-        p++;
+        const char *p = FileName.ToCStr();
+        const char *pname = p;
+        while (*p)
+        {
+            if (*p == '/' || *p == '\\')
+                pname = p+1;
+            p++;
+        }
+        FilenameText.SetText(pname);
     }
-    FilenameText.SetText(pname);
 #endif
     return;
 }
 
 #ifdef FXSMP_ENABLE_HUD
-
 void FxShippingPlayer::SetHudPanelMode()
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     if (ContentWindow != HudWindow)
     {
         if (HudMode != 1)
@@ -311,10 +407,10 @@ void FxShippingPlayer::SetTextFloat(Value& TF, float n)
 static const char* StatLabels[] = {"FPS", "DP", "Mesh", "Memory", "Triangles", "Masks", "Filters", "Advance", "Display", "Other"};
 
 static const char* ButtonFrames[] = {0, "next", "previous", "normal", "pause", "reset", "lockscreen", "stageclip", "display", "curve",
-"edgeaa", "batch", "overdraw", "wireframe"};
+                                     "edgeaa", "batch", "overdraw", "wireframe"};
 
 static const char* ButtonLabels[] = {0, "Next", "Previous", "Profile", "Pause", "Restart", "Orientation", "Stage Clip", "Display", "Tolerance",
-"Edge AA", "Batches", "Overdraw", "Wireframe"};
+                                     "Edge AA", "Batches", "Overdraw", "Wireframe"};
 
 // HUD Handler
 void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const Value* args, unsigned argCount)
@@ -363,17 +459,17 @@ void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const
                 break;
 
             case Button_Batch:
-                ProfileMode = (ProfileMode == FxRenderThread::Profile_Batch
-                    ? FxRenderThread::Profile_None : FxRenderThread::Profile_Batch);
+                ProfileMode = (ProfileMode == Render::Profile_Batch
+                    ? Render::Profile_None : Render::Profile_Batch);
                 Buttons[ButtonIndex[Button_Overdraw]].SetMember("toggled", false);
-                Buttons[button].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Batch));
+                Buttons[button].SetMember("toggled", (ProfileMode == Render::Profile_Batch));
                 pRenderThread->SetProfileMode(ProfileMode);
                 break;
             case Button_Overdraw:
-                ProfileMode = (ProfileMode == FxRenderThread::Profile_Overdraw
-                    ? FxRenderThread::Profile_None : FxRenderThread::Profile_Overdraw);
+                ProfileMode = (ProfileMode == Render::Profile_Overdraw
+                    ? Render::Profile_None : Render::Profile_Overdraw);
                 Buttons[ButtonIndex[Button_Batch]].SetMember("toggled", false);
-                Buttons[button].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Overdraw));
+                Buttons[button].SetMember("toggled", (ProfileMode == Render::Profile_Overdraw));
                 pRenderThread->SetProfileMode(ProfileMode);
                 break;
 
@@ -394,12 +490,15 @@ void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const
                 ButtonIcons[ButtonIndex[Button_CurveTol]].GetMember("curve", &CurveText);
 
                 CurveTolerancePosition++;
-                if (CurveTolerancePosition >= 4)
+                if (CurveTolerancePosition >= 5)
                     CurveTolerancePosition = 0;
-                //XXX pRenderConfig->SetMaxCurvePixelError(CurveTolerances[CurveTolerancePosition]);
+                    
+                pRenderThread->GetToleranceParams(&tolParams);
+                tolParams.CurveTolerance = CurveTolerances[CurveTolerancePosition];
+                pRenderThread->SetToleranceParams(tolParams);
 
                 char buf[64];
-                Format(buf, "{0:.1}", CurveTolerances[CurveTolerancePosition]);
+                Format(buf, "{0}", CurveTolerancePosition + 1);
                 CurveText.SetText(buf);
                 break;
 
@@ -534,16 +633,14 @@ void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const
                 SetButton(4, Button_Profile);
                 if (GetCaps() & Platform::Cap_LockOrientation)
                     SetButton(5, Button_LockOrient);
-                // TODO: Edit once dynamic Curve Tolerance added to core
-                //SetButton(6, Button_Display); // Enable
+                SetButton(6, Button_Display);
                 SetButton(7, Button_StageClip);
 
                 SetButton(8, Button_Batch);
                 SetButton(9, Button_Overdraw);
                 SetButton(10, Button_EdgeAA);
-                // TODO: Edit once dynamic Curve Tolerance added to core
-                //SetButton(11, Button_CurveTol); // Enable
-                SetButton(11, Button_Display); // Delete
+                
+                SetButton(11, Button_CurveTol);
             }
             else // Dashboard view
             {
@@ -569,8 +666,7 @@ void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const
                     SetButton(10, Button_Wireframe);
 
                 SetButton(11, Button_EdgeAA);
-                // Disabled until dynamic Curve Tolerance added to core
-                //SetButton(12, Button_CurveTol);
+                SetButton(12, Button_CurveTol);
             }
 
             for (int i = 0; i < (HudMode == 1 ? 12 : 14); i++)
@@ -601,8 +697,8 @@ void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const
                 Buttons[ButtonIndex[Button_Pause]].SetMember("toggled", Wireframe);
             Buttons[ButtonIndex[Button_StageClip]].SetMember("toggled", StageClipping);
 
-            Buttons[ButtonIndex[Button_Batch]].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Batch));
-            Buttons[ButtonIndex[Button_Overdraw]].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Overdraw));
+            Buttons[ButtonIndex[Button_Batch]].SetMember("toggled", (ProfileMode == Render::Profile_Batch));
+            Buttons[ButtonIndex[Button_Overdraw]].SetMember("toggled", (ProfileMode == Render::Profile_Overdraw));
 
             if (FastForward)
                 ButtonIcons[ButtonIndex[Button_Profile]].GotoAndStop("fastforward");
@@ -615,7 +711,7 @@ void FxShippingPlayer::Callback(Movie* pmovieView, const char* methodName, const
                 ButtonIcons[ButtonIndex[Button_CurveTol]].GetMember("curve", &CurveText);
 
                 char buf[64];
-                Format(buf, "%.0f", CurveTolerances[CurveTolerancePosition]);
+                Format(buf, "{0}", CurveTolerancePosition + 1);
                 CurveText.SetText(buf);
             }
 
@@ -722,7 +818,7 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
     LockOrientation = FXSMP_LOCK_ORIENTATION;
     StageClipping = 0;
     Wireframe = 0;
-    ProfileMode = FxRenderThread::Profile_None;
+    ProfileMode = Render::Profile_None;
     Width = config.ViewSize.Width;
     Height = config.ViewSize.Height;
     NeedsOrientation = config.HasFlag(View_UseOrientation);
@@ -733,9 +829,11 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
     config.SetFlag(View_Stereo, 1);
     SetOrientationMode(!LockOrientation);
 
-    // enable progressive loading
+    // Enable progressive loading
+#ifdef SF_ENABLE_THREADS
     Ptr<ThreadedTaskManager> pTaskManager = *new ThreadedTaskManager;
     mLoader.SetTaskManager(pTaskManager);
+#endif
 
     Ptr<FileOpener> pfileOpener = *new FxPlayerFileOpener;
     mLoader.SetFileOpener(pfileOpener);
@@ -744,31 +842,15 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
     mLoader.SetFSCommandHandler(pcommandHandler);
 
     mLoader.SetExternalInterface(this);
+    
+#ifdef SF_USE_ANE
+	mLoader.SetExtensionContextInterface(Ptr<ExtensionContextInterface>(*new FxPlayerExtensionContextInterface(this)));
+#endif
 
     Ptr<FxPlayerUrlNavigator> purlnav = *new FxPlayerUrlNavigator();
     mLoader.SetUrlNavigator(purlnav);
 
-    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry();
-#ifdef SF_ENABLE_LIBJPEG
-    pimgReg->AddHandler(&SF::Render::JPEG::FileReader::Instance);
-#endif
-#ifdef SF_ENABLE_LIBPNG
-    pimgReg->AddHandler(&SF::Render::PNG::FileReader::Instance);
-#endif
-    pimgReg->AddHandler(&SF::Render::PVR::FileReader::Instance);
-    pimgReg->AddHandler(&SF::Render::TGA::FileReader::Instance);
-#if defined(SF_OS_ANDROID)
-    pimgReg->AddHandler(&SF::Render::KTX::FileReader::Instance);
-#endif
-#if defined (SF_OS_NGP) || defined(SF_OS_ANDROID)
-    pimgReg->AddHandler(&SF::Render::DDS::FileReader::Instance);
-#endif
-#if defined (SF_OS_WIIU)
-    pimgReg->AddHandler(&SF::Render::GTX::FileReader::Instance);
-#endif
-#if defined (SF_OS_NGP)
-    pimgReg->AddHandler(&SF::Render::GXT::FileReader::Instance);
-#endif
+    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry(GFx::ImageFileHandlerRegistry::AddDefaultHandlers);
     mLoader.SetImageFileHandlerRegistry(pimgReg);
 
 #if defined(GFX_ENABLE_SOUND)
@@ -847,13 +929,13 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
     fontCacheConfig.MaxSlotHeight  = 100;
     //fontCacheConfig.SlotPadding    = 2;
 
-    pRenderThread->SetFontCacheConfig(fontCacheConfig);
+    pRenderThread->SetGlyphCacheParams(fontCacheConfig);
 
     // Multithreaded loading with single threading rendering is not properly supported
     // because of RTCommandQueue. Disable creating textures on load.
     SF::Ptr<GFx::ImageCreator> pimageCreator =
         *new GFx::ImageCreator(
-#if defined(SF_OS_3DS) || defined(SF_OS_WIIU) || defined(SF_OS_NGP)
+#if defined(SF_OS_3DS) || defined(SF_OS_WIIU) || defined(SF_OS_PSVITA) || defined(SF_OS_ANDROID)
         pRenderThread->GetTextureManager()
 #else
         NULL
@@ -894,7 +976,7 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
     {
         pHudMovie = *pHudDef->CreateInstance();
 
-        if (pHudMovie) 
+        if (pHudMovie && pHudMovie->IsValid()) 
         {
             pRenderThread->AddDisplayHandle(pHudMovie->GetDisplayHandle(), Platform::RenderThread::DHCAT_Overlay, 
                 true, 0, pHudWindow);
@@ -915,9 +997,12 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
         pMovieDef = *mLoader.CreateMovie(FileName, Loader::LoadAll|Loader::LoadWaitFrame1);
         if (pMovieDef)
         {
-            pMovie = *pMovieDef->CreateInstance(false, 0, 0, pRenderThread);
+            pMovie = *pMovieDef->CreateInstance(false, 0, NULL, pRenderThread);
             if (pMovie)
             {
+#ifdef SF_USE_ANE
+				mLoader.GetExtensionContextInterface()->SetMovie(pMovie);
+#endif
                 // implicitly disable action error reporting
                 Ptr<ActionControl> pactionControl = *new ActionControl();
                 pactionControl->SetActionErrorSuppress(true);
@@ -932,22 +1017,32 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
                 pMovie->HandleEvent(GFx::Event::SetFocus);
                 pMovie->SetMouseCursorCount(1);
 
+                // init EdgeAA and CurveTolerance
+                pMovie->SetEdgeAAMode(EdgeAA ? Render::EdgeAA_On : Render::EdgeAA_Disable);
+                pRenderThread->GetToleranceParams(&tolParams);
+                tolParams.CurveTolerance = CurveTolerances[CurveTolerancePosition];
+                pRenderThread->SetToleranceParams(tolParams);
+
                 pRenderThread->AddDisplayHandle(pMovie->GetDisplayHandle());
 
-                const char *p = FileName.ToCStr();
-                const char *pname = p;
-                while (*p)
+                if (pMovie->IsValid())
                 {
-                    if (*p == '/' || *p == '\\')
-                        pname = p+1;
-                    p++;
-                }
-                // Tell the directory implementation of the current filename.
-                ContentDir.SetCurrentFile(pname);
+                    const char *p = FileName.ToCStr();
+                    const char *pname = p;
+                    while (*p)
+                    {
+                        if (*p == '/' || *p == '\\')
+                            pname = p+1;
+                        p++;
+                    }
+                    // Tell the directory implementation of the current filename.
+                    ContentDir.SetCurrentFile(pname);
 
 #ifdef FXSMP_ENABLE_HUD
-                FilenameText.SetText(pname);
+                    FilenameText.SetText(pname);
 #endif
+
+                }
             }
         }
         else
@@ -963,27 +1058,71 @@ bool FxShippingPlayer::OnInit(Platform::ViewConfig& config)
     LastLoggedFps = MovieLastTime = Timer::GetTicks()/1000;
     FrameCount = -1;
 
+
+#if !FXSMP_RECOGNIZE_GESTURES
+	pGestureManager = 0;
+#endif
     return 1;
+}
+
+void FxShippingPlayer::OnPause()
+{
+    if (pMovie)
+    {
+    //iOS sockets do not persist when the application becomes inactive. 
+    //The socket connection needs to be closed when the application is about to go inactive.
+#if defined (SF_OS_IPHONE) && !defined (SF_BUILD_SHIPPING) && !defined (SF_BUILD_LITE)
+        AmpServer::GetInstance().CloseConnection();
+#endif
+
+        AppLifecycleEvent event (AppLifecycleEvent::OnPause);
+        pMovie->HandleEvent(event);
+        
+        pMovie->SetPause(true);
+    }
+}
+
+void FxShippingPlayer::OnResume()
+{
+    if (pMovie)
+    {
+    //iOS sockets do not persist when the application becomes inactive. 
+    //The socket connection needs to be re-opened when the application is about resume.
+#if defined (SF_OS_IPHONE) && !defined (SF_BUILD_SHIPPING) && !defined (SF_BUILD_LITE)
+        AmpServer::GetInstance().OpenConnection();
+#endif
+        AppLifecycleEvent event (AppLifecycleEvent::OnResume);
+        pMovie->HandleEvent(event);
+        
+        pMovie->SetPause(false);
+    }
 }
 
 void FxShippingPlayer::OnShutdown()
 {
 #ifdef FXSMP_ENABLE_HUD
-    HiddenFpsText = Panel = FilenameText = CurveText = Value();
-    for (int i = 0; i < 14; i++)
+    if ((pHudMovie != NULL && pHudMovie->IsValid()) ||
+        (pMovie != NULL && pMovie->IsValid()))
     {
-        Buttons[i] = Value();
-        ButtonIcons[i] = Value();
+        HiddenFpsText = Panel = FilenameText = CurveText = Value();
+        for (int i = 0; i < 14; i++)
+        {
+            Buttons[i] = Value();
+            ButtonIcons[i] = Value();
+        }
+        for (int i = 0; i < 10; i++)
+            StatText[i] = Value();
+        for (int i = 0; i < 3; i++)
+        {
+            Sliders[i] = Value();
+            SliderValues[i] = Value();
+        }
     }
-    for (int i = 0; i < 10; i++)
-        StatText[i] = Value();
-    for (int i = 0; i < 3; i++)
-    {
-        Sliders[i] = Value();
-        SliderValues[i] = Value();
-    }
-
     pHudMovie = 0;
+#endif
+
+#ifdef SF_USE_ANE
+	mLoader.GetExtensionContextInterface()->SetMovie(0);
 #endif
 
     pMovie = 0;
@@ -1088,10 +1227,9 @@ void FxShippingPlayer::OnUpdateFrame(bool needDraw)
 }
 
 #ifdef FXSMP_ENABLE_HUD
-
 void FxShippingPlayer::AdvanceAndDisplayHud(UInt64 time)
 {
-    if (pHudMovie)
+    if (pHudMovie && pHudMovie->IsValid())
     {
         if ((time - LastLoggedFps > 1000) && FrameCount && ((HudVisible) || MeasurePerformance))
         {
@@ -1146,12 +1284,16 @@ void FxShippingPlayer::AdvanceAndDisplayHud(UInt64 time)
         pHudMovie->Advance(/*((float)(time - MovieLastTime)) / 1000.0f*/ 0.5f);
     }
 }
-
 #endif
 
 void FxShippingPlayer::OnMouseButton(unsigned inputSource, unsigned button, bool downFlag, const Point<int> &pos, KeyModifiers modifiers)
 {
     SF_UNUSED(modifiers);
+
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
 
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned mouseIndex = inputSource & Platform::InputController_Mask;
@@ -1160,6 +1302,10 @@ void FxShippingPlayer::OnMouseButton(unsigned inputSource, unsigned button, bool
     PointF p = win.MouseMatrix.Transform(PointF((float)pos.x,(float)pos.y));
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && (int)windowIndex == HudWindow && (HudWindow != ContentWindow || ButtonDown || pHudMovie->HitTest(p.x, p.y, Movie::HitTest_ShapesNoInvisible)))
     {
         if (windowIndex == 0)
@@ -1185,6 +1331,11 @@ void FxShippingPlayer::OnMouseMove(unsigned inputSource, const Point<int> &pos, 
 {
     SF_UNUSED(modifiers);
 
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned mouseIndex = inputSource & Platform::InputController_Mask;
     const Window& win = (Windows[windowIndex].pWindow ? Windows[windowIndex] : Windows[0]);
@@ -1192,6 +1343,10 @@ void FxShippingPlayer::OnMouseMove(unsigned inputSource, const Point<int> &pos, 
     PointF p = win.MouseMatrix.Transform(PointF((float)pos.x,(float)pos.y));
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && (int)windowIndex == HudWindow && (HudWindow != ContentWindow || ButtonDown || pHudMovie->HitTest(p.x, p.y, Movie::HitTest_ShapesNoInvisible)))
     {
         MouseEvent event(GFx::Event::MouseMove, 0, p.x, p.y, 0.0f, mouseIndex);
@@ -1213,6 +1368,17 @@ void FxShippingPlayer::OnMouseWheel(unsigned inputSource, float zdelta,
 {
     SF_UNUSED(mods);
 
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+#ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
+#endif
+
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned mouseIndex = inputSource & Platform::InputController_Mask;
     const Matrix2F& MouseMatrix = (Windows[windowIndex].pWindow ? Windows[windowIndex] : Windows[0]).MouseMatrix;
@@ -1232,6 +1398,12 @@ void FxShippingPlayer::OnKey(unsigned inputSource, KeyCode key, unsigned wcharCo
     unsigned kbIndex = inputSource & Platform::InputController_Mask;
 
 #ifdef FXSMP_ENABLE_HUD
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     if (!down)
         switch (key)
     {
@@ -1260,6 +1432,11 @@ void FxShippingPlayer::OnKey(unsigned inputSource, KeyCode key, unsigned wcharCo
 
 void FxShippingPlayer::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool downFlag)
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     if (!pMovie)
         return;
     switch(keyCode)
@@ -1277,6 +1454,17 @@ void FxShippingPlayer::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool do
         OnKey(controllerIdx, Key::Down, 0, downFlag, 0);
         return;
 
+#ifdef SF_OS_PSVITA
+    case SF::Pad_X:
+        OnKey(controllerIdx, Key::Return, 0, downFlag, 0);
+        return;
+    case SF::Pad_O:
+        OnKey(controllerIdx, Key::Escape, 0, downFlag, 0);
+        return;
+    case SF::Pad_T:
+        OnKey(controllerIdx, Key::Space, 0, downFlag, 0);
+        return;
+#else
     case SF::Pad_A:
         OnKey(controllerIdx, Key::Return, 0, downFlag, 0);
         return;
@@ -1286,6 +1474,7 @@ void FxShippingPlayer::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool do
     case SF::Pad_X:
         OnKey(controllerIdx, Key::Space, 0, downFlag, 0);
         return;
+#endif
 
     case SF::Pad_L1:
         OnKey(controllerIdx, Key::PageUp, 0, downFlag, 0);
@@ -1295,6 +1484,12 @@ void FxShippingPlayer::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool do
         return;
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
+
+	case SF::Key::Home:
     case SF::Pad_Start:
     case SF::Pad_Select:
         if (downFlag)
@@ -1306,7 +1501,6 @@ void FxShippingPlayer::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool do
             HiddenFpsText.SetDisplayInfo(disp);
         }
         return;
-#else
 #endif
 
     default:
@@ -1316,6 +1510,18 @@ void FxShippingPlayer::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool do
 
 void FxShippingPlayer::OnPadStick(unsigned inputSource, PadKeyCode padCode, float xpos, float ypos)
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
+#ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
+
+#endif
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned controllerIdx = inputSource & Platform::InputController_Mask;
 
@@ -1336,50 +1542,115 @@ PointF FxShippingPlayer::AdjustInputPoint(int x, int y)
 
 void FxShippingPlayer::OnTouchBegin(unsigned window, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary)
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     TouchEvent event(GFx::Event::TouchBegin, id, p.x, p.y, (float)contact.x, (float)contact.y, primary);
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) &&
         (TouchDown || pHudMovie->HitTest(p.x, p.y, Movie::HitTest_ShapesNoInvisible)))
     {
-        pHudMovie->HandleEvent(event);
+		pHudMovie->HandleEvent(event);
+		if (pGestureManager)
+		{
+			pGestureManager->SetMovie(pHudMovie);
+			pGestureManager->ProcessDown(id, pos, p);
+		}
         TouchDown = true;
     }
     else
 #endif
         if (pMovie && ((int)(window >> Platform::InputWindow_Shift) == ContentWindow))
-            pMovie->HandleEvent(event);
+		{
+			pMovie->HandleEvent(event);
+			if (pGestureManager)
+			{
+				pGestureManager->SetMovie(pMovie);
+				pGestureManager->ProcessDown(id, pos, p);
+			}
+		}
 }
 void FxShippingPlayer::OnTouchEnd(unsigned window, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary)
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     TouchEvent event(GFx::Event::TouchEnd, id, p.x, p.y, (float)contact.x, (float)contact.y, primary);
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
     {
-        pHudMovie->HandleEvent(event);
+		pHudMovie->HandleEvent(event);
+		if (pGestureManager)
+		{
+			pGestureManager->SetMovie(pHudMovie);
+			pGestureManager->ProcessUp(id, pos, p);
+		}
         if (primary)
             TouchDown = false;
     }
     else
 #endif
         if (pMovie && ((int)(window >> Platform::InputWindow_Shift) == ContentWindow))
-            pMovie->HandleEvent(event);
+		{
+			pMovie->HandleEvent(event);
+			if (pGestureManager)
+			{
+				pGestureManager->SetMovie(pMovie);
+				pGestureManager->ProcessUp(id, pos, p);
+			}
+		}
 }
 void FxShippingPlayer::OnTouchMove(unsigned window, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary)
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     TouchEvent event(GFx::Event::TouchMove, id, p.x, p.y, (float)contact.x, (float)contact.y, primary);
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
-        pHudMovie->HandleEvent(event);
+	{
+		pHudMovie->HandleEvent(event);
+		if (pGestureManager)
+		{
+			pGestureManager->SetMovie(pHudMovie);
+			pGestureManager->ProcessMove(id, pos, p);
+		}
+	}
     else
 #endif
         if (pMovie && ((int)(window >> Platform::InputWindow_Shift) == ContentWindow))
-            pMovie->HandleEvent(event);
+		{
+			pMovie->HandleEvent(event);
+			if (pGestureManager)
+			{
+				pGestureManager->SetMovie(pMovie);
+				pGestureManager->ProcessMove(id, pos, p);
+			}
+		}
 }
 
 void FxShippingPlayer::OnGestureBegin(unsigned window, UInt32 gestureMask, const Point<int>& pos, 
@@ -1387,11 +1658,20 @@ void FxShippingPlayer::OnGestureBegin(unsigned window, UInt32 gestureMask, const
                                       const PointF& scale,
                                       float rotation)
 {
+    if (pGestureManager || (pMovie != NULL && !pMovie->IsValid()))
+    {
+		return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     GestureEvent event(GFx::Event::GestureBegin, gestureMask, p.x, p.y,
         translation.x, translation.y, scale.x, scale.y, rotation);
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) &&
         (TouchDown || pHudMovie->HitTest(p.x, p.y, Movie::HitTest_ShapesNoInvisible)))
     {
@@ -1409,13 +1689,21 @@ void FxShippingPlayer::OnGesture(unsigned window, UInt32 gestureMask, const Poin
                                  const PointF& scale,
                                  float rotation)
 {
-    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
+    if (pGestureManager || (pMovie != NULL && !pMovie->IsValid()))
+    {
+		return;
+	}
 
+    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     GestureEvent event(gestureMask & GestureBit_Swipe ? GFx::Event::GestureSimple
         : GFx::Event::Gesture, gestureMask, p.x, p.y,
         translation.x, translation.y, scale.x, scale.y, rotation);
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
     {
         pHudMovie->HandleEvent(event);
@@ -1429,11 +1717,19 @@ void FxShippingPlayer::OnGesture(unsigned window, UInt32 gestureMask, const Poin
 
 void FxShippingPlayer::OnGestureEnd(unsigned window, UInt32 gestureMask, const Point<int>& pos)
 {
-    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
+    if (pGestureManager || (pMovie != NULL && !pMovie->IsValid()))
+    {
+		return;
+	}
 
+    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     GestureEvent event(GFx::Event::GestureEnd, gestureMask, p.x, p.y);
 
 #ifdef FXSMP_ENABLE_HUD
+    if (pHudMovie != NULL && !pHudMovie->IsValid())
+    {
+        return;
+    }
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
     {
         pHudMovie->HandleEvent(event);
@@ -1475,24 +1771,41 @@ void FxShippingPlayer::OnConfigurationChange(const ViewConfig& config)
     pRenderThread->UpdateConfiguration();
 }
 
-void FxShippingPlayer::OnPause()
+void FxShippingPlayer::OnFocus(bool setFocus, KeyModifiers)
 {
+    // By default, if we receive or lose focus, unpause or pause the movie (eg. pause the game). 
+    // On Android, this will be called from the onWindowFocusChanged callback.
     if (pMovie)
-    {
-        AppLifecycleEvent event (AppLifecycleEvent::OnPause);
-        pMovie->HandleEvent(event);
-    }
+        pMovie->SetPause(!setFocus);
 }
 
-void FxShippingPlayer::OnResume()
+void FxShippingPlayer::OnAccelerometerUpdate(int idAcc, double timestamp, double accelerationX, double accelerationY, double accelerationZ)
 {
-    if (pMovie)
-    {
-        AppLifecycleEvent event (AppLifecycleEvent::OnResume);
-        pMovie->HandleEvent(event);
-    }
+    if (!pMovie)
+        return;
+    
+    AccelerometerEvent event(GFx::Event::Accelerometer, idAcc, timestamp, accelerationX, accelerationY, accelerationZ);
+    pMovie->HandleEvent(event);
 }
 
+void FxShippingPlayer::OnGeolocationUpdate(int idGeo, double latitude, double longitude, double altitude, double hAccuracy, double vAccuracy, double speed, double heading, double timestamp)
+{
+    if (!pMovie)
+        return;
+    
+    GeolocationEvent event(GFx::Event::Geolocation, idGeo, latitude, longitude, altitude, hAccuracy, vAccuracy, speed, heading, timestamp);
+    pMovie->HandleEvent(event);
+}
+
+
+void FxShippingPlayer::OnStatus(String* code, String* level, String* extensionId, String* contextId)
+{
+    if (!pMovie)
+        return;
+
+    StatusEvent event(GFx::Event::Status, code, level, extensionId, contextId);
+    pMovie->HandleEvent(event);
+}
 
 void FxShippingPlayer::Window::UpdateViewport(const Platform::ViewConfig& vc)
 {
@@ -1525,7 +1838,11 @@ void FxShippingPlayer::Window::UpdateViewport(const Platform::ViewConfig& vc)
 
 void FxShippingPlayer::ResetViewport()
 {
-    pRenderThread->SetViewportFlags(Windows[0].BaseViewport.Flags);
+    int noClear = 0;
+#if FXSMP_NO_CLEAR
+    noClear = Render::Viewport::View_NoClear;
+#endif
+    pRenderThread->SetViewportFlags(Windows[0].BaseViewport.Flags | noClear);
 
 #ifdef FXSMP_ENABLE_HUD
     if (pHudMovie)
@@ -1553,6 +1870,7 @@ void FxShippingPlayer::ResetViewport()
             mViewport.Width = ViewWidth;
             mViewport.Height = ViewHeight;
         }
+        mViewport.Flags |= noClear;
 
         pMovie->SetViewport(mViewport);
     }
@@ -1565,16 +1883,44 @@ bool FxShippingPlayer::OnOrientation(unsigned orientation, bool force)
 
     Orientation = orientation;
 
-    Platform::ViewConfig newconfig;
-    Windows[0].pWindow->GetViewConfig(&newconfig);
-    Windows[0].UpdateViewport(newconfig);
+    if (pMovie)
+    {
+        switch(orientation)
+        {
+            case Render::Viewport::View_Orientation_L90:
+            {
+                OrientationEvent event(OrientationEvent::RotatedLeft);
+                pMovie->HandleEvent(event);
+                break;
+            }
+            case Render::Viewport::View_Orientation_R90:
+            {
+                OrientationEvent event(OrientationEvent::RotatedRight);
+                pMovie->HandleEvent(event);
+                break;
+            }
+            case Render::Viewport::View_Orientation_180:
+            {
+                OrientationEvent event(OrientationEvent::UpsideDown);
+                pMovie->HandleEvent(event);
+                break;
+            }
+            case Render::Viewport::View_Orientation_Normal:
+            default:
+            {
+                OrientationEvent event(OrientationEvent::Default);
+                pMovie->HandleEvent(event);
+                break;
+            }
+        }
+    }
 
-    ResetViewport();
     return true;
 }
 
 void FxShippingPlayer::ResetInputFocus(unsigned controllerIdx)
 {
+    SF_UNUSED(controllerIdx);
     if (pMovie)
         pMovie->ResetInputFocus(controllerIdx);
 }
@@ -1582,6 +1928,7 @@ void FxShippingPlayer::ResetInputFocus(unsigned controllerIdx)
 void FxShippingPlayer::NotifyShowVirtualKeyboard(const Render::RectF& keyboardRect,
                                                  const Render::RectF& textBox)
 {
+    SF_UNUSED2(keyboardRect, textBox);
     if (pMovie)
     {
         GFx::Viewport vp;
@@ -1630,6 +1977,7 @@ void FxShippingPlayer::InitializeSound()
 #if defined(GFX_SOUND_FMOD)
     if (!pSoundSystem)
         pSoundSystem = new FxSoundFMOD;
+	pSoundSystem->pFileOpener = FxShippingPlayer::pApp->mLoader.GetFileOpener();
     if (!pSoundSystem->IsInitialized())
     {
         if (!pSoundSystem->Initialize(

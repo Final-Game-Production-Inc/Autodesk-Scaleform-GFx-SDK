@@ -6,6 +6,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -124,6 +125,7 @@ bool GlyphTextureMapper::Create(unsigned method, MemoryHeap* heap,
 //------------------------------------------------------------------------
 ImagePlane* GlyphTextureMapper::Map()
 {
+    SF_AMP_CODE(LockSafe::Locker lock(&ImageLock);)
     ImagePlane* plane = 0;
     switch(Method)
     {
@@ -159,6 +161,7 @@ ImagePlane* GlyphTextureMapper::Map()
 //------------------------------------------------------------------------
 bool GlyphTextureMapper::Unmap()
 {
+    SF_AMP_CODE(LockSafe::Locker lock(&ImageLock);)
     bool ret = false;
     switch(Method)
     {
@@ -193,6 +196,7 @@ bool GlyphTextureMapper::Unmap()
 //------------------------------------------------------------------------
 bool GlyphTextureMapper::Update(const Texture::UpdateDesc* updates, unsigned count)
 {
+    SF_AMP_CODE(LockSafe::Locker lock(&ImageLock);)
     bool ret = false;
     if (Method == GlyphCache::TU_MultipleUpdate)
     {
@@ -206,18 +210,11 @@ bool GlyphTextureMapper::Update(const Texture::UpdateDesc* updates, unsigned cou
     return ret;
 }
 
-
-//------------------------------------------------------------------------
-Texture* GlyphTextureMapper::GetTexture()
-{
-    return (Method == GlyphCache::TU_WholeImage) ?
-        pRawImg->GetTexture(pTexMan) : pTexImg->GetTexture(pTexMan);
+Image* GlyphTextureMapper::GetImage()
+{ 
+    SF_AMP_CODE(SF_DEBUG_ASSERT(ImageLock.IsLocked(), "Font texture not locked - possible race condition with AMP");)
+    return pRawImg.GetPtr() ? (Image*)pRawImg : (Image*)pTexImg;
 }
-
-
-
-
-
 
 
 //------------------------------------------------------------------------
@@ -666,10 +663,12 @@ int GlyphCache::GetTextureData(File* dataFile, UInt32 version)
     {
         if (Textures[i].IsValid())
         {
+            Textures[i].LockImage();
             if (AmpFileWriter::WriteImage(dataFile, Textures[i].GetImage()))
             {
                 ++numTextures;
             }
+            Textures[i].UnlockImage();
         }
     }
     pRQCaches->ClearCacheLocked(Cache_Glyph);
@@ -1338,7 +1337,9 @@ void RecursiveBlur(Img& img, float radius, SumBuf& sum, ColorBuf& buf)
 
     for(y = 0; y < h; y++)
     {
-        register float a1=0, a2=0, a3=0, a4=0;
+        // C++ 17 remove register
+        // register float a1=0, a2=0, a3=0, a4=0;
+        float a1 = 0, a2 = 0, a3 = 0, a4 = 0;
 
         for(x = 0; x < pad; ++x)
             sum[x] = 0;
@@ -1609,7 +1610,7 @@ float GlyphCache::GetCachedFontSize(const GlyphParam& gp, float screenSize, bool
         if (!exactFit)
         {
             const float snapTo = 0.25f;
-            screenSize = floor(screenSize/snapTo + 0.5f) * snapTo;
+            screenSize = (float)(floor(screenSize/snapTo + 0.5f)) * snapTo;
         }
     }
     else
@@ -1724,8 +1725,6 @@ void GlyphCache::filterScanline(UByte* sl, unsigned w) const
 //-----------------------------------------------------------------------
 GlyphNode* GlyphCache::RasterizeGlyph(GlyphRunData& data, TextMeshProvider* tm, const GlyphParam& gp)
 {
-    SF_AMP_SCOPE_RENDER_TIMER_ID("GlyphCache::RasterizeGlyph", Amp_Native_Function_Id_GlyphCache_RasterizeGlyph);
-
     if (MaxNumTextures == 0)
     {
         Result = Res_NoRasterCache;
@@ -1765,8 +1764,8 @@ GlyphNode* GlyphCache::RasterizeGlyph(GlyphRunData& data, TextMeshProvider* tm, 
     }
 
     float scale = gp.GetFontSize() / nomHeight;
-    float y1 = floor(data.GlyphBounds.y1 * scale);
-    float y2 =  ceil(data.GlyphBounds.y2 * scale);
+    float y1 = floorf(data.GlyphBounds.y1) * scale;
+    float y2 =  ceilf(data.GlyphBounds.y2) * scale;
 
     if (y1 >= y2)
         y1 = y2 = 0;
@@ -1966,8 +1965,6 @@ GlyphNode* GlyphCache::createShadowFromRaster(GlyphRunData& data, TextMeshProvid
 //-----------------------------------------------------------------------
 GlyphNode* GlyphCache::RasterizeShadow(GlyphRunData& data, TextMeshProvider* tm, const GlyphParam& gp, float screenSize, const GlyphRaster* ras)
 {
-    SF_AMP_SCOPE_RENDER_TIMER_ID("GlyphCache::RasterizeShadow", Amp_Native_Function_Id_GlyphCache_RasterizeShadow);
-
     if (MaxNumTextures == 0)
     {
         Result = Res_NoRasterCache;
@@ -2112,7 +2109,7 @@ void GlyphCache::LogWarning(const char* fmt, ...)
     if (pLog)
     {
         va_list argList; va_start(argList, fmt);
-        pLog->LogMessageVarg(LogChannel_Render | LogMessage_Warning, fmt, argList);
+        pLog->LogMessageVarg(static_cast<uint32_t>(LogChannel_Render) | static_cast<uint32_t>(LogMessage_Warning), fmt, argList);
         va_end(argList);
     }
 }
@@ -2122,7 +2119,7 @@ void GlyphCache::LogError(const char* fmt, ...)
     if (pLog)
     {
         va_list argList; va_start(argList, fmt);
-        pLog->LogMessageVarg(LogChannel_Render | LogMessage_Error, fmt, argList);
+        pLog->LogMessageVarg(static_cast<uint32_t>(LogChannel_Render) | static_cast<uint32_t>(LogMessage_Error), fmt, argList);
         va_end(argList);
     }
 }

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::KeyboardEvent, Instances::fl_events::KeyboardEvent::mid_altKeyGet, bool> TFunc_Instances_KeyboardEvent_altKeyGet;
 typedef ThunkFunc1<Instances::fl_events::KeyboardEvent, Instances::fl_events::KeyboardEvent::mid_altKeySet, const Value, bool> TFunc_Instances_KeyboardEvent_altKeySet;
 typedef ThunkFunc0<Instances::fl_events::KeyboardEvent, Instances::fl_events::KeyboardEvent::mid_charCodeGet, UInt32> TFunc_Instances_KeyboardEvent_charCodeGet;
@@ -273,34 +268,57 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 KeyboardEvent::tito[KeyboardEvent::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 26, 
+    // };
+    const TypeInfo* KeyboardEvent::tit[27] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+    };
     const ThunkInfo KeyboardEvent::ti[KeyboardEvent::ThunkInfoNum] = {
-        {TFunc_Instances_KeyboardEvent_altKeyGet::Func, &AS3::fl::BooleanTI, "altKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_altKeySet::Func, NULL, "altKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_charCodeGet::Func, &AS3::fl::uintTI, "charCode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_charCodeSet::Func, NULL, "charCode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_commandKeyGet::Func, &AS3::fl::BooleanTI, "commandKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_commandKeySet::Func, NULL, "commandKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_controlKeyGet::Func, &AS3::fl::BooleanTI, "controlKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_controlKeySet::Func, NULL, "controlKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_ctrlKeyGet::Func, &AS3::fl::BooleanTI, "ctrlKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_ctrlKeySet::Func, NULL, "ctrlKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_keyCodeGet::Func, &AS3::fl::uintTI, "keyCode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_keyCodeSet::Func, NULL, "keyCode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_keyLocationGet::Func, &AS3::fl::uintTI, "keyLocation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_keyLocationSet::Func, NULL, "keyLocation", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_shiftKeyGet::Func, &AS3::fl::BooleanTI, "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_KeyboardEvent_shiftKeySet::Func, NULL, "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_KeyboardEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_KeyboardEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_KeyboardEvent_updateAfterEvent::Func, NULL, "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_KeyboardEvent_altKeyGet::Func, &KeyboardEvent::tit[0], "altKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_altKeySet::Func, &KeyboardEvent::tit[1], "altKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_charCodeGet::Func, &KeyboardEvent::tit[3], "charCode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_charCodeSet::Func, &KeyboardEvent::tit[4], "charCode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_commandKeyGet::Func, &KeyboardEvent::tit[6], "commandKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_commandKeySet::Func, &KeyboardEvent::tit[7], "commandKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_controlKeyGet::Func, &KeyboardEvent::tit[9], "controlKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_controlKeySet::Func, &KeyboardEvent::tit[10], "controlKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_ctrlKeyGet::Func, &KeyboardEvent::tit[12], "ctrlKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_ctrlKeySet::Func, &KeyboardEvent::tit[13], "ctrlKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_keyCodeGet::Func, &KeyboardEvent::tit[15], "keyCode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_keyCodeSet::Func, &KeyboardEvent::tit[16], "keyCode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_keyLocationGet::Func, &KeyboardEvent::tit[18], "keyLocation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_keyLocationSet::Func, &KeyboardEvent::tit[19], "keyLocation", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_shiftKeyGet::Func, &KeyboardEvent::tit[21], "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_shiftKeySet::Func, &KeyboardEvent::tit[22], "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_clone::Func, &KeyboardEvent::tit[24], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_toString::Func, &KeyboardEvent::tit[25], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_KeyboardEvent_updateAfterEvent::Func, &KeyboardEvent::tit[26], "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     KeyboardEvent::KeyboardEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::KeyboardEvent::KeyboardEvent()"
 //##protect##"InstanceTraits::KeyboardEvent::KeyboardEvent()"
-        SetMemSize(sizeof(Instances::fl_events::KeyboardEvent));
 
     }
 
@@ -337,24 +355,27 @@ namespace ClassTraits { namespace fl_events
         {"KEY_UP", NULL, OFFSETOF(Classes::fl_events::KeyboardEvent, KEY_UP), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    KeyboardEvent::KeyboardEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::KeyboardEventCI)
+
+    KeyboardEvent::KeyboardEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::KeyboardEvent::KeyboardEvent()"
 //##protect##"ClassTraits::KeyboardEvent::KeyboardEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::KeyboardEvent(vm, AS3::fl_events::KeyboardEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::KeyboardEvent(*this));
 
     }
 
     Pickable<Traits> KeyboardEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) KeyboardEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) KeyboardEvent(vm, AS3::fl_events::KeyboardEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::KeyboardEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -365,6 +386,11 @@ namespace fl_events
 {
     const TypeInfo KeyboardEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::KeyboardEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::KeyboardEvent::MemberInfoNum,
+        InstanceTraits::fl_events::KeyboardEvent::ThunkInfoNum,
+        0,
         "KeyboardEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -372,10 +398,6 @@ namespace fl_events
     const ClassInfo KeyboardEventCI = {
         &KeyboardEventTI,
         ClassTraits::fl_events::KeyboardEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::KeyboardEvent::MemberInfoNum,
-        InstanceTraits::fl_events::KeyboardEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::KeyboardEvent::mi,
         InstanceTraits::fl_events::KeyboardEvent::ti,

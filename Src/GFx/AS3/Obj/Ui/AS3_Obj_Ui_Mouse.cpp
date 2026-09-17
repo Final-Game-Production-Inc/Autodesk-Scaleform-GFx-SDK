@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -108,30 +109,42 @@ template <> const TFunc_Classes_Mouse_show::TMethod TFunc_Classes_Mouse_show::Me
 
 namespace ClassTraits { namespace fl_ui
 {
-    const ThunkInfo Mouse::ti[Mouse::ThunkInfoNum] = {
-        {TFunc_Classes_Mouse_cursorSet::Func, NULL, "cursor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_Mouse_cursorGet::Func, &AS3::fl::StringTI, "cursor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Mouse_hide::Func, NULL, "hide", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_Mouse_show::Func, NULL, "show", NULL, Abc::NS_Public, CT_Method, 0, 0},
+    // const UInt16 Mouse::tito[Mouse::ThunkInfoNum] = {
+    //    0, 2, 3, 4, 
+    // };
+    const TypeInfo* Mouse::tit[5] = {
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+        NULL, 
     };
-    Mouse::Mouse(VM& vm)
-    : Traits(vm, AS3::fl_ui::MouseCI)
+    const ThunkInfo Mouse::ti[Mouse::ThunkInfoNum] = {
+        {TFunc_Classes_Mouse_cursorSet::Func, &Mouse::tit[0], "cursor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Mouse_cursorGet::Func, &Mouse::tit[2], "cursor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Mouse_hide::Func, &Mouse::tit[3], "hide", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Mouse_show::Func, &Mouse::tit[4], "show", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+    };
+
+    Mouse::Mouse(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Mouse::Mouse()"
 //##protect##"ClassTraits::Mouse::Mouse()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_ui::MouseCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_ui::Mouse(*this));
 
     }
 
     Pickable<Traits> Mouse::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Mouse(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Mouse(vm, AS3::fl_ui::MouseCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_ui::MouseCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -142,6 +155,11 @@ namespace fl_ui
 {
     const TypeInfo MouseTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_ui::Mouse::InstanceType),
+        ClassTraits::fl_ui::Mouse::ThunkInfoNum,
+        0,
+        0,
+        0,
         "Mouse", "flash.ui", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -149,10 +167,6 @@ namespace fl_ui
     const ClassInfo MouseCI = {
         &MouseTI,
         ClassTraits::fl_ui::Mouse::MakeClassTraits,
-        ClassTraits::fl_ui::Mouse::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_ui::Mouse::ti,
         NULL,
         NULL,

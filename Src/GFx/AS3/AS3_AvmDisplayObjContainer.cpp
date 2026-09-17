@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -14,6 +15,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 #include "GFx/AS3/AS3_AvmDisplayObjContainer.h"
 #include "GFx/GFx_PlayerImpl.h"
+#include "GFx/AS3/AS3_MovieRoot.h"
 
 namespace Scaleform {
 namespace GFx {
@@ -21,6 +23,158 @@ namespace AS3 {
 
 AvmDisplayObjContainer::~AvmDisplayObjContainer() 
 {
+}
+
+void AvmDisplayObjContainer::OnEventUnload()
+{
+    while( unsigned children = GetNumChildren() > 0 )
+    {
+        RemoveChildAt(children-1);
+    }
+
+    AvmInteractiveObj::OnEventUnload();
+}
+
+DisplayObject::TopMostResult
+AvmDisplayObjContainer::GetTopMostEntity(const Render::PointF &localPt, TopMostDescr* pdescr,
+                                         const ArrayPOD<UByte>& hitTest)
+{
+    DisplayObjContainer* const _this = GetDisplayObjContainer();
+    Sprite* phitAreaHolder = _this->GetHitAreaHolder();
+    Sprite* phitArea = _this->GetHitArea();
+    TopMostDescr    savedDescr;
+    TopMostResult   savedTe = DisplayObjectBase::TopMost_FoundNothing;
+    bool            foundButMouseDisabled = false;
+
+    // Go backwards, to check higher objects first.
+    SPInt i, n;
+    n = (SPInt)GetDisplayList().GetCount();
+    for (i = n - 1; i >= 0; i--)
+    {
+        DisplayObjectBase* ch = GetDisplayList().GetDisplayObject(i);
+
+        if (hitTest.GetSize() && (!hitTest[i] || ch->GetClipDepth()>0))
+            continue;
+
+        if (ch->IsTopmostLevelFlagSet()) // do not check children w/topmostLevel
+            continue;
+
+        // MA: This should consider submit masks in the display list,
+        // such masks can obscure/clip out buttons for the purpose of
+        // hit-testing as well.
+
+        if (ch != NULL)
+        {           
+            TopMostResult te = ch->GetTopMostMouseEntity(localPt, pdescr);
+
+            if (te == DisplayObjectBase::TopMost_Found)
+            {
+                //if (IsMouseChildrenDisabledFlagSet() || (pdescr->pResult && pdescr->pResult->IsMouseDisabledFlagSet()))
+                if (_this->IsMouseChildrenDisabledFlagSet())
+                    pdescr->pResult = _this;
+                // AS3 may have a hitarea with mouseEnabled = false: still should go through regular
+                // hitArea checks. AS3/test_hitArea_mouseDisabled4.swf
+                if (pdescr->pResult && pdescr->pResult->IsMouseDisabledFlagSet())
+                {
+                    pdescr->pResult = _this;
+                    foundButMouseDisabled = true;
+                    continue;
+                }
+            }
+            else if (te == DisplayObjectBase::TopMost_Continue && pdescr->pResult)
+            {
+                // if continue,
+                savedTe     = DisplayObjectBase::TopMost_Found;
+                savedDescr  = *pdescr;
+            }
+
+            // It is either child or us; no matter - button mode takes precedence.
+            // Note, if both - the hitArea and the holder of hitArea have button handlers
+            // then the holder (parent) takes precedence; otherwise, if only the hitArea has handlers
+            // it should be returned.
+            if (te == DisplayObjectBase::TopMost_Found || savedTe == DisplayObjectBase::TopMost_Found)
+            {
+                // In AS3, allow hitArea and hitArea's children to receive mouse
+                // events (unless they are disabled implicitly).
+                // See AS3/test_hitArea_mouseDisabledN.swfs
+                // However, the change conflicts with AS3/test_hitArea4.swf, disabling for now.
+                if (phitAreaHolder)
+                {
+                    pdescr->pHitArea = _this;
+                }
+                else 
+                {
+                    if (phitArea)
+                    {
+                        // hitArea must be ignored if hit occurred on a child that is InteractiveObject.
+                        // In this case the child still should get the event (test_hitarea_and_child_mc.swf).
+                        if (!pdescr->pResult || pdescr->pResult == _this || !pdescr->pResult->IsInteractiveObject())
+                        {
+                            if (phitArea == pdescr->pHitArea)
+                            {
+                                pdescr->pResult = _this;
+                                return DisplayObjectBase::TopMost_Found;
+                            }
+                            else
+                            {
+                                pdescr->pResult = NULL;
+                                savedTe = DisplayObjectBase::TopMost_FoundNothing;
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+            if (te == DisplayObjectBase::TopMost_Found) 
+            {
+                if (phitAreaHolder && pdescr->pResult == _this)
+                    pdescr->pHitArea = _this;
+                return te;
+            }
+        }
+    }
+    // if we are here then we are going to return 'Continue'. But first, check
+    // if there is a hitArea, and if there is one check if we hit into it. Otherwise,
+    // return 'NotFound'. Refer to AS3 test_hitArea1.swf,test_hitArea2.swf,test_hitArea3.swf.
+    if (phitArea)
+    {
+        // hitArea must be ignored if hit occurred on a child that is InteractiveObject.
+        // In this case the child still should get the event (test_hitarea_and_child_mc.swf).
+        if (!pdescr->pResult || pdescr->pResult == _this || !pdescr->pResult->IsInteractiveObject())
+        {
+            if (phitArea == pdescr->pHitArea)
+            {
+                pdescr->pResult = _this;
+                return DisplayObjectBase::TopMost_Found;
+            }
+            else
+            {
+                pdescr->pResult = NULL;
+                return DisplayObjectBase::TopMost_FoundNothing;
+            }
+        }
+    }
+    if (savedTe == DisplayObjectBase::TopMost_Found)
+    {
+        *pdescr = savedDescr;
+        if (phitAreaHolder && pdescr->pResult == _this)
+            pdescr->pHitArea = _this;
+        return DisplayObjectBase::TopMost_Found;
+    }
+    pdescr->LocalPt = localPt;
+    if (foundButMouseDisabled)
+    {
+        pdescr->pResult = _this;
+        if (phitAreaHolder)
+            pdescr->pHitArea = _this;
+        return DisplayObjectBase::TopMost_Found;
+    }
+    else
+        pdescr->pResult = NULL;
+
+    if (phitAreaHolder && pdescr->pResult == _this)
+        pdescr->pHitArea = _this;
+    return DisplayObjectBase::TopMost_Continue;
 }
 
 void AvmDisplayObjContainer::FillTabableArray(InteractiveObject::FillTabableParams* params)
@@ -74,10 +228,19 @@ DisplayObjectBase*  AvmDisplayObjContainer::RemoveChild(DisplayObjectBase* ch)
 {
     Ptr<DisplayObjectBase> sch = ch;
 
+    // OnRemoved should be called BEFORE the obj is actually removed
+    // for correct REMOVE_FROM_STAGE events order.
+	ToAvmDisplayObj(sch->CharToScriptableObject())->OnRemoved(false);
+
     if (ch->IsScriptableObject())
     {
         DisplayObject* cch = ch->CharToScriptableObject_Unsafe();
-        cch->SetMask(NULL);
+
+        // If clip depth is zero, it means that the mask was set using the .mask property. In this case,
+        // the mask is not removed from the display object, if the object is readded, it would not longer have
+        // its mask set properly.
+        if (ch->GetClipDepth() > 0)
+            cch->SetMask(NULL);
     }
     if (ch->HasIndirectTransform())
         GetMovieImpl()->RemoveTopmostLevelCharacter(ch);
@@ -90,7 +253,6 @@ DisplayObjectBase*  AvmDisplayObjContainer::RemoveChild(DisplayObjectBase* ch)
         return NULL;
     displayList.InvalidateDepthMappings();
     InteractiveObject* intobj = sch->CharToInteractiveObject();
-    ToAvmDisplayObj(sch->CharToScriptableObject())->OnRemoved(false);
     sch->SetParent(NULL); // needs to be done AFTER OnRemoved
 
     if (intobj && intobj->IsInPlayList())
@@ -239,18 +401,29 @@ void AvmDisplayObjContainer::AddChild(DisplayObjectBase* ch)
     }
     displayList.AddEntryAtIndex(GetDispObj(), (unsigned)idx, ch);
     displayList.InvalidateDepthMappings();
+
+    if (ch->IsUnloaded())
+    {
+        ch->SetUnloaded(false);
+        if (ch->IsDisplayObjContainer())
+        {
+            // it was unloaded before, so we need to re-add it into a playlist.
+            GetAS3Root()->AddScriptableMovieClip(ch->CharToDisplayObjContainer_Unsafe());
+        }
+    }
+
     ch->SetParent(GetIntObj());
     ch->SetDepth(DisplayList::INVALID_DEPTH);
-    ch->SetUnloaded(false);
     if (ch->IsInteractiveObject())
     {
         InteractiveObject* intobj = ch->CharToInteractiveObject_Unsafe();
+
         if (intobj->IsInPlayList())
             ToAvmInteractiveObj(intobj)->MoveBranchInPlayList();
     }
+
     DisplayObject* sch = ch->CharToScriptableObject();
     AvmDisplayObj* avmObj = ToAvmDisplayObj(sch);
-    avmObj->SetAppDomain(*AppDomain);
     avmObj->OnAdded(false);
 
     // re-apply scroll rect if it was set
@@ -283,18 +456,28 @@ void AvmDisplayObjContainer::AddChildAt(DisplayObjectBase* ch, unsigned index)
         ToAvmDisplayObjContainer(ch->GetParent()->CharToDisplayObjContainer_Unsafe())->RemoveChild(ch);
     }
     displayList.AddEntryAtIndex(GetDispObj(), index, ch);
+
+    if (ch->IsUnloaded())
+    {
+        ch->SetUnloaded(false);
+        if (ch->IsDisplayObjContainer())
+        {
+            // it was unloaded before, so we need to re-add it into a playlist.
+            GetAS3Root()->AddScriptableMovieClip(ch->CharToDisplayObjContainer_Unsafe());
+        }
+    }
+
     ch->SetParent(GetIntObj());
     ch->SetDepth(DisplayList::INVALID_DEPTH);
-    ch->SetUnloaded(false);
     if (ch->IsInteractiveObject())
     {
         InteractiveObject* intobj = ch->CharToInteractiveObject_Unsafe();
         if (intobj->IsInPlayList())
             ToAvmInteractiveObj(intobj)->MoveBranchInPlayList();
     }
+
     DisplayObject* sch = ch->CharToScriptableObject();
     AvmDisplayObj* avmObj = ToAvmDisplayObj(sch);
-    avmObj->SetAppDomain(*AppDomain);
     avmObj->OnAdded(false);
 
     // re-apply scroll rect if it was set
@@ -440,12 +623,36 @@ void AvmDisplayObjContainer::PropagateEvent(const Instances::fl_events::Event& e
     {
         // iterate through children
         DisplayObjContainer* dobjParent = GetDisplayObjContainer();
-        unsigned i = 0, n = dobjParent->GetNumChildren();
+        unsigned i;
         const DisplayList& dl = dobjParent->GetDisplayList();
-        for (; i < n; ++i)
+
+        // iterate through immutable array
+        for (i = 0; i < dobjParent->GetNumChildren(); ++i)
         {
-            DisplayObjectBase* pcur = dl.GetDisplayObject(i);
-            ToAvmDisplayObj(pcur->CharToScriptableObject())->PropagateEvent(evtProto);
+            Ptr<DisplayObjectBase> curObj = dl.GetDisplayObject(i);
+            AvmDisplayObj* sch = ToAvmDisplayObj(dl.GetDisplayObject(i)->CharToScriptableObject());
+            unsigned modid = dl.GetCurModId();
+            sch->PropagateEvent(evtProto);
+            if (dl.GetCurModId() != modid)
+            {
+                // display list was modified inside the PropagateEvent.
+                // We need to replicate behavior of list (this is how Flash behaves):
+                // a) if elements were added after the current one - continue iterations (incl new ones)
+                // b) if elements were added before the current one - they are ignored; need to reposition
+                //    the cursor, since the index of the cur obj could change;
+                // c) if elements were removed before the current one - continue iterations; need
+                //    to reposition the cursor, since the index of the cur obj could change.
+                // d) if the current element was removed: stop iterations.
+                
+                // find the new index of current obj
+                SPInt k = dl.FindDisplayIndex(curObj);
+                // if not found: the obj was removed by PropagateEvent, finish now
+                if (k < 0)
+                    break;
+
+                // otherwise, use the new index
+                i = unsigned(k);
+            }
         }
     }
 }
@@ -478,7 +685,7 @@ bool AvmDisplayObjContainer::GetObjectsUnderPoint(
         }
     }
 
-    Array<UByte> hitTest;
+    ArrayPOD<UByte> hitTest;
     dobjParent->CalcDisplayListHitTestMaskArray(&hitTest, pt, hitMask);
 
     Matrix2F m;

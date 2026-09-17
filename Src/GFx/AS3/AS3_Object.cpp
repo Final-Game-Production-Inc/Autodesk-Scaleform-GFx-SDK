@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -238,9 +239,9 @@ void Value::ReleaseInternal()
     }
 }
 
-CheckResult Value::Convert2PrimitiveValueUnsafe(Value& result, Hint hint) const
+CheckResult Value::Convert2PrimitiveValueUnsafe(ASStringManager& sm, Value& result, Hint hint) const
 {
-	if (IsPrimitive() || IsNull())
+	if (IsPrimitive())
         result = *this;
     else
     {
@@ -262,7 +263,7 @@ CheckResult Value::Convert2PrimitiveValueUnsafe(Value& result, Hint hint) const
         case kThunkClosure:
         case kVTableInd:
         case kVTableIndClosure:
-            result.SetNumber(0);
+            result.SetNumber(0.0);
 
             // No exceptions.
             return true;
@@ -270,11 +271,96 @@ CheckResult Value::Convert2PrimitiveValueUnsafe(Value& result, Hint hint) const
             break;
         }
 
-        // !!! GetDefaultValue() can throw exceptions.
-        GetObject()->GetDefaultValueUnsafe(result, hint);
+        Object* obj = GetObject();
+        if (obj)
+        {
+            if (!obj->GetDefaultValueUnsafe(result, hint))
+                return false;
+        }
+        else
+        {
+            // Null.
 
-        if (GetObject()->GetVM().IsException())
-            return false;
+#if 0
+            // !!! DO NOT delete this code !!!
+            // Theoretically, we are supposed to run code below.
+            // But because obj == NULL we cannot do that. (We cannot get object's Traits)
+            BuiltinTraitsType tt = obj->GetTraitsType();
+
+            // Unlike, the [[DefaultValue]] method defined by the Object type, 
+            // the XML and XMLList [[DefaultValue]] methods always return a string. 
+            // The hint parameter is ignored
+            if (tt == Traits_XML || tt == Traits_XMLList)
+                hint = Value::hintString;
+
+            if (hint == Value::hintNone)
+            {
+                if (tt == Traits_Date)
+                    hint = Value::hintString;
+                else
+                    hint = Value::hintNumber;
+            }
+#endif
+
+            switch (hint)
+            {
+            case Value::hintNone:
+            case Value::hintNumber:
+                result.SetNumberUnsafe(0.0);
+                break;
+            case Value::hintString:
+                // Should be string.
+                result.AssignUnsafe(sm.CreateConstStringNode("null", 4, 0));
+                break;
+            }
+        }
+    }
+
+    // No exceptions.
+    return true;
+}
+
+CheckResult Value::Convert2PrimitiveValueUnsafeHintNumber(Value& result) const
+{
+	if (IsPrimitive())
+        result = *this;
+    else
+    {
+        // Functions get converted to ZERO.
+        switch (GetKind())
+        {
+        case kNamespace:
+            result = AsNamespace().GetUri();
+            return true;
+        /* DO NOT delete this.
+        // Cases below represent dynamic objects, which may have altered
+        // toString() and valueOf() methods.
+        case kFunction:
+        case kThunkFunction:
+        case kMethodClosure:
+        */
+
+        case kThunk:
+        case kThunkClosure:
+        case kVTableInd:
+        case kVTableIndClosure:
+            result.SetNumber(0.0);
+
+            // No exceptions.
+            return true;
+        default:
+            break;
+        }
+
+        Object* obj = GetObject();
+        if (obj)
+        {
+            if (!obj->GetDefaultValueUnsafe(result, Value::hintNumber))
+                return false;
+        }
+        else
+            // Null.
+            result.SetNumberUnsafe(0.0);
     }
 
     // No exceptions.
@@ -452,6 +538,7 @@ Multiname::Multiname(const VM& vm, const StringDataPtr& qname)
     PostProcessName(false);
 }
 
+
 Multiname::Multiname(const VM& vm, const TypeInfo& ti)
 : Kind(Abc::MN_QName)
 {
@@ -464,6 +551,29 @@ Multiname::Multiname(const VM& vm, const TypeInfo& ti)
 
     Name = sm.CreateConstString(ti.Name);
     PostProcessName(false);
+}
+
+Multiname::Multiname(const Multiname& other)
+: Kind(other.Kind)
+, Obj(other.Obj)
+, Name(other.Name)
+{
+}
+
+bool Multiname::IsAnyType() const
+{
+    bool result = false;
+
+    if (Name.IsNullOrUndefined())
+        result = true;
+    else if (Name.IsString())
+    {
+        const ASString str = Name.AsString();
+
+        result = str.IsEmpty() || str == "*";
+    }
+
+    return result;
 }
 
 bool Multiname::ContainsNamespace(const Instances::fl::Namespace& ns) const
@@ -543,36 +653,15 @@ Instances::fl::Namespace& Multiname::GetNamespace() const
 
 void Multiname::PostProcessName(const bool fromQName)
 {
-    if (Name.IsString())
+    if (Name.IsString() && !fromQName)
     {
+        // '@' in case of QName is just a regular character.
         const ASString name = Name.AsString();
 
-        if (!name.IsEmpty())
+        if (!name.IsEmpty() && name[0] == '@')
         {
-            ASStringManager* sm = name.GetManager();
-
-            switch (name[0])
-            {
-            case '@':
-                if (fromQName)
-                    // '@' in case of QName is just a regular character.
-                    break;
-
-                SetAttr();
-                if (name.GetSize() == 2 && name[1] == '*')
-                    // Name.SetNull(); // Any Type.
-                    Name = sm->CreateEmptyString();
-                else
-                    Name = name.Substring(1, name.GetSize());
-
-                break;
-            case '*':
-                // Name.SetNull(); // Any Type.
-                Name = sm->CreateEmptyString();
-                break;
-            default:
-                break;
-            }
+            SetAttr();
+            Name = name.Substring(1, name.GetSize());
         }
     }
 }
@@ -594,7 +683,7 @@ void FindScopeProperty(
     )
 {
     // [2.3.6]
-    // Typically, the order of the search for resolving multinames is the object’s declared traits, 
+    // Typically, the order of the search for resolving multinames is the objectâ€™s declared traits, 
     // its dynamic properties, and finally the prototype chain.
     // The dynamic properties and prototype chain search will only happen if the
     // multiname contains the public namespace (dynamic properties are always in the public namespace in
@@ -770,7 +859,7 @@ FindClassTraits(VMAbcFile& file, const Abc::Multiname& mn)
         const Abc::NamespaceSetInfo& nss = mn.GetNamespaceSetInfo(cp);
         const UInt8* ptr = nss.GetData();
         UInt32 size;
-        UInt32 ns_ind;
+        SInt32 ns_ind;
 
         Abc::Read(ptr, size);
         for(UInt32 i = 0; i < size; ++i)
@@ -1197,60 +1286,38 @@ void FindPropertyWith(PropRef& result, VM& vm, const Value& scope, const Multina
 ///////////////////////////////////////////////////////////////////////////
 CheckResult ExecutePropertyUnsafe(VM& vm, const Multiname& prop_name, const Value& _this, Value& result, unsigned argc, const Value* argv)
 {
+    if (_this.IsObject() && _this.GetObject())
+        return _this.GetObject()->ExecutePropertyUnsafe(prop_name, result, argc, argv);
+
     PropRef prop;
 
-    AS3::FindObjProperty(prop, vm, _this, prop_name);
+    AS3::FindObjProperty(prop, vm, _this, prop_name, FindCall);
 
     if (prop)
     {
         Value funct;
 
-        if (prop.GetSlotValueUnsafe(vm, funct))
+        if (prop.GetSlotValueUnsafe(vm, funct, SlotInfo::valExecute))
         {
             if (funct.IsNullOrUndefined())
-                // A TypeError is thrown if obj is null or undefined.
-                vm.ThrowTypeError(VM::Error(VM::eConvertNullToObjectError, vm));
-            else
             {
-                vm.ExecuteUnsafe(funct, _this, result, argc, argv);
-                return !vm.IsException();
-            }
-        }
-    }
-
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////
-CheckResult CallPropertyUnsafe(VM& vm, const ASString& name, const Value& _this, Value& result, unsigned argc, const Value* argv)
-{
-    const Multiname mn(vm.GetPublicNamespace(), name);
-    PropRef prop;
-
-    FindObjProperty(prop, vm, _this, mn, FindCall);
-
-    if (prop)
-    {
-        Value func;
-
-        if (prop.GetSlotValueUnsafe(vm, func, SlotInfo::valExecute))
-        {
-            // A TypeError is thrown if the property specified by the
-            // multiname is null or undefined.
-            if (func.IsNullOrUndefined())
-            {
+                // A TypeError is thrown if the property specified by the
+                // multiname is null or undefined.
                 vm.ThrowTypeError(VM::Error(VM::eCallOfNonFunctionError, vm
-                    SF_DEBUG_ARG(name)
+                    SF_DEBUG_ARG(prop_name.GetName())
                     ));
             }
             else
             {
                 // The [[Call]] property is invoked on the value of the resolved property with the arguments 
                 // obj, arg1, ..., argn. 
-                vm.ExecuteUnsafe(func, _this, result, argc, argv);
+                vm.ExecuteUnsafe(funct, _this, result, argc, argv);
             }
         }
-    } 
+        else
+            // We should throw an exception here.
+            return false;
+    }
     else
     {
         // No property ...
@@ -1260,13 +1327,13 @@ CheckResult CallPropertyUnsafe(VM& vm, const ASString& name, const Value& _this,
             // But we do not create it for the time being. We just throw
             // an exception.
             vm.ThrowTypeError(VM::Error(VM::eCallOfNonFunctionError, vm
-                SF_DEBUG_ARG(name)
+                SF_DEBUG_ARG(prop_name.GetName())
                 ));
         }
         else
         {
             vm.ThrowReferenceError(VM::Error(VM::ePropertyNotFoundError, vm
-                SF_DEBUG_ARG(name)
+                SF_DEBUG_ARG(prop_name.GetName())
                 SF_DEBUG_ARG(_this)
                 ));
         }
@@ -1327,7 +1394,10 @@ void Object::ForEachChild_GC_NoValues(Collector* prcc, GcOp op) const
 
 void Object::ValueOfUnsafe(Value& result)
 {
-	ExecutePropertyUnsafe(GetStringManager().GetBuiltin(AS3Builtin_valueOf), result, 0, NULL);
+    const ASString& name = GetStringManager().GetBuiltin(AS3Builtin_valueOf);
+    Instances::fl::Namespace& ns = GetVM().GetPublicNamespace();
+
+	ExecutePropertyUnsafe(Multiname(ns, name), result, 0, NULL).DoNotCheck();
 }
 
 CheckResult Object::SetSlotValue(SlotIndex ind, const Value& value)
@@ -1335,10 +1405,22 @@ CheckResult Object::SetSlotValue(SlotIndex ind, const Value& value)
     return GetTraits().SetSlotValue(AbsoluteIndex(ind, GetTraits()), value, this);
 }
 
-void Object::GetDefaultValueUnsafe(Value& result, Value::Hint hint)
+bool Object::HasProperty(const Multiname& prop_name, bool check_prototype)
+{
+    PropRef result;
+    FindProperty(result, prop_name, check_prototype ? FindGet: FindSet);
+    return result;
+}
+
+void Object::GetDescendants(Instances::fl::XMLList& /*list*/, const Multiname& /*prop_name*/)
+{
+}
+
+CheckResult Object::GetDefaultValueUnsafe(Value& result, Value::Hint hint)
 {
     StringManager &sm = GetStringManager();
     VM& vm = GetVM();
+    Instances::fl::Namespace& ns = vm.GetPublicNamespace();
     BuiltinTraitsType tt = GetTraitsType();
 
     // Unlike, the [[DefaultValue]] method defined by the Object type, 
@@ -1361,33 +1443,26 @@ void Object::GetDefaultValueUnsafe(Value& result, Value::Hint hint)
 	{
 		// toString part.
 		{
-			if (!GetSlotValueUnsafe(sm.GetBuiltin(AS3Builtin_toString), vm.GetPublicNamespace(), value))
-				return;
+            const ASString& name = sm.GetBuiltin(AS3Builtin_toString);
+            if (!ExecutePropertyUnsafe(Multiname(ns, name), value, 0, NULL))
+                // Exception
+                return false;
 
-			if (value.IsCallable())
-            {
-                Value v;
-				ExecuteValueUnsafe(value, v, 0, NULL);
-                result.Swap(v);
-            }
+            result.Swap(value);
 
-			if (vm.IsException() || result.IsPrimitive())
-				return;
+			if (result.IsPrimitive())
+				return true;
 		}
 
 		// valueOf part.
 		{
-            Value value;
+            Value v;
+            const ASString& name = sm.GetBuiltin(AS3Builtin_valueOf);
+            if (!ExecutePropertyUnsafe(Multiname(ns, name), v, 0, NULL))
+                // Exception.
+                return false;
 
-			if (!GetSlotValueUnsafe(sm.GetBuiltin(AS3Builtin_valueOf), vm.GetPublicNamespace(), value))
-				return;
-
-			if (value.IsCallable())
-            {
-                Value v;
-				ExecuteValueUnsafe(value, v, 0, NULL);
-                result.Swap(v);
-            }
+            result.Swap(v);
 
             /*
 			if (vm.IsException() || result.IsPrimitive())
@@ -1399,33 +1474,24 @@ void Object::GetDefaultValueUnsafe(Value& result, Value::Hint hint)
 	{
 		// valueOf part.
 		{
-			if (!GetSlotValueUnsafe(sm.GetBuiltin(AS3Builtin_valueOf), vm.GetPublicNamespace(), value))
-				return;
+            const ASString& name = sm.GetBuiltin(AS3Builtin_valueOf);
+            if (!ExecutePropertyUnsafe(Multiname(ns, name), value, 0, NULL))
+                return false;
 
-			if (value.IsCallable())
-            {
-                Value v;
-				ExecuteValueUnsafe(value, v, 0, NULL);
-                result.Swap(v);
-            }
+            result.Swap(value);
 
-			if (vm.IsException() || result.IsPrimitive())
-				return;
+			if (result.IsPrimitive())
+				return true;
 		}
 
 		// toString part.
 		{
-            Value value;
+            Value v;
+            const ASString& name = sm.GetBuiltin(AS3Builtin_toString);
+            if (!ExecutePropertyUnsafe(Multiname(ns, name), v, 0, NULL))
+                return false;
 
-			if (!GetSlotValueUnsafe(sm.GetBuiltin(AS3Builtin_toString), vm.GetPublicNamespace(), value))
-				return;
-
-			if (value.IsCallable())
-            {
-                Value v;
-				ExecuteValueUnsafe(value, v, 0, NULL);
-                result.Swap(v);
-            }
+            result.Swap(v);
 
             /*
 			if (vm.IsException() || result.IsPrimitive())
@@ -1433,6 +1499,8 @@ void Object::GetDefaultValueUnsafe(Value& result, Value::Hint hint)
             */
 		}
 	}
+
+    return true;
 }
 
 void Object::FindProperty(PropRef& result, const Multiname& mn, FindPropAttr attr)
@@ -1481,37 +1549,48 @@ void Object::FindProperty(PropRef& result, const Multiname& mn, FindPropAttr att
     }
 }
 
-void Object::ExecutePropertyUnsafe(const ASString& name, Value& result, unsigned argc, const Value* argv)
+CheckResult Object::ExecutePropertyUnsafe(const Multiname& prop_name, Value& result, unsigned argc, const Value* argv)
 {
-    const Multiname mn(GetVM().GetPublicNamespace(), name);
     PropRef prop;
+    const Value _this(this);
+    VM& vm = GetVM();
 
-    AS3::FindObjProperty(prop, GetVM(), Value(this), mn);
+    AS3::FindObjProperty(prop, vm, _this, prop_name, FindCall);
     
     if (prop)
     {
-        Value _this;
+        Value funct;
         
-        if (!prop.GetSlotValueUnsafe(GetVM(), _this))
-            return;
-        
-        if (_this.IsNullOrUndefined())
+        if (prop.GetSlotValueUnsafe(vm, funct, SlotInfo::valExecute))
         {
-            // A TypeError is thrown if obj is null or undefined.
-            GetVM().ThrowTypeError(VM::Error(VM::eConvertUndefinedToObjectError, GetVM()));
-            return;
+            if (funct.IsNullOrUndefined())
+                // A TypeError is thrown if the property specified by the multiname is null or undefined.
+                vm.ThrowTypeError(VM::Error(VM::eCallOfNonFunctionError, vm SF_DEBUG_ARG(prop_name.GetName())));
+            else
+                vm.ExecuteUnsafe(funct, _this, result, argc, argv);
         }
-
-		ExecuteValueUnsafe(_this, result, argc, argv);
-
-        // !!! Code below is not correct.
-        //GetVM().Execute(prop.GetValue(), prop.GetObject(), result, argc, argv);
+        else 
+            // We should throw an exception here.
+            return false;
     } else
     {
-        // Assert for the time being.
-        SF_ASSERT(false);
-        GetVM().ThrowReferenceError(VM::Error(VM::ePropertyNotFoundError, GetVM() SF_DEBUG_ARG(mn.GetName()) SF_DEBUG_ARG(Value(this))));
+        // No property ...
+        if (vm.GetValueTraits(_this).IsDynamic() || _this.IsPrimitive())
+        {
+            // In case of a dynamic object property might be created.
+            // But we do not create it for the time being. We just throw an exception.
+            vm.ThrowTypeError(VM::Error(VM::eCallOfNonFunctionError, vm SF_DEBUG_ARG(prop_name.GetName())));
+        }
+        else
+        {
+            vm.ThrowReferenceError(VM::Error(VM::ePropertyNotFoundError, vm
+                SF_DEBUG_ARG(prop_name.GetName())
+                SF_DEBUG_ARG(_this)
+                ));
+        }
     }
+
+    return !vm.IsException();
 }
 
 void Object::AddDynamicSlotValuePair(const ASString& prop_name, const Value& v, SlotInfo::Attribute a)
@@ -1636,8 +1715,14 @@ PropRef Object::FindDynamicSlot(const Multiname& mn)
 #ifdef GFX_AS_ENABLE_USERDATA
 void    Object::SetUserData(Movie* pmovieView, ASUserData* puserData, bool isdobj)
 {
-    if (pUserDataHolder) { delete pUserDataHolder; }
+    if (pUserDataHolder)
+    {
+        pUserDataHolder->NotifyDestroy(this);
+        delete pUserDataHolder;
+    }
+
     pUserDataHolder = SF_HEAP_AUTO_NEW(this) UserDataHolder(pmovieView, puserData);
+
     if (puserData)
     {
         MovieImpl* pmovieImpl = static_cast<MovieImpl*>(pmovieView);
@@ -1647,17 +1732,18 @@ void    Object::SetUserData(Movie* pmovieView, ASUserData* puserData, bool isdob
 
 Object::UserDataHolder::~UserDataHolder() 
 { 
-    if (pUserData)
-        pUserData->SetLastObjectValue(NULL, NULL, false);
 }
 
-void Object::UserDataHolder::NotifyDestroy(Object* pthis) const
+void Object::UserDataHolder::NotifyDestroy(Object* pthis)
 {
     if (pUserData)  
     {
         // Remove user data weak ref
         pUserData->SetLastObjectValue(NULL, NULL, false);
-        pUserData->OnDestroy(pMovieView, pthis);                
+        pUserData->OnDestroy(pMovieView, pthis);
+        
+        // Clear user data pointer so destructor doesn't access a bad pointer
+        pUserData = NULL;
     }
 }
 #endif
@@ -2015,10 +2101,10 @@ void Class::toString(ASString& result)
     result = GetASString("[class " + GetTraits().GetName() + "]");
 }
 
-Class& Class::ApplyTypeArgs(unsigned argc, const Value* argv)
+const ClassTraits::Traits& Class::ApplyTypeArgs(unsigned argc, const Value* argv)
 {
     SF_UNUSED2(argc, argv);
-    return *this;
+    return GetClassTraits();
 }
 
 void Class::Call(const Value& /*_this*/, Value& result, unsigned argc, const Value* const argv)
@@ -2085,6 +2171,7 @@ void  Value::Assign(Object* v)
 
 void  Value::AssignUnsafe(Object* v)
 {
+    SF_ASSERT(!IsRefCounted());
     SetKind(kObject);
     value = v;
     if (v)
@@ -2102,6 +2189,7 @@ void Value::Assign(Class* v)
 
 void Value::AssignUnsafe(Class* v)
 {
+    SF_ASSERT(!IsRefCounted());
     SetKind(kClass);
     value = v;
     if (v)
@@ -2118,6 +2206,7 @@ void  Value::Pick(Object* v)
 
 void  Value::PickUnsafe(Object* v)
 {
+    SF_ASSERT(!IsRefCounted());
     SetKind(kObject);
     value = v;
     // No AddRef() is necessary.
@@ -2133,6 +2222,7 @@ void Value::Pick(Class* v)
 
 void Value::PickUnsafe(Class* v)
 {
+    SF_ASSERT(!IsRefCounted());
     SetKind(kClass);
     value = v;
     // No AddRef() is necessary.

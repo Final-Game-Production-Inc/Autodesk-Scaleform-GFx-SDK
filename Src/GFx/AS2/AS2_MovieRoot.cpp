@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -84,7 +85,7 @@ void MovieRoot::Shutdown()
     pGlobalContext->PreClean();
     ActionQueue.Clear();
 
-    MemContext->ASGC->ForceCollect(); // !AB @TODO: make sure this is the right place for it!
+    MemContext->ASGC->ForceCollect(pMovieImpl->AdvanceStats); // !AB @TODO: make sure this is the right place for it!
 #endif // SF_NO_GC
 }
 
@@ -133,7 +134,7 @@ void MovieRoot::AdvanceFrame(bool nextFrame)
 #ifdef GFX_AS_ENABLE_GC
     SF_AMP_SCOPE_TIMER(pMovieImpl->AdvanceStats, "MovieRoot::AdvanceFrame", Amp_Profile_Level_Low);
     if (nextFrame)
-        MemContext->ASGC->AdvanceFrame(&NumAdvancesSinceCollection, &LastCollectionFrame);
+        MemContext->ASGC->AdvanceFrame(&NumAdvancesSinceCollection, &LastCollectionFrame, pMovieImpl->AdvanceStats);
 #endif // SF_NO_GC
 }
 
@@ -141,7 +142,7 @@ void MovieRoot::AdvanceFrame(bool nextFrame)
 void MovieRoot::ForceCollect(unsigned)
 {
 #ifdef GFX_AS_ENABLE_GC
-    MemContext->ASGC->ForceCollect();
+    MemContext->ASGC->ForceCollect(pMovieImpl->AdvanceStats);
 #endif // SF_NO_GC
 }
 
@@ -152,7 +153,7 @@ void MovieRoot::ForceEmergencyCollect()
 #ifdef GFX_AS_ENABLE_GC
     // If garbage collection is used - force collect. Use ForceEmergencyCollect - it
     // guarantees that no new allocations will be made during the collection.
-    MemContext->ASGC->ForceEmergencyCollect();
+    MemContext->ASGC->ForceEmergencyCollect(pMovieImpl->AdvanceStats);
 #endif // SF_NO_GC
 }
 
@@ -726,13 +727,13 @@ void MovieRoot::ClearDisplayList()
 void    MovieRoot::AddLoadQueueEntryMT(LoadQueueEntry* pentry)
 {
     LoadQueueEntryMT* pentryMT = NULL;
-    if (pentry->Type & GFxAS2LoadQueueEntry::LTF_VarsFlag)
+    if (pentry->Type & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_VarsFlag))
     {
 #ifdef GFX_AS2_ENABLE_LOADVARS
         pentryMT = SF_HEAP_NEW(GetMovieHeap()) LoadQueueEntryMT_LoadVars(pentry, pMovieImpl);
 #endif
     }
-    else if (pentry->Type & GFxAS2LoadQueueEntry::LTF_XMLFlag)
+    else if (pentry->Type & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_XMLFlag))
     {
 #ifdef GFX_ENABLE_XML
         if (pentry->URL.GetLength())
@@ -753,7 +754,7 @@ void    MovieRoot::AddLoadQueueEntryMT(LoadQueueEntry* pentry)
         }
 #endif
     } 
-    else if (pentry->Type & GFxAS2LoadQueueEntry::LTF_CSSFlag)
+    else if (pentry->Type & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_CSSFlag))
     {
 #ifdef GFX_ENABLE_CSS
         if (pentry->URL.GetLength())
@@ -1095,16 +1096,16 @@ void MovieRoot::AddXmlLoadQueueEntry(Object* pxmlobj, XMLFileLoader* pxmlLoader,
 void    MovieRoot::ProcessLoadQueueEntry(LoadQueueEntry *pentry, LoadStates* pls)
 {
 #ifdef GFX_AS2_ENABLE_LOADVARS
-    if ((pentry->Type & LoadQueueEntry::LTF_VarsFlag) != 0)
+    if ((pentry->Type & static_cast<unsigned int>(LoadQueueEntry::LTF_VarsFlag)) != 0)
     {
         ProcessLoadVars(pentry, pls);
     }
 #ifdef GFX_ENABLE_XML
-    else if ((pentry->Type & LoadQueueEntry::LTF_XMLFlag) != 0)
+    else if ((pentry->Type & static_cast<unsigned int>(LoadQueueEntry::LTF_XMLFlag)) != 0)
         ProcessLoadXML(pentry, pls);
 #endif
 #ifdef GFX_ENABLE_CSS
-    else if ((pentry->Type & LoadQueueEntry::LTF_CSSFlag) != 0)
+    else if ((pentry->Type & static_cast<unsigned int>(LoadQueueEntry::LTF_CSSFlag)) != 0)
         ProcessLoadCSS(pentry, pls);
 #endif
     else
@@ -1117,7 +1118,7 @@ void    MovieRoot::ProcessLoadQueueEntry(LoadQueueEntry *pentry, LoadStates* pls
 void    MovieRoot::ProcessLoadMovieClip(LoadQueueEntry *p_entry, LoadStates* pls)
 {
     SF_ASSERT(p_entry);
-    SF_ASSERT((p_entry->Type & GFxAS2LoadQueueEntry::LTF_VarsFlag) == 0);
+    SF_ASSERT((static_cast<unsigned int>(p_entry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_VarsFlag)) == 0);
 
     GFxAS2LoadQueueEntry *pentry = static_cast<GFxAS2LoadQueueEntry*>(p_entry);
     // Obtain level0 path before it has a chance to be unloaded below.
@@ -1145,7 +1146,7 @@ void    MovieRoot::ProcessLoadMovieClip(LoadQueueEntry *p_entry, LoadStates* pls
     {
         // This is loadMovie, not level.
         SF_ASSERT(pentry->Level == -1);
-        SF_ASSERT(!(pentry->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag));
+        SF_ASSERT(!(static_cast<unsigned int>(pentry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_LevelFlag)));
 
         // Make sure we have character targets and parents.
         //!AB: We need to get the character by name first time. It is kind of weird but
@@ -1173,7 +1174,7 @@ void    MovieRoot::ProcessLoadMovieClip(LoadQueueEntry *p_entry, LoadStates* pls
     }
     else if (pentry->Level != -1)
     {
-        SF_ASSERT(pentry->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag);
+        SF_ASSERT(static_cast<unsigned int>(pentry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_LevelFlag));
         if (GetLevelMovie(pentry->Level))
             stripped = ((GetLevelMovie(pentry->Level)->GetResourceMovieDef()->GetSWFFlags()
             & MovieInfo::SWF_Stripped) != 0);
@@ -1383,7 +1384,7 @@ void    MovieRoot::ProcessLoadMovieClip(LoadQueueEntry *p_entry, LoadStates* pls
     else
     {
         // Level loading.
-        SF_ASSERT(pentry->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag);           
+        SF_ASSERT(static_cast<unsigned int>(pentry->Type)& static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_LevelFlag));
         if (pnewChar)
         {
             ToAvmSprite(pnewChar)->SetLevel(pentry->Level);
@@ -1459,7 +1460,7 @@ void    MovieRoot::ProcessLoadMovieClip(LoadQueueEntry *p_entry, LoadStates* pls
 void    MovieRoot::ProcessLoadXML(LoadQueueEntry *pentry, LoadStates* pls)
 {
     SF_ASSERT(pentry);
-    SF_ASSERT((pentry->Type & GFxAS2LoadQueueEntry::LTF_XMLFlag) != 0);
+    SF_ASSERT((static_cast<unsigned int>(pentry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_XMLFlag)) != 0);
 
     // Obtain level0 path before it has a chance to be unloaded below.
     String level0Path;
@@ -1483,7 +1484,7 @@ void    MovieRoot::ProcessLoadXML(LoadQueueEntry *pentry, LoadStates* pls)
 void    MovieRoot::ProcessLoadCSS(LoadQueueEntry *pentry, LoadStates* pls)
 {
     SF_ASSERT(pentry);
-    SF_ASSERT((pentry->Type & GFxAS2LoadQueueEntry::LTF_CSSFlag) != 0);
+    SF_ASSERT((static_cast<unsigned int>(pentry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_CSSFlag)) != 0);
 
     // Obtain level0 path before it has a chance to be unloaded below.
     String level0Path;
@@ -1546,7 +1547,7 @@ void MovieRoot::DoProcessLoadVars
         else
         {
             // Level loading
-            SF_ASSERT(pentry->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag);           
+            SF_ASSERT(static_cast<unsigned int>(pentry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_LevelFlag));
             // use MovieLevels to get the appropriate level, and
             // add the variables into the level's sprite
             // find the right level movie
@@ -1571,7 +1572,7 @@ void MovieRoot::DoProcessLoadVars
 void    MovieRoot::ProcessLoadVars(LoadQueueEntry *p_entry, LoadStates* pls)
 {
     SF_ASSERT(p_entry);
-    SF_ASSERT((p_entry->Type & GFxAS2LoadQueueEntry::LTF_VarsFlag) != 0);
+    SF_ASSERT((static_cast<unsigned int>(p_entry->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_VarsFlag)) != 0);
 
     GFxAS2LoadQueueEntry *pentry = static_cast<GFxAS2LoadQueueEntry*>(p_entry);
     // Obtain level0 path before it has a chance to be unloaded below.
@@ -1598,7 +1599,46 @@ void    MovieRoot::ProcessLoadVars(LoadQueueEntry *p_entry, LoadStates* pls)
 
             // File loading protocol
             Ptr<File> pfile;
-            pfile = *pls->OpenFile(fileName.ToCStr());
+            Array<UByte> bytes;
+            if (URLBuilder::IsProtocol(fileName))
+            {
+#ifdef SF_ENABLE_HTTP_LOADING
+                URLBuilder::UrlMethod sendUrlRequest = URLBuilder::Url_Method_None;
+                switch (pentry->Method)
+                {
+                case LoadQueueEntry::LM_Get:
+                    sendUrlRequest = URLBuilder::Url_Method_Get;
+                    break;
+                case LoadQueueEntry::LM_Post:
+                    sendUrlRequest = URLBuilder::Url_Method_Post;
+                    break;
+                case LoadQueueEntry::LM_Put:
+                    sendUrlRequest = URLBuilder::Url_Method_Put;
+                    break;
+                case LoadQueueEntry::LM_Delete:
+                    sendUrlRequest = URLBuilder::Url_Method_Delete;
+                    break;
+                case LoadQueueEntry::LM_None:
+                    break;
+                default:
+                    SF_ASSERT(false); // Unsupported method
+                    break;
+                }
+
+                if (sendUrlRequest != URLBuilder::Url_Method_None)
+                {
+                    if (URLBuilder::SendURLRequest(&bytes, fileName, sendUrlRequest)
+                        && !bytes.IsEmpty())
+                    {
+                        pfile = *SF_NEW MemoryFile(fileName, bytes.GetDataPtr(), (int)bytes.GetSize());
+                    }
+                }
+#endif
+            }
+            else
+            {
+                pfile = *pls->OpenFile(fileName.ToCStr());
+            }
             if (pfile)
             {
                 if (pentry->LoadVarsHolder.IsObject())
@@ -2517,7 +2557,7 @@ BytesLoaded(0), FirstFrameLoaded(false)
     {
         // This is loadMovie, not level.
         SF_ASSERT(qe->Level == -1);
-        SF_ASSERT(!(qe->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag));
+        SF_ASSERT(!(static_cast<unsigned int>(qe->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_LevelFlag)));
 
         // Make sure we have character targets and parents.
         Ptr<DisplayObject> poldChar = qe->pCharacter->ResolveCharacter(pMovieImpl);
@@ -2528,7 +2568,7 @@ BytesLoaded(0), FirstFrameLoaded(false)
     else if (qe->Level != -1)
     {
         MovieRoot* as2mr = static_cast<MovieRoot*>(pMovieImpl->pASMovieRoot.GetPtr());
-        SF_ASSERT(qe->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag);
+        SF_ASSERT(static_cast<unsigned int>(qe->Type) & static_cast<unsigned int>(GFxAS2LoadQueueEntry::LTF_LevelFlag));
         if (as2mr->GetLevelMovie(qe->Level))
             stripped = ((as2mr->GetLevelMovie(qe->Level)->GetResourceMovieDef()->GetSWFFlags()
             & MovieInfo::SWF_Stripped) != 0);
@@ -2558,316 +2598,343 @@ bool GFxAS2LoadQueueEntryMT_LoadMovie::LoadFinished()
 
     GFxAS2LoadQueueEntry* qe = static_cast<GFxAS2LoadQueueEntry*>(pQueueEntry);
     MovieRoot*   root = ToAS2Root(pMovieImpl);
-    if (btaskDone)
+    if (!btaskDone)
     {
-        // make sure that the character that we want to replace is alive.
-        if (!pOldChar && qe->pCharacter)
+        return false;
+    }
+    // make sure that the character that we want to replace is alive.
+    if (!pOldChar && qe->pCharacter)
+    {
+        //!AB: We need to get the character by name first time. It is kind of weird but
+        // it seems that is how Flash works. For example, we have a movieclip 'mc'
+        // and it already contains child 'holder'. Then we create an empty movie clip
+        // within 'mc' and call it 'holder' as well. If we resolve string 'mc.holder' to
+        // a character when the first (native) 'holder' will be returned. However, if we 
+        // use returning value from createEmptyMovieClip we will have a pointer to the new
+        // 'holder'. Now, we call loadMovie using the pointer returned from createEmptyMovieClip.
+        // We expect, that movie will be loaded into newly created 'holder'. However, it loads
+        // it into the native 'holder'. So, looks like the implementation of 'loadMovie' always
+        // resolve character by name. Test file: Test\LoadMovie\test_loadmovie_with_two_same_named_clips.swf 
+        DisplayObject* objChar = qe->pCharacter->ForceResolveCharacter(pMovieImpl);
+        if (!objChar)
         {
-            //!AB: We need to get the character by name first time. It is kind of weird but
-            // it seems that is how Flash works. For example, we have a movieclip 'mc'
-            // and it already contains child 'holder'. Then we create an empty movie clip
-            // within 'mc' and call it 'holder' as well. If we resolve string 'mc.holder' to
-            // a character when the first (native) 'holder' will be returned. However, if we 
-            // use returning value from createEmptyMovieClip we will have a pointer to the new
-            // 'holder'. Now, we call loadMovie using the pointer returned from createEmptyMovieClip.
-            // We expect, that movie will be loaded into newly created 'holder'. However, it loads
-            // it into the native 'holder'. So, looks like the implementation of 'loadMovie' always
-            // resolve character by name. Test file: Test\LoadMovie\test_loadmovie_with_two_same_named_clips.swf 
-            DisplayObject* objChar = qe->pCharacter->ForceResolveCharacter(pMovieImpl);
-            if (!objChar)
+            Sprite* pmovie0 = root->GetLevelMovie(0);
+            if (pmovie0)
             {
-                Sprite* pmovie0 = root->GetLevelMovie(0);
-                if (pmovie0)
-                {
-                    Environment* penv = ToAvmSprite(pmovie0)->GetASEnvironment();
-                    SF_ASSERT(penv);
-                    MovieClipLoader* pmovieClipLoader = 
-                        static_cast<MovieClipLoader*>(qe->MovieClipLoaderHolder.ToObject(penv));
-                    if (pmovieClipLoader)
-                        pmovieClipLoader->NotifyOnLoadError(penv, NULL, "Error", 0);
-                }
-                return true;
-            }
-            pOldChar = objChar->CharToInteractiveObject();
-            //AB: if loading in the character then we need to assign the
-            // same Id as the old character had; this is important to avoid
-            // re-creation of the original character when timeline rollover 
-            // of the parent character occurs.
-            NewCharId = pOldChar->GetId();
-        }
-        // prepare env and listener object.
-        Sprite* pmovie0 = root->GetLevelMovie(0);
-        // Just finish loading if _level0 has already been unloaded
-        if (!pmovie0)
-            return true;
-
-        Environment* penv0 = ToAvmSprite(pmovie0)->GetASEnvironment();
-        SF_ASSERT(penv0);
-        MovieClipLoader* pmovieClipLoader = 
-            static_cast<MovieClipLoader*>(qe->MovieClipLoaderHolder.ToObject(penv0));
-        bool extensions = penv0->CheckExtensions();
-        penv0   = NULL; // can't use later, might be invalid!
-        pmovie0 = NULL; // can't use later, might be invalid (if loading into _level0)
-
-        // Preload task is finished by now. Check if a movedef is created
-        MovieDefImpl* pdefImpl = pPreloadTask->GetMoiveDefImpl();
-        if (!pdefImpl)
-        {
-            // A moviedef was not created. This means that loader couldn't load a file. 
-            // Creating an empty movie and set it instead of the old one.
-            if (qe->pCharacter)
-            {
-                InteractiveObject* pparent = pOldChar->GetParent();
-                // make sure that the parent of the character that we want to
-                // replace is still alive.
-                if (!pparent)
-                    return true;
-                CharacterCreateInfo ccinfo =
-                    pparent->GetResourceMovieDef()->GetCharacterCreateInfo
-                    (ResourceId(CharacterDef::CharId_EmptyMovieClip));
-                Ptr<Sprite> emptyChar = *(Sprite*)root->pASSupport->CreateCharacterInstance
-                    (pMovieImpl, ccinfo, pparent, NewCharId, CharacterDef::Sprite);
-                //AB: we need to replicate the same CreateFrame, Depth and the Name.
-                // Along with replicated Id this is important to maintain the loaded
-                // movie on the stage. Otherwise, once the parent clip reaches the end
-                // of its timeline the original movieclip will be recreated. Flash
-                // doesn't recreate the original movie clip in this case, and it also
-                // doesn't stop timeline animation for the target movieclip. The only way
-                // to achieve both of these features is to copy Id, CreateFrame, Depth and
-                // Name from the old character to the new one.
-                // See last_to_first_frame_mc_no_reloadX.fla and 
-                // test_timeline_anim_after_loadmovie.swf
-                emptyChar->SetCreateFrame(pOldChar->GetCreateFrame());
-                emptyChar->SetDepth(pOldChar->GetDepth());
-                if (!pOldChar->HasInstanceBasedName())
-                    emptyChar->SetName(pOldChar->GetName());
-                emptyChar->AddToPlayList();
-                ToAvmCharacter(pparent)->ReplaceChildCharacterOnLoad(pOldChar, emptyChar);
-                pOldChar->SetParent(NULL);
-                pOldChar = emptyChar;
-            } else if (qe->Level != -1)
-                pOldChar = root->GetLevelMovie(qe->Level);
-            if (pOldChar && pmovieClipLoader)
-            {
-                Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
+                Environment* penv = ToAvmSprite(pmovie0)->GetASEnvironment();
                 SF_ASSERT(penv);
-                pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "URLNotFound", 0);
+                MovieClipLoader* pmovieClipLoader = 
+                    static_cast<MovieClipLoader*>(qe->MovieClipLoaderHolder.ToObject(penv));
+                if (pmovieClipLoader)
+                    pmovieClipLoader->NotifyOnLoadError(penv, NULL, "Error", 0);
             }
-            if (qe->Level != -1)
-                pMovieImpl->ReleaseLevelMovie(qe->Level);
             return true;
         }
-        else 
+        pOldChar = objChar->CharToInteractiveObject();
+        //AB: if loading in the character then we need to assign the
+        // same Id as the old character had; this is important to avoid
+        // re-creation of the original character when timeline rollover 
+        // of the parent character occurs.
+        NewCharId = pOldChar->GetId();
+    }
+    // prepare env and listener object.
+    Sprite* pmovie0 = root->GetLevelMovie(0);
+    // Just finish loading if _level0 has already been unloaded
+    if (!pmovie0)
+    {
+        return true;
+    }
+
+    Environment* penv0 = ToAvmSprite(pmovie0)->GetASEnvironment();
+    SF_ASSERT(penv0);
+    MovieClipLoader* pmovieClipLoader = 
+        static_cast<MovieClipLoader*>(qe->MovieClipLoaderHolder.ToObject(penv0));
+    bool extensions = penv0->CheckExtensions();
+    penv0   = NULL; // can't use later, might be invalid!
+    pmovie0 = NULL; // can't use later, might be invalid (if loading into _level0)
+
+    // Preload task is finished by now. Check if a movedef is created
+    MovieDefImpl* pdefImpl = pPreloadTask->GetMoiveDefImpl();
+    if (!pdefImpl)
+    {
+        // A moviedef was not created. This means that loader couldn't load a file. 
+        // Creating an empty movie and set it instead of the old one.
+        if (qe->pCharacter)
         {
-            // check if the movie is already unloaded or being unloaded. This is possible when
-            // loadMovie is initiated and then the container movie is removed. In this case 
-            // one of the _parent of pOldChar will be a dangling pointer. Thus, if the movie
-            // is unloaded already - do nothing.
-            if (pOldChar && (pOldChar->IsUnloaded() || pOldChar->IsUnloading()))
+            InteractiveObject* pparent = pOldChar->GetParent();
+            // make sure that the parent of the character that we want to
+            // replace is still alive.
+            if (!pparent)
                 return true;
+            CharacterCreateInfo ccinfo =
+                pparent->GetResourceMovieDef()->GetCharacterCreateInfo
+                (ResourceId(CharacterDef::CharId_EmptyMovieClip));
+            Ptr<Sprite> emptyChar = *(Sprite*)root->pASSupport->CreateCharacterInstance
+                (pMovieImpl, ccinfo, pparent, NewCharId, CharacterDef::Sprite);
+            //AB: we need to replicate the same CreateFrame, Depth and the Name.
+            // Along with replicated Id this is important to maintain the loaded
+            // movie on the stage. Otherwise, once the parent clip reaches the end
+            // of its timeline the original movieclip will be recreated. Flash
+            // doesn't recreate the original movie clip in this case, and it also
+            // doesn't stop timeline animation for the target movieclip. The only way
+            // to achieve both of these features is to copy Id, CreateFrame, Depth and
+            // Name from the old character to the new one.
+            // See last_to_first_frame_mc_no_reloadX.fla and 
+            // test_timeline_anim_after_loadmovie.swf
+            emptyChar->SetCreateFrame(pOldChar->GetCreateFrame());
+            emptyChar->SetDepth(pOldChar->GetDepth());
+            if (!pOldChar->HasInstanceBasedName())
+                emptyChar->SetName(pOldChar->GetName());
+            emptyChar->AddToPlayList();
+            ToAvmCharacter(pparent)->ReplaceChildCharacterOnLoad(pOldChar, emptyChar);
+            pOldChar->SetParent(NULL);
+            pOldChar = emptyChar;
+        } 
+        else if (qe->Level != -1)
+        {
+            pOldChar = root->GetLevelMovie(qe->Level);
+        }
+        if (pOldChar && pmovieClipLoader)
+        {
+            Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
+            SF_ASSERT(penv);
+            pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "URLNotFound", 0);
+        }
+        if (qe->Level != -1)
+        {
+            pMovieImpl->ReleaseLevelMovie(qe->Level);
+        }
+        return true;
+    }
+    // check if the movie is already unloaded or being unloaded. This is possible when
+    // loadMovie is initiated and then the container movie is removed. In this case 
+    // one of the _parent of pOldChar will be a dangling pointer. Thus, if the movie
+    // is unloaded already - do nothing.
+    if (pOldChar && (pOldChar->IsUnloaded() || pOldChar->IsUnloading()))
+    {
+        return true;
+    }
 
-            if (pdefImpl->GetVersion() != ~0u && (pdefImpl->GetVersion() >= 9 && pdefImpl->GetDataDef()->GetASVersion() > 2))
-            {
-                pQueueEntry->Canceled = true;
-                if (root->GetLogState() && !qe->QuietOpen)
-                {
-                    root->GetLogState()->LogScriptWarning("Failed loading SWF \"%s\": ActionScript version mismatch", 
-                        qe->URL.ToCStr());
-                }
-                if (pOldChar && pmovieClipLoader)
-                {
-                    Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
-                    SF_ASSERT(penv);
-                    pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "ActionScriptMismatch", 0);
-                }
+    if (pdefImpl->GetVersion() != ~0u && (pdefImpl->GetVersion() >= 9 && pdefImpl->GetDataDef()->GetASVersion() > 2))
+    {
+        pQueueEntry->Canceled = true;
+        if (root->GetLogState() && !qe->QuietOpen)
+        {
+            root->GetLogState()->LogScriptWarning("Failed loading SWF \"%s\": ActionScript version mismatch", 
+                qe->URL.ToCStr());
+        }
+        if (pOldChar && pmovieClipLoader)
+        {
+            Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
+            SF_ASSERT(penv);
+            pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "ActionScriptMismatch", 0);
+        }
+        return true;
+    }
+
+    // A moviedef was created successfully.
+    if (!CharSwitched)
+    {
+        //Replace the old character with the new sprite. This operation should be done only once
+        //per loading movie.
+        InteractiveObject* pparent = NULL;
+        if (qe->Level != -1)
+        {
+            pMovieImpl->ReleaseLevelMovie(qe->Level);
+            NewCharId = ResourceId(); // Assign invalid id.
+        } 
+        else if (qe->pCharacter)
+        {
+            pparent = pOldChar->GetParent();
+            // make sure that the parent of the character that we want to
+            // replace is still alive.
+            if (!pparent)
                 return true;
-            }
-
-            // A moviedef was created successfully.
-            if (!CharSwitched)
-            {
-                //Replace the old character with the new sprite. This operation should be done only once
-                //per loading movie.
-                InteractiveObject* pparent = NULL;
-                if (qe->Level != -1)
-                {
-                    pMovieImpl->ReleaseLevelMovie(qe->Level);
-                    NewCharId = ResourceId(); // Assign invalid id.
-                } 
-                else if (qe->pCharacter)
-                {
-                    pparent = pOldChar->GetParent();
-                    // make sure that the parent of the character that we want to
-                    // replace is still alive.
-                    if (!pparent)
-                        return true;
-                }
-                CharacterCreateInfo ccinfo(pdefImpl->GetDataDef(), pdefImpl);
-                Ptr<Sprite> pnewChar = *static_cast<Sprite*>(root->GetASSupport()->CreateCharacterInstance(
-                    root->GetMovieImpl(), ccinfo, pparent, NewCharId, CharacterDef::Sprite));
-                pnewChar->SetLoadedSeparately();
+        }
+        CharacterCreateInfo ccinfo(pdefImpl->GetDataDef(), pdefImpl);
+        Ptr<Sprite> pnewChar = *static_cast<Sprite*>(root->GetASSupport()->CreateCharacterInstance(
+            root->GetMovieImpl(), ccinfo, pparent, NewCharId, CharacterDef::Sprite));
+        pnewChar->SetLoadedSeparately();
 //                 Ptr<Sprite> pnewChar = *SF_HEAP_NEW(pMovieRoot->GetMovieHeap())
 //                     Sprite(pdefImpl->GetDataDef(), pdefImpl,
 //                     root, pparent, NewCharId, true);
 
-                if (!extensions)
-                    pnewChar->SetNoAdvanceLocalFlag();
+        if (!extensions)
+            pnewChar->SetNoAdvanceLocalFlag();
 
-                if (qe->pCharacter)
-                {
-                    pnewChar->AddToPlayList();
-                    //AB: we need to replicate the same CreateFrame, Depth and the Name.
-                    // Along with replicated Id this is important to maintain the loaded
-                    // movie on the stage. Otherwise, once the parent clip reaches the end
-                    // of its timeline the original movieclip will be recreated. Flash
-                    // doesn't recreate the original movie clip in this case, and it also
-                    // doesn't stop timeline animation for the target movieclip. The only way
-                    // to achieve both of these features is to copy Id, CreateFrame, Depth and
-                    // Name from the old character to the new one.
-                    // See last_to_first_frame_mc_no_reloadX.fla and 
-                    // test_timeline_anim_after_loadmovie.swf
-                    pnewChar->SetCreateFrame(pOldChar->GetCreateFrame());
-                    pnewChar->SetDepth(pOldChar->GetDepth());
-                    if (!pOldChar->HasInstanceBasedName())
-                        pnewChar->SetName(pOldChar->GetName());
-                    ToAvmCharacter(pparent)->ReplaceChildCharacter(pOldChar, pnewChar);
-                    pOldChar->SetParent(NULL);
-                }
-                else 
-                {
-                    ToAvmSprite(pnewChar)->SetLevel(qe->Level);
-                    pMovieImpl->SetLevelMovie(qe->Level, pnewChar);
-                    // we will execute action script for frame 0 ourself here
-                    // this is needed because this script has to be executed 
-                    // before calling OnLoadInit
-                    G_SetFlag<MovieImpl::Flag_LevelClipsChanged>(pMovieImpl->Flags, false);
-                }
-                // we need to disable calling advance on this movie until its first frame is loaded
-                pnewChar->SetPlayState(State_Stopped);
-
-                pOldChar = pnewChar;
-                // If we have a movie loader listener send notifications.
-                if (pmovieClipLoader)
-                {
-                    Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
-                    SF_ASSERT(penv);
-                    pmovieClipLoader->NotifyOnLoadStart(penv, pOldChar);
-                    BytesLoaded = pdefImpl->GetBytesLoaded();
-                    pmovieClipLoader->NotifyOnLoadProgress(penv, pOldChar, BytesLoaded, pdefImpl->GetFileBytes());
-                }
-                CharSwitched = true;
-            }
-
-            // The number of loaded bytes has changed since the last iteration and we have a movie loader listener
-            // sent a progress notification.
-            if (BytesLoaded != pdefImpl->GetBytesLoaded() && pmovieClipLoader)
-            {
-                Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
-                SF_ASSERT(penv);
-                BytesLoaded = pdefImpl->GetBytesLoaded();
-                pmovieClipLoader->NotifyOnLoadProgress(penv, pOldChar, BytesLoaded, pdefImpl->GetFileBytes());
-            }
-            // when we loaded the first frame process its actions.
-            if (extensions && !FirstFrameLoaded && ((pdefImpl->pBindData->GetBindState() & MovieDefImpl::BSF_Frame1Loaded) != 0))
-            {
-                // This branch will be executed when gfxExtensions == true, to 
-                // produce different (better) behavior during the loading. If extensions
-                // are on then we can start the loading movie after the first frame is loaded.
-                // Flash, for some reasons, waits until whole movie is loaded.
-                Ptr<Sprite> psprite;
-                if (qe->Level == -1)
-                    psprite = pOldChar->CharToSprite();
-                else
-                    psprite = root->GetLevelMovie(qe->Level);
-                SF_ASSERT(psprite.GetPtr());
-                if (psprite)
-                {
-                    psprite->SetPlayState(State_Playing);
-                    psprite->SetRootNodeLoadingStat(pdefImpl->GetBytesLoaded(), pdefImpl->GetLoadingFrame());
-                    //psprite->OnEventLoad();
-                    //!AB: note, we can't use OnEventLoad here, need to use ExecuteFrame0Events. 
-                    // ExecuteFrame0Events executes onLoad event AFTER the first frame and Flash
-                    // does exactly the same.
-                    psprite->ExecuteFrame0Events();
-                    root->DoActions();
-                    if (pmovieClipLoader)
-                    {
-                        Environment* penv = ToAvmSprite(psprite)->GetASEnvironment();
-                        SF_ASSERT(penv);
-                        pmovieClipLoader->NotifyOnLoadInit(penv, psprite);
-                    }
-                }
-                FirstFrameLoaded = true;
-            }
-            // If the movie is not completely loaded yet try it on the next iteration.
-            if ((pdefImpl->pBindData->GetBindState() 
-                & (MovieDefImpl::BS_InProgress | MovieDefImpl::BS_Finished)) < MovieDefImpl::BS_Finished)
-                return false;
-            if (pdefImpl->pBindData->GetBindState() & MovieDefImpl::BS_Finished)
-            {
-                Ptr<Sprite> psprite;
-                if (qe->Level == -1)
-                {
-                    SF_ASSERT(pOldChar.GetPtr());
-                    psprite = pOldChar->CharToSprite();
-                    root->ResolveStickyVariables(pOldChar);
-                }
-                else
-                    psprite = root->GetLevelMovie(qe->Level);
-                SF_ASSERT(psprite.GetPtr());
-
-                if (psprite)
-                {
-                    if (!extensions)
-                        psprite->ClearNoAdvanceLocalFlag();
-                    // movie is loaded completely here. Send notifications for a listener.
-                    if (pmovieClipLoader)
-                    {
-                        Environment* penv = ToAvmSprite(psprite)->GetASEnvironment();
-                        SF_ASSERT(penv);
-                        pmovieClipLoader->NotifyOnLoadComplete(penv, psprite, 0);
-                    }
-                    // If we did not process the actions in the first frame do it now
-                    if (!FirstFrameLoaded)
-                    {
-                        psprite->SetPlayState(State_Playing);
-                        psprite->SetRootNodeLoadingStat(pdefImpl->GetBytesLoaded(), pdefImpl->GetLoadingFrame());
-                        //psprite->OnEventLoad();
-                        //!AB: note, we can't use OnEventLoad here, need to use ExecuteFrame0Events. 
-                        // ExecuteFrame0Events executes onLoad event AFTER the first frame and Flash
-                        // does exactly the same.
-                        psprite->ExecuteFrame0Events();
-                        root->DoActions();
-                        if (pmovieClipLoader)
-                        {
-                            Environment* penv = ToAvmSprite(psprite)->GetASEnvironment();
-                            SF_ASSERT(penv);
-                            pmovieClipLoader->NotifyOnLoadInit(penv, psprite);
-                        }
-                    }
-                    FirstFrameLoaded = true;
-                }
-            } 
-            else 
-            {
-                // A error happened during the movie loading 
-                if (pmovieClipLoader)
-                {
-                    SF_ASSERT(pOldChar.GetPtr());
-                    Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
-                    SF_ASSERT(penv);
-                    if (pdefImpl->GetLoadState() == MovieDataDef::LS_LoadError)
-                        pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "Error", 0);
-                    else 
-                        pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "Canceled", 0);
-                }
-            }
-            // Loading finished. Remove the item from the queue.
-            return true;
+        if (qe->pCharacter)
+        {
+            pnewChar->AddToPlayList();
+            //AB: we need to replicate the same CreateFrame, Depth and the Name.
+            // Along with replicated Id this is important to maintain the loaded
+            // movie on the stage. Otherwise, once the parent clip reaches the end
+            // of its timeline the original movieclip will be recreated. Flash
+            // doesn't recreate the original movie clip in this case, and it also
+            // doesn't stop timeline animation for the target movieclip. The only way
+            // to achieve both of these features is to copy Id, CreateFrame, Depth and
+            // Name from the old character to the new one.
+            // See last_to_first_frame_mc_no_reloadX.fla and 
+            // test_timeline_anim_after_loadmovie.swf
+            pnewChar->SetCreateFrame(pOldChar->GetCreateFrame());
+            pnewChar->SetDepth(pOldChar->GetDepth());
+            if (!pOldChar->HasInstanceBasedName())
+                pnewChar->SetName(pOldChar->GetName());
+            ToAvmCharacter(pparent)->ReplaceChildCharacter(pOldChar, pnewChar);
+            pOldChar->SetParent(NULL);
         }
+        else 
+        {
+            ToAvmSprite(pnewChar)->SetLevel(qe->Level);
+            pMovieImpl->SetLevelMovie(qe->Level, pnewChar);
+            // we will execute action script for frame 0 ourself here
+            // this is needed because this script has to be executed 
+            // before calling OnLoadInit
+            G_SetFlag<MovieImpl::Flag_LevelClipsChanged>(pMovieImpl->Flags, false);
+        }
+        // we need to disable calling advance on this movie until its first frame is loaded
+        pnewChar->SetPlayState(State_Stopped);
+
+        pOldChar = pnewChar;
+        // If we have a movie loader listener send notifications.
+        if (pmovieClipLoader)
+        {
+            Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
+            SF_ASSERT(penv);
+            pmovieClipLoader->NotifyOnLoadStart(penv, pOldChar);
+            BytesLoaded = pdefImpl->GetBytesLoaded();
+            pmovieClipLoader->NotifyOnLoadProgress(penv, pOldChar, BytesLoaded, pdefImpl->GetFileBytes());
+        }
+        CharSwitched = true;
     }
+
+    // The number of loaded bytes has changed since the last iteration and we have a movie loader listener
+    // sent a progress notification.
+    if (BytesLoaded != pdefImpl->GetBytesLoaded() && pmovieClipLoader)
+    {
+        Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
+        SF_ASSERT(penv);
+        BytesLoaded = pdefImpl->GetBytesLoaded();
+        pmovieClipLoader->NotifyOnLoadProgress(penv, pOldChar, BytesLoaded, pdefImpl->GetFileBytes());
+    }
+    // when we loaded the first frame process its actions.
+    if (extensions && !FirstFrameLoaded && 
+        (pdefImpl->pBindData->GetBindStateFlags() & MovieDefImpl::BSF_Frame1Loaded) != 0)
+    {
+        // This branch will be executed when gfxExtensions == true, to 
+        // produce different (better) behavior during the loading. If extensions
+        // are on then we can start the loading movie after the first frame is loaded.
+        // Flash, for some reasons, waits until whole movie is loaded.
+        Ptr<Sprite> psprite;
+        if (qe->Level == -1)
+            psprite = pOldChar->CharToSprite();
+        else
+            psprite = root->GetLevelMovie(qe->Level);
+        SF_ASSERT(psprite.GetPtr());
+        if (psprite)
+        {
+            psprite->SetPlayState(State_Playing);
+            psprite->SetRootNodeLoadingStat(pdefImpl->GetBytesLoaded(), pdefImpl->GetLoadingFrame());
+            //psprite->OnEventLoad();
+            //!AB: note, we can't use OnEventLoad here, need to use ExecuteFrame0Events. 
+            // ExecuteFrame0Events executes onLoad event AFTER the first frame and Flash
+            // does exactly the same.
+            psprite->ExecuteFrame0Events();
+            root->DoActions();
+            if (pmovieClipLoader)
+            {
+                Environment* penv = ToAvmSprite(psprite)->GetASEnvironment();
+                SF_ASSERT(penv);
+                pmovieClipLoader->NotifyOnLoadInit(penv, psprite);
+            }
+        }
+        FirstFrameLoaded = true;
+    }
+
+    bool finished = false;
+    switch (pdefImpl->pBindData->GetBindStateType())
+    {
+    case MovieDefImpl::BS_NotStarted:
+    case MovieDefImpl::BS_InProgress:
+        // If the movie is not completely loaded yet try it on the next iteration.
+        break;
+    case MovieDefImpl::BS_Finished:
+    {
+        Ptr<Sprite> psprite;
+        if (qe->Level == -1)
+        {
+            SF_ASSERT(pOldChar.GetPtr());
+            psprite = pOldChar->CharToSprite();
+            root->ResolveStickyVariables(pOldChar);
+        }
+        else
+        {
+            psprite = root->GetLevelMovie(qe->Level);
+        }
+        SF_ASSERT(psprite.GetPtr());
+
+        if (psprite)
+        {
+            if (!extensions)
+            {
+                psprite->ClearNoAdvanceLocalFlag();
+            }
+            // movie is loaded completely here. Send notifications for a listener.
+            if (pmovieClipLoader)
+            {
+                Environment* penv = ToAvmSprite(psprite)->GetASEnvironment();
+                SF_ASSERT(penv);
+                pmovieClipLoader->NotifyOnLoadComplete(penv, psprite, 0);
+            }
+            // If we did not process the actions in the first frame do it now
+            if (!FirstFrameLoaded)
+            {
+                psprite->SetPlayState(State_Playing);
+                psprite->SetRootNodeLoadingStat(pdefImpl->GetBytesLoaded(), pdefImpl->GetLoadingFrame());
+                //psprite->OnEventLoad();
+                //!AB: note, we can't use OnEventLoad here, need to use ExecuteFrame0Events. 
+                // ExecuteFrame0Events executes onLoad event AFTER the first frame and Flash
+                // does exactly the same.
+                psprite->ExecuteFrame0Events();
+                root->DoActions();
+                if (pmovieClipLoader)
+                {
+                    Environment* penv = ToAvmSprite(psprite)->GetASEnvironment();
+                    SF_ASSERT(penv);
+                    pmovieClipLoader->NotifyOnLoadInit(penv, psprite);
+                }
+            }
+            FirstFrameLoaded = true;
+        }
+        finished = true;
+        break;
+    } 
+    case MovieDefImpl::BS_Canceled:
+    case MovieDefImpl::BS_Error:
+        // A error happened during the movie loading 
+        if (pmovieClipLoader)
+        {
+            SF_ASSERT(pOldChar.GetPtr());
+            Environment* penv = ToAvmCharacter(pOldChar)->GetASEnvironment();
+            SF_ASSERT(penv);
+            if (pdefImpl->GetLoadState() == MovieDataDef::LS_LoadError)
+            {
+                pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "Error", 0);
+            }
+            else
+            {
+                pmovieClipLoader->NotifyOnLoadError(penv, pOldChar, "Canceled", 0);
+            }
+        }
+        finished = true;
+        break;
+    default:
+        SF_ASSERT(false); // unhandled case
+        finished = true;
+        break;
+    }
+
     // Preload task is not finished yet. Check again on the next iteration.
-    return false;
+    return finished;
 }
 
 bool GFxAS2LoadQueueEntryMT_LoadMovie::IsPreloadingFinished()
@@ -3037,7 +3104,7 @@ void ASRefCountCollector::SetParams(unsigned frameBetweenCollections, unsigned m
         PresetMaxRootCount  = MaxRootCount = 1000;
 }
 
-void ASRefCountCollector::AdvanceFrame(unsigned* movieFrameCnt, unsigned* movieLastCollectFrame)
+void ASRefCountCollector::AdvanceFrame(unsigned* movieFrameCnt, unsigned* movieLastCollectFrame, AmpStats* ampStats)
 {
     // Is this the first advance since a collection by a different MovieView?
     if (*movieLastCollectFrame != LastCollectionFrameNum)
@@ -3073,7 +3140,7 @@ void ASRefCountCollector::AdvanceFrame(unsigned* movieFrameCnt, unsigned* movieL
         FrameCnt >= MaxFramesBetweenCollections && 
         curRootCount > PresetMaxRootCount))
     {
-        ASRefCountCollector::Stats stats;
+        ASRefCountCollector::Stats stats(ampStats);
         Collect(&stats);
 
 #ifdef SF_TRACE_COLLECTIONS        
@@ -3092,7 +3159,10 @@ void ASRefCountCollector::AdvanceFrame(unsigned* movieFrameCnt, unsigned* movieL
 
         // MaxRootCount has been updated every collection event
         //MaxRootCount = Alg::Max(PresetMaxRootCount, PeakRootCount - stats.RootsFreedTotal);
-        MaxRootCount = Alg::Max(MaxRootCount, curRootCount - stats.RootsFreedTotal);
+        if (curRootCount > stats.RootsFreedTotal)
+        {
+            MaxRootCount = Alg::Max(MaxRootCount, curRootCount - stats.RootsFreedTotal);
+        }
 
         if (PeakRootCount < (unsigned)(MaxRootCount * 0.7))
             MaxRootCount = (unsigned)(MaxRootCount * 0.7);
@@ -3113,11 +3183,11 @@ void ASRefCountCollector::AdvanceFrame(unsigned* movieFrameCnt, unsigned* movieL
     *movieLastCollectFrame = LastCollectionFrameNum;
 }
 
-void ASRefCountCollector::ForceCollect()
+void ASRefCountCollector::ForceCollect(AmpStats* ampStats)
 {
     unsigned curRootCount = (unsigned)GetRootsCount();
 
-    ASRefCountCollector::Stats stats;
+    ASRefCountCollector::Stats stats(ampStats);
     Collect(&stats);
 
 #ifdef SF_TRACE_COLLECTIONS        
@@ -3129,9 +3199,9 @@ void ASRefCountCollector::ForceCollect()
     LastRootCount = curRootCount;
 }
 
-void ASRefCountCollector::ForceEmergencyCollect()
+void ASRefCountCollector::ForceEmergencyCollect(AmpStats* ampStats)
 {
-    ForceCollect();
+    ForceCollect(ampStats);
 
     // DO NOT shrink roots, if this was called while in adding roots in Release
     if (!IsAddingRoot())
@@ -3283,38 +3353,42 @@ bool MemoryContextImpl::HeapLimit::OnExceedLimit(MemoryHeap* heap, UPInt overLim
     if (allocsSinceLastCollect >= (SPInt)(footprint * HeapLimitMultiplier) ||
         (UserLevelLimit != 0 && newLimit > UserLevelLimit))
     {
-        Collect(heap);
-
-        if (UserLevelLimit != 0 && newLimit > UserLevelLimit)
+        if (!IsInsideAlloc())
         {
-            // check, if user limit is specified. If so, and if it is exceeded
-            // then increase the limit just for absolutely required delta to minimize
-            // the heap growth.
-            SF_ASSERT(LastCollectionFootprint <= footprint);
-            if (overLimit > (footprint - LastCollectionFootprint))
+            // if called from realloc then do nothing, next allocation will take care about collection.
+            Collect(heap);
+
+            if (UserLevelLimit != 0 && newLimit > UserLevelLimit)
             {
-                CurrentLimit = heapLimit + (overLimit - (footprint - LastCollectionFootprint));
-                heap->SetLimit(CurrentLimit);
+                // check, if user limit is specified. If so, and if it is exceeded
+                // then increase the limit just for absolutely required delta to minimize
+                // the heap growth.
+                SF_ASSERT(LastCollectionFootprint <= footprint);
+                if (overLimit > (footprint - LastCollectionFootprint))
+                {
+                    CurrentLimit = heapLimit + (overLimit - (footprint - LastCollectionFootprint));
+                    heap->SetLimit(CurrentLimit);
 
 #ifdef SF_TRACE_COLLECTIONS        
-                printf("-        UserLimit exceeded. increasing limit up to: %u (%u)\n", 
-                    (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
+                    printf("-        UserLimit exceeded. increasing limit up to: %u (%u)\n", 
+                        (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
 #endif
 
-                CurrentLimit = heap->GetLimit(); // take an actual value of the limit
-            }
-            else
-            {
-                // even though limit is not changed - set it to heap again to make sure
-                // the acutual heap's limit is set correctly.
-                heap->SetLimit(CurrentLimit);
+                    CurrentLimit = heap->GetLimit(); // take an actual value of the limit
+                }
+                else
+                {
+                    // even though limit is not changed - set it to heap again to make sure
+                    // the acutual heap's limit is set correctly.
+                    heap->SetLimit(CurrentLimit);
 
 #ifdef SF_TRACE_COLLECTIONS        
-                printf("-        no limit increase is necessary. Current limit is %u (%u)\n", 
-                    (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
+                    printf("-        no limit increase is necessary. Current limit is %u (%u)\n", 
+                        (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
 #endif
 
-                CurrentLimit = heap->GetLimit(); // take an actual value of the limit
+                    CurrentLimit = heap->GetLimit(); // take an actual value of the limit
+                }
             }
         }
     }
@@ -3358,7 +3432,21 @@ void MemoryContextImpl::HeapLimit::Collect(MemoryHeap* heap)
 #ifdef GFX_AS_ENABLE_GC
     // If garbage collection is used - force collect. Use ForceEmergencyCollect - it
     // guarantees that no new allocations will be made during the collection.
-    MemContext->ASGC->ForceEmergencyCollect();
+#ifdef SF_AMP_SERVER
+    AmpServer& ampServer = AmpServer::GetInstance();
+    MovieImpl* movie;
+    // If garbage collection is used - force collect. Use ForceEmergencyCollect - it
+    // guarantees that no new allocations will be made during the collection.
+    if (ampServer.FindMovieByHeap(heap, &movie))
+    {
+        MemContext->ASGC->ForceEmergencyCollect(movie->AdvanceStats);
+        movie->Release(); // addref=ed by FindMovieByHeap above
+    }
+    else
+        MemContext->ASGC->ForceEmergencyCollect(NULL);
+#else
+    MemContext->ASGC->ForceEmergencyCollect(NULL);
+#endif // SF_AMP_SERVER
 #endif // SF_NO_GC
     LastCollectionFootprint = heap->GetFootprint(); 
 

@@ -7,6 +7,7 @@ Created     :   May 5, 2003
 Authors     :   Michael Antonov, Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -904,7 +905,7 @@ unsigned WINAPI Thread_Win32StartFn(void * phandle)
 #endif
     // Ensure that ThreadId is assigned once thread is running, in case
     // beginthread hasn't filled it in yet.
-    pthread->IdValue = (ThreadId)::GetCurrentThreadId();
+    pthread->IdValue = reinterpret_cast<Scaleform::ThreadId>(static_cast<uintptr_t>(::GetCurrentThreadId()));
 
     DWORD       result = pthread->PRun();
     // Signal the thread as done and release it atomically.
@@ -934,7 +935,7 @@ bool    Thread::Start(ThreadState initialState)
     
     ExitCode        = 0;
     SuspendCount    = 0;
-    ThreadFlags     = (initialState == Running) ? 0 : SF_THREAD_START_SUSPENDED;
+    ThreadFlags     = (initialState == Running) ? SF_THREAD_STARTED : SF_THREAD_START_SUSPENDED;
     ThreadHandle = (HANDLE) _beginthreadex(0, (unsigned)StackSize,
                                            Thread_Win32StartFn, this, 0, (unsigned*)&IdValue);
 
@@ -1060,7 +1061,7 @@ void    Thread::SetThreadName( const char* name )
 
     info.dwType = 0x1000;
     info.szName = name;
-    info.dwThreadID = reinterpret_cast<DWORD>(GetThreadId());
+    info.dwThreadID = static_cast<DWORD>(reinterpret_cast<uintptr_t>(GetThreadId()));
     info.dwFlags = 0;
 
     __try
@@ -1099,7 +1100,7 @@ int     Thread::GetCPUCount()
 // comparison purposes.
 ThreadId GetCurrentThreadId()
 {
-    return (ThreadId)::GetCurrentThreadId();
+    return reinterpret_cast<Scaleform::ThreadId>(static_cast<uintptr_t>(::GetCurrentThreadId()));
 }
 
 } // Scaleform

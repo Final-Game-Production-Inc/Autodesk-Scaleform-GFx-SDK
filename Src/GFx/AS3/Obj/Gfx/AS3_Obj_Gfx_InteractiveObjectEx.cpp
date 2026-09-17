@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -103,30 +104,42 @@ template <> const TFunc_Classes_InteractiveObjectEx_getTopmostLevel::TMethod TFu
 
 namespace ClassTraits { namespace fl_gfx
 {
-    const ThunkInfo InteractiveObjectEx::ti[InteractiveObjectEx::ThunkInfoNum] = {
-        {TFunc_Classes_InteractiveObjectEx_setHitTestDisable::Func, NULL, "setHitTestDisable", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_InteractiveObjectEx_getHitTestDisable::Func, &AS3::fl::BooleanTI, "getHitTestDisable", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_InteractiveObjectEx_setTopmostLevel::Func, NULL, "setTopmostLevel", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_InteractiveObjectEx_getTopmostLevel::Func, &AS3::fl::BooleanTI, "getTopmostLevel", NULL, Abc::NS_Public, CT_Method, 1, 1},
+    // const UInt16 InteractiveObjectEx::tito[InteractiveObjectEx::ThunkInfoNum] = {
+    //    0, 3, 5, 8, 
+    // };
+    const TypeInfo* InteractiveObjectEx::tit[10] = {
+        NULL, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::InteractiveObjectTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::InteractiveObjectTI, 
     };
-    InteractiveObjectEx::InteractiveObjectEx(VM& vm)
-    : Traits(vm, AS3::fl_gfx::InteractiveObjectExCI)
+    const ThunkInfo InteractiveObjectEx::ti[InteractiveObjectEx::ThunkInfoNum] = {
+        {TFunc_Classes_InteractiveObjectEx_setHitTestDisable::Func, &InteractiveObjectEx::tit[0], "setHitTestDisable", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_InteractiveObjectEx_getHitTestDisable::Func, &InteractiveObjectEx::tit[3], "getHitTestDisable", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_InteractiveObjectEx_setTopmostLevel::Func, &InteractiveObjectEx::tit[5], "setTopmostLevel", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_InteractiveObjectEx_getTopmostLevel::Func, &InteractiveObjectEx::tit[8], "getTopmostLevel", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+    };
+
+    InteractiveObjectEx::InteractiveObjectEx(VM& vm, const ClassInfo& ci)
+    : fl_gfx::DisplayObjectEx(vm, ci)
     {
 //##protect##"ClassTraits::InteractiveObjectEx::InteractiveObjectEx()"
 //##protect##"ClassTraits::InteractiveObjectEx::InteractiveObjectEx()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_gfx::InteractiveObjectExCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::InteractiveObjectEx(*this));
 
     }
 
     Pickable<Traits> InteractiveObjectEx::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) InteractiveObjectEx(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) InteractiveObjectEx(vm, AS3::fl_gfx::InteractiveObjectExCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::InteractiveObjectExCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -137,6 +150,11 @@ namespace fl_gfx
 {
     const TypeInfo InteractiveObjectExTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_gfx::InteractiveObjectEx::InstanceType),
+        ClassTraits::fl_gfx::InteractiveObjectEx::ThunkInfoNum,
+        0,
+        0,
+        0,
         "InteractiveObjectEx", "scaleform.gfx", &fl_gfx::DisplayObjectExTI,
         TypeInfo::None
     };
@@ -144,10 +162,6 @@ namespace fl_gfx
     const ClassInfo InteractiveObjectExCI = {
         &InteractiveObjectExTI,
         ClassTraits::fl_gfx::InteractiveObjectEx::MakeClassTraits,
-        ClassTraits::fl_gfx::InteractiveObjectEx::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_gfx::InteractiveObjectEx::ti,
         NULL,
         NULL,

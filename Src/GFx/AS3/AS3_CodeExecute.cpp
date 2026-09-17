@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,7 +23,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Obj/AS3_Obj_Array.h"
 #include "Obj/AS3_Obj_XML.h"
 #ifdef GFX_ENABLE_XML
-#include "Obj/AS3_Obj_XMLList.h"
+    #include "Obj/AS3_Obj_XMLList.h"
 #endif
 #include "Obj/AS3_Obj_Global.h"
 #include "GFx/AMP/Amp_Server.h"
@@ -41,6 +42,7 @@ CheckResult Add(StringManager& sm, Value& result, const Value& l, const Value& r
     // because "result" can be a value on op-stack.
     //SF_ASSERT(!result.IsRefCounted());
 
+#ifdef GFX_ENABLE_XML
     // XML part.
     if (l.IsObject() && r.IsObject() && l.GetObject() && r.GetObject())
     {
@@ -50,8 +52,10 @@ CheckResult Add(StringManager& sm, Value& result, const Value& l, const Value& r
         if (xmls.Add(result, *l.GetObject(), *r.GetObject()))
             return true;
     }
+#endif
 
     // Strings.
+    // Step 7.
     if (l.IsString() || r.IsString())
     {
         ASString left(sm.CreateEmptyString());
@@ -87,8 +91,11 @@ CheckResult Add(StringManager& sm, Value& result, const Value& l, const Value& r
     // Convert to primitive values.
     Value l_prim;
     Value r_prim;
+    ASStringManager* sm_ptr = sm.GetStringManager();
 
-    if (l.Convert2PrimitiveValueUnsafe(l_prim) && r.Convert2PrimitiveValueUnsafe(r_prim))
+    // Steps 5 and 6.
+    // NOTE 1. No hint is provided in the calls to ToPrimitive in steps 5 and 6.
+    if (l.Convert2PrimitiveValueUnsafe(*sm_ptr, l_prim) && r.Convert2PrimitiveValueUnsafe(*sm_ptr, r_prim))
         return Add(sm, result, l_prim, r_prim);
 
     // Exception
@@ -808,12 +815,16 @@ void VM::exec_swap()
 }
 
 SF_INLINE 
-void VM::exec_pushstring(const StringDataPtr& str) 
+void VM::exec_pushstring(VMFile& file, const UPInt ind) 
 {
     OpStack.Acquire1();
-    OpStack.Top0().AssignUnsafe(GetStringManager().CreateString(
-        str.ToCStr(), str.GetSize()
-        ));
+
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+    SF_UNUSED1(file);
+    OpStack.Top0().AssignUnsafe(ASString(reinterpret_cast<ASStringNode*>(ind)));
+#else
+    OpStack.Top0().AssignUnsafe(file.GetInternedString(ind));
+#endif
 }
 
 SF_INLINE 
@@ -1128,8 +1139,16 @@ void VM::exec_esc_xelem()
     
     SF_ASSERT(OpStack.GetSize() > 0);
     
+#ifdef GFX_ENABLE_XML
     const XMLSupport& xmls = GetXMLSupport();
+
+    if (!xmls.IsEnabled())
+        return ThrowVerifyError(VM::Error(VM::eNotImplementedError, *this SF_DEBUG_ARG("exec_esc_xelem")));
+
     xmls.ToXMLString(*this, OpStack.Back()).DoNotCheck();
+#else
+    ThrowVerifyError(VM::Error(VM::eNotImplementedError, *this SF_DEBUG_ARG("exec_esc_xelem")));
+#endif
 }
 
 void VM::exec_esc_xattr() 
@@ -1138,6 +1157,7 @@ void VM::exec_esc_xattr()
     // This uses the EscapeAttributeValue algorithm as described in the E4X
     // specification, ECMA-357 section 10.2.1.2, to perform the conversion.
     
+#ifdef GFX_ENABLE_XML
     SF_ASSERT(OpStack.GetSize() > 0);
     StringManager& sm = GetStringManager();
     Value& v = OpStack.Back();
@@ -1148,6 +1168,7 @@ void VM::exec_esc_xattr()
         Instances::fl::XML::EscapeElementValue(buf, v.AsString());
         v = sm.CreateString(buf.ToCStr(), buf.GetSize());
     }
+#endif
 }
 
 SF_INLINE 
@@ -1467,7 +1488,7 @@ void VM::exec_strictequals()
 {
     SH2<1> stack(OpStack);
     // No exceptions at this point.
-    stack._1 = Value(StrictEqual(stack._1, stack._2));
+    stack._1.SetBool(StrictEqual(stack._1, stack._2));
 }
 
 SF_INLINE
@@ -1525,7 +1546,7 @@ void VM::exec_istypelate()
     {
         const ClassTraits::Traits& type = stack._2.AsClass().GetClassTraits();
 
-        stack._1 = Value(IsOfType(stack._1, type));
+        stack._1.SetBool(IsOfType(stack._1, type));
     }
     else
         ThrowTypeError(VM::Error(eIsTypeMustBeClassError, *this));
@@ -2027,7 +2048,7 @@ void VM::exec_hasnext()
 
     // This logic should work correctly.
     SF_ASSERT(stack._1.GetObject());
-    stack._1 = Value(stack._1.GetObject()->GetNextDynPropIndex(GlobalSlotIndex(stack._2)).Get());
+    stack._1.SetUInt32(stack._1.GetObject()->GetNextDynPropIndex(GlobalSlotIndex(stack._2)).Get());
 }
 
 AS3_INLINE
@@ -2071,54 +2092,28 @@ void VM::exec_in()
     if (stack._2.IsNullOrUndefined())
         return ThrowTypeError(VM::Error(eConvertNullToObjectError, *this));
 
-#if 0
-    const Traits& tr = GetValueTraits(stack._2);
-    Multiname prop_name(GetPublicNamespace(), stack._1);
-
-    if (tr.IsArrayLike())
-    {
-        Value value = Value::GetUndefined();
-
-        stack._1.SetBool(stack._2.GetObject()->GetProperty(prop_name, value));
-
-        if (IsException())
-            IgnoreException();
-
-        return;
-    }
-#else
     Multiname prop_name(GetPublicNamespace(), stack._1);
     if (stack._2.IsObject())
     {
         Object* obj = stack._2.GetObject();
         SF_ASSERT(obj);
-        const Traits& tr = obj->GetTraits();
-
-        if (tr.IsArrayLike() || (tr.GetTraitsType() == Traits_XML && tr.IsInstanceTraits()))
-        {
-            Value value = Value::GetUndefined();
-
-            stack._1.SetBool(stack._2.GetObject()->GetProperty(prop_name, value));
-
-            if (IsException())
-                IgnoreException();
-
-            return;
-        }
+        stack._1.SetBool(obj->HasProperty(prop_name, true));
+        return;
     }
-#endif
+    else
+    {
+        // Find property ...
+        PropRef prop;
 
-    // Find property ...
-    PropRef prop;
+        FindObjProperty(
+            prop,
+            *this,
+            stack._2, 
+            prop_name
+            );
 
-    FindObjProperty(
-        prop,
-        *this,
-        stack._2, 
-        prop_name
-        );
-
-    stack._1.SetBool(prop.IsFound());
+        stack._1.SetBool(prop.IsFound());
+    }
 }
 
 AS3_INLINE
@@ -2222,9 +2217,8 @@ void VM::DropCallFrame()
     CFCache.DestroyCallFrame(cf);
     CallStack.PopBack();
 #else
-    // Restore stack in case of exception.
-    if (IsException())
-        CallStack.Back().ClearOpStack();
+    // Restore stack in case of exception or multiple values on stack.
+    CallStack.Back().ClearOpStack();
 
     CallStack.PopBack();
 #endif
@@ -2258,7 +2252,6 @@ int VM::ExecuteCode(unsigned max_stack_depth)
         VMAbcFile& file = call_frame.GetFile();
         const Abc::ConstPool& constp = file.GetConstPool();
         const Abc::TOpCode::ValueType* curr_cp = NULL;
-        const TOpCode::ValueType* cp = NULL;
         
         // We may already have an exception.
         // Let us store it because call_frame.GetCode() may throw it's own exception.
@@ -2268,8 +2261,12 @@ int VM::ExecuteCode(unsigned max_stack_depth)
         ExceptionObj.Clean();
 
         // call_frame.GetCP() can throw exceptions.
-        cp = call_frame.GetCP();
+        const TOpCode::ValueType* cp = call_frame.GetCP();
         SIMD::IS::Prefetch(cp, 0);
+
+#ifdef GFX_AS3_TRACE
+        const TOpCode::ValueType* dp = call_frame.GetCode().GetDataPtr();
+#endif
 
         if (IsException())
         {
@@ -2299,7 +2296,7 @@ int VM::ExecuteCode(unsigned max_stack_depth)
             // Removing the IF statement below makes code ~20% faster with MSVC ...     
             if (ui.NeedToCheckOpCode())
             {
-                Abc::TCodeOffset curr_offset = curr_cp - call_frame.GetCode().GetDataPtr();
+                Abc::TCodeOffset curr_offset = curr_cp - dp;
 
                 if (ui.OnOpCode(curr_offset))
                 {
@@ -2707,16 +2704,51 @@ int VM::ExecuteCode(unsigned max_stack_depth)
                 exec_swap();
                 break;
             case Code::op_pushstring:
-                exec_pushstring(constp.GetString(AbsoluteIndex(ReadU30(cp))));
+                exec_pushstring(file, ReadUPInt(cp));
                 break;
             case Code::op_pushint:
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+                exec_pushint(ReadU30(cp));
+#else
                 exec_pushint(constp.GetInt(ReadU30(cp)));
+#endif
                 break;
             case Code::op_pushuint:
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+                exec_pushuint(static_cast<UInt32>(ReadU30(cp)));
+#else
                 exec_pushuint(constp.GetUInt(ReadU30(cp)));
+#endif
                 break;
             case Code::op_pushdouble:
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+                if (sizeof(Abc::TOpCode::ValueType) == sizeof(AS3::Value::Number))
+                {
+                    // This case handles 64-bit platforms and SF_NO_DOUBLE.
+                    union
+                    {
+                        TOpCode::ValueType  I;
+                        Value::Number       D;
+                    } u;
+
+                    u.I = ReadUPInt(cp);
+                    exec_pushdouble(u.D);
+                }
+                else
+                {
+                    union
+                    {
+                        UInt32  I[2];
+                        double  D;
+                    } u;
+
+                    u.I[0] = ReadU30(cp);
+                    u.I[1] = ReadU30(cp);
+                    exec_pushdouble(u.D);
+                }
+#else
                 exec_pushdouble(constp.GetDouble(ReadU30(cp)));
+#endif
                 break;
             case Code::op_pushscope:
                 exec_pushscope();

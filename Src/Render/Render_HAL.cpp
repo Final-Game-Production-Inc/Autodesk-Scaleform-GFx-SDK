@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,14 +36,33 @@ MatrixState::MatrixState() : UVPOChanged(0), OrientationSet(0), S3DDisplay(Stere
     FullViewportMVP = Matrix2F::Scaling(2,-2) * Matrix2F::Translation(-0.5f, -0.5f);
 }
 
-void MatrixState::SetUserMatrix(const Matrix2F& user)
+void MatrixState::SetUserMatrix(const Matrix2F& user, const Matrix2F& user3D)
 {
     UVPOChanged = 1;
     User = user;
     UserView = View2D * (User * Orient2D);
-    User3D = User;
-    User3D.M[0][3] *= View2D.M[0][0] / User.M[0][0];
-    User3D.M[1][3] *= View2D.M[1][1] / User.M[1][1];
+    User3D = user3D;
+
+    // Offset the 3D content, so that it will match the transforms made to 2D content.
+    if (ViewRect.Width() > 0 && ViewRect.Height() > 0)
+    {
+        float w = (float)(ViewRect.Width());
+        float h = (float)(ViewRect.Height());
+        PointF center = PointF(w * 0.5f, h * 0.5f);
+        PointF dc = User3D * center - center;
+        User3D.M[0][3] = ( 2.0f * dc.x / w);
+        User3D.M[1][3] = (-2.0f * dc.y / h);
+    }
+    else
+    {
+        User3D.M[0][3] = 0.0f;
+        User3D.M[1][3] = 0.0f;
+    }
+}
+
+void MatrixState::SetUserMatrix(const Matrix2F& user)
+{
+    SetUserMatrix(user, user);
 }
 
 void MatrixState::SetViewportMatrix(const Matrix2F& vp)
@@ -159,7 +179,12 @@ void MatrixState::Copy(MatrixState* outmat, MatrixState* inmat)
     outmat->UVPOChanged = true; 
     outmat->OrientationSet = inmat->OrientationSet;
 
-    outmat->S3DParams = inmat->S3DParams;
+    if (inmat->S3DImpl)
+    {
+        outmat->S3DImpl = inmat->S3DImpl;
+        outmat->S3DImpl->SetParams(inmat->S3DImpl->GetParams());
+    }
+    
     outmat->S3DDisplay = inmat->S3DDisplay;
     
     // Seems a bit squirrelly, but done so that we can have a default constructor for the class
@@ -179,17 +204,17 @@ void MatrixState::CopyTo(MatrixState* state)
 
 const Matrix4F& MatrixState::updateStereoProjection(float factor) const
 {
-    if (S3DDisplay != StereoCenter)
+    if (S3DDisplay != StereoCenter && S3DImpl)
     {
         float eyeZ = -View3D.M[2][3];
         if (S3DDisplay == StereoLeft)
         {
-            getStereoProjectionMatrix(&Proj3DLeft, NULL, Proj3D, eyeZ, factor);
+            S3DImpl->GetStereoProj(Proj3D, eyeZ, &Proj3DLeft, NULL, factor);
             return Proj3DLeft;
         }
         else if (S3DDisplay == StereoRight)
         {
-            getStereoProjectionMatrix(NULL, &Proj3DRight, Proj3D, eyeZ, factor);
+            S3DImpl->GetStereoProj(Proj3D, eyeZ, NULL, &Proj3DRight, factor);
             return Proj3DRight;
         }
     }
@@ -223,11 +248,11 @@ void Viewport::SetStereoViewport(unsigned display)
 // Essentially, the camera separation  = interaxial / screen width;  (scaled 
 // by a distortion scale factor)
 //
-void MatrixState::getStereoProjectionMatrix(
-                                    Matrix4F *left, 		    // dest perspective matrix ptr for left eye
-                                    Matrix4F *right, 	        // dest perspective matrix ptr for right eye
+void StereoImplBase::GetStereoProj(
                                     const Matrix4F &original, 	// original (mono) perspective matrix
                                     float screenDist,           // eye distance to screen, eye Z 
+                                    Matrix4F *left, 		    // dest perspective matrix ptr for left eye
+                                    Matrix4F *right, 	        // dest perspective matrix ptr for right eye
                                     float factor)   const
 
 {
@@ -260,8 +285,9 @@ void MatrixState::getStereoProjectionMatrix(
     }
 }
 
-Matrix2F& MatrixState::GetFullViewportMatrix()
+Matrix2F& MatrixState::GetFullViewportMatrix(const Size<int>& rtSize)
 {
+    SF_UNUSED(rtSize);
     return FullViewportMVP;
 }
 
@@ -293,25 +319,52 @@ HAL::HAL(ThreadCommandQueue *commandQueue)  :
     pRTCommandQueue(commandQueue),
     pRenderBufferManager(0),
     QueueProcessor(Queue, getThis()),
+    CurrentDepthStencilState(DepthStencil_Disabled),
+    CurrentStencilRef(0),
+    StencilChecked(false), 
+    StencilAvailable(false), 
+    MultiBitStencil(false),
+    DepthBufferAvailable(false),
+    NextSceneRasterMode(RasterMode_Solid),
+    CurrentSceneRasterMode(RasterMode_Solid),
+    AppliedSceneRasterMode(RasterMode_Solid),
     MaskStackTop(0),
-    CachedFilterIndex(-1),
-	CachedFilterPrepIndex(-1),
-    NextProfileMode(0)
+    CacheableIndex(-1),
+	CacheablePrepIndex(-1),
+    CacheablePrepStart(-1)
 { 
     pHeap = Memory::GetGlobalHeap();
+    
     Link_RenderStats(); 
 }
 
 bool HAL::initHAL(const HALInitParams& params)
 {
+    initMatrices();
+    Matrices->S3DImpl = *SF_NEW StereoImplBase;
+
     VMCFlags = params.ConfigFlags;
     RenderThreadID = params.RenderThreadId;
 
     // If no RendeThreadID is supplied, assume that the render thread is the one calling InitHAL.
     if ( RenderThreadID == 0 )
+    {
+        SF_DEBUG_WARNING(RenderThreadID == 0, "HALInitParams::RenderThreadId is NULL - assuming current thread is the render thread.");
         RenderThreadID = GetCurrentThreadId();
+    }
+
+    // When starting up, assume that all profiler modes and flags are available. Derived HALs may disable specific
+    // modes in their InitHAL function (assumes that this method is called first).
+    GetProfiler().SetModeAvailability((unsigned)Profile_All);
+    GetProfiler().SetFlagAvailability((unsigned)ProfileFlag_All);
 
     return Queue.Initialize(params.RenderQueueSize);
+}
+
+void HAL::initMatrices()
+{
+    // Allocate our matrix state
+    Matrices = *SF_HEAP_AUTO_NEW(this) MatrixState(this);
 }
 
 bool HAL::shutdownHAL()
@@ -324,6 +377,11 @@ bool HAL::shutdownHAL()
 
     // Remove ModeSet and other state flags.
     HALState = 0;    
+
+    // Remove availability of all profiling.
+    GetProfiler().SetModeAvailability(0);
+    GetProfiler().SetFlagAvailability(0);
+
     return true;
 }
 
@@ -337,6 +395,10 @@ bool HAL::BeginFrame()
         return false;
 
     HALState |= HS_InFrame;
+
+    if (GetRenderSync())
+        GetRenderSync()->BeginFrame();
+
     GetRQProcessor().BeginFrame();
     GetMeshCache().BeginFrame();
     GetTextureManager()->BeginFrame();
@@ -349,6 +411,11 @@ void HAL::EndFrame()
     ScopedRenderEvent GPUEvent(GetEvent(Event_Frame), 0, false);
     if (!checkState(HS_ModeSet|HS_InFrame, __FUNCTION__))
         return;
+
+    // RenderSync::EndFrame should come before MeshCache::EndFrame - as it function will do fence pending checks,
+    // which may be marked as 'quick' reclaimed, during RenderSync::EndFrame.
+    if (GetRenderSync())
+        GetRenderSync()->EndFrame();
 
     RenderBufferManager* prbm = GetRenderBufferManager();
     if ( prbm )
@@ -443,7 +510,6 @@ void HAL::beginDisplay(BeginDisplayData* data)
     applyBlendMode(CurrentBlendState);
 
     beginMaskDisplay();
-    Profiler.SetDrawMode(0);
 
     VP = Matrices->SetOrientation(vpin);
     if (VP.GetClippedRect(&ViewRect))
@@ -453,9 +519,20 @@ void HAL::beginDisplay(BeginDisplayData* data)
 
     updateViewport();
 
+    // If there is a child that has a BlendMode that requires a target, and we are not currently in a RenderTarget
+    // (eg. the buffer currently being rendered to cannot be sampled), then we must create a target that can be sampled
+    // and render the entire scene into that.
+    if ((GetHALState() & (HS_BlendTarget|HS_InRenderTarget)) == HS_BlendTarget)
+    {
+        FullSceneBlendTarget = *CreateTempRenderTarget(ViewRect.GetSize(), true);
+        PushRenderTarget(Rect<int>(ViewRect.GetSize()), FullSceneBlendTarget);
+    }
+
     // Clear the background with a solid quad, if background has alpha > 0.
-    if (backgroundColor.GetAlpha() > 0)
-        clearSolidRectangle(Rect<int>(vpin.Width, vpin.Height), backgroundColor);
+    if (backgroundColor.GetAlpha() > 0 && !(vpin.Flags & Viewport::View_NoClear))
+    {
+        clearSolidRectangle(Rect<int>(vpin.Width, vpin.Height), backgroundColor, true);
+    }
 }
 
 void HAL::endDisplay()
@@ -466,6 +543,24 @@ void HAL::endDisplay()
 
     endMaskDisplay();
     SF_ASSERT(BlendModeStack.GetSize() == 0);
+
+    if (GetHALState() & HS_BlendTarget &&
+        RenderTargetStack.GetSize() > 0 &&
+        RenderTargetStack.Back().pRenderTarget == FullSceneBlendTarget)
+    {
+        RenderTargetEntry& rte = RenderTargetStack.Back();
+        PopRenderTarget();
+
+        // Render to the backbuffer.
+        applyBlendMode(Blend_Normal, true, true);
+        Render::Texture* ptex = rte.pRenderTarget->GetTexture();
+        Matrix2F fullViewportMatrix = Matrices->GetFullViewportMatrix(ptex->GetSize());
+        Matrix2F texgen(Matrix2F::Identity);
+        texgen.AppendScaling(SizeF(rte.pRenderTarget->GetRect().GetSize()) / SizeF(ptex->GetSize()));
+        texgen.AppendScaling(1.0f, -GetViewportScaling());
+        DrawableCopyback(ptex, fullViewportMatrix, texgen, 0); // disable 1/2 pixel offset
+        rte.pRenderTarget->SetInUse(RTUse_Unused);
+    }
 
     if (HALState & HS_SceneInDisplay)
     {
@@ -524,13 +619,23 @@ bool HAL::BeginScene()
     if ( GetTextureManager() )
         GetTextureManager()->BeginScene();
 
-    // Set the blend mode state. If applyBlendMode is called subsequently to BeginScene, 
-    // that blend state, instead of the default will be applied.
-    CurrentBlendState.Mode     = Blend_None;
-    CurrentBlendState.SourceAc = false;
-    CurrentBlendState.ForceAc  = false;
+    // Set the blend mode state Force setting of states, by changing the cached values, and then applying different settings.
+    CurrentBlendState.Mode = Blend_Count;   
+    CurrentBlendState.BlendEnable = false;
+    applyBlendMode(Blend_None, false, false);
+    applyBlendModeEnable(true);
 
-    Profiler.SetProfileViews(NextProfileMode);
+    // Set the depth/stencil state, to off. Set the redundancy checks to a mode that ignores everything.
+    // When we set the mode to disabled, it will only set the modes it actually needs.
+    CurrentDepthStencilState = DepthStencil_Invalid;
+    CurrentStencilRef        = (unsigned)-1;
+    applyDepthStencilMode(DepthStencil_Disabled, 0);
+    
+    // Set the rasterization state.
+    CurrentSceneRasterMode = NextSceneRasterMode;
+    AppliedSceneRasterMode = RasterMode_Count; // invalidate to force set.
+    applyRasterMode(CurrentSceneRasterMode);
+
     HALState |= HS_InScene;
     return true;
 }
@@ -626,8 +731,8 @@ void HAL::DrawBundleEntries( BundleIterator ibundles, Renderer2DImpl* r2d )
 			GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_All);
             break;
         case Display_Prepass:
-			GetRQProcessor().SetQueueEmitFilter(RenderQueueProcessor::QPF_Filters);
-            GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_Filters);
+			GetRQProcessor().SetQueueEmitFilter(RenderQueueProcessor::QPF_CacheableOnly);
+            GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_CacheableOnly);
             break;
         }
 
@@ -669,42 +774,218 @@ void HAL::Draw(const RenderQueueItem& item)
     qp.ProcessQueue(RenderQueueProcessor::QPM_Any);
 }
 
+// Mask support is implemented as a stack, enabling for a number of optimizations:
+//
+// 1. Large "Clipped" marks are clipped to a custom viewport, allowing to save on
+//    fill-rate when rendering both the mask and its content. The mask area threshold
+//    that triggers this behavior is determined externally.
+//      - Clipped masks can be nested, but not batched. When erased, clipped masks
+//        clear the clipped intersection area.
+// 2. Small masks can be Batched, having multiple mask areas with multiple mask
+//    content items inside.
+//      - Small masks can contain clipped masks either regular or clipped masks.
+// 3. Mask area dimensions are provided as HMatrix, which maps a unit rectangle {0,0,1,1}
+//    to a mask bounding rectangle. This rectangle can be rotated (non-axis aligned),
+//    allowing for more efficient fill.
+// 4. PopMask stack optimization is implemented that does not erase nested masks; 
+//    Stencil Reference value is changed instead. Erase of a mask only becomes
+//    necessary if another PushMask_BeginSubmit is called, in which case previous
+//    mask bounding rectangles are erased. This setup avoids often unnecessary erase 
+//    operations when drawing content following a nested mask.
+//      - To implement this MaskStack keeps a previous "stale" MaskPrimitive
+//        located above the MaskStackTop.
+
+void HAL::PushMask_BeginSubmit(MaskPrimitive* prim)
+{
+    GetEvent(Event_Mask).Begin(__FUNCTION__);
+    if (!checkState(HS_InDisplay, __FUNCTION__))
+        return;
+
+    if (!checkDepthStencilBufferCaps())
+        return;
+
+    // Draw masking primitives in 'solid' rasterization mode, otherwise the masking may not affect the stencil buffer.
+    applyRasterMode(RasterMode_Solid);
+
+    bool viewportValid = (HALState & HS_ViewValid) != 0;
+
+    // Erase previous mask if it existed above our current stack top.
+    if (MaskStackTop && (MaskStack.GetSize() > MaskStackTop) && viewportValid)
+    {
+        // Erase rectangles of these matrices; must be done even for clipped masks.
+        if (StencilAvailable && MultiBitStencil)
+        {
+            // Any stencil of value greater then MaskStackTop should be set to it;
+            // i.e. replace when (MaskStackTop < stencil value).
+            unsigned maxStencilValue = MaskStackTop;
+            applyDepthStencilMode(DepthStencil_StencilClearHigher, maxStencilValue);
+            MaskPrimitive* erasePrim = MaskStack[MaskStackTop].pPrimitive;
+            drawMaskClearRectangles(erasePrim->GetMaskAreaMatrices(), erasePrim->GetMaskCount());
+        }
+    }
+
+    MaskStack.Resize(MaskStackTop+1);
+    MaskStackEntry &e = MaskStack[MaskStackTop];
+    e.pPrimitive       = prim;
+    e.OldViewportValid = viewportValid;
+    e.OldViewRect      = ViewRect; // TBD: Must assign
+    MaskStackTop++;
+
+    HALState |= HS_DrawingMask;
+
+    if ((MaskStackTop == 1) && viewportValid)
+    {
+        // Clear view rectangles.
+        if (StencilAvailable)
+        {
+            // Unconditionally overwrite stencil rectangles with REF value of 0.
+            applyDepthStencilMode(DepthStencil_StencilClear, 0);
+        }
+        else
+        {
+            // Depth clears bounds. 
+            applyDepthStencilMode(DepthStencil_DepthWrite, 0);
+        }
+        drawMaskClearRectangles(prim->GetMaskAreaMatrices(), prim->GetMaskCount());
+    }
+
+    // Prepare for primitives rendering masks.
+    if (StencilAvailable)
+    {
+        if (MultiBitStencil)
+        {
+            // Increment only if we support it.
+            applyDepthStencilMode(DepthStencil_StencilIncrementEqual, (MaskStackTop-1));
+        }
+        else
+        {
+            // If we cannot increment, setup for 1-bit masks (no nested masking).
+            applyDepthStencilMode(DepthStencil_StencilClear, 1);
+            SF_DEBUG_WARNONCE(MaskStackTop > 1, "Nested-masks used, but only single-bit stencil buffer available. Nested masks will be incorrect.");
+        }
+    }
+    else if (DepthBufferAvailable)
+    {
+        // Set the correct render states in order to not modify the color buffer
+        // but write the default Z-value everywhere.
+        applyDepthStencilMode(DepthStencil_DepthWrite, 0);
+        SF_DEBUG_WARNONCE(MaskStackTop > 1, "Nested-masks used, but only depth buffer available. Nested masks will be incorrect.");
+    }
+    ++AccumulatedStats.Masks;
+}
+
+
+void HAL::EndMaskSubmit()
+{
+    ScopedRenderEvent GPUEvent(GetEvent(Event_Mask), 0, false);
+
+    if (!checkState(HS_InDisplay|HS_DrawingMask, __FUNCTION__))
+        return;
+    HALState &= ~HS_DrawingMask;    
+    SF_DEBUG_ASSERT(MaskStackTop, "EndMaskSubmit called, but not masks on the MaskStack.");
+
+    if (StencilAvailable)
+    {
+        // We draw only where the (MaskStackTop <= stencil), i.e. where the latest mask was drawn.
+        // However, we don't change the stencil buffer
+        applyDepthStencilMode(DepthStencil_StencilTestLessEqual, MaskStackTop);
+    }
+    else if (DepthBufferAvailable)
+    {
+        // Disable the Z-write and write only where the mask had written
+        applyDepthStencilMode(DepthStencil_DepthTestEqual, 0);
+    }
+
+    // Re-apply the current raster mode, it may have been set to solid in PushMask_BeginSubmit.
+    applyRasterMode(CurrentSceneRasterMode);
+}
+
+
+void HAL::PopMask()
+{
+    ScopedRenderEvent GPUEvent(GetEvent(Event_PopMask), __FUNCTION__);
+    if (!checkState(HS_InDisplay, __FUNCTION__))
+        return;
+
+    if (!checkDepthStencilBufferCaps())        
+        return;
+
+    SF_DEBUG_ASSERT(MaskStackTop, "No items on the MaskStack, during HAL::PopMask");
+    MaskStackTop--;
+
+    // Disable mask or decrement stencil reference value.
+    if (StencilAvailable)
+    {
+        if (MaskStackTop == 0)
+        {
+            applyDepthStencilMode(DepthStencil_Disabled, 0);
+        }
+        else
+        {
+            // Change ref value down, so that we can draw using previous mask.
+            applyDepthStencilMode(DepthStencil_StencilTestLessEqual, MaskStackTop);
+        }
+    }
+    else if (DepthBufferAvailable)
+    {
+        // Disable the Z-write/test.
+        applyDepthStencilMode(DepthStencil_Disabled, 0);
+    }
+}
+
+#define BO(x) HAL::BlendOp_##x
+#define BF(x) HAL::BlendFactor_##x
+
 HAL::BlendModeDescriptor HAL::BlendModeTable[Blend_Count] =
 {
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // None
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // Normal
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // Layer      // UNSUPPORTED.
-                                                                                 
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_DESTCOLOR,     HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_SRCALPHA,  HAL::BlendFactor_INVSRCALPHA  }, // Multiply
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_INVDESTCOLOR,  HAL::BlendFactor_ONE,         HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // Screen
-                                                                                 
-    { HAL::BlendOp_MAX,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_ONE,         HAL::BlendFactor_SRCALPHA,  HAL::BlendFactor_ONE          }, // Lighten
-    { HAL::BlendOp_MIN,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_ONE,         HAL::BlendFactor_SRCALPHA,  HAL::BlendFactor_ONE          }, // Darken
+    { BO(ADD),         BF(SRCALPHA),      BF(INVSRCALPHA), BO(ADD), BF(ONE),       BF(INVSRCALPHA)  }, // None
+    { BO(ADD),         BF(SRCALPHA),      BF(INVSRCALPHA), BO(ADD), BF(ONE),       BF(INVSRCALPHA)  }, // Normal
+    { BO(ADD),         BF(SRCALPHA),      BF(INVSRCALPHA), BO(ADD), BF(SRCALPHA),  BF(INVSRCALPHA)  }, // Layer
+                                                                                          
+    { BO(ADD),         BF(DESTCOLOR),     BF(INVSRCALPHA), BO(ADD), BF(ONE),       BF(INVSRCALPHA)  }, // Multiply
+    { BO(ADD),         BF(INVDESTCOLOR),  BF(ONE),         BO(ADD), BF(ONE),       BF(INVSRCALPHA)  }, // Screen
 
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // Difference // UNSUPPORTED.
-                                                                                 
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_ONE,         HAL::BlendFactor_ZERO,      HAL::BlendFactor_ONE          }, // Add
-    { HAL::BlendOp_REVSUBTRACT, HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_ONE,         HAL::BlendFactor_ZERO,      HAL::BlendFactor_ONE          }, // Subtract
+#if defined(SF_RENDER_DARKEN_LIGHTEN_OLD_BEHAVIOR)
+    { BO(MAX),         BF(SRCALPHA),      BF(ONE),         BO(MAX), BF(SRCALPHA),  BF(ONE)          }, // Lighten
+    { BO(MIN),         BF(SRCALPHA),      BF(ONE),         BO(MIN), BF(SRCALPHA),  BF(ONE)          }, // Darken
+#else
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ONE),       BF(ZERO)         }, // Lighten (Same as overwrite all)
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ONE),       BF(ZERO)         }, // Darken (Same as overwrite all)
+#endif
 
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_INVDESTCOLOR,  HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_SRCALPHA,  HAL::BlendFactor_INVSRCALPHA  }, // Invert
-                                                                                 
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_ZERO,          HAL::BlendFactor_ZERO,        HAL::BlendFactor_ONE,       HAL::BlendFactor_ONE          }, // Alpha     // UNSUPPORTED.
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_ZERO,          HAL::BlendFactor_ZERO,        HAL::BlendFactor_ONE,       HAL::BlendFactor_ONE          }, // Erase     // UNSUPPORTED.
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // Overlay   // UNSUPPORTED.
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_SRCALPHA,      HAL::BlendFactor_INVSRCALPHA, HAL::BlendFactor_ONE,       HAL::BlendFactor_INVSRCALPHA  }, // Hardlight // UNSUPPORTED.
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ONE),       BF(ZERO)         }, // Difference (Same as overwrite all)
+                                                                                          
+    { BO(ADD),         BF(SRCALPHA),      BF(ONE),         BO(ADD), BF(ONE),       BF(ONE)          }, // Add
+    { BO(REVSUBTRACT), BF(SRCALPHA),      BF(ONE),         BO(ADD), BF(ONE),       BF(INVSRCALPHA)  }, // Subtract
+                                                           
+    { BO(ADD),         BF(INVDESTCOLOR),  BF(INVSRCALPHA), BO(ADD), BF(SRCALPHA),  BF(INVSRCALPHA)  }, // Invert
+                                                                                          
+    { BO(ADD),         BF(ZERO),          BF(ONE),         BO(ADD), BF(ZERO),      BF(SRCALPHA)     }, // Alpha
+    { BO(ADD),         BF(ZERO),          BF(ONE),         BO(ADD), BF(ZERO),      BF(INVSRCALPHA)  }, // Erase
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ONE),       BF(ZERO)         }, // Overlay (Same as overwrite all)
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ONE),       BF(ZERO)         }, // Hardlight (Same as overwrite all)
 
     // The following are used internally.
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_ONE,           HAL::BlendFactor_ZERO,        HAL::BlendFactor_ZERO,      HAL::BlendFactor_ONE          }, // Overwrite - overwrite the destination.
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_ONE,           HAL::BlendFactor_ZERO,        HAL::BlendFactor_ONE,       HAL::BlendFactor_ZERO         }, // OverwriteAll - overwrite the destination (including alpha).
-    { HAL::BlendOp_ADD,         HAL::BlendFactor_ONE,           HAL::BlendFactor_ONE,         HAL::BlendFactor_ONE,       HAL::BlendFactor_ONE          }, // FullAdditive - add all components together, without multiplication.
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ZERO),      BF(ONE)          }, // Overwrite - overwrite the destination.
+    { BO(ADD),         BF(ONE),           BF(ZERO),        BO(ADD), BF(ONE),       BF(ZERO)         }, // OverwriteAll - overwrite the destination (including alpha).
+    { BO(ADD),         BF(ONE),           BF(ONE),         BO(ADD), BF(ONE),       BF(ONE)          }, // FullAdditive - add all components together, without multiplication.
+    { BO(ADD),         BF(SRCALPHA),      BF(INVSRCALPHA), BO(ADD), BF(ONE),       BF(INVSRCALPHA)  }, // FilterBlend
+    { BO(ADD),         BF(ZERO),          BF(ONE),         BO(ADD), BF(ZERO),      BF(ONE)          }, // Ignore - leaves dest unchanged.
 };                                           
 
-void HAL::PushBlendMode(BlendMode mode)
+#undef BO
+#undef BF
+
+void HAL::PushBlendMode(BlendPrimitive* prim)
 {
     if (!checkState(HS_InDisplay, __FUNCTION__))
         return;
 
-    BlendModeStack.PushBack(mode);
+    BlendMode mode = prim->GetBlendMode();
+    BlendStackEntry e = { prim, 0 };
+    SF_DEBUG_ASSERT(prim != 0, "Unexpected NULL BlendPrimitive in HAL::PushBlendMode.");
+    BlendModeStack.PushBack(e);
+
     applyBlendMode(mode, false, (HALState& HS_InRenderTarget) != 0 );
 }
 
@@ -713,31 +994,64 @@ void HAL::PopBlendMode()
     if (!checkState(HS_InDisplay, __FUNCTION__))
         return;
 
-    UPInt stackSize = BlendModeStack.GetSize();
-    SF_ASSERT(stackSize != 0);
+    SF_DEBUG_ASSERT(BlendModeStack.GetSize() != 0, "Blend mode stack was unexpectedly empty during PopBlendMode.");
+    BlendStackEntry e = BlendModeStack.Back();
     BlendModeStack.PopBack();
-    applyBlendMode((stackSize>1) ? BlendModeStack[stackSize-2] : Blend_Normal, 
-        false, (HALState& HS_InRenderTarget) != 0 );
+
+    applyBlendMode(getLastBlendModeOrDefault(), false, (HALState& HS_InRenderTarget) != 0 );
+}
+
+void HAL::SetFullSceneTargetBlend(bool enable)
+{
+    HALState &= ~HS_BlendTarget;
+    if (enable)
+        HALState |= HS_BlendTarget;
 }
 
 void HAL::applyBlendMode(BlendMode mode, bool sourceAc, bool forceAc)
 {
-    // TODO: Enable blend mode redudancy checking.
     // Check for redundant setting of blend states.
-    //if (CurrentBlendState.Mode == mode &&
-    //    CurrentBlendState.SourceAc == sourceAc &&
-    //    CurrentBlendState.ForceAc == forceAc )
-    //{
-    //    return;
-    //}
+    if (CurrentBlendState.Mode == mode &&
+        CurrentBlendState.SourceAc == sourceAc &&
+        CurrentBlendState.ForceAc == forceAc )
+    {
+        return;
+    }
 
-    ScopedRenderEvent GPUEvent(GetEvent(Event_ApplyBlend), __FUNCTION__);
+    SF_DEBUG_ASSERT1(((unsigned) mode) < Blend_Count, "Invalid blend mode set (%d)", mode);
 
-    // Detect invalid blend modes (debug)
-    SF_ASSERT(((unsigned) mode) < Blend_Count);
     // For release, just set a default blend mode
     if (((unsigned) mode) >= Blend_Count)
         mode = Blend_None;
+
+#if !defined(SF_BUILD_SHIPPING)
+    const char* eventString = 0;
+    switch(mode)
+    {
+       default:
+        case Blend_None:        eventString = "HAL::applyBlendMode(None)"; break;
+        case Blend_Normal:      eventString = "HAL::applyBlendMode(Normal)"; break;
+        case Blend_Layer:       eventString = "HAL::applyBlendMode(Layer)"; break;
+        case Blend_Multiply:    eventString = "HAL::applyBlendMode(Multiply)"; break;
+        case Blend_Screen:      eventString = "HAL::applyBlendMode(Screen)"; break;
+        case Blend_Lighten:     eventString = "HAL::applyBlendMode(Lighten)"; break;
+        case Blend_Darken:      eventString = "HAL::applyBlendMode(Darken)"; break;
+        case Blend_Difference:  eventString = "HAL::applyBlendMode(Difference)"; break;
+        case Blend_Add:         eventString = "HAL::applyBlendMode(Add)"; break;       
+        case Blend_Subtract:    eventString = "HAL::applyBlendMode(Subtract)"; break;
+        case Blend_Invert:      eventString = "HAL::applyBlendMode(Invert)"; break;
+        case Blend_Alpha:       eventString = "HAL::applyBlendMode(Alpha)"; break;
+        case Blend_Erase:       eventString = "HAL::applyBlendMode(Erase)"; break;
+        case Blend_Overlay:     eventString = "HAL::applyBlendMode(Overlay)"; break;
+        case Blend_HardLight:   eventString = "HAL::applyBlendMode(HardLight)"; break;
+        case Blend_Overwrite:   eventString = "HAL::applyBlendMode(Overwrite)"; break;
+        case Blend_OverwriteAll:eventString = "HAL::applyBlendMode(OverwriteAll)"; break;
+        case Blend_FullAdditive:eventString = "HAL::applyBlendMode(FullAdditive)"; break;
+        case Blend_FilterBlend: eventString = "HAL::applyBlendMode(FilterBlend)"; break;
+        case Blend_Ignore:      eventString = "HAL::applyBlendMode(Ignore)"; break;
+    }
+    ScopedRenderEvent GPUEvent(GetEvent(Event_ApplyBlend), eventString);
+#endif
 
     // Check for overriding
     mode = Profiler.GetBlendMode(mode);
@@ -767,33 +1081,104 @@ void HAL::applyBlendMode(const HALBlendState& state)
     applyBlendMode(state.Mode, state.SourceAc, state.ForceAc);
 }
 
-void HAL::PrepareFilters(FilterPrimitive* prim)
+void HAL::applyBlendModeEnable(bool enabled)
+{
+    if (CurrentBlendState.BlendEnable != enabled)
+    {
+        applyBlendModeEnableImpl(enabled);
+        CurrentBlendState.BlendEnable = enabled;
+    }
+}
+
+BlendMode HAL::getLastBlendModeOrDefault() const
+{
+    if (BlendModeStack.GetSize()>=1)
+        return BlendModeStack.Back().pPrimitive->GetBlendMode();
+    return Blend_Normal;
+}
+
+// Just to make things easier to read:
+#define IV(x) EnableIgnore_##x
+#define DSF(x) DepthStencilFunction_##x
+#define SO(x) StencilOp_##x
+HAL::HALDepthStencilDescriptor HAL::DepthStencilModeTable[DepthStencil_Count] =
+{
+    // ZTest,      ZWrite,      Stencil,      ColorW,       DepthFn,     StencilFn,      StencilPassOp, StencilFailOp, StencilZFailOp
+    { IV(Ignore),  IV(Ignore),  IV(Ignore),   IV(Ignore),   DSF(Ignore), DSF(Ignore),    SO(Ignore),    SO(Ignore),    SO(Ignore)  },  // Invalid - must be all ignores (used as a 'force')
+    { IV(Off),     IV(Off),     IV(Off),      IV(On),       DSF(Ignore), DSF(Ignore),    SO(Ignore),    SO(Ignore),    SO(Ignore)  },  // Disabled
+    { IV(Off),     IV(Off),     IV(On),       IV(Off),      DSF(Ignore), DSF(Always),    SO(Replace),   SO(Ignore),    SO(Ignore)  },  // StencilClear
+    { IV(Off),     IV(Off),     IV(On),       IV(Off),      DSF(Ignore), DSF(LessEqual), SO(Replace),   SO(Keep),      SO(Ignore)  },  // StencilClearHigher
+    { IV(Off),     IV(Off),     IV(On),       IV(Off),      DSF(Ignore), DSF(Equal),     SO(Increment), SO(Keep),      SO(Ignore)  },  // StencilIncrementEqual
+    { IV(Off),     IV(Off),     IV(On),       IV(On),       DSF(Ignore), DSF(LessEqual), SO(Keep),      SO(Keep),      SO(Ignore)  },  // StencilTestLessEqual
+    { IV(Off),     IV(On),      IV(Off),      IV(On),       DSF(Always), DSF(Ignore),    SO(Ignore),    SO(Ignore),    SO(Ignore)  },  // DepthWrite
+    { IV(On),      IV(Off),     IV(Off),      IV(On),       DSF(Equal),  DSF(Ignore),    SO(Ignore),    SO(Ignore),    SO(Ignore)  },  // DepthTestEqual
+};
+#undef IV
+#undef DSF
+#undef SO
+
+void HAL::drawMaskClearRectangles(const HMatrix* matrices, UPInt count)
+{
+    UPInt baseCount = 0;
+    while (count > 0)
+    {
+        static const int MaximumClearRects = 32;
+        UPInt passCount = Alg::Min<UPInt>(count, MaximumClearRects);
+        Matrix2F convertedMatrices[MaximumClearRects];
+        for(unsigned mtx = 0; mtx < passCount; ++mtx)
+        {
+            convertedMatrices[mtx].SetToAppend(matrices[baseCount + mtx].GetMatrix2D(), GetMatrices()->UserView);
+        }
+        drawMaskClearRectangles(convertedMatrices, passCount);
+        count -= passCount;
+        baseCount += passCount;
+    }
+}
+
+void HAL::beginMaskDisplay()
+{
+    SF_DEBUG_ASSERT(MaskStackTop == 0, "No masks should be on the stack before calling beginMaskDisplay." );
+    StencilChecked  = 0;
+    StencilAvailable= 0;
+    MultiBitStencil = 0;
+    DepthBufferAvailable = 0;
+    HALState &= ~HS_DrawingMask;
+}
+
+void HAL::endMaskDisplay()
+{
+    SF_DEBUG_ASSERT(MaskStackTop == 0, "All masks should be on removed the mask stack when calling endMaskDisplay.");
+    MaskStackTop = 0;
+    MaskStack.Clear();
+}
+
+void HAL::applyRasterMode(RasterModeType mode)
+{
+    if (mode != AppliedSceneRasterMode)
+    {
+        applyRasterModeImpl(mode);
+        AppliedSceneRasterMode = mode;
+    }
+}
+
+void HAL::PrepareCacheable(CacheablePrimitive* prim, bool unprepare)
 {
     if (!checkState(HS_InDisplay, __FUNCTION__))
         return;
 
-    // We are drawing a profile mode, which will not use the cached results, and will 
-    // not require a change in the queue filtering.
-    if ( !Profiler.ShouldDrawMask() || !prim)
-        return;
-
-    // If the filter pointer is 0, then we are 'unpreparing'. This happens after the filter
-    // and all its contents have been prepared.
-    bool unprepare = (prim->GetFilters() == 0);
-
     // If we are cached in some way (or we are 'unpreparing').
-    if ( prim->GetCacheState() != FilterPrimitive::Cache_Uncached || unprepare)
+    if ( prim->GetCacheState() != CacheablePrimitive::Cache_Uncached || unprepare)
     {
         if ( !unprepare )
         {
             // The filter is being prepared, determine whether the results are cached.
-            RenderTarget* results[FilterPrimitive::MaximumCachedResults];
-            prim->GetCacheResults(results, FilterPrimitive::MaximumCachedResults);
+            RenderTarget* results[CacheablePrimitive::MaximumCachedResults];
+            prim->GetCacheResults(results, CacheablePrimitive::MaximumCachedResults);
 
             // Make sure that the first result (which is always required) is valid, and has the CacheID relating to
-            // this FilterPrimitive. If other results exist, make sure that they are valid as well.
+            // this CacheablePrimitive. If other results exist, make sure that they are valid as well.
             bool validCache = true;
-            for ( unsigned cr = 0; cr < FilterPrimitive::MaximumCachedResults; ++cr )
+            for ( unsigned cr = 0; cr < CacheablePrimitive::MaximumCachedResults; ++cr )
             {
                 if ( !results[cr] )
                 {
@@ -810,42 +1195,49 @@ void HAL::PrepareFilters(FilterPrimitive* prim)
             }
 
             // Must increase the prep index always, so we know when to remove the prepare filter.
-            CachedFilterPrepIndex++;
+            CacheablePrepIndex++;
 
             // Cache isn't valid, uncache the results.
             if (!validCache)
             {
-                prim->SetCacheResults(FilterPrimitive::Cache_Uncached, 0, 0);
+                prim->SetCacheResults(CacheablePrimitive::Cache_Uncached, 0, 0);
                 return;
             }
 
             // If there are valid cache results, then we must set the queue processor to skip
-            // anything in the queue, except other filter prepares. Because the filter is cached,
-            // we do not need to prepare any geometry inside it, as it will be contained within 
+            // anything in the queue, except other cacheable prepares. Because the primitive is cached,
+            // we do not need to prepare any geometry inside it, as it should be contained within 
             // the cached results. 
-            if (CachedFilterPrepIndex == 0 )
+            if (CacheablePrepStart < 0)
             {
-                for ( unsigned cr = 0; cr < FilterPrimitive::MaximumCachedResults; ++cr )
+                for ( unsigned cr = 0; cr < CacheablePrimitive::MaximumCachedResults; ++cr )
                 {
                     if ( results[cr] )
-                        results[cr]->SetInUse(true);
+                        results[cr]->SetInUse(RTUse_InUse);
                 }
-                GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_Filters);
+                GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_CacheableOnly);
+                CacheablePrepStart = CacheablePrepIndex;
             }
         }
-        else if ( CachedFilterPrepIndex >= 0 )
+        else if ( CacheablePrepIndex >= 0 )
         {
-            // When filters are 'unprepared' we need to set the render queue to continue preparing
+            // When cacheables are 'unprepared' we need to set the render queue to continue preparing
             // primitives from that point on. However, if we are in the prepass, make sure it is
-            // still only processing filters.
-            if (CachedFilterPrepIndex == 0 && CurrentPass != Display_Prepass)
-                GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_All);
-            else if (CachedFilterPrepIndex == 0 && CurrentPass == Display_Prepass )
-                GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_Filters);
-            --CachedFilterPrepIndex;
+            // still only processing cacheables.
+            if (CacheablePrepIndex == CacheablePrepStart)
+            {
+                CacheablePrepStart = -1;
+                if (CurrentPass != Display_Prepass)
+                    GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_All);
+                else
+                    GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_CacheableOnly);
+            }
+
+            // Make sure that cache results have their SetInUse flags set properly
+            --CacheablePrepIndex;
         }
     }
-    else if (prim->GetCacheState() == FilterPrimitive::Cache_Uncached)
+    else if (prim->GetCacheState() == CacheablePrimitive::Cache_Uncached)
     {
         if (CurrentPass == Display_Prepass)
         {
@@ -853,11 +1245,78 @@ void HAL::PrepareFilters(FilterPrimitive* prim)
             GetRQProcessor().SetQueuePrepareFilter(RenderQueueProcessor::QPF_All);
         }
 
-        // If we're currently within a cached filter, and we hit an uncached filter, we still increase the
-        // cached prep index, just so we know where the real cached filter ends.
-        if (!unprepare && CachedFilterPrepIndex >= 0)
-            CachedFilterPrepIndex++;
+        // If we're currently within a cached filter, and we hit an uncached primitive, we still increase the
+        // cached prep index, just so we know where the real cached primitive ends.
+        if (!unprepare && CacheablePrepIndex >= 0)
+            CacheablePrepIndex++;
     }
+}
+
+void HAL::PushFilters(FilterPrimitive* prim)
+{
+    GetEvent(Event_Filter).Begin(__FUNCTION__);
+    if (!checkState(HS_InDisplay, __FUNCTION__))
+        return;
+
+    FilterStackEntry e = {prim, 0};
+
+    // Do not render filters if the profile does not support it (unfiltered content will be rendered).
+    if (!shouldRenderFilters(prim))
+    {
+        FilterStack.PushBack(e);
+        return;
+    }
+
+    if ( (HALState & HS_InCachedTarget) )
+    {
+        FilterStack.PushBack(e);
+        return;
+    }
+
+    // Disable masking from previous target, if this filter primitive doesn't have any masking.
+    if ( MaskStackTop != 0 && !prim->GetMaskPresent() && prim->GetCacheState() != CacheablePrimitive::Cache_Target )
+        applyDepthStencilMode(HAL::DepthStencil_Disabled, MaskStackTop);
+
+    // Apply the solid raster mode, we do not want to draw filtered content in wireframe/point, as if it gets cached, it will stay that way
+    applyRasterModeImpl(RasterMode_Solid);
+
+    HALState |= HS_DrawingFilter;
+
+    if ( prim->GetCacheState() ==  CacheablePrimitive::Cache_Uncached )
+    {
+        // Draw the filter from scratch.
+        const Matrix2F& m = e.pPrimitive->GetAreaMatrix().GetMatrix2D();
+        e.pRenderTarget = *CreateTempRenderTarget(ImageSize((UInt32)m.Sx(), (UInt32)m.Sy()), prim->GetMaskPresent());
+        RectF frameRect(m.Tx(), m.Ty(), m.Tx() + m.Sx(), m.Ty() + m.Sy());
+        PushRenderTarget(frameRect, e.pRenderTarget);
+        applyBlendMode(Blend_Normal, false, true);
+
+        // If this primitive has masking, then clear the entire area to the current mask level, because 
+        // the depth stencil target may be different, and thus does not contain the previously written values.
+        if (prim->GetMaskPresent() && checkDepthStencilBufferCaps())
+        {
+            if (StencilAvailable)
+                applyDepthStencilMode(HAL::DepthStencil_StencilClear, MaskStackTop);
+            else if (DepthBufferAvailable)
+                applyDepthStencilMode(HAL::DepthStencil_DepthWrite, MaskStackTop);
+
+            const Matrix2F& viewMtx = GetMatrices()->GetFullViewportMatrix(e.pRenderTarget->GetBufferSize());
+            drawMaskClearRectangles(&viewMtx, 1);
+
+
+            // Although we cleared the mask, we might not be rendering it immediately, so put depth/stencil back to normal.
+            applyDepthStencilMode(HAL::DepthStencil_Disabled, MaskStackTop);
+        }
+    }
+    else
+    {
+        // Drawing a cached filter, ignore all draw calls until the corresponding PopFilters.
+        // Keep track of the level at which we need to draw the cached filter, by adding entries to the stack.
+        HALState |= HS_InCachedFilter;
+        CacheableIndex = (int)FilterStack.GetSize();
+        GetRQProcessor().SetQueueEmitFilter(RenderQueueProcessor::QPF_CacheableOnly);
+    }
+    FilterStack.PushBack(e);
 }
 
 void HAL::GetStats(Stats* pstats, bool clear)
@@ -868,6 +1327,13 @@ void HAL::GetStats(Stats* pstats, bool clear)
 	*pstats = AccumulatedStats;
 	if (clear)
 		AccumulatedStats.Clear();
+}
+
+
+RenderEvent& HAL::GetEvent( EventType )
+{
+    static RenderEvent defaultEvent;
+    return defaultEvent;
 }
 
 void HAL::PopFilters()
@@ -883,23 +1349,20 @@ void HAL::PopFilters()
     FilterStackEntry e;
     e = FilterStack.Pop();
 
-    if ( !Profiler.ShouldDrawMask() )
+    // If doing a cached filter, and haven't reached the level at which it will be displayed, ignore the pop.
+    // Also, if doing a cached blend, ignore all filter calls.
+    if ( (HALState&HS_InCachedBlend) ||
+         ((HALState&HS_InCachedFilter) && (CacheableIndex < (int)FilterStack.GetSize())) )
     {
-        if ( FilterStack.GetSize() == 0 )
-            Profiler.SetDrawMode(0);
         return;
     }
 
-    // If doing a cached filter, and haven't reached the level at which it will be displayed, ignore the pop.
-    if ( (HALState & HS_CachedFilter) && (CachedFilterIndex < (int)FilterStack.GetSize()) )
-        return;
-
-    CachedFilterIndex = -1;
-    if ( HALState & HS_CachedFilter )
+    CacheableIndex = -1;
+    if ( HALState & HS_InCachedTarget )
     {
         drawCachedFilter(e.pPrimitive);
         GetRQProcessor().SetQueueEmitFilter(RenderQueueProcessor::QPF_All);
-        HALState &= ~HS_CachedFilter;
+        HALState &= ~HS_InCachedTarget;
     }
     else
     {

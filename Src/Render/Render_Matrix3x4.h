@@ -2,11 +2,12 @@
 
 PublicHeader:   Render
 Filename    :   Render_Matrix3x4.h
-Content     :   3D Matrix class 
+Content     :   3D Matrix class
 Created     :   November 15, 2010
 Authors     :   Mustafa Thamer
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -33,16 +34,16 @@ namespace Scaleform { namespace Render {
     //
     //    This matrix is composed of 3 rows and 4 columns with translation in the 4th column.
     //    It is laid out in row-major order (rows are stored one after the other in memory)
-    //    The data is in the same format as Matrix2x4 and Matrix4x4.    
+    //    The data is in the same format as Matrix2x4 and Matrix4x4.
     //
     //    Column vectors are used when applying matrix multiplications.
-    //    A vector is represented as a single column, 4-row matrix. 
+    //    A vector is represented as a single column, 4-row matrix.
     //
-    //    TRANSFORMATIONS HAPPEN RIGHT TO LEFT, so M3 * M2 * M1 * V    
+    //    TRANSFORMATIONS HAPPEN RIGHT TO LEFT, so M3 * M2 * M1 * V
     //    means that Vector V is transformed by M1 then M2 then M3.
     //    This is the same as OpenGL but opposite of Direct3D
     //
-    //    This Matrix represents the matrix of type: 
+    //    This Matrix represents the matrix of type:
     //
     //    | sx      01      02      tx |    // this is row #1 which has 4 values
     //    | 10      sy      12      ty |    // this is row #2 which has 4 values
@@ -53,7 +54,7 @@ namespace Scaleform { namespace Render {
     //    | 20      21      22      23 |
     //
     //    in memory it looks like this {00, 01, 02, 03,  10, 11, 12, 13,  20, 21, 22, 23},
-    //    ((float *)M)[4] = 10, and ((float *)M)[7] = 13, in general M[row][col] = M[row * 4 + col] 
+    //    ((float *)M)[4] = 10, and ((float *)M)[7] = 13, in general M[row][col] = M[row * 4 + col]
     //          (since 4 is the number of columns)
     //
     //    Basis vectors are the 1st 3 columns:
@@ -93,7 +94,7 @@ namespace Scaleform { namespace Render {
         Matrix3x4(const T *pVals, int count=12)  { Set(pVals, count);  }
         Matrix3x4(const T pVals[3][4])           { Set(&pVals[0][0], 12);  }
         inline Matrix3x4(
-            T v1, T v2, T v3, T v4, 
+            T v1, T v2, T v3, T v4,
             T v5, T v6, T v7, T v8,
             T v9, T v10, T v11, T v12);
         // copy constructor
@@ -105,9 +106,9 @@ namespace Scaleform { namespace Render {
         Matrix3x4(const Matrix4x4<T> &m);
 
         // constructors for multiplication
-        Matrix3x4(const Matrix3x4 &m1, const Matrix3x4 &m2)     { MultiplyMatrix(m1, m2); }  
-        Matrix3x4(const Matrix3x4 &m1, const Matrix2x4<T> &m2)  { MultiplyMatrix(m1, m2); }  
-        Matrix3x4(const Matrix2x4<T> &m1, const Matrix3x4 &m2)  { MultiplyMatrix(m1, m2); }  
+        Matrix3x4(const Matrix3x4 &m1, const Matrix3x4 &m2)     { MultiplyMatrix(m1, m2); }
+        Matrix3x4(const Matrix3x4 &m1, const Matrix2x4<T> &m2)  { MultiplyMatrix(m1, m2); }
+        Matrix3x4(const Matrix2x4<T> &m1, const Matrix3x4 &m2)  { MultiplyMatrix(m1, m2); }
 
         // Checks if all matrix values are within the -MAX..MAX value range
         SF_EXPORT bool IsValid() const;
@@ -129,7 +130,7 @@ namespace Scaleform { namespace Render {
         SF_EXPORT void SetIdentity();
         void Clear()                        {  memset(M, 0, sizeof(M)); }
 
-        // Scaling 
+        // Scaling
         // use basis vectors
         T GetXScale() const                 { return sqrtf(M[0][0]*M[0][0]+M[1][0]*M[1][0]+M[2][0]*M[2][0]); }
         T GetYScale() const                 { return sqrtf(M[0][1]*M[0][1]+M[1][1]*M[1][1]+M[2][1]*M[2][1]); }
@@ -156,7 +157,7 @@ namespace Scaleform { namespace Render {
         const T &Ty() const                 { return M[1][3]; }
         const T &Tz() const                 { return M[2][3]; }
 
-        // static, create translation matrix 
+        // static, create translation matrix
         static inline Matrix3x4<T> Translation(T tX, T tY, T tZ);
 
         // Multiplication (matches Matrix2x4 ordering as well)
@@ -171,24 +172,29 @@ namespace Scaleform { namespace Render {
         SF_EXPORT void MultiplyMatrix(const Matrix2x4<T> &m1, const Matrix3x4 &m2);
         SF_EXPORT void MultiplyMatrix_NonOpt(const Matrix2x4<T> &m1, const Matrix3x4 &m2);
 
+#if (defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG)
+        SF_EXPORT void MultiplyMatrix_Opt(const Matrix2x4<T> &m1, const Matrix3x4 &m2, float* mask);
+        SF_EXPORT void MultiplyMatrix_Opt(const Matrix3x4 &m1, const Matrix3x4 &m2, float* mask);
+#endif
+
         friend const Matrix3x4      operator * (const Matrix3x4 &m1, const Matrix3x4 &m2)
         {
             Matrix3x4 outMat(NoInit);
-            outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+            outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
             return outMat;
         }
 
         friend const Matrix3x4      operator * (const Matrix3x4 &m1, const Matrix2x4<T> &m2)
         {
             Matrix3x4 outMat(NoInit);
-            outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+            outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
             return outMat;
         }
 
         friend const Matrix3x4      operator * (const Matrix2x4<T> &m1, const Matrix3x4 &m2)
         {
             Matrix3x4 outMat(NoInit);
-            outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+            outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
             return outMat;
         }
 
@@ -310,13 +316,13 @@ namespace Scaleform { namespace Render {
         void GetRotation(T *eX, T *eY, T *eZ) const { return GetEulerAngles(eX, eY, eZ); }
 
         // static initializers, create rotation matrix
-        inline static Matrix3x4<T> RotationX(T angleRad);      
-        inline static Matrix3x4<T> RotationY(T angleRad);      
-        inline static Matrix3x4<T> RotationZ(T angleRad);      
+        inline static Matrix3x4<T> RotationX(T angleRad);
+        inline static Matrix3x4<T> RotationY(T angleRad);
+        inline static Matrix3x4<T> RotationZ(T angleRad);
         inline static Matrix3x4<T> Rotation(T angleRad, const Point3<T>& axis);
         inline static Matrix3x4<T> Rotation(T angleRad, const Point3<T>& axis, const Point3<T>& pivot);
 
-        // create camera view matrix, world to view transform. Right or Left-handed. 
+        // create camera view matrix, world to view transform. Right or Left-handed.
         SF_EXPORT void ViewRH(const Point3<T>& eyePt, const Point3<T>& lookAtPt, const Point3<T>& upVec);
         SF_EXPORT void ViewLH(const Point3<T>& eyePt, const Point3<T>& lookAtPt, const Point3<T>& upVec);
         SF_EXPORT void View  (const Point3<T>& eyePt, const Point3<T>& viewVector, const Point3<T>& upVec);
@@ -385,15 +391,15 @@ namespace Scaleform { namespace Render {
         M[2][0] = m.M[2][0];
         M[2][1] = m.M[2][1];
         M[2][2] = m.M[2][2];   // SZ
-        M[2][3] = m.M[2][3];   // TZ 
+        M[2][3] = m.M[2][3];   // TZ
     }
 
     // construct from data elements
     template<typename T>
     inline Matrix3x4<T>::Matrix3x4(
-        T v1, T v2, T v3, T v4, 
+        T v1, T v2, T v3, T v4,
         T v5, T v6, T v7, T v8,
-        T v9, T v10, T v11, T v12 
+        T v9, T v10, T v11, T v12
         )
     {
         M[0][0] = v1;
@@ -441,9 +447,9 @@ namespace Scaleform { namespace Render {
         for(i=0;i<3;i++)
             for(j=0;j<3;j++)
                 matDest.M[j][i] = M[i][j];
-        
+
         matDest.M[0][3] = matDest.M[1][3] = matDest.M[2][3] = 0;
-        
+
         *this = matDest;
     }
 
@@ -455,12 +461,12 @@ namespace Scaleform { namespace Render {
         for(i=0;i<3;i++)
             for(j=0;j<3;j++)
                 matDest->M[j][i] = M[i][j];
-        
+
         (*matDest).M[0][3] = (*matDest).M[1][3] = (*matDest).M[2][3] = 0;
 
         (*matDest).M[3][0] = M[0][3];
         (*matDest).M[3][1] = M[1][3];
-        (*matDest).M[3][2] = M[2][3];        
+        (*matDest).M[3][2] = M[2][3];
         (*matDest).M[3][3] = 1;
     }
 
@@ -477,20 +483,20 @@ namespace Scaleform { namespace Render {
 
     template<typename T>
     inline void Matrix3x4<T>::MultiplyMatrix(const Matrix3x4<T> &m1, const Matrix3x4<T> &m2)
-    {   
-        MultiplyMatrix_NonOpt(m1,m2);    
+    {
+        MultiplyMatrix_NonOpt(m1,m2);
     }
 
     template<typename T>
     inline void Matrix3x4<T>::MultiplyMatrix(const Matrix3x4<T> &m1, const Matrix2x4<T> &m2)
-    {   
-        MultiplyMatrix_NonOpt(m1,m2);    
+    {
+        MultiplyMatrix_NonOpt(m1,m2);
     }
 
     template<typename T>
     inline void Matrix3x4<T>::MultiplyMatrix(const Matrix2x4<T> &m1, const Matrix3x4<T> &m2)
-    {   
-        MultiplyMatrix_NonOpt(m1,m2);    
+    {
+        MultiplyMatrix_NonOpt(m1,m2);
     }
 
     // multiply 2 matrices
@@ -568,34 +574,34 @@ namespace Scaleform { namespace Render {
         // Assuming the angles are in radians.
         if (copy.M[1][0] > 0.998f) {                        // singularity at north pole
             if (eY)
-                *eY = atan2f(copy.M[0][2],copy.M[2][2]);    
+                *eY = atan2f(copy.M[0][2],copy.M[2][2]);
             if (eZ)
-                *eZ = (T)SF_MATH_PI/2.f;                    
+                *eZ = (T)SF_MATH_PI/2.f;
             if (eX)
-                *eX = 0;                                    
+                *eX = 0;
             return;
         }
         if (copy.M[1][0] < -0.998f) {                       // singularity at south pole
             if (eY)
-                *eY = atan2f(copy.M[0][2],copy.M[2][2]);    
+                *eY = atan2f(copy.M[0][2],copy.M[2][2]);
             if (eZ)
-                *eZ = (T)-SF_MATH_PI/2.f;                   
+                *eZ = (T)-SF_MATH_PI/2.f;
             if (eX)
-                *eX = 0;                                    
+                *eX = 0;
             return;
         }
 
         if (eY)
-            *eY = atan2f(-copy.M[2][0],copy.M[0][0]);       
+            *eY = atan2f(-copy.M[2][0],copy.M[0][0]);
         if (eX)
-            *eX = atan2f(-copy.M[1][2],copy.M[1][1]);       
+            *eX = atan2f(-copy.M[1][2],copy.M[1][1]);
         if (eZ)
-            *eZ = asinf(copy.M[1][0]);                      
+            *eZ = asinf(copy.M[1][0]);
     }
 
     // Return X rotation matrix
     template<typename T>
-    inline Matrix3x4<T> Matrix3x4<T>::RotationX(T angle) 
+    inline Matrix3x4<T> Matrix3x4<T>::RotationX(T angle)
     {
         Matrix3x4<T> mat;
 
@@ -616,7 +622,7 @@ namespace Scaleform { namespace Render {
 
     // Return Y rotation matrix
     template<typename T>
-    inline Matrix3x4<T> Matrix3x4<T>::RotationY(T angle) 
+    inline Matrix3x4<T> Matrix3x4<T>::RotationY(T angle)
     {
         Matrix3x4<T> mat;
 
@@ -637,7 +643,7 @@ namespace Scaleform { namespace Render {
 
     // Return Z rotation matrix
     template<typename T>
-    inline Matrix3x4<T> Matrix3x4<T>::RotationZ(T angle) 
+    inline Matrix3x4<T> Matrix3x4<T>::RotationZ(T angle)
     {
         Matrix3x4<T> mat;
 
@@ -695,9 +701,9 @@ namespace Scaleform { namespace Render {
         // TODO - compute pre-multiplied version
         return
             Matrix3x4<T>(
-                Matrix3x4<T>::Translation(-pivot.x, -pivot.y, -pivot.z), 
+                Matrix3x4<T>::Translation(-pivot.x, -pivot.y, -pivot.z),
                 Matrix3x4<T>(
-                    Matrix3x4<T>::Rotation(angle, axis), 
+                    Matrix3x4<T>::Rotation(angle, axis),
                     Matrix3x4<T>::Translation(pivot.x, pivot.y, pivot.z)
                 )
             );
@@ -710,8 +716,8 @@ namespace Scaleform { namespace Render {
     {
         Matrix3x4<T> mat;
 
-        mat.M[0][3] = tX; 
-        mat.M[1][3] = tY; 
+        mat.M[0][3] = tX;
+        mat.M[1][3] = tY;
         mat.M[2][3] = tZ;
 
         return mat;
@@ -731,12 +737,12 @@ namespace Scaleform { namespace Render {
 
     // create scale matrix
     template<typename T>
-    inline Matrix3x4<T> Matrix3x4<T>::Scaling(T sX, T sY, T sZ)      
-    { 
+    inline Matrix3x4<T> Matrix3x4<T>::Scaling(T sX, T sY, T sZ)
+    {
         Matrix3x4<T> mat;
-        mat.M[0][0] = sX; 
-        mat.M[1][1] = sY; 
-        mat.M[2][2] = sZ; 
+        mat.M[0][0] = sX;
+        mat.M[1][1] = sY;
+        mat.M[2][2] = sZ;
         return mat;
     }
 
@@ -858,7 +864,7 @@ namespace Scaleform { namespace Render {
             tmp.Ty() = -Ty();
             tmp.Tz() = -Tz();
             return tmp;
-        }        
+        }
         T invDet = 1 / det;
 
         T d00 = t00 * invDet;
@@ -919,7 +925,7 @@ namespace Scaleform { namespace Render {
         }
     };
 
-    typedef Matrix3x4<float> Matrix3F;      
+    typedef Matrix3x4<float> Matrix3F;
     typedef Matrix3x4Ref<float> Matrix3FRef;
 
 #ifdef SF_ENABLE_SIMD
@@ -931,12 +937,18 @@ namespace Scaleform { namespace Render {
         static const unsigned Rows = 3;
         SF_SIMD_ALIGN( float M[Rows][4] );
     };
+#endif
 
-    // Now pre-declare any explicit specializations found in source files. 
-    template<> void Matrix3F::MultiplyMatrix(const Matrix3F&m1, const Matrix3F &m2);
+#if defined(SF_ENABLE_SIMD) || ((defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG))
+    // Now pre-declare any explicit specializations found in source files.
     template<> void Matrix3F::MultiplyMatrix(const Matrix3F&m1, const Matrix2F &m2);
+    template<> void Matrix3F::MultiplyMatrix(const Matrix3F&m1, const Matrix3F &m2);
     template<> void Matrix3F::MultiplyMatrix(const Matrix2F&m1, const Matrix3F &m2);
+#endif
 
+#if (defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG)
+    template<> void Matrix3F::MultiplyMatrix_Opt(const Matrix3F&m1, const Matrix3F &m2, float* mask);
+    template<> void Matrix3F::MultiplyMatrix_Opt(const Matrix2F&m1, const Matrix3F &m2, float* mask);
 #endif
 
 }} // Scaleform<T>::Render

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -59,17 +60,19 @@ namespace Classes { namespace fl_desktop
     
 namespace ClassTraits { namespace fl_desktop
 {
-    class InteractiveIcon : public Traits
+    class InteractiveIcon : public fl_desktop::Icon
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::InteractiveIcon"; }
 #endif
     public:
-        typedef Classes::fl_desktop::InteractiveIcon ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_events::EventDispatcher InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        InteractiveIcon(VM& vm);
+        InteractiveIcon(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

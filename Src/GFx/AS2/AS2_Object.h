@@ -7,6 +7,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -26,7 +27,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "GFx/AS2/AS2_StringManager.h"
 #include "AS2_FunctionRef.h"
 #include "AS2_Value.h"
-#include "GFx/AMP/Amp_ViewStats.h"
+#include "Kernel/SF_AmpInterface.h"
 
 #include "Kernel/SF_HeapNew.h"
 
@@ -356,7 +357,7 @@ public:
 
     Object*   FindOwner(ASStringContext *psc, const ASString& name);
 
-    AMP::ViewStats* GetAdvanceStats() const { return NULL; }
+    AmpStats* GetAdvanceStats() const { return NULL; }
 
 #ifdef GFX_AS_ENABLE_USERDATA
 protected:
@@ -371,13 +372,17 @@ protected:
             if (pUserData)
                 pUserData->SetLastObjectValue(NULL, NULL, false);
         }
-        void    NotifyDestroy(ObjectInterface* pthis) const 
+        
+        void    NotifyDestroy(ObjectInterface* pthis)
         {
             if (pUserData)  
             {
                 // Remove user data weak ref
                 pUserData->SetLastObjectValue(NULL, NULL, false);
-                pUserData->OnDestroy(pMovieView, pthis);                
+                pUserData->OnDestroy(pMovieView, pthis);
+        
+                // Clear user data pointer so destructor doesn't access a bad pointer
+                pUserData = NULL;
             }
         }
     } *pUserDataHolder;

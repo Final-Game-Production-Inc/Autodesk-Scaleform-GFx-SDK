@@ -2,6 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
     <ConfigShort>Release</ConfigShort>
+    <ConfigLetter>r</ConfigLetter>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
@@ -18,6 +19,9 @@
   <ItemGroup>
     <BuildMacro Include="ConfigShort">
       <Value>$(ConfigShort)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ConfigLetter">
+      <Value>$(ConfigLetter)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

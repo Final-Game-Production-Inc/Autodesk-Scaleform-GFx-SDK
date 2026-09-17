@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -26,7 +27,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 ///////////////////////////////////////////////////////////////////////////
 const char* NS_XML = "http://www.w3.org/XML/1998/namespace";
 const char* NS_AS3 = "http://adobe.com/AS3/2006/builtin";
-const char* NS_flash_proxy = "http://www.adobe.com/flash/proxy";
+const char* NS_flash_proxy = "http://www.adobe.com/2006/actionscript/flash/proxy";
 const char* NS_Vector = "__AS3__.vec";
 
 ///////////////////////////////////////////////////////////////////////////
@@ -160,10 +161,14 @@ namespace InstanceTraits
         : Traits(vm.MakeInternedNamespace(Abc::NS_Public, ci.GetPkgName()), vm, GetParentInstanceTraits(vm, ci, vm.GetFrameAppDomain()), ci.IsDynamicObject(), ci.IsFinalType())
     , CI(ci)
     {
-        for (UInt8 i = 0; i < ci.InstanceMemberNum; ++i)
+        SetMemSize(ci.GetInstanceSize());
+
+        UInt16 size = ci.GetInstanceMemberNum();
+        for (UInt8 i = 0; i < size; ++i)
             AddSlot(ci.InstanceMember[i]);
 
-        for (UInt8 i = 0; i < ci.InstanceMethodNum; ++i)
+        size = ci.GetInstanceMethodNum();
+        for (UInt8 i = 0; i < size; ++i)
             Add2VT(ci, ci.InstanceMethod[i]);
 
         const TypeInfo& ti = *ci.Type;
@@ -175,7 +180,10 @@ namespace InstanceTraits
         {
             UPInt ii = 0;
             for (; ti.Implements[ii] != NULL; ++ii)
-                RegisterImplementedInterface(Multiname(GetVM(), *ti.Implements[ii]));
+            {
+                Multiname mn(GetVM(), *ti.Implements[ii]);
+                RegisterImplementedInterface(mn);
+            }
 
             // AddInterfaceSlots2This() has to go after adding of methods.
             // It is a call to a virtual method inside of a constructor.
@@ -359,6 +367,8 @@ namespace InstanceTraits
     ///////////////////////////////////////////////////////////////////////
     const TypeInfo Anonimous::TInfo = {
         TypeInfo::CompileTime, 
+        sizeof(InstanceTraits::Anonimous::InstanceType),
+        0, 0, 0, 0,
         "", "", &AS3::fl::ObjectTI,
         TypeInfo::None
     };
@@ -367,6 +377,8 @@ namespace InstanceTraits
     ///////////////////////////////////////////////////////////////////////
     const TypeInfo Void::TInfo = {
         TypeInfo::CompileTime, 
+        sizeof(InstanceTraits::Void::InstanceType),
+        0, 0, 0, 0,
         "void", "", &AS3::fl::ObjectTI,
         TypeInfo::None
     };

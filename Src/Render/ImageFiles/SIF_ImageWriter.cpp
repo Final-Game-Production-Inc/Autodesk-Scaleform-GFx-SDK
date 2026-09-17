@@ -6,6 +6,7 @@ Created     :   July 2011
 Authors     :   Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,10 +31,10 @@ bool FileWriter::Write(File* out, const ImageData& imageData,
         return false;
 
     SF_ASSERT(imageData.RawPlaneCount > 0);
-    const ImageWriteArgs* args = 0;
+    // const ImageWriteArgs* args = 0;
     if (argsVal)
     {
-        args = (const ImageWriteArgs*)argsVal;
+        //  args = (const ImageWriteArgs*)argsVal;
         
     }
     out->WriteUByte('S');

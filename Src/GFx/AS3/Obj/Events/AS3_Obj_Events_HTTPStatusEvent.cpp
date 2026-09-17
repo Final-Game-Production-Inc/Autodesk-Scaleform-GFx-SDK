@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,22 +30,28 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 HTTPStatusEvent_tito[7] = {
+    //    0, 1, 3, 4, 6, 7, 8, 
+    // };
+    const TypeInfo* HTTPStatusEvent_tit[9] = {
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo HTTPStatusEvent_ti[7] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::ArrayTI, "responseHeaders", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "responseHeaders", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "responseURL", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "responseURL", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "status", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[0], "responseHeaders", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[1], "responseHeaders", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[3], "responseURL", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[4], "responseURL", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[6], "status", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[7], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &HTTPStatusEvent_tit[8], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -72,24 +79,27 @@ namespace ClassTraits { namespace fl_events
         {"HTTP_STATUS", NULL, OFFSETOF(Classes::fl_events::HTTPStatusEvent, HTTP_STATUS), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    HTTPStatusEvent::HTTPStatusEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::HTTPStatusEventCI)
+
+    HTTPStatusEvent::HTTPStatusEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::HTTPStatusEvent::HTTPStatusEvent()"
 //##protect##"ClassTraits::HTTPStatusEvent::HTTPStatusEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::Event(vm, AS3::fl_events::HTTPStatusEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::HTTPStatusEvent(*this));
 
     }
 
     Pickable<Traits> HTTPStatusEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) HTTPStatusEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) HTTPStatusEvent(vm, AS3::fl_events::HTTPStatusEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::HTTPStatusEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -100,6 +110,11 @@ namespace fl_events
 {
     const TypeInfo HTTPStatusEventTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_events::HTTPStatusEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::HTTPStatusEvent::MemberInfoNum,
+        7,
+        0,
         "HTTPStatusEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -107,10 +122,6 @@ namespace fl_events
     const ClassInfo HTTPStatusEventCI = {
         &HTTPStatusEventTI,
         ClassTraits::fl_events::HTTPStatusEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::HTTPStatusEvent::MemberInfoNum,
-        7,
-        0,
         NULL,
         ClassTraits::fl_events::HTTPStatusEvent::mi,
         InstanceTraits::fl_events::HTTPStatusEvent_ti,

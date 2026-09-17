@@ -8,6 +8,7 @@ Created     :   September 23, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -95,36 +96,36 @@ class Bundle;
 
 enum SortKeyFlags
 {
-    SKF_RangeStart          = 0x1000,
-    SKF_MatchNoOverlap      = 0x2000,
-    SKF_MatchSingleOverlap  = 0x4000
+    SKF_RangeStart          = 0x1000,   // The SKI is the beginning of a range.
+    SKF_MatchNoOverlap      = 0x2000,   // The SKI can match with compatible SKIs, but not if they overlap.
+    SKF_MatchSingleOverlap  = 0x4000,   // The SKI can match with compatible SKIs, if they are adjacent and overlapping.
+    SKF_MatchNever          = 0x8000,   // The SKI will not match, even with compatible SKIs.
 };
 
 enum SortKeyType
 {
-    SortKey_None             = 0,
-    SortKey_PrimitiveFill    = 1,
-    SortKey_MeshProvider     = 2,
-    SortKey_Text             = 3,
+    SortKey_None,
+    SortKey_PrimitiveFill,
+    SortKey_MeshProvider,
+    SortKey_Text,
     // Masking
-    SortKey_MaskStart        = 4,
-    SortKey_MaskStartClipped = 5,
-    SortKey_MaskEnd          = 6, // End or Pop.
+    SortKey_MaskStart,
+    SortKey_MaskEnd,    // End or Pop.
     // Blend mode
-    SortKey_BlendModeStart   = 7,
-    SortKey_BlendModeEnd     = 8,
+    SortKey_BlendModeStart,
+    SortKey_BlendModeEnd,
     // Filter mode
-    SortKey_FilterStart      = 9,
-    SortKey_FilterEnd        = 10,
+    SortKey_FilterStart,
+    SortKey_FilterEnd,
     // ViewMatrix3D
-    SortKey_ViewMatrix3DStart   = 11,
-    SortKey_ViewMatrix3DEnd     = 12,
+    SortKey_ViewMatrix3DStart,
+    SortKey_ViewMatrix3DEnd,
     // ProjectionMatrix3D
-    SortKey_ProjectionMatrix3DStart = 13,
-    SortKey_ProjectionMatrix3DEnd   = 14,
+    SortKey_ProjectionMatrix3DStart,
+    SortKey_ProjectionMatrix3DEnd,
     // UserData (setRenderString/Float)
-    SortKey_UserDataStart           = 15,
-    SortKey_UserDataEnd             = 16,
+    SortKey_UserDataStart,
+    SortKey_UserDataEnd,
 };
 
 // Separate mask-type alias is declared for masks to enable
@@ -133,7 +134,6 @@ enum SortKeyType
 enum SortKeyMaskType
 {
     SortKeyMask_Push,
-    SortKeyMask_PushClipped,
     SortKeyMask_End,
     SortKeyMask_Pop,
     SortKeyMask_Item_Count
@@ -268,10 +268,14 @@ public:
     // These functions are different for every key type    
     bool MatchNoOverlap(const SortKey& other)
     {
+        if (GetFlags() & SKF_MatchNever)
+            return false;
         return (Data == other.Data) && (pImpl == other.pImpl) && (GetFlags() & SKF_MatchNoOverlap);
     }
     bool MatchSingleItemOverlap(const SortKey& other)
     {
+        if (GetFlags() & SKF_MatchNever)
+            return false;
         return (Data == other.Data) && (pImpl == other.pImpl) && (GetFlags() & SKF_MatchSingleOverlap);
     }
     
@@ -515,7 +519,7 @@ public:
 
 // Bundle is a base class for Render::PrimitiveBundle and represents an array
 // of BundleEntry(s).
-class Bundle : public RefCountBaseNTS<Bundle, StatRender_RenderBatch_Mem>
+class Bundle : public RefCountBaseNTS<Bundle, StatRender_RenderPipeline_Mem>
 {   
 protected:    
     ArrayLH<BundleEntry*> Entries;

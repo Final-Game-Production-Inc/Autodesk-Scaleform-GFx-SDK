@@ -10,6 +10,7 @@ Notes       :    Implements optimized GASString class, which acts as a
 hash key for strings allocated from GASStringManager.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -976,7 +977,7 @@ public:
     void    Free()
     {   
         typedef typename C::FirstType FirstDtor;
-        typedef typename C::SecondType SecondDtor;
+        //typedef typename C::SecondType SecondDtor;
         Value.First.~FirstDtor();
         Value.Second.Finalize_GC(); // placement delete
         //Value.Second.~SecondDtor(); // placement delete

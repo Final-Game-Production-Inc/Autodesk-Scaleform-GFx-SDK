@@ -11,6 +11,7 @@ visible by other player files should be placed
 in GFxCharacter.h.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,7 +28,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 // For GFxMovieImpl::IsPathAbsolute
 //#include "GFx/GFx_PlayerImpl.h"
-
 
 namespace Scaleform { namespace GFx {
 
@@ -118,7 +118,7 @@ void        LoadStates::SetRelativePathForDataDef(MovieDataDef* pdef)
 
 // Implementation that allows us to override the log.
 File*      LoadStates::OpenFile(const char *pfilename, unsigned loadConstants)
-{    
+{
     if (!pBindStates->pFileOpener)
     {             
         // Don't even have a way to open the file.
@@ -252,6 +252,13 @@ LoadProcess::LoadProcess(MovieDataDef* pdataDef,
 
 LoadProcess::~LoadProcess()
 {
+#ifdef SF_ENABLE_HTTP_LOADING
+    String fileURL = pLoadData->GetFileURL();
+    if (URLBuilder::IsProtocol(fileURL))
+    {
+        pLoadStates->pLoaderImpl->LoadingDone(fileURL);
+    }
+#endif
     pJpegTables = NULL; // MUST be released before pLoadData dies!
 #ifdef SF_DEBUG_COUNT_TAGS
     SF_DEBUG_MESSAGE(1,    ">");

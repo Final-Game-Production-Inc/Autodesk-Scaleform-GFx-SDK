@@ -7,6 +7,7 @@ Created     :   Dec, 2009
 Authors     :   Michael Antonov, Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -172,8 +173,8 @@ bool AvmButton::OnMouseEvent(const EventId& event)
                         // Matching action
                         AvmSprite* avmParentSpr = GFx::AS2::ToAvmSprite(pparentSprite);
                         ASStringContext* psc = avmParentSpr->GetASEnvironment()->GetSC();
-                        const UPInt n = action->Actions.GetSize();
-                        for (UPInt j = 0; j < n; ++j)
+                        const UPInt an = action->Actions.GetSize();
+                        for (UPInt j = 0; j < an; ++j)
                         {
                             if (!action->Actions[j]->IsNull())
                             {
@@ -182,7 +183,7 @@ bool AvmButton::OnMouseEvent(const EventId& event)
                                 avmParentSpr->AddActionBuffer(pbuff);
                             }
                         }
-                        if (n > 0) handlerFound = true;
+                        if (an > 0) handlerFound = true;
                     }
                 }
             }
@@ -647,15 +648,15 @@ bool AvmButton::SetStandardMember(StandardMember member, const Value& origVal, b
     case M_scale9Grid:
         if (GetASEnvironment()->GetVersion() >= 8)
         {
-            Environment* penv = GetASEnvironment();
-            Object* pobj = val.ToObject(penv);
+            Environment* penvGrid = GetASEnvironment();
+            Object* pobj = val.ToObject(penvGrid);
 
 #ifdef GFX_AS2_ENABLE_RECTANGLE
             if (pobj && pobj->GetObjectType() == Object_Rectangle)
             {
                 RectangleObject* prect = (RectangleObject*)pobj;
                 ASRect gr;
-                prect->GetProperties(penv, gr);
+                prect->GetProperties(penvGrid, gr);
                 RectF sg;
                 sg.x1 = PixelsToTwips(float(gr.x1));
                 sg.y1 = PixelsToTwips(float(gr.y1));
@@ -666,17 +667,17 @@ bool AvmButton::SetStandardMember(StandardMember member, const Value& origVal, b
 #else
             if (pobj)
             {
-                ASStringContext *psc = penv->GetSC();
+                ASStringContext *psc = penvGrid->GetSC();
                 Value params[4];
                 pobj->GetConstMemberRaw(psc, "x", &params[0]);
                 pobj->GetConstMemberRaw(psc, "y", &params[1]);
                 pobj->GetConstMemberRaw(psc, "width", &params[2]);
                 pobj->GetConstMemberRaw(psc, "height", &params[3]);
                 RectF sg;
-                sg.x1 = PixelsToTwips(float(params[0].ToNumber(penv)));
-                sg.y1 = PixelsToTwips(float(params[1].ToNumber(penv)));
-                sg.SetWidth(PixelsToTwips(float(params[2].ToNumber(penv))));
-                sg.SetHeight(PixelsToTwips(float(params[3].ToNumber(penv))));
+                sg.x1 = PixelsToTwips(float(params[0].ToNumber(penvGrid)));
+                sg.y1 = PixelsToTwips(float(params[1].ToNumber(penvGrid)));
+                sg.SetWidth(PixelsToTwips(float(params[2].ToNumber(penvGrid))));
+                sg.SetHeight(PixelsToTwips(float(params[3].ToNumber(penvGrid))));
                 GetButton()->SetScale9Grid(sg);
             }
 #endif

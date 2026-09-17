@@ -6,6 +6,7 @@ Created     :   December 13, 2009
 Authors     :   Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -107,10 +108,10 @@ void    FxHUDLog::Update()
 {
     SF_ASSERT(LogMC.IsDisplayObject());
 
-    Double rowHeight = 30.f;
+    GFx::Double rowHeight = 30.f;
 
     // Tick the message lifetimes
-    Double yoff = 0;
+    GFx::Double yoff = 0.0;
     FxHUDMessage* data = Log.GetFirst();
     while (!Log.IsNull(data))
     {
@@ -417,7 +418,7 @@ void FxHUDView::UpdateTeamStats(FxHUDEnvironment *penv)
 		Format(text, "{0}", scoreRed);
 		ScoreRedMC.SetText(text); // Update the red team score text.
 
-		info.SetScale((scoreRed / (Double)MaxScore) * 100, 100); 
+		info.SetScale((scoreRed / (double)MaxScore) * 100, 100); 
 		TeamRedMC.SetDisplayInfo(info); // Update and scale the red team score bar movieClip.
 	}
 
@@ -426,7 +427,7 @@ void FxHUDView::UpdateTeamStats(FxHUDEnvironment *penv)
 		Format(text, "{0}", scoreBlue);
 		ScoreBlueMC.SetText(text); // Update the blue team score text.
 
-		info.SetScale((scoreBlue / (Double)MaxScore) * 100, 100);  
+		info.SetScale((scoreBlue / (double)MaxScore) * 100, 100);  
 		TeamBlueMC.SetDisplayInfo(info); // Update and scale the blue team score bar movieClip.
 	}
 
@@ -499,7 +500,7 @@ void FxHUDView::UpdatePlayerStats(FxHUDEnvironment *penv)
 		HealthNMC.SetText(text); // Update the health text field.
 
 		Value::DisplayInfo info;
-		info.SetScale(Double(health), 100);  
+		info.SetScale(double(health), 100);  
 		HealthMC.SetDisplayInfo(info); // Update and scale the health bar.
 	}
 

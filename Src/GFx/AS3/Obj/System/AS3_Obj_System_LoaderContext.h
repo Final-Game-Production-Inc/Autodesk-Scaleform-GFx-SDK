@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -98,7 +99,7 @@ namespace Instances { namespace fl_system
 
 namespace InstanceTraits { namespace fl_system
 {
-    class LoaderContext : public CTraits
+    class LoaderContext : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -136,17 +137,19 @@ namespace InstanceTraits { namespace fl_system
     
 namespace ClassTraits { namespace fl_system
 {
-    class LoaderContext : public Traits
+    class LoaderContext : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::LoaderContext"; }
 #endif
     public:
-        typedef Classes::fl_system::LoaderContext ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_system::LoaderContext InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        LoaderContext(VM& vm);
+        LoaderContext(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

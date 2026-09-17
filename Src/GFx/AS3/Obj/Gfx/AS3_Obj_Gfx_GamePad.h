@@ -7,6 +7,7 @@ Created     :   Jul, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -57,7 +58,7 @@ namespace Classes { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class GamePad : public Traits
+    class GamePad : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -65,14 +66,18 @@ namespace ClassTraits { namespace fl_gfx
 #endif
     public:
         typedef Classes::fl_gfx::GamePad ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        GamePad(VM& vm);
+        GamePad(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 29 };
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 1 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[1];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

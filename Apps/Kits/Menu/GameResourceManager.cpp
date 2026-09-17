@@ -5,6 +5,7 @@ Content     :   Sample resource manager for Menu Kit
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -303,7 +304,7 @@ private:
 // Install system-specific clipboard implementation on Win32. If this is not done
 // the clipboard will still work in FxPlayer, but it will be impossible to paste
 // text to external applications.
-class MenuKitTextClipboard : public GFx::TextClipboard
+class MenuKitTextClipboard : public GFx::Clipboard
 {
 public:
     void OnTextStore(const wchar_t* ptext, UPInt len)
@@ -438,14 +439,7 @@ void    GameResourceManager::InitLoader(GFx::Loader& loader)
 
     // Uncomment this line and add libpng to linker's settings to enable
     // PNG support.
-    Scaleform::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new Scaleform::GFx::ImageFileHandlerRegistry();
-#ifdef SF_ENABLE_LIBJPEG
-    pimgReg->AddHandler(&Scaleform::Render::JPEG::FileReader::Instance);
-#endif
-#ifdef SF_ENABLE_LIBPNG
-    pimgReg->AddHandler(&Scaleform::Render::PNG::FileReader::Instance);
-#endif
-    pimgReg->AddHandler(&Scaleform::Render::TGA::FileReader::Instance);
+    Scaleform::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new Scaleform::GFx::ImageFileHandlerRegistry(Scaleform::GFx::ImageFileHandlerRegistry::AddDefaultHandlers);
     loader.SetImageFileHandlerRegistry(pimgReg);
 
     Ptr<GFx::ImageCreator> pimageCreator = 
@@ -469,7 +463,7 @@ void    GameResourceManager::InitLoader(GFx::Loader& loader)
 
     loader.SetLog(pPlayerLog);
 #ifdef SF_OS_WIN32    
-    loader.SetTextClipboard(Ptr<GFx::TextClipboard>(pTextClipboard));
+    loader.SetClipboard(Ptr<GFx::Clipboard>(pTextClipboard));
 #endif    
 
     loader.SetUserEventHandler(pUserEventHandler);

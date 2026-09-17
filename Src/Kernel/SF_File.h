@@ -13,6 +13,7 @@ Notes       :   errno may not be preserved across use of BaseFile member functio
                 (For the GetFullName function)
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -225,9 +226,7 @@ public:
     inline void    WriteUInt64(UInt64 v)       { PWrite64((UInt64)Alg::ByteUtil::SystemToLE(v));   }
     inline void    WriteSInt64(SInt64 v)       { PWrite64((UInt64)Alg::ByteUtil::SystemToLE(v));   }
     inline void    WriteFloat(float v)         { v = Alg::ByteUtil::SystemToLE(v); Write((UByte*)&v, 4); } 
-#ifndef SF_NO_DOUBLE
-    inline void    WriteDouble(Double v)       { v = Alg::ByteUtil::SystemToLE(v); Write((UByte*)&v, 8); }
-#endif
+    inline void    WriteDouble(double v)       { v = Alg::ByteUtil::SystemToLE(v); Write((UByte*)&v, 8); }
     // Writing primitive types - Big Endian
     inline void    WriteUByteBE(UByte v)       { PWrite8((UInt8)Alg::ByteUtil::SystemToBE(v));     }
     inline void    WriteSByteBE(SByte v)       { PWrite8((UInt8)Alg::ByteUtil::SystemToBE(v));     }
@@ -240,9 +239,7 @@ public:
     inline void    WriteUInt64BE(UInt64 v)     { PWrite64((UInt64)Alg::ByteUtil::SystemToBE(v));   }
     inline void    WriteSInt64BE(UInt64 v)     { PWrite64((UInt64)Alg::ByteUtil::SystemToBE(v));   }
     inline void    WriteFloatBE(float v)       { v = Alg::ByteUtil::SystemToBE(v); Write((UByte*)&v, 4); }
-#ifndef SF_NO_DOUBLE
-    inline void    WriteDoubleBE(Double v)     { v = Alg::ByteUtil::SystemToBE(v); Write((UByte*)&v, 8); }
-#endif
+    inline void    WriteDoubleBE(double v)     { v = Alg::ByteUtil::SystemToBE(v); Write((UByte*)&v, 8); }
         
     // Reading primitive types - Little Endian
     inline UByte   ReadUByte()                 { return (UByte)Alg::ByteUtil::LEToSystem(PRead8());    }
@@ -256,9 +253,7 @@ public:
     inline UInt64  ReadUInt64()                { return (UInt64)Alg::ByteUtil::LEToSystem(PRead64());  }
     inline SInt64  ReadSInt64()                { return (SInt64)Alg::ByteUtil::LEToSystem(PRead64());  }
     inline float   ReadFloat()                 { float v = 0.0f; Read((UByte*)&v, 4); return Alg::ByteUtil::LEToSystem(v); }
-#ifndef SF_NO_DOUBLE
-    inline Double  ReadDouble()                { Double v = 0.0; Read((UByte*)&v, 8); return Alg::ByteUtil::LEToSystem(v); }
-#endif
+    inline double  ReadDouble()                { double v = 0.0; Read((UByte*)&v, 8); return Alg::ByteUtil::LEToSystem(v); }
     // Reading primitive types - Big Endian
     inline UByte   ReadUByteBE()               { return (UByte)Alg::ByteUtil::BEToSystem(PRead8());    }
     inline SByte   ReadSByteBE()               { return (SByte)Alg::ByteUtil::BEToSystem(PRead8());    }
@@ -271,9 +266,7 @@ public:
     inline UInt64  ReadUInt64BE()              { return (UInt64)Alg::ByteUtil::BEToSystem(PRead64());  }
     inline SInt64  ReadSInt64BE()              { return (SInt64)Alg::ByteUtil::BEToSystem(PRead64());  }
     inline float   ReadFloatBE()               { float v = 0.0f; Read((UByte*)&v, 4); return Alg::ByteUtil::BEToSystem(v); }
-#ifndef SF_NO_DOUBLE
-    inline Double  ReadDoubleBE()              { Double v = 0.0; Read((UByte*)&v, 8); return Alg::ByteUtil::BEToSystem(v); }
-#endif
+    inline double  ReadDoubleBE()              { double v = 0.0; Read((UByte*)&v, 8); return Alg::ByteUtil::BEToSystem(v); }
 };
 
 

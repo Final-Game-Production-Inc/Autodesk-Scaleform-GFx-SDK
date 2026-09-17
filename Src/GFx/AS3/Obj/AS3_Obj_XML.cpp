@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,6 +30,9 @@ namespace Scaleform { namespace GFx { namespace AS3
 {
 
 //##protect##"methods"
+
+#ifdef GFX_ENABLE_XML
+
 //////////////////////////////////////////////////////////////////////////////
 NamespaceArray::~NamespaceArray()
 {
@@ -302,6 +306,13 @@ CheckResult XMLParser::Parse(const StringDataPtr& str, UPInt& pos, bool isList)
                 shouldThrow = false;
             }
             break;
+        // --------------- 新增：显式处理expat-2.7.5新增的枚举 ---------------
+        case XML_ERROR_INVALID_ARGUMENT:
+        case XML_ERROR_NO_BUFFER:
+        case XML_ERROR_AMPLIFICATION_LIMIT_BREACH:
+        case XML_ERROR_NOT_STARTED:
+            errorID = VM::eXMLMarkupMustBeWellFormed; // 归类为XML格式错误
+            break;
         case XML_ERROR_PARTIAL_CHAR:
         case XML_ERROR_PARAM_ENTITY_REF:
         case XML_ERROR_UNDEFINED_ENTITY:
@@ -539,10 +550,10 @@ void XMLParser::StartElementExpatCallback(
     const UPInt size = namespaces.GetSize();
     for (UPInt i = 0; i < size; ++i)
     {
-        SPtr<Instances::fl::Namespace>& ns = namespaces[i];
+        SPtr<Instances::fl::Namespace>& nsfl = namespaces[i];
 
-        if (ns->GetPrefix().IsString())
-            el->Namespaces.PushBack(ns);
+        if (nsfl->GetPrefix().IsString())
+            el->Namespaces.PushBack(nsfl);
     }
 
     // Add attributes.
@@ -559,10 +570,10 @@ void XMLParser::StartElementExpatCallback(
             continue;
         }
 
-        const char* delim = strchr(attr_name, parser->NsSep);
+        const char* delima = strchr(attr_name, parser->NsSep);
         ASString value = sm.CreateString(atts[++i]);
 
-        if (delim == NULL)
+        if (delima == NULL)
         {
             aname = sm.CreateString(attr_name);
 
@@ -587,10 +598,10 @@ void XMLParser::StartElementExpatCallback(
         }
         else
         {
-            ASString ns_prefix = sm.CreateString(attr_name, delim - attr_name);
-            aname = sm.CreateString(delim + 1);
+            ASString ans_prefix = sm.CreateString(attr_name, delima - attr_name);
+            aname = sm.CreateString(delima + 1);
             
-            ns = ptr_el->FindNamespaceByPrefix(ns_prefix, NULL);
+            ns = ptr_el->FindNamespaceByPrefix(ans_prefix, NULL);
 
 #if 0
             if (ns == NULL)
@@ -997,10 +1008,10 @@ namespace Instances { namespace fl
         const UPInt sizea = Attrs.GetSize();
         for (UPInt i = 0; i < sizea; ++i)
         {
-            Namespace& ns = Attrs[i]->GetCurrNamespace();
+            Namespace& nsa = Attrs[i]->GetCurrNamespace();
 
-            if (ns.GetPrefix() == nPrefix)
-                ns.SetPrefix(Value::GetUndefined());
+            if (nsa.GetPrefix() == nPrefix)
+                nsa.SetPrefix(Value::GetUndefined());
         }
     }
 
@@ -1229,8 +1240,8 @@ namespace Instances { namespace fl
         for (UPInt i = 0; i < sizeAttrs; ++i)
         {
             const Namespace& nsAttr = Attrs[i]->GetNamespace();
-            SPtr<Namespace> nsCopy = LookupNamespace(nsAttr, &ancestorsAndDeclarations);
-            attrNamespaces.Add(*nsCopy);
+            SPtr<Namespace> nsCopySp = LookupNamespace(nsAttr, &ancestorsAndDeclarations);
+            attrNamespaces.Add(*nsCopySp);
         }
 
         // Size of attrNamespaces is not going to change inside of this loop.
@@ -2293,8 +2304,10 @@ namespace Instances { namespace fl
     }
 
     // 9.1.1.6 [[HasProperty]] (P)
-    bool XMLElement::HasProperty(const Multiname& prop_name)
+    bool XMLElement::HasProperty(const Multiname& prop_name, bool check_prototype)
     {
+        SF_UNUSED1(check_prototype);
+
         // Step 1.
         UInt32 ind;
         if (GetVectorInd(prop_name, ind))
@@ -2352,8 +2365,8 @@ namespace Instances { namespace fl
                 }
 
                 // Insert.
-                const UPInt size = Children.GetSize();
-                if (pos + i < size)
+                const UPInt sizeInsert = Children.GetSize();
+                if (pos + i < sizeInsert)
                 {
                     if (v->GetKind() == kText)
                         Children.InsertAt(pos + i, v->DeepCopy(this));
@@ -2366,7 +2379,7 @@ namespace Instances { namespace fl
 
                     result = true;
                 }
-                else if (pos + i == size)
+                else if (pos + i == sizeInsert)
                 {
                     if (v->GetKind() == kText)
                         Children.PushBack(v->DeepCopy(this));
@@ -3351,9 +3364,11 @@ Pickable<Instances::fl::Namespace> LookupNamespace(const Instances::fl::Namespac
 
     return resultNs;
 }
+#endif
 
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -3373,6 +3388,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl::XML, Instances::fl::XML::mid_prototypeGet, SPtr<Instances::fl::XMLList> > TFunc_Instances_XML_prototypeGet;
 typedef ThunkFunc1<Instances::fl::XML, Instances::fl::XML::mid_prototypeSet, const Value, const Value&> TFunc_Instances_XML_prototypeSet;
 typedef ThunkFunc0<Instances::fl::XML, Instances::fl::XML::mid_AS3toString, ASString> TFunc_Instances_XML_AS3toString;
@@ -3462,7 +3479,9 @@ namespace Instances { namespace fl
     XML::XML(InstanceTraits::Traits& t)
     : Instances::fl::Object(t)
 //##protect##"instance::XML::XML()$data"
+#ifdef GFX_ENABLE_XML
     , Text(t.GetVM().GetStringManager().CreateEmptyString())
+#endif
 //##protect##"instance::XML::XML()$data"
     {
 //##protect##"instance::XML::XML()$code"
@@ -3472,7 +3491,11 @@ namespace Instances { namespace fl
     void XML::prototypeGet(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XML::prototypeGet()"
+        SF_UNUSED1(result);
+
+#ifdef GFX_ENABLE_XML
         result = MakeXMLListInstance();
+#endif
 //##protect##"instance::XML::prototypeGet()"
     }
     void XML::prototypeSet(const Value& result, const Value& p)
@@ -3486,22 +3509,30 @@ namespace Instances { namespace fl
 //##protect##"instance::XML::AS3toString()"
         SF_UNUSED1(result);
 
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         StringBuffer buf(vm.GetMemoryHeap());
 
         ToString(buf, 0);
         result = vm.GetStringManager().CreateString(buf.ToCStr(), buf.GetSize());
+#endif
 //##protect##"instance::XML::AS3toString()"
     }
     void XML::AS3hasOwnProperty(bool& result, const ASString& p)
     {
 //##protect##"instance::XML::AS3hasOwnProperty()"
+#ifdef GFX_ENABLE_XML
         result = HasOwnProperty(p);
+#else
+        SF_UNUSED2(p, result);
+        WARN_NOT_IMPLEMENTED("XML::AS3hasOwnProperty()");
+#endif
 //##protect##"instance::XML::AS3hasOwnProperty()"
     }
     void XML::AS3propertyIsEnumerable(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XML::AS3propertyIsEnumerable()"
+#ifdef GFX_ENABLE_XML
         if (argc > 0 && !argv[0].IsNullOrUndefined())
         {
             Multiname prop_name(GetVM().GetPublicNamespace(), argv[0]);
@@ -3512,6 +3543,10 @@ namespace Instances { namespace fl
                 return;
             }
         }
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XML::AS3propertyIsEnumerable()");
+#endif
 
         result.SetBool(false);
 //##protect##"instance::XML::AS3propertyIsEnumerable()"
@@ -3519,6 +3554,7 @@ namespace Instances { namespace fl
     void XML::AS3addNamespace(SPtr<Instances::fl::XML>& result, const Value& ns)
     {
 //##protect##"instance::XML::AS3addNamespace()"
+#ifdef GFX_ENABLE_XML
         if (!ns.IsNullOrUndefined())
         {
             VM& vm = GetVM();
@@ -3531,6 +3567,10 @@ namespace Instances { namespace fl
 
             AddInScopeNamespace(vns.AsNamespace());
         }
+#else
+        SF_UNUSED2(result, ns);
+        WARN_NOT_IMPLEMENTED("XML::AS3addNamespace()");
+#endif
 
         result = this;
 //##protect##"instance::XML::AS3addNamespace()"
@@ -3538,14 +3578,19 @@ namespace Instances { namespace fl
     void XML::AS3appendChild(SPtr<Instances::fl::XML>& result, const Value& child)
     {
 //##protect##"instance::XML::AS3appendChild()"
-        SF_UNUSED1(result);
-
+#ifdef GFX_ENABLE_XML
         AppendChild(child).DoNotCheck();
+        SF_UNUSED1(result);
+#else
+        SF_UNUSED2(result, child);
+        WARN_NOT_IMPLEMENTED("XML::AS3appendChild()");
+#endif
 //##protect##"instance::XML::AS3appendChild()"
     }
     void XML::AS3attribute(SPtr<Instances::fl::XMLList>& result, const Value& arg)
     {
 //##protect##"instance::XML::AS3attribute()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
 
         if (arg.IsNullOrUndefined())
@@ -3561,20 +3606,30 @@ namespace Instances { namespace fl
         result = MakeXMLListInstance(prop_name);
 
         GetProperty(prop_name, *result).DoNotCheck();
+#else
+        SF_UNUSED2(result, arg);
+        WARN_NOT_IMPLEMENTED("XML::AS3attribute()");
+#endif
 //##protect##"instance::XML::AS3attribute()"
     }
     void XML::AS3attributes(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XML::AS3attributes()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeXMLListInstance();
 
         result = list;
         GetAttributes(*list);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3attributes()");
+#endif
 //##protect##"instance::XML::AS3attributes()"
     }
     void XML::AS3child(SPtr<Instances::fl::XMLList>& result, const Value& propertyName)
     {
 //##protect##"instance::XML::AS3child()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
 
         if (propertyName.IsNullOrUndefined())
@@ -3592,32 +3647,51 @@ namespace Instances { namespace fl
         // 13.4.4.6.
         // Step 1 and 2.
         GetProperty(prop_name, *result).DoNotCheck();
+#else
+        SF_UNUSED2(result, propertyName);
+        WARN_NOT_IMPLEMENTED("XML::AS3child()");
+#endif
 //##protect##"instance::XML::AS3child()"
     }
     void XML::AS3childIndex(SInt32& result)
     {
 //##protect##"instance::XML::AS3childIndex()"
         result = -1;
+
+#ifdef GFX_ENABLE_XML
         UPInt ind;
 
         if (GetChildIndex(ind))
             result = static_cast<SInt32>(ind);
+#else
+        WARN_NOT_IMPLEMENTED("XML::AS3childIndex()");
+#endif
 //##protect##"instance::XML::AS3childIndex()"
     }
     void XML::AS3children(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XML::AS3children()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeXMLListInstance();
         result = list;
         GetChildren(*list, kNone);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3children()");
+#endif
 //##protect##"instance::XML::AS3children()"
     }
     void XML::AS3comments(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XML::AS3comments()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeXMLListInstance(*this, GetVM().GetStringManager().CreateNullString(), GetVM().GetPublicNamespace());
         result = list;
         GetChildren(*list, kComment);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3comments()");
+#endif
 //##protect##"instance::XML::AS3comments()"
     }
     void XML::AS3contains(bool& result, const Value& value)
@@ -3625,54 +3699,85 @@ namespace Instances { namespace fl
 //##protect##"instance::XML::AS3contains()"
         result = false;
 
+#ifdef GFX_ENABLE_XML
         if (!IsXMLObject(value))
             return;
 
         Instances::fl::XML* other = static_cast<Instances::fl::XML*>(value.GetObject());
         result = Equals(*other);
+#else
+        SF_UNUSED1(value);
+        WARN_NOT_IMPLEMENTED("XML::AS3contains()");
+#endif
 //##protect##"instance::XML::AS3contains()"
     }
     void XML::AS3copy(SPtr<Instances::fl::XML>& result)
     {
 //##protect##"instance::XML::AS3copy()"
+#ifdef GFX_ENABLE_XML
         result = DeepCopy(NULL);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3copy()");
+#endif
 //##protect##"instance::XML::AS3copy()"
     }
     void XML::AS3descendants(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XML::AS3descendants()"
+#ifdef GFX_ENABLE_XML
         Pickable<XMLList> list = MakeXMLListInstance();
         result = list;
 
         Multiname mn(GetVM().GetPublicNamespace(), argc == 0 ? Value(GetVM().GetStringManager().CreateConstString("*")) : argv[0]);
         GetDescendants(*list, mn);
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XML::AS3descendants()");
+#endif
 //##protect##"instance::XML::AS3descendants()"
     }
     void XML::AS3elements(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XML::AS3elements()"
+#ifdef GFX_ENABLE_XML
         Pickable<XMLList> list = MakeXMLListInstance();
         result = list;
 
         Multiname mn(GetVM().GetPublicNamespace(), argc == 0 ? Value(GetVM().GetStringManager().CreateConstString("*")) : argv[0]);
         GetChildren(*list, mn);
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XML::AS3elements()");
+#endif
 //##protect##"instance::XML::AS3elements()"
     }
     void XML::AS3hasComplexContent(bool& result)
     {
 //##protect##"instance::XML::AS3hasComplexContent()"
+#ifdef GFX_ENABLE_XML
         result = !HasSimpleContent();
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3hasComplexContent()");
+#endif
 //##protect##"instance::XML::AS3hasComplexContent()"
     }
     void XML::AS3hasSimpleContent(bool& result)
     {
 //##protect##"instance::XML::AS3hasSimpleContent()"
+#ifdef GFX_ENABLE_XML
         result = HasSimpleContent();
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3hasSimpleContent()");
+#endif
 //##protect##"instance::XML::AS3hasSimpleContent()"
     }
     void XML::AS3inScopeNamespaces(SPtr<Instances::fl::Array>& result)
     {
 //##protect##"instance::XML::AS3inScopeNamespaces()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::Array> a = GetVM().MakeArray();
         result = a;
 
@@ -3704,25 +3809,38 @@ namespace Instances { namespace fl
         // PPS: Add public(?) namespace by default
         if (a->GetSize() == 0)
             a->PushBack(Value(&GetVM().GetPublicNamespace()));
-
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3inScopeNamespaces()");
+#endif
 //##protect##"instance::XML::AS3inScopeNamespaces()"
     }
     void XML::AS3insertChildAfter(Value& result, const Value& child1, const Value& child2)
     {
 //##protect##"instance::XML::AS3insertChildAfter()"
+#ifdef GFX_ENABLE_XML
         if (InsertChildAfter(child1, child2))
             result = this;
         else
             result.SetUndefined();
+#else
+        SF_UNUSED3(result, child1, child2);
+        WARN_NOT_IMPLEMENTED("XML::AS3insertChildAfter()");
+#endif
 //##protect##"instance::XML::AS3insertChildAfter()"
     }
     void XML::AS3insertChildBefore(Value& result, const Value& child1, const Value& child2)
     {
 //##protect##"instance::XML::AS3insertChildBefore()"
+#ifdef GFX_ENABLE_XML
         if (InsertChildBefore(child1, child2))
             result = this;
         else
             result.SetUndefined();
+#else
+        SF_UNUSED3(result, child1, child2);
+        WARN_NOT_IMPLEMENTED("XML::AS3insertChildBefore()");
+#endif
 //##protect##"instance::XML::AS3insertChildBefore()"
     }
     void XML::AS3length(SInt32& result)
@@ -3734,18 +3852,29 @@ namespace Instances { namespace fl
     void XML::AS3localName(ASString& result)
     {
 //##protect##"instance::XML::AS3localName()"
+#ifdef GFX_ENABLE_XML
         result = Text;
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3localName()");
+#endif
 //##protect##"instance::XML::AS3localName()"
     }
     void XML::AS3name(SPtr<Instances::fl::QName>& result)
     {
 //##protect##"instance::XML::AS3name()"
+#ifdef GFX_ENABLE_XML
         result = GetQName();
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3name()");
+#endif
 //##protect##"instance::XML::AS3name()"
     }
     void XML::AS3namespace_(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XML::AS3namespace_()"
+#ifdef GFX_ENABLE_XML
         if (argc == 0)
         {
             Namespace& ns = GetCurrNamespace();
@@ -3765,11 +3894,16 @@ namespace Instances { namespace fl
             else
                 result.SetUndefined();
         }
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XML::AS3namespace_()");
+#endif
 //##protect##"instance::XML::AS3namespace_()"
     }
     void XML::AS3namespaceDeclarations(SPtr<Instances::fl::Array>& result)
     {
 //##protect##"instance::XML::AS3namespaceDeclarations()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         Pickable<Instances::fl::Array> a = vm.MakeArray();
         result = a;
@@ -3822,12 +3956,17 @@ namespace Instances { namespace fl
 
         for (UPInt i = 0; i < declaredNS.GetSize(); ++i)
             a->PushBack(Value(&declaredNS[i]));
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3namespaceDeclarations()");
+#endif
 
 //##protect##"instance::XML::AS3namespaceDeclarations()"
     }
     void XML::AS3nodeKind(ASString& result)
     {
 //##protect##"instance::XML::AS3nodeKind()"
+#ifdef GFX_ENABLE_XML
         const char* kind = NULL;
         switch (GetKind())
         {
@@ -3852,27 +3991,41 @@ namespace Instances { namespace fl
         }
 
         result = kind;
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3nodeKind()");
+#endif
 //##protect##"instance::XML::AS3nodeKind()"
     }
     void XML::AS3normalize(SPtr<Instances::fl::XML>& result)
     {
 //##protect##"instance::XML::AS3normalize()"
+#ifdef GFX_ENABLE_XML
         Normalize();
+#else
+        WARN_NOT_IMPLEMENTED("XML::AS3normalize()");
+#endif
         result = this;
 //##protect##"instance::XML::AS3normalize()"
     }
     void XML::AS3parent(Value& result)
     {
 //##protect##"instance::XML::AS3parent()"
+#ifdef GFX_ENABLE_XML
         if (Parent.GetPtr() == NULL)
             result.SetUndefined();
         else
             result = Parent;
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3parent()");
+#endif
 //##protect##"instance::XML::AS3parent()"
     }
     void XML::AS3processingInstructions(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XML::AS3processingInstructions()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeXMLListInstance();
         result = list;
 
@@ -3882,27 +4035,41 @@ namespace Instances { namespace fl
 
         if (argc > 0) argv[0].Convert2String(name).DoNotCheck();
         GetChildren(*list, kInstruction, &name);
-
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XML::AS3processingInstructions()");
+#endif
 //##protect##"instance::XML::AS3processingInstructions()"
     }
     void XML::AS3prependChild(SPtr<Instances::fl::XML>& result, const Value& value)
     {
 //##protect##"instance::XML::AS3prependChild()"
+#ifdef GFX_ENABLE_XML
         if (InsertChildAt(0, value))
             result = this;
         else
             result = NULL;
+#else
+        SF_UNUSED2(result, value);
+        WARN_NOT_IMPLEMENTED("XML::AS3prependChild()");
+#endif
 //##protect##"instance::XML::AS3prependChild()"
     }
     void XML::AS3removeNamespace(SPtr<Instances::fl::XML>& result, const Value& ns)
     {
 //##protect##"instance::XML::AS3removeNamespace()"
+#ifdef GFX_ENABLE_XML
         result = RemoveNamespace(ns);
+#else
+        SF_UNUSED2(result, ns);
+        WARN_NOT_IMPLEMENTED("XML::AS3removeNamespace()");
+#endif
 //##protect##"instance::XML::AS3removeNamespace()"
     }
     void XML::AS3replace(SPtr<Instances::fl::XML>& result, const Value& propertyName, const Value& value)
     {
 //##protect##"instance::XML::AS3replace()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         const Multiname prop_name(vm, propertyName);
 
@@ -3928,6 +4095,10 @@ namespace Instances { namespace fl
             if (!AS3Replace(prop_name, value))
                 return;
         }
+#else
+        SF_UNUSED2(propertyName, value);
+        WARN_NOT_IMPLEMENTED("XML::AS3replace()");
+#endif
 
         result = this;
 //##protect##"instance::XML::AS3replace()"
@@ -3935,7 +4106,12 @@ namespace Instances { namespace fl
     void XML::AS3setChildren(SPtr<Instances::fl::XML>& result, const Value& value)
     {
 //##protect##"instance::XML::AS3setChildren()"
+#ifdef GFX_ENABLE_XML
         SetChildren(value);
+#else
+        SF_UNUSED1(value);
+        WARN_NOT_IMPLEMENTED("XML::AS3setChildren()");
+#endif
         result = this;
 //##protect##"instance::XML::AS3setChildren()"
     }
@@ -3943,6 +4119,7 @@ namespace Instances { namespace fl
     {
 //##protect##"instance::XML::AS3setLocalName()"
         SF_UNUSED1(result);
+#ifdef GFX_ENABLE_XML
         XML::Kind kind = GetKind();
 
         if (kind == kText || kind == kComment)
@@ -3956,12 +4133,17 @@ namespace Instances { namespace fl
 
         if (!IsValidName(Text))
             return vm.ThrowTypeError(VM::Error(VM::eXMLInvalidName, vm));
+#else
+        SF_UNUSED1(name);
+        WARN_NOT_IMPLEMENTED("XML::AS3setLocalName()");
+#endif
 //##protect##"instance::XML::AS3setLocalName()"
     }
     void XML::AS3setName(const Value& result, const Value& name)
     {
 //##protect##"instance::XML::AS3setName()"
         SF_UNUSED1(result);
+#ifdef GFX_ENABLE_XML
         XML::Kind kind = GetKind();
         if (kind == kText || kind == kComment)
             return;
@@ -4000,6 +4182,10 @@ namespace Instances { namespace fl
                 AddInScopeNamespace(*ns);
         }
         SetNamespace(ns ? *ns : vm.GetPublicNamespace());
+#else
+        SF_UNUSED1(name);
+        WARN_NOT_IMPLEMENTED("XML::AS3setName()");
+#endif
 //##protect##"instance::XML::AS3setName()"
     }
     void XML::AS3setNamespace(const Value& result, const Value& ns)
@@ -4008,6 +4194,8 @@ namespace Instances { namespace fl
         // ECMA 13.4.4.36
 
         SF_UNUSED1(result);
+
+#ifdef GFX_ENABLE_XML
         XML::Kind kind = GetKind();
 
         // Step 1.
@@ -4045,14 +4233,23 @@ namespace Instances { namespace fl
             AddInScopeNamespace(*ns2);
 
         SetNamespace(*ns2);
+#else
+        SF_UNUSED1(ns);
+        WARN_NOT_IMPLEMENTED("XML::AS3setNamespace()");
+#endif
 //##protect##"instance::XML::AS3setNamespace()"
     }
     void XML::AS3text(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XML::AS3text()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeXMLListInstance();
         result = list;
         GetChildren(*list, kText);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3text()");
+#endif
 //##protect##"instance::XML::AS3text()"
     }
     void XML::AS3toXMLString(ASString& result)
@@ -4060,11 +4257,15 @@ namespace Instances { namespace fl
 //##protect##"instance::XML::AS3toXMLString()"
         SF_UNUSED1(result);
 
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         StringBuffer buf(vm.GetMemoryHeap());
 
         ToXMLString(buf, 0, NULL, NULL);
         result = vm.GetStringManager().CreateString(buf.ToCStr(), buf.GetSize());
+#else
+        WARN_NOT_IMPLEMENTED("XML::AS3toXMLString()");
+#endif
 //##protect##"instance::XML::AS3toXMLString()"
     }
     void XML::AS3valueOf(SPtr<Instances::fl::XML>& result)
@@ -4135,6 +4336,8 @@ namespace Instances { namespace fl
         return result;
     }
 //##protect##"instance$methods"
+#ifdef GFX_ENABLE_XML
+
     XML::XML(InstanceTraits::Traits& t, const ASString& n, XML* p) 
     : Instances::fl::Object(t)
     , Text(n)
@@ -4606,6 +4809,7 @@ namespace Instances { namespace fl
     {
         SF_UNUSED(ns);
     }
+#endif
 
 //##protect##"instance$methods"
 
@@ -4613,57 +4817,102 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 XML::tito[XML::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 11, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 30, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 46, 49, 51, 53, 55, 57, 58, 59, 
+    // };
+    const TypeInfo* XML::tit[60] = {
+        &AS3::fl::XMLListTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLListTI, NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, NULL, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::BooleanTI, NULL, 
+        &AS3::fl::XMLTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::ArrayTI, 
+        NULL, NULL, NULL, 
+        NULL, NULL, NULL, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::QNameTI, 
+        NULL, 
+        &AS3::fl::ArrayTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::XMLTI, 
+        NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLTI, NULL, NULL, 
+        &AS3::fl::XMLTI, NULL, 
+        NULL, NULL, 
+        NULL, NULL, 
+        NULL, NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::XMLTI, 
+    };
     const ThunkInfo XML::ti[XML::ThunkInfoNum] = {
-        {TFunc_Instances_XML_prototypeGet::Func, &AS3::fl::XMLListTI, "prototype", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_XML_prototypeSet::Func, NULL, "prototype", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_XML_AS3toString::Func, &AS3::fl::StringTI, "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3hasOwnProperty::Func, &AS3::fl::BooleanTI, "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3propertyIsEnumerable::Func, &AS3::fl::BooleanTI, "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XML_AS3addNamespace::Func, &AS3::fl::XMLTI, "addNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3appendChild::Func, &AS3::fl::XMLTI, "appendChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3attribute::Func, &AS3::fl::XMLListTI, "attribute", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3attributes::Func, &AS3::fl::XMLListTI, "attributes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3child::Func, &AS3::fl::XMLListTI, "child", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3childIndex::Func, &AS3::fl::int_TI, "childIndex", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3children::Func, &AS3::fl::XMLListTI, "children", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3comments::Func, &AS3::fl::XMLListTI, "comments", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3contains::Func, &AS3::fl::BooleanTI, "contains", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3copy::Func, &AS3::fl::XMLTI, "copy", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3descendants::Func, &AS3::fl::XMLListTI, "descendants", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XML_AS3elements::Func, &AS3::fl::XMLListTI, "elements", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XML_AS3hasComplexContent::Func, &AS3::fl::BooleanTI, "hasComplexContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3hasSimpleContent::Func, &AS3::fl::BooleanTI, "hasSimpleContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3inScopeNamespaces::Func, &AS3::fl::ArrayTI, "inScopeNamespaces", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3insertChildAfter::Func, NULL, "insertChildAfter", NS_AS3, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_XML_AS3insertChildBefore::Func, NULL, "insertChildBefore", NS_AS3, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_XML_AS3length::Func, &AS3::fl::int_TI, "length", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3localName::Func, &AS3::fl::StringTI, "localName", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3name::Func, &AS3::fl::QNameTI, "name", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3namespace_::Func, NULL, "namespace", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XML_AS3namespaceDeclarations::Func, &AS3::fl::ArrayTI, "namespaceDeclarations", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3nodeKind::Func, &AS3::fl::StringTI, "nodeKind", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3normalize::Func, &AS3::fl::XMLTI, "normalize", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3parent::Func, NULL, "parent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3processingInstructions::Func, &AS3::fl::XMLListTI, "processingInstructions", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XML_AS3prependChild::Func, &AS3::fl::XMLTI, "prependChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3removeNamespace::Func, &AS3::fl::XMLTI, "removeNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3replace::Func, &AS3::fl::XMLTI, "replace", NS_AS3, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_XML_AS3setChildren::Func, &AS3::fl::XMLTI, "setChildren", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3setLocalName::Func, NULL, "setLocalName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3setName::Func, NULL, "setName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3setNamespace::Func, NULL, "setNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XML_AS3text::Func, &AS3::fl::XMLListTI, "text", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3toXMLString::Func, &AS3::fl::StringTI, "toXMLString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XML_AS3valueOf::Func, &AS3::fl::XMLTI, "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_XML_prototypeGet::Func, &XML::tit[0], "prototype", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_prototypeSet::Func, &XML::tit[1], "prototype", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3toString::Func, &XML::tit[3], "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3hasOwnProperty::Func, &XML::tit[4], "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3propertyIsEnumerable::Func, &XML::tit[6], "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XML_AS3addNamespace::Func, &XML::tit[7], "addNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3appendChild::Func, &XML::tit[9], "appendChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3attribute::Func, &XML::tit[11], "attribute", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3attributes::Func, &XML::tit[13], "attributes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3child::Func, &XML::tit[14], "child", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3childIndex::Func, &XML::tit[16], "childIndex", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3children::Func, &XML::tit[17], "children", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3comments::Func, &XML::tit[18], "comments", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3contains::Func, &XML::tit[19], "contains", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3copy::Func, &XML::tit[21], "copy", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3descendants::Func, &XML::tit[22], "descendants", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XML_AS3elements::Func, &XML::tit[23], "elements", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XML_AS3hasComplexContent::Func, &XML::tit[24], "hasComplexContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3hasSimpleContent::Func, &XML::tit[25], "hasSimpleContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3inScopeNamespaces::Func, &XML::tit[26], "inScopeNamespaces", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3insertChildAfter::Func, &XML::tit[27], "insertChildAfter", NS_AS3, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3insertChildBefore::Func, &XML::tit[30], "insertChildBefore", NS_AS3, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3length::Func, &XML::tit[33], "length", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3localName::Func, &XML::tit[34], "localName", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3name::Func, &XML::tit[35], "name", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3namespace_::Func, &XML::tit[36], "namespace", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XML_AS3namespaceDeclarations::Func, &XML::tit[37], "namespaceDeclarations", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3nodeKind::Func, &XML::tit[38], "nodeKind", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3normalize::Func, &XML::tit[39], "normalize", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3parent::Func, &XML::tit[40], "parent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3processingInstructions::Func, &XML::tit[41], "processingInstructions", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XML_AS3prependChild::Func, &XML::tit[42], "prependChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3removeNamespace::Func, &XML::tit[44], "removeNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3replace::Func, &XML::tit[46], "replace", NS_AS3, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3setChildren::Func, &XML::tit[49], "setChildren", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3setLocalName::Func, &XML::tit[51], "setLocalName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3setName::Func, &XML::tit[53], "setName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3setNamespace::Func, &XML::tit[55], "setNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3text::Func, &XML::tit[57], "text", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3toXMLString::Func, &XML::tit[58], "toXMLString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XML_AS3valueOf::Func, &XML::tit[59], "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     XML::XML(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::XML::XML()"
         SetTraitsType(Traits_XML);
 //##protect##"InstanceTraits::XML::XML()"
-        SetMemSize(sizeof(Instances::fl::XML));
 
     }
 
@@ -4673,9 +4922,10 @@ namespace InstanceTraits { namespace fl
     }
 
 //##protect##"instance_traits$methods"
-    void XML::toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+#ifdef GFX_ENABLE_XML
+    void XML::toStringProto(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
-        SF_UNUSED4(ti, _this, argc, argv);
+        SF_UNUSED4(cti, _this, argc, argv);
 
         if (_this.IsObject() && _this.GetObject() == &vm.GetXMLSupport().GetITraitsXML()->GetClass().GetPrototype())
             // This method is called on a prototype object.
@@ -4696,13 +4946,13 @@ namespace InstanceTraits { namespace fl
         }
     }
 
-    void XML::PropertyIsEnumerableProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void XML::PropertyIsEnumerableProto(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
-        SF_UNUSED4(ti, _this, argc, argv);
+        SF_UNUSED4(cti, _this, argc, argv);
 
         if (_this.IsObject() && _this.GetObject() == &vm.GetXMLSupport().GetITraitsXML()->GetClass().GetPrototype())
             // This method is called on a prototype object.
-            static_cast<Instances::fl::Object*>(_this.GetObject())->propertyIsEnumerableProto(ti, vm, _this, result, argc, argv);
+            static_cast<Instances::fl::Object*>(_this.GetObject())->propertyIsEnumerableProto(cti, vm, _this, result, argc, argv);
         else
         {
             if (!IsXMLObject(_this))
@@ -4715,13 +4965,13 @@ namespace InstanceTraits { namespace fl
         }
     }
 
-    void XML::HasOwnPropertyProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void XML::HasOwnPropertyProto(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
-        SF_UNUSED4(ti, _this, argc, argv);
+        SF_UNUSED4(cti, _this, argc, argv);
 
         if (_this.IsObject() && _this.GetObject() == &vm.GetXMLSupport().GetITraitsXML()->GetClass().GetPrototype())
             // This method is called on a prototype object.
-            static_cast<Instances::fl::Object*>(_this.GetObject())->hasOwnPropertyProto(ti, vm, _this, result, argc, argv);
+            static_cast<Instances::fl::Object*>(_this.GetObject())->hasOwnPropertyProto(cti, vm, _this, result, argc, argv);
         else
         {
             if (!IsXMLObject(_this))
@@ -4739,6 +4989,7 @@ namespace InstanceTraits { namespace fl
             result.SetBool(obj->HasOwnProperty(argv[0].AsString()));
         }
     }
+#endif
 //##protect##"instance_traits$methods"
 
 }} // namespace InstanceTraits
@@ -4754,12 +5005,15 @@ namespace Classes { namespace fl
     , prettyIndent(2)
     {
 //##protect##"class_::XML::XML()"
+#ifdef GFX_ENABLE_XML
         SetDefaultValues();
+#endif
 //##protect##"class_::XML::XML()"
     }
     void XML::AS3settings(SPtr<Instances::fl::Object>& result)
     {
 //##protect##"class_::XML::AS3settings()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         StringManager& sm = vm.GetStringManager();
         Pickable<Instances::fl::Object> obj = vm.MakeObject();
@@ -4770,19 +5024,29 @@ namespace Classes { namespace fl
         obj->AddDynamicSlotValuePair(sm.CreateConstString("ignoreWhitespace"), Value(ignoreWhitespace));
         obj->AddDynamicSlotValuePair(sm.CreateConstString("prettyPrinting"), Value(prettyPrinting));
         obj->AddDynamicSlotValuePair(sm.CreateConstString("prettyIndent"), Value(prettyIndent));
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3settings()");
+#endif
 //##protect##"class_::XML::AS3settings()"
     }
     void XML::settings(SPtr<Instances::fl::Object>& result)
     {
 //##protect##"class_::XML::settings()"
+#ifdef GFX_ENABLE_XML
         AS3settings(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::settings()");
+#endif
 //##protect##"class_::XML::settings()"
     }
     void XML::AS3setSettings(const Value& result, const Value& o)
     {
 //##protect##"class_::XML::AS3setSettings()"
-        SF_UNUSED1(result);
+        SF_UNUSED2(result, o);
 
+#ifdef GFX_ENABLE_XML
         if (o.IsNullOrUndefined())
             SetDefaultValues();
         else if (o.IsObject())
@@ -4812,17 +5076,27 @@ namespace Classes { namespace fl
             if (v && v->IsInt())
                 prettyIndent = *v;
         }
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3setSettings()");
+#endif
 //##protect##"class_::XML::AS3setSettings()"
     }
     void XML::setSettings(const Value& result, const Value& o)
     {
 //##protect##"class_::XML::setSettings()"
+#ifdef GFX_ENABLE_XML
         AS3setSettings(result, o);
+#else
+        SF_UNUSED2(result, o);
+        WARN_NOT_IMPLEMENTED("XML::setSettings()");
+#endif
 //##protect##"class_::XML::setSettings()"
     }
     void XML::AS3defaultSettings(SPtr<Instances::fl::Object>& result)
     {
 //##protect##"class_::XML::AS3defaultSettings()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         StringManager& sm = vm.GetStringManager();
         Pickable<Instances::fl::Object> obj = vm.MakeObject();
@@ -4833,15 +5107,25 @@ namespace Classes { namespace fl
         obj->AddDynamicSlotValuePair(sm.CreateConstString("ignoreWhitespace"), Value(true));
         obj->AddDynamicSlotValuePair(sm.CreateConstString("prettyPrinting"), Value(true));
         obj->AddDynamicSlotValuePair(sm.CreateConstString("prettyIndent"), Value(SInt32(2)));
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::AS3defaultSettings()");
+#endif
 //##protect##"class_::XML::AS3defaultSettings()"
     }
     void XML::defaultSettings(SPtr<Instances::fl::Object>& result)
     {
 //##protect##"class_::XML::defaultSettings()"
+#ifdef GFX_ENABLE_XML
         AS3defaultSettings(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XML::defaultSettings()");
+#endif
 //##protect##"class_::XML::defaultSettings()"
     }
 //##protect##"class_$methods"
+#ifdef GFX_ENABLE_XML
     void XML::Construct(Value& _this, unsigned argc, const Value* argv, bool extCall)
     {
         VM& vm = GetVM();
@@ -4898,8 +5182,8 @@ namespace Classes { namespace fl
                             if (ignoreWhitespace)
                                 str = str.TruncateWhitespace();
 
-                            InstanceTraits::fl::XML& itr = static_cast<InstanceTraits::fl::XML&>(GetClassTraits().GetInstanceTraits());
-                            Pickable<Instances::fl::XML> el = itr.MakeInstanceText(itr, str, NULL);
+                            InstanceTraits::fl::XML& itrxml = static_cast<InstanceTraits::fl::XML&>(GetClassTraits().GetInstanceTraits());
+                            Pickable<Instances::fl::XML> el = itrxml.MakeInstanceText(itrxml, str, NULL);
 
                             _this = el;
                         }
@@ -4915,8 +5199,8 @@ namespace Classes { namespace fl
                             }
                             else
                             {
-                                InstanceTraits::fl::XML& itr = static_cast<InstanceTraits::fl::XML&>(GetClassTraits().GetInstanceTraits());
-                                Pickable<Instances::fl::XML> el = itr.MakeInstanceText(itr, vm.GetStringManager().CreateEmptyString(), NULL);
+                                InstanceTraits::fl::XML& itrxml = static_cast<InstanceTraits::fl::XML&>(GetClassTraits().GetInstanceTraits());
+                                Pickable<Instances::fl::XML> el = itrxml.MakeInstanceText(itrxml, vm.GetStringManager().CreateEmptyString(), NULL);
                                 _this = el;
                             }
                         }
@@ -4993,10 +5277,16 @@ namespace Classes { namespace fl
     }
 
     // Created manually.
+    const TypeInfo* XML::tit[4] = {
+        &AS3::fl::StringTI,
+        &AS3::fl::StringTI,
+        &AS3::fl::StringTI, &AS3::fl::StringTI,
+    };
+
     const ThunkInfo XML::f[3] = {
-        {&InstanceTraits::fl::XML::toStringProto, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {&InstanceTraits::fl::XML::PropertyIsEnumerableProto, &AS3::fl::StringTI, "propertyIsEnumerable", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {&InstanceTraits::fl::XML::HasOwnPropertyProto, &AS3::fl::StringTI, "hasOwnProperty", NULL, Abc::NS_Public, CT_Method, 0, 1},
+        {&InstanceTraits::fl::XML::toStringProto, &XML::tit[0], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {&InstanceTraits::fl::XML::PropertyIsEnumerableProto, &XML::tit[1], "propertyIsEnumerable", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
+        {&InstanceTraits::fl::XML::HasOwnPropertyProto, &XML::tit[2], "hasOwnProperty", NULL, Abc::NS_Public, CT_Method, 0, 1},
     };
 
     void XML::InitPrototype(AS3::Object& obj) const
@@ -5021,6 +5311,7 @@ namespace Classes { namespace fl
         prettyPrinting = true;
         prettyIndent = 2;
     }
+#endif
 //##protect##"class_$methods"
 
 }} // namespace Classes
@@ -5049,33 +5340,49 @@ namespace ClassTraits { namespace fl
         {"prettyIndent", NULL, OFFSETOF(Classes::fl::XML, prettyIndent), Abc::NS_Public, SlotInfo::BT_Int, 0},
     };
 
-    const ThunkInfo XML::ti[XML::ThunkInfoNum] = {
-        {TFunc_Classes_XML_AS3settings::Func, &AS3::fl::ObjectTI, "settings", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_XML_settings::Func, &AS3::fl::ObjectTI, "settings", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_XML_AS3setSettings::Func, NULL, "setSettings", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Classes_XML_setSettings::Func, NULL, "setSettings", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Classes_XML_AS3defaultSettings::Func, &AS3::fl::ObjectTI, "defaultSettings", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_XML_defaultSettings::Func, &AS3::fl::ObjectTI, "defaultSettings", NULL, Abc::NS_Public, CT_Method, 0, 0},
+    // const UInt16 XML::tito[XML::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 6, 7, 
+    // };
+    const TypeInfo* XML::tit[8] = {
+        &AS3::fl::ObjectTI, 
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::ObjectTI, 
+        &AS3::fl::ObjectTI, 
     };
-    XML::XML(VM& vm)
-    : Traits(vm, AS3::fl::XMLCI)
+    const ThunkInfo XML::ti[XML::ThunkInfoNum] = {
+        {TFunc_Classes_XML_AS3settings::Func, &XML::tit[0], "settings", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_XML_settings::Func, &XML::tit[1], "settings", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_XML_AS3setSettings::Func, &XML::tit[2], "setSettings", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Classes_XML_setSettings::Func, &XML::tit[4], "setSettings", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Classes_XML_AS3defaultSettings::Func, &XML::tit[6], "defaultSettings", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_XML_defaultSettings::Func, &XML::tit[7], "defaultSettings", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+    };
+
+    XML::XML(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::XML::XML()"
+#ifdef GFX_ENABLE_XML
         SetTraitsType(Traits_XML);
+#endif
 //##protect##"ClassTraits::XML::XML()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::XML(vm, AS3::fl::XMLCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::XML(*this));
 
     }
 
     Pickable<Traits> XML::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) XML(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) XML(vm, AS3::fl::XMLCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::XMLCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -5086,6 +5393,11 @@ namespace fl
 {
     const TypeInfo XMLTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject | TypeInfo::Final,
+        sizeof(ClassTraits::fl::XML::InstanceType),
+        ClassTraits::fl::XML::ThunkInfoNum,
+        ClassTraits::fl::XML::MemberInfoNum,
+        InstanceTraits::fl::XML::ThunkInfoNum,
+        0,
         "XML", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -5093,10 +5405,6 @@ namespace fl
     const ClassInfo XMLCI = {
         &XMLTI,
         ClassTraits::fl::XML::MakeClassTraits,
-        ClassTraits::fl::XML::ThunkInfoNum,
-        ClassTraits::fl::XML::MemberInfoNum,
-        InstanceTraits::fl::XML::ThunkInfoNum,
-        0,
         ClassTraits::fl::XML::ti,
         ClassTraits::fl::XML::mi,
         InstanceTraits::fl::XML::ti,

@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,6 +37,9 @@ SlotInfo::SlotInfo()
 , CppBinding(false)
 , BindType(BT_Unknown)
 , ValueInd(-1)
+#ifdef SF_64BIT_POINTERS
+, Padding01(0)
+#endif    
 , CTraits(NULL)
 , File(NULL)
 , TI(NULL)
@@ -45,8 +49,8 @@ SlotInfo::SlotInfo()
 SlotInfo::SlotInfo(
     Pickable<const Instances::fl::Namespace> ns, 
     const ClassTraits::Traits* ctraits,
-    int a
-    SF_DEBUG_ARG(const Ptr<ASStringNode>& name)
+    int a,
+    const Ptr<ASStringNode>& name
     )
 : ReadOnly(false)
 , DontEnum(false)
@@ -55,12 +59,15 @@ SlotInfo::SlotInfo(
 , CppBinding(false)
 , BindType(BT_Unknown)
 , ValueInd(-1)
+#ifdef SF_64BIT_POINTERS
+, Padding01(0)
+#endif    
 , pNs(ns)
 , CTraits(ctraits)
 , File(NULL)
 , TI(NULL)
 #ifdef SF_AS3_NAME_IN_SLOTINFO
-SF_DEBUG_ARG(Name(name))
+, Name(name)
 #endif
 {
     SetFlagsFromInt(a);
@@ -70,8 +77,8 @@ SlotInfo::SlotInfo(
      Pickable<const Instances::fl::Namespace> ns,
      VMAbcFile& file,
      const Abc::TraitInfo& ti,
-     int a
-     SF_DEBUG_ARG(const Ptr<ASStringNode>& name)
+     int a,
+     const Ptr<ASStringNode>& name
      )
 : ReadOnly(false)
 , DontEnum(false)
@@ -80,11 +87,14 @@ SlotInfo::SlotInfo(
 , CppBinding(false)
 , BindType(BT_Unknown)
 , ValueInd(-1)
+#ifdef SF_64BIT_POINTERS
+, Padding01(0)
+#endif    
 , pNs(ns)
 , File(&file)
 , TI(&ti)
 #ifdef SF_AS3_NAME_IN_SLOTINFO
-SF_DEBUG_ARG(Name(name))
+, Name(name)
 #endif
 {
     SetFlagsFromInt(a);
@@ -98,12 +108,15 @@ SlotInfo::SlotInfo(const SlotInfo& other)
 , CppBinding(other.CppBinding)
 , BindType(other.BindType)
 , ValueInd(other.ValueInd)
+#ifdef SF_64BIT_POINTERS
+, Padding01(0)
+#endif    
 , pNs(other.pNs)
 , CTraits(other.CTraits)
 , File(other.File)
 , TI(other.TI)
 #ifdef SF_AS3_NAME_IN_SLOTINFO
-SF_DEBUG_ARG(Name(other.Name))
+, Name(other.Name)
 #endif
 {
 }
@@ -137,7 +150,7 @@ SlotInfo& SlotInfo::operator =(const SlotInfo& other)
         TI = other.TI;
         ValueInd = other.ValueInd;
 #ifdef SF_AS3_NAME_IN_SLOTINFO
-        SF_DEBUG_CODE(Name = other.Name;)
+        Name = other.Name;
 #endif
     }
     
@@ -285,7 +298,7 @@ CheckResult SlotInfo::GetSlotValueUnsafe(VM& vm, Value& value, const Value& _thi
     case BT_Set:
         // Error.
         vm.ThrowReferenceError(VM::Error(VM::eWriteOnlyError, vm
-            SF_DEBUG_ARG(GetNameNode()->pData)
+            SF_DEBUG_ARG(GetQualifiedNameNode()->pData)
             SF_DEBUG_ARG(_this)
             ));
         return false;
@@ -309,7 +322,7 @@ CheckResult SlotInfo::GetSlotValueUnsafe(Value& value, Object* obj) const
     case BT_ValueArray:
         {
             SF_ASSERT(&obj->GetVM().GetGlobalObjectCPP() == obj);
-            Instances::fl::GlobalObjectCPP* go = static_cast<Instances::fl::GlobalObjectCPP*>(obj);
+            const Instances::fl::GlobalObjectCPP* go = static_cast<const Instances::fl::GlobalObjectCPP*>(obj);
             value.AssignUnsafe(go->GetValueArray(vind));
         }
         break;
@@ -395,7 +408,7 @@ CheckResult SlotInfo::GetSlotValueUnsafe(Value& value, Object* obj) const
             // Error.
             VM& vm = obj->GetVM();
             vm.ThrowReferenceError(VM::Error(VM::eWriteOnlyError, vm
-                SF_DEBUG_ARG(GetNameNode()->pData)
+                SF_DEBUG_ARG(GetQualifiedNameNode()->pData)
                 SF_DEBUG_ARG(obj->GetTraits().GetName().ToCStr())
                 ));
         }
@@ -414,7 +427,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, const Value& _this, c
     {
         // const properties can be assigned in initializers.
         vm.ThrowReferenceError(VM::Error(VM::eConstWriteError, vm
-            SF_DEBUG_ARG(GetNameNode()->pData) 
+            SF_DEBUG_ARG(GetQualifiedNameNode()->pData) 
             SF_DEBUG_ARG(_this)
             ));
         return false;
@@ -487,7 +500,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, const Value& _this, c
         SetSlotUInt(_this.GetObject(), vind, r);
         break;
     case BT_Number:
-        SetSlotNumber(_this.GetObject(), vind, r);
+        SetSlotNumber(_this.GetObject(), vind, Value::Number(r));
         break;
     case BT_String:
         SetSlotStringNode(_this.GetObject(), vind, r.GetStringNode());
@@ -497,7 +510,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, const Value& _this, c
     case BT_Get:
         // Error.
         vm.ThrowReferenceError(VM::Error(VM::eConstWriteError, vm
-            SF_DEBUG_ARG(GetNameNode()->pData) 
+            SF_DEBUG_ARG(GetQualifiedNameNode()->pData) 
             SF_DEBUG_ARG(_this)
             ));
         return false;
@@ -532,7 +545,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, const Value& _this, c
             // It looks like Tamarin works this way.
             // Primitive value is a sealed object.
             vm.ThrowReferenceError(VM::Error(VM::eWriteSealedError, vm
-                SF_DEBUG_ARG(GetNameNode()->pData)
+                SF_DEBUG_ARG(GetQualifiedNameNode()->pData)
                 SF_DEBUG_ARG(_this)
                 ));
         }
@@ -540,7 +553,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, const Value& _this, c
         {
             // Sealed objects, which are not primitives seem to throw eCannotAssignToMethodError.
             vm.ThrowReferenceError(VM::Error(VM::eCannotAssignToMethodError, vm
-                SF_DEBUG_ARG(GetNameNode()->pData)
+                SF_DEBUG_ARG(GetQualifiedNameNode()->pData)
                 SF_DEBUG_ARG(_this)
                 ));
         }
@@ -561,7 +574,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, Object* const obj) co
     {
         // const properties can be assigned in initializers.
         vm.ThrowReferenceError(VM::Error(VM::eConstWriteError, vm
-            SF_DEBUG_ARG(GetNameNode()->pData) 
+            SF_DEBUG_ARG(GetQualifiedNameNode()->pData) 
             SF_DEBUG_ARG(obj->GetTraits().GetName().ToCStr())
             ));
         return false;
@@ -634,7 +647,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, Object* const obj) co
         SetSlotUInt(obj, vind, r);
         break;
     case BT_Number:
-        SetSlotNumber(obj, vind, r);
+        SetSlotNumber(obj, vind, Value::Number(r));
         break;
     case BT_String:
         SetSlotStringNode(obj, vind, r.GetStringNode());
@@ -644,7 +657,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, Object* const obj) co
     case BT_Get:
         // Error.
         vm.ThrowReferenceError(VM::Error(VM::eConstWriteError, vm
-            SF_DEBUG_ARG(GetNameNode()->pData) 
+            SF_DEBUG_ARG(GetQualifiedNameNode()->pData) 
             SF_DEBUG_ARG(obj->GetTraits().GetName().ToCStr())
             ));
         break;
@@ -671,7 +684,7 @@ CheckResult SlotInfo::SetSlotValue(VM& vm, const Value& v, Object* const obj) co
         break;
     case BT_Code:
         vm.ThrowReferenceError(VM::Error(VM::eCannotAssignToMethodError, vm
-            SF_DEBUG_ARG(GetNameNode()->pData)
+            SF_DEBUG_ARG(GetQualifiedNameNode()->pData)
             SF_DEBUG_ARG(obj->GetTraits().GetName().ToCStr())
             ));
         return false;
@@ -969,6 +982,23 @@ void SlotInfo::ForEachChild_GC(Collector* prcc, RefCountBaseGC<Mem_Stat>::GcOp o
     AS3::ForEachChild_GC_Const<const Instances::fl::Namespace, Mem_Stat>(prcc, pNs, op SF_DEBUG_ARG(owner));
 	AS3::ForEachChild_GC_Const<const ClassTraits::Traits, Mem_Stat>(prcc, CTraits, op SF_DEBUG_ARG(owner));
 }
+
+#ifdef SF_AS3_NAME_IN_SLOTINFO
+ASString SlotInfo::GetName() const
+{
+    ASStringNode* name_ptr = GetQualifiedNameNode();
+    SF_ASSERT(name_ptr);
+    StringDataPtr qname(name_ptr->pData, name_ptr->Size);
+    SPInt         index = qname.FindLastChar('/');
+
+    if (index < 0)
+        index = qname.FindLastChar('.');
+
+    const StringDataPtr name = qname.GetTrimLeft(index + 1);
+
+    return name_ptr->GetManager()->CreateString(name.ToCStr(), name.GetSize());
+}
+#endif
 
 void SlotInfo::setNamespace(const Instances::fl::Namespace& ns)
 {

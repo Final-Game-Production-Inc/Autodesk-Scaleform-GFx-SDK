@@ -28,6 +28,7 @@
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -69,6 +70,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -81,6 +83,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -134,6 +137,7 @@ public:
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -166,6 +170,7 @@ public:
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -227,6 +232,7 @@ bool CGFxPlayerOGLES::InitApplication()
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -245,6 +251,7 @@ bool CGFxPlayerOGLES::QuitApplication()
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -338,6 +345,7 @@ bool CGFxPlayerOGLES::InitView()
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -363,6 +371,7 @@ bool CGFxPlayerOGLES::ReleaseView()
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -543,6 +552,7 @@ void CGFxPlayerOGLES::FsCallback(GFxMovieView* pMovie, const char* pszCommand, c
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -560,6 +570,7 @@ PVRShell* NewDemo()
 Filename    :   GFxPlayerShellOGLES.cpp
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which

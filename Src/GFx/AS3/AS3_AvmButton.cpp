@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -403,15 +404,15 @@ bool AvmButton::DetachChild(DisplayObjectBase* child)
                     child->SetParent(NULL);
                     if (child->GetRenderNode())
                     {
-                        Render::TreeContainer* pcontainer = static_cast<Render::TreeContainer*>
+                        Render::TreeContainer* treePcontainer = static_cast<Render::TreeContainer*>
                             (child->GetRenderNode()->GetParent());
-                        if (pcontainer)
+                        if (treePcontainer)
                         {
-                            for(UPInt k = 0, kn = pcontainer->GetSize(); k < kn; ++k)
+                            for(UPInt k = 0, kn = treePcontainer->GetSize(); k < kn; ++k)
                             {
-                                if (pcontainer->GetAt(k) == child->GetRenderNode())
+                                if (treePcontainer->GetAt(k) == child->GetRenderNode())
                                 {
-                                    pcontainer->Remove(k, 1);
+                                    treePcontainer->Remove(k, 1);
                                     break;
                                 }
                             }

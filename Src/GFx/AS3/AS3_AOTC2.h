@@ -1172,6 +1172,8 @@ namespace AOT
         }
 
     private:
+        // Make sure the member variables stay with no padding
+        // Padding breaks the hash function that uses this struct as a key
         const Abc::File*    pFile;
         // Use pointer-size member to prevent padding.
         SPInt               Method;

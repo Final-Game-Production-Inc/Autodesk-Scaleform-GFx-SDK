@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -64,6 +65,11 @@ class GASRefCountBase;
 class WeakProxy;
 class SNode;
 
+namespace Abc
+{
+    struct ConstValue;
+}
+
 namespace Instances
 {
     class Function;
@@ -119,7 +125,9 @@ public:
     }
     ~CheckResult()
     {
+#ifdef SF_BUILD_DEBUG
         SF_ASSERT(Checked);
+#endif
     }
 
 public:
@@ -186,29 +194,50 @@ struct ThunkInfo
 
     TThunkFunc Method;
 
-    const TypeInfo* ResultType;
+    const TypeInfo** ArgType;
 
     const char* Name;
 
     const char* NamespaceName;
 
-    Abc::NamespaceKind  NsKind:4;
-    TCodeType           CodeType_:3; // One bit can be saved.
+    // 32 bits.
+    UPInt   NsKind:4;
+    UPInt   CodeType_:2;
 
-    unsigned MinArgNum_:3;
-    unsigned MaxArgNum_:12;
+    UPInt   MinArgNum_:3;
+    UPInt   MaxArgNum_:12;
+    UPInt   Ellipsis_:1;
+    UPInt   DefArgNum_:10;
 
+    const Abc::ConstValue* DefArgValue;
+
+    Abc::NamespaceKind GetNsKind() const
+    {
+        return static_cast<Abc::NamespaceKind>(NsKind);
+    }
     TCodeType GetCodeType() const
     {
-        return CodeType_;
+        return static_cast<TCodeType>(CodeType_);
     }
-    unsigned GetMinArgNum() const
+    UPInt GetMinArgNum() const
     {
         return MinArgNum_;
     }
-    unsigned GetMaxArgNum() const
+    UPInt GetMaxArgNum() const
     {
         return MaxArgNum_;
+    }
+    UPInt GetDefArgNum() const
+    {
+        return DefArgNum_;
+    }
+    bool HasEllipsis() const
+    {
+        return Ellipsis_ != 0;
+    }
+    const TypeInfo* GetResultType() const
+    {
+        return ArgType[0];
     }
 
     static void EmptyFunc(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
@@ -334,6 +363,20 @@ public:
     , value(v)
     {
     }
+    SF_INLINE
+    explicit Value(float v)
+    : Flags(kNumber)
+    , value(v)
+    {
+    }
+#ifdef SF_SAFE_DOUBLE
+    SF_INLINE
+    explicit Value(double v)
+    : Flags(kNumber)
+    , value(v)
+    {
+    }
+#endif
     SF_INLINE
     explicit Value(Number v)
     : Flags(kNumber)
@@ -504,6 +547,25 @@ public:
         SetKind(kUInt);
         value = v;
     }
+
+#ifdef SF_SAFE_DOUBLE
+    ///
+    SF_INLINE
+    void Assign(double v)
+    {
+        Release();
+        SetKind(kNumber);
+        value = v;
+    }
+    SF_INLINE
+    void AssignUnsafe(double v)
+    {
+        SF_ASSERT(!IsRefCounted());
+
+        SetKind(kNumber);
+        value = v;
+    }
+#endif
 
     ///
     SF_INLINE
@@ -836,6 +898,20 @@ public:
         return value.operator UInt32();
     }
 
+#ifdef SF_SAFE_DOUBLE
+    ///
+    operator double&()
+    {
+        SF_ASSERT(GetKind() == kNumber);
+        return value;
+    }
+    operator double() const
+    {
+        SF_ASSERT(GetKind() == kNumber);
+        return value;
+    }
+#endif
+
     ///
     operator Number&()
     {
@@ -1132,15 +1208,28 @@ public:
     // Can throw exceptions.
     // Return false in case of exception.
     // result will not be modified in case of exception.
-    CheckResult Convert2PrimitiveValueUnsafe(Value& result, Hint hint = hintNone) const;
+    CheckResult Convert2PrimitiveValueUnsafe(ASStringManager& sm, Value& result, Hint hint = hintNone) const;
+    CheckResult Convert2PrimitiveValueUnsafeHintNumber(Value& result) const;
     // Can throw exceptions.
     // Return false in case of exception.
     // Value will not be modified in case of exception.
-    CheckResult ToPrimitiveValue()
+    CheckResult ToPrimitiveValue(ASStringManager& sm)
     {
         Value v = GetUndefined();
         bool result = false;
-        if (Convert2PrimitiveValueUnsafe(v))
+        if (Convert2PrimitiveValueUnsafe(sm, v))
+        {
+            Swap(v);
+            result = true;
+        }
+
+        return result;
+    }
+    CheckResult ToPrimitiveValueHintNumber()
+    {
+        Value v = GetUndefined();
+        bool result = false;
+        if (Convert2PrimitiveValueUnsafeHintNumber(v))
         {
             Swap(v);
             result = true;
@@ -1169,19 +1258,27 @@ public:
         switch(kind)
         {
         case kNumber:
-            result = value;
+            result = value.VNumber;
             break;
         case kUndefined:
             result = NumberUtil::NaN();
             break;
         case kBoolean:
-            result = value.VS._1.VBool ? 1.0 : NumberUtil::POSITIVE_ZERO();
+            result = value.VS._1.VBool ? Double(1.0) : NumberUtil::POSITIVE_ZERO();
             break;
         case kInt:
+#ifdef SF_SAFE_DOUBLE
+            result = value.VS._1.VInt;
+#else
             result = static_cast<Number>(value.VS._1.VInt);
+#endif
             break;
         case kUInt:
+#ifdef SF_SAFE_DOUBLE
+            result = value.VS._1.VUInt;
+#else
             result = static_cast<Number>(value.VS._1.VUInt);
+#endif
             break;
         default:
             return Convert2NumberInternal(result, kind);
@@ -1235,17 +1332,10 @@ public:
     }
     
 public:
-    SF_INLINE
-    bool IsNull() const 
+    bool IsNull() const
     { 
-        bool result;
-
-        if (IsObject())
-            result = value.VS._1.VObj == NULL;
-        else
-            result = false;
-
-        return result;
+        const KindType k = GetKind();
+        return (IsObject(k) || IsString(k)) && value.VS._1.VObj == NULL;
     }
 
     static bool IsInt(const KindType k) { return k == kInt || k == kUInt; }
@@ -1551,6 +1641,10 @@ private:
 #endif
         VU(SInt32 v) { VS._1.VInt = v; }
         VU(UInt32 v) { VS._1.VUInt = v; }
+        VU(float v) { VNumber = v; }
+#ifdef SF_SAFE_DOUBLE
+        VU(double v) { VNumber = v; }
+#endif
         VU(Number v) { VNumber = v; }
         VU(ASStringNode* v) { VS._1.VStr = v; }
         VU(Object* v) { VS._1.VObj = v; }
@@ -1604,14 +1698,19 @@ private:
         operator UInt32&() { return VS._1.VUInt; }
         operator UInt32() const { return VS._1.VUInt; }
 
-#if !defined(SF_CC_SNC) && !defined(SF_CC_MWERKS) && !defined(SF_CC_ARM) && !defined(SF_CC_GHS)
-
+#if !defined(SF_CC_SNC) && !defined(SF_CC_MWERKS) && !defined(SF_CC_ARM) && !defined(SF_CC_GHS) && !defined(SF_CC_CLANG)
         ///
         operator UPInt() const { return VS._1.VUInt; }
 #endif
 
+#ifdef SF_SAFE_DOUBLE
         ///
-        operator Number&() { return VNumber; }
+        operator double&() { return VNumber; }
+        operator double() const { return VNumber; }
+#endif
+
+        ///
+        operator Number&() { return reinterpret_cast<Number&>(VNumber); }
         operator Number() const { return VNumber; }
 
         ///
@@ -1646,7 +1745,7 @@ private:
 #endif
 
     public:
-        Number VNumber;
+        double  VNumber;
         VStruct VS;
     };
 
@@ -1888,11 +1987,7 @@ bool Value::IsNaN_OR_NP_ZERO() const
 SF_INLINE
 Value::Number MakeValueNumber(double v)
 {
-#ifdef SF_NO_DOUBLE
-    return NumberUtil::ConvertDouble2Float(v);
-#else
     return v;
-#endif
 }
 
 inline
@@ -2452,6 +2547,7 @@ void Swap<GFx::AS3::Value>(GFx::AS3::Value& l, GFx::AS3::Value& r)
 
 namespace Scaleform { namespace GFx { 
 
+    ///////////////////////////////////////////////////////////////////////////
 template<>
 inline
 void ASString::operator = <AS3::Value>(const AS3::Value& v)
@@ -2461,6 +2557,16 @@ void ASString::operator = <AS3::Value>(const AS3::Value& v)
     else
         AssignNode(v.AsStringNode());
 }
+
+///////////////////////////////////////////////////////////////////////////
+#if defined(SF_SAFE_DOUBLE)
+
+inline Double::Double(const AS3::Value& v)
+: value(v)
+{
+}
+
+#endif
 
 }} // namespace Scaleform { namespace GFx { 
 

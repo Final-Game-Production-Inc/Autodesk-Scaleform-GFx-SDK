@@ -6,6 +6,7 @@ Created     :   May, 2010
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -14,6 +15,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 
 #include "GFx/AS2/AS2_AmpMarker.h"
+#ifdef SF_AMP_SERVER
 #include "AS2_Value.h"
 #include "GFx/AMP/Amp_ViewStats.h"
 
@@ -57,7 +59,7 @@ void AmpMarkerCtorFunction::AddMarker(const FnCall& fn)
         return;
     }
 
-    fn.Env->GetMovieImpl()->AdvanceStats->AddMarker(fn.Arg(0).ToString(fn.Env).ToCStr());
+    fn.Env->GetMovieImpl()->GetAdvanceStats().AddMarker(fn.Arg(0).ToString(fn.Env).ToCStr());
 }
 
 void AmpMarkerCtorFunction::GlobalCtor(const FnCall& fn)
@@ -80,7 +82,7 @@ bool AmpMarkerCtorFunction::SetMember(Environment* env, const ASString& name, co
     MovieImpl* proot = env->GetMovieImpl();
     if (name == "addMarker")
     {
-        proot->AdvanceStats->AddMarker(val.ToString(env).ToCStr());
+        proot->GetAdvanceStats().AddMarker(val.ToString(env).ToCStr());
         return true;
     }
     return FunctionObject::SetMember(env, name, val, flags);
@@ -98,3 +100,5 @@ FunctionRef AmpMarkerCtorFunction::Register(GlobalContext* pgc)
 }
 
 }}} // SF::GFx::AS2
+
+#endif

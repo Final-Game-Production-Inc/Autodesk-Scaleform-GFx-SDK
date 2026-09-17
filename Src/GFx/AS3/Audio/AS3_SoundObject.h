@@ -6,6 +6,7 @@ Created     :   March 2011
 Authors     :   Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -59,6 +60,7 @@ public:
     void         LoadFile(const String& url, bool streaming = false);
     void         Play(int startTime, int loops);
     void         Stop();
+    void         Close();
     void         SetVolume(int volume);
     int          GetVolume();
     void         SetPan(int pan);

@@ -6,6 +6,7 @@ Created     :   2005-2006
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -677,11 +678,11 @@ unsigned Tessellator::nextScanbeam(CoordType yb, CoordType yt,
     IntersectionType intr;
     for(i = 1; i < ValidChains.GetSize(); ++i)
     {
-        SPInt j;
-        for(j = i - 1; j >= 0; --j)
+        SPInt jl;
+        for(jl = i - 1; jl >= 0; --jl)
         {
-            MonoChainType* mc1 = ActiveChains[ValidChains[j  ]];
-            MonoChainType* mc2 = ActiveChains[ValidChains[j+1]];
+            MonoChainType* mc1 = ActiveChains[ValidChains[jl]];
+            MonoChainType* mc2 = ActiveChains[ValidChains[jl+1]];
 
             if(mc1->xt <= mc2->xt) break;
 
@@ -705,8 +706,8 @@ unsigned Tessellator::nextScanbeam(CoordType yb, CoordType yt,
                 intr.y = yt;
             }
             Intersections.PushBack(intr);
-            Alg::Swap(ActiveChains[ValidChains[j  ]], 
-                      ActiveChains[ValidChains[j+1]]);
+            Alg::Swap(ActiveChains[ValidChains[jl]], 
+                      ActiveChains[ValidChains[jl+1]]);
         }
     }
 
@@ -1958,13 +1959,13 @@ void Tessellator::monotonize()
 
         if(flags & RemoveEdgesFlag)
         {
-            UPInt i, pos;
-            for(i = pos = 0; i < ActiveChains.GetSize(); ++i)
+            UPInt ik, pos;
+            for(ik = pos = 0; ik < ActiveChains.GetSize(); ++ik)
             {
-                MonoChainType* mc = ActiveChains[i];
-                if((mc->flags & EndChainFlag) == 0)
+                MonoChainType* mec = ActiveChains[ik];
+                if((mec->flags & EndChainFlag) == 0)
                 {
-                    ActiveChains[pos++] = mc;
+                    ActiveChains[pos++] = mec;
                 }
             }
             ActiveChains.CutAt(pos);
@@ -2797,13 +2798,13 @@ void Tessellator::emitTriangles()
                 ((m.style == Meshes[meshIdx].Style1) ? TessStyleFactorOne : 0);
             for (unsigned j = 0; j < m.d.t.numTriangles; ++j)
             {
-                TriangleType& tri = MeshTriangles.At(meshIdx, m.d.t.startTriangle+j);
-                tri.d.m.v1->aaVer = emitVertex(meshIdx, tri.d.m.v1->aaVer, m.style, flags);
-                tri.d.m.v2->aaVer = emitVertex(meshIdx, tri.d.m.v2->aaVer, m.style, flags);
-                tri.d.m.v3->aaVer = emitVertex(meshIdx, tri.d.m.v3->aaVer, m.style, flags);
-                tri.d.t.v1 = verIdx(tri.d.m.v1->aaVer);
-                tri.d.t.v2 = verIdx(tri.d.m.v2->aaVer);
-                tri.d.t.v3 = verIdx(tri.d.m.v3->aaVer);
+                TriangleType& trit = MeshTriangles.At(meshIdx, m.d.t.startTriangle+j);
+                trit.d.m.v1->aaVer = emitVertex(meshIdx, trit.d.m.v1->aaVer, m.style, flags);
+                trit.d.m.v2->aaVer = emitVertex(meshIdx, trit.d.m.v2->aaVer, m.style, flags);
+                trit.d.m.v3->aaVer = emitVertex(meshIdx, trit.d.m.v3->aaVer, m.style, flags);
+                trit.d.t.v1 = verIdx(trit.d.m.v1->aaVer);
+                trit.d.t.v2 = verIdx(trit.d.m.v2->aaVer);
+                trit.d.t.v3 = verIdx(trit.d.m.v3->aaVer);
             }
         }
     }
@@ -2833,17 +2834,17 @@ void Tessellator::emitTriangles()
         MonoVertexType* v3 = e2->cntVer;
         MonoVertexType* v4 = e2->rayVer;
 
-        unsigned s3 = s1;
-        unsigned f3 = 0;
+        unsigned su3 = s1;
+        unsigned fu3 = 0;
 
         if (TessStyleIsComplex(mesh.Flags1 ^ mesh.Flags2))
         {
-            s3 = s2;
-            f3 = TessStyleUseColor2;
+            su3 = s2;
+            fu3 = TessStyleUseColor2;
         }
 
-        v1->aaVer = emitVertex(meshIdx, v1->aaVer, s1, s3, TessStyleOpaque | TessStyleFactorOne | f3);
-        v2->aaVer = emitVertex(meshIdx, v2->aaVer, s1, s3, TessStyleOpaque | TessStyleFactorOne | f3);
+        v1->aaVer = emitVertex(meshIdx, v1->aaVer, s1, su3, TessStyleOpaque | TessStyleFactorOne | fu3);
+        v2->aaVer = emitVertex(meshIdx, v2->aaVer, s1, su3, TessStyleOpaque | TessStyleFactorOne | fu3);
         v3->aaVer = emitVertex(meshIdx, v3->aaVer, s2, TessStyleOpaque);
         v4->aaVer = emitVertex(meshIdx, v4->aaVer, s2, TessStyleOpaque);
 

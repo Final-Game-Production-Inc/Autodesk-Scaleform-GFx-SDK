@@ -5,15 +5,6 @@ ifneq ($(strip $(call HAS_HEADER,pthread.h)),)
 GFXlibgfxSRCS += Src/Kernel/SF_ThreadsPthread.cpp
 endif
 
-ifneq ($(strip $(call HAS_HEADER,GLES2/gl2.h)),)
-PCFLAGS += -DSF_USE_GLES2
-ifneq ($(strip $(call HAS_HEADER,EGL/egl.h)),)
-PCFLAGS += -DSF_USE_EGL
-endif
-$(call BUILD_GFX_LIB,libgfxrender_gl)
-$(GFXlibgfxrender_glSRCS_ALL): Src/Render/GL/GLES_ShaderDescs.h
-endif
-
 ifneq ($(strip $(call HAS_HEADER,GL/gl.h)),)
 $(call BUILD_GFX_LIB,libgfxrender_gl)
 $(GFXlibgfxrender_glSRCS_ALL): Src/Render/GL/GL_ShaderDescs.h

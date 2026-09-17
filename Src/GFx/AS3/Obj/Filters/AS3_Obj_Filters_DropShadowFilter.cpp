@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_filters::DropShadowFilter, Instances::fl_filters::DropShadowFilter::mid_alphaGet, Value::Number> TFunc_Instances_DropShadowFilter_alphaGet;
 typedef ThunkFunc1<Instances::fl_filters::DropShadowFilter, Instances::fl_filters::DropShadowFilter::mid_alphaSet, const Value, Value::Number> TFunc_Instances_DropShadowFilter_alphaSet;
 typedef ThunkFunc0<Instances::fl_filters::DropShadowFilter, Instances::fl_filters::DropShadowFilter::mid_angleGet, Value::Number> TFunc_Instances_DropShadowFilter_angleGet;
@@ -129,6 +124,7 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::DropShadowFilter::blurXSet()"
         SF_UNUSED(result);
+        value = Alg::Max(0.0, value);
         GetShadowFilterData()->GetParams().BlurX = PixelsToTwips((float)value);
 //##protect##"instance::DropShadowFilter::blurXSet()"
     }
@@ -142,6 +138,7 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::DropShadowFilter::blurYSet()"
         SF_UNUSED(result);
+        value = Alg::Max(0.0, value);
         GetShadowFilterData()->GetParams().BlurY = PixelsToTwips((float)value);
 //##protect##"instance::DropShadowFilter::blurYSet()"
     }
@@ -183,7 +180,9 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::DropShadowFilter::hideObjectSet()"
         SF_UNUSED(result);
-        GetShadowFilterData()->GetParams().Mode |= (value ? Render::BlurFilterParams::Mode_HideObject : 0);
+        unsigned& mode = GetShadowFilterData()->GetParams().Mode;
+        mode &= ~Render::BlurFilterParams::Mode_HideObject;
+        mode |= (value ? Render::BlurFilterParams::Mode_HideObject : 0);
 //##protect##"instance::DropShadowFilter::hideObjectSet()"
     }
     void DropShadowFilter::innerGet(bool& result)
@@ -196,7 +195,9 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::DropShadowFilter::innerSet()"
         SF_UNUSED(result);
-        GetShadowFilterData()->GetParams().Mode |= (value ? Render::BlurFilterParams::Mode_Inner : 0);
+        unsigned& mode = GetShadowFilterData()->GetParams().Mode;
+        mode &= ~Render::BlurFilterParams::Mode_Inner;
+        mode |= (value ? Render::BlurFilterParams::Mode_Inner : 0);
 //##protect##"instance::DropShadowFilter::innerSet()"
     }
     void DropShadowFilter::knockoutGet(bool& result)
@@ -209,7 +210,9 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::DropShadowFilter::knockoutSet()"
         SF_UNUSED(result);
-        GetShadowFilterData()->GetParams().Mode |= (value ? Render::BlurFilterParams::Mode_Knockout : 0);
+        unsigned& mode = GetShadowFilterData()->GetParams().Mode;
+        mode &= ~Render::BlurFilterParams::Mode_Knockout;
+        mode |= (value ? Render::BlurFilterParams::Mode_Knockout : 0);
 //##protect##"instance::DropShadowFilter::knockoutSet()"
     }
     void DropShadowFilter::qualityGet(SInt32& result)
@@ -292,6 +295,9 @@ namespace Instances { namespace fl_filters
         SInt32 qual(1);
         bool inner(false), knock(false), hide(false);
 
+        if ( argc >= 12 )
+            return GetVM().ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, GetVM() SF_DEBUG_ARG("flash.filters::DropShadowFilter()") SF_DEBUG_ARG(0) SF_DEBUG_ARG(11) SF_DEBUG_ARG(argc)));
+
         if ( argc >= 1 && !argv[0].Convert2Number(dist)) return;
         if ( argc >= 2 && !argv[1].Convert2Number(angl)) return;
         if ( argc >= 3 && !argv[2].Convert2UInt32(color)) return;
@@ -300,8 +306,9 @@ namespace Instances { namespace fl_filters
         if ( argc >= 6 && !argv[5].Convert2Number(blurY)) return;
         if ( argc >= 7 && !argv[6].Convert2Number(stren)) return;
         if ( argc >= 8 && !argv[7].Convert2Int32(qual)) return;
-        if ( argc >= 7 ) inner = argv[6].Convert2Boolean();
-        if ( argc >= 8 ) knock = argv[7].Convert2Boolean();
+        if ( argc >= 9 ) inner = argv[8].Convert2Boolean();
+        if ( argc >= 10 ) knock = argv[9].Convert2Boolean();
+        if ( argc >= 11 ) hide = argv[10].Convert2Boolean();
 
         Value result;
         distanceSet(result, dist);
@@ -322,38 +329,65 @@ namespace Instances { namespace fl_filters
 
 namespace InstanceTraits { namespace fl_filters
 {
+    // const UInt16 DropShadowFilter::tito[DropShadowFilter::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 
+    // };
+    const TypeInfo* DropShadowFilter::tit[34] = {
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_filters::BitmapFilterTI, 
+    };
     const ThunkInfo DropShadowFilter::ti[DropShadowFilter::ThunkInfoNum] = {
-        {TFunc_Instances_DropShadowFilter_alphaGet::Func, &AS3::fl::NumberTI, "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_alphaSet::Func, NULL, "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_angleGet::Func, &AS3::fl::NumberTI, "angle", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_angleSet::Func, NULL, "angle", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_blurXGet::Func, &AS3::fl::NumberTI, "blurX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_blurXSet::Func, NULL, "blurX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_blurYGet::Func, &AS3::fl::NumberTI, "blurY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_blurYSet::Func, NULL, "blurY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_colorGet::Func, &AS3::fl::uintTI, "color", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_colorSet::Func, NULL, "color", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_distanceGet::Func, &AS3::fl::NumberTI, "distance", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_distanceSet::Func, NULL, "distance", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_hideObjectGet::Func, &AS3::fl::BooleanTI, "hideObject", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_hideObjectSet::Func, NULL, "hideObject", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_innerGet::Func, &AS3::fl::BooleanTI, "inner", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_innerSet::Func, NULL, "inner", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_knockoutGet::Func, &AS3::fl::BooleanTI, "knockout", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_knockoutSet::Func, NULL, "knockout", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_qualityGet::Func, &AS3::fl::int_TI, "quality", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_qualitySet::Func, NULL, "quality", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_strengthGet::Func, &AS3::fl::NumberTI, "strength", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DropShadowFilter_strengthSet::Func, NULL, "strength", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DropShadowFilter_clone::Func, &AS3::fl_filters::BitmapFilterTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_DropShadowFilter_alphaGet::Func, &DropShadowFilter::tit[0], "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_alphaSet::Func, &DropShadowFilter::tit[1], "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_angleGet::Func, &DropShadowFilter::tit[3], "angle", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_angleSet::Func, &DropShadowFilter::tit[4], "angle", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_blurXGet::Func, &DropShadowFilter::tit[6], "blurX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_blurXSet::Func, &DropShadowFilter::tit[7], "blurX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_blurYGet::Func, &DropShadowFilter::tit[9], "blurY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_blurYSet::Func, &DropShadowFilter::tit[10], "blurY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_colorGet::Func, &DropShadowFilter::tit[12], "color", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_colorSet::Func, &DropShadowFilter::tit[13], "color", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_distanceGet::Func, &DropShadowFilter::tit[15], "distance", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_distanceSet::Func, &DropShadowFilter::tit[16], "distance", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_hideObjectGet::Func, &DropShadowFilter::tit[18], "hideObject", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_hideObjectSet::Func, &DropShadowFilter::tit[19], "hideObject", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_innerGet::Func, &DropShadowFilter::tit[21], "inner", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_innerSet::Func, &DropShadowFilter::tit[22], "inner", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_knockoutGet::Func, &DropShadowFilter::tit[24], "knockout", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_knockoutSet::Func, &DropShadowFilter::tit[25], "knockout", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_qualityGet::Func, &DropShadowFilter::tit[27], "quality", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_qualitySet::Func, &DropShadowFilter::tit[28], "quality", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_strengthGet::Func, &DropShadowFilter::tit[30], "strength", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_strengthSet::Func, &DropShadowFilter::tit[31], "strength", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DropShadowFilter_clone::Func, &DropShadowFilter::tit[33], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     DropShadowFilter::DropShadowFilter(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"InstanceTraits::DropShadowFilter::DropShadowFilter()"
 //##protect##"InstanceTraits::DropShadowFilter::DropShadowFilter()"
-        SetMemSize(sizeof(Instances::fl_filters::DropShadowFilter));
 
     }
 
@@ -370,24 +404,27 @@ namespace InstanceTraits { namespace fl_filters
 
 namespace ClassTraits { namespace fl_filters
 {
-    DropShadowFilter::DropShadowFilter(VM& vm)
-    : Traits(vm, AS3::fl_filters::DropShadowFilterCI)
+
+    DropShadowFilter::DropShadowFilter(VM& vm, const ClassInfo& ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"ClassTraits::DropShadowFilter::DropShadowFilter()"
 //##protect##"ClassTraits::DropShadowFilter::DropShadowFilter()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_filters::DropShadowFilter(vm, AS3::fl_filters::DropShadowFilterCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> DropShadowFilter::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) DropShadowFilter(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) DropShadowFilter(vm, AS3::fl_filters::DropShadowFilterCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_filters::DropShadowFilterCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -398,6 +435,11 @@ namespace fl_filters
 {
     const TypeInfo DropShadowFilterTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_filters::DropShadowFilter::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_filters::DropShadowFilter::ThunkInfoNum,
+        0,
         "DropShadowFilter", "flash.filters", &fl_filters::BitmapFilterTI,
         TypeInfo::None
     };
@@ -405,10 +447,6 @@ namespace fl_filters
     const ClassInfo DropShadowFilterCI = {
         &DropShadowFilterTI,
         ClassTraits::fl_filters::DropShadowFilter::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_filters::DropShadowFilter::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_filters::DropShadowFilter::ti,

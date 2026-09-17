@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -53,24 +54,27 @@ namespace ClassTraits { namespace fl_display
         {"NORMAL", NULL, OFFSETOF(Classes::fl_display::StageDisplayState, NORMAL), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    StageDisplayState::StageDisplayState(VM& vm)
-    : Traits(vm, AS3::fl_display::StageDisplayStateCI)
+
+    StageDisplayState::StageDisplayState(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::StageDisplayState::StageDisplayState()"
 //##protect##"ClassTraits::StageDisplayState::StageDisplayState()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_display::StageDisplayStateCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_display::StageDisplayState(*this));
 
     }
 
     Pickable<Traits> StageDisplayState::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) StageDisplayState(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) StageDisplayState(vm, AS3::fl_display::StageDisplayStateCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::StageDisplayStateCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -81,6 +85,11 @@ namespace fl_display
 {
     const TypeInfo StageDisplayStateTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_display::StageDisplayState::InstanceType),
+        0,
+        ClassTraits::fl_display::StageDisplayState::MemberInfoNum,
+        0,
+        0,
         "StageDisplayState", "flash.display", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -88,10 +97,6 @@ namespace fl_display
     const ClassInfo StageDisplayStateCI = {
         &StageDisplayStateTI,
         ClassTraits::fl_display::StageDisplayState::MakeClassTraits,
-        0,
-        ClassTraits::fl_display::StageDisplayState::MemberInfoNum,
-        0,
-        0,
         NULL,
         ClassTraits::fl_display::StageDisplayState::mi,
         NULL,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -207,12 +208,6 @@ namespace Classes
     class TextFormat;
 }
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_text::StyleSheet, Instances::fl_text::StyleSheet::mid_styleNamesGet, SPtr<Instances::fl::Array> > TFunc_Instances_StyleSheet_styleNamesGet;
 typedef ThunkFunc0<Instances::fl_text::StyleSheet, Instances::fl_text::StyleSheet::mid_clear, const Value> TFunc_Instances_StyleSheet_clear;
 typedef ThunkFunc1<Instances::fl_text::StyleSheet, Instances::fl_text::StyleSheet::mid_getStyle, SPtr<Instances::fl::Object>, const ASString&> TFunc_Instances_StyleSheet_getStyle;
@@ -597,21 +592,31 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
+    // const UInt16 StyleSheet::tito[StyleSheet::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 6, 9, 
+    // };
+    const TypeInfo* StyleSheet::tit[11] = {
+        &AS3::fl::ArrayTI, 
+        NULL, 
+        &AS3::fl::ObjectTI, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::ObjectTI, 
+        &AS3::fl_text::TextFormatTI, &AS3::fl::ObjectTI, 
+    };
     const ThunkInfo StyleSheet::ti[StyleSheet::ThunkInfoNum] = {
-        {TFunc_Instances_StyleSheet_styleNamesGet::Func, &AS3::fl::ArrayTI, "styleNames", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_StyleSheet_clear::Func, NULL, "clear", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_StyleSheet_getStyle::Func, &AS3::fl::ObjectTI, "getStyle", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_StyleSheet_parseCSS::Func, NULL, "parseCSS", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_StyleSheet_setStyle::Func, NULL, "setStyle", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_StyleSheet_transform::Func, &AS3::fl_text::TextFormatTI, "transform", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_StyleSheet_styleNamesGet::Func, &StyleSheet::tit[0], "styleNames", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_StyleSheet_clear::Func, &StyleSheet::tit[1], "clear", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_StyleSheet_getStyle::Func, &StyleSheet::tit[2], "getStyle", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_StyleSheet_parseCSS::Func, &StyleSheet::tit[4], "parseCSS", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_StyleSheet_setStyle::Func, &StyleSheet::tit[6], "setStyle", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_StyleSheet_transform::Func, &StyleSheet::tit[9], "transform", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     StyleSheet::StyleSheet(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::StyleSheet::StyleSheet()"
 //##protect##"InstanceTraits::StyleSheet::StyleSheet()"
-        SetMemSize(sizeof(Instances::fl_text::StyleSheet));
 
     }
 
@@ -628,24 +633,27 @@ namespace InstanceTraits { namespace fl_text
 
 namespace ClassTraits { namespace fl_text
 {
-    StyleSheet::StyleSheet(VM& vm)
-    : Traits(vm, AS3::fl_text::StyleSheetCI)
+
+    StyleSheet::StyleSheet(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::StyleSheet::StyleSheet()"
 //##protect##"ClassTraits::StyleSheet::StyleSheet()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_text::StyleSheet(vm, AS3::fl_text::StyleSheetCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> StyleSheet::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) StyleSheet(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) StyleSheet(vm, AS3::fl_text::StyleSheetCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_text::StyleSheetCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -656,6 +664,11 @@ namespace fl_text
 {
     const TypeInfo StyleSheetTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject,
+        sizeof(ClassTraits::fl_text::StyleSheet::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_text::StyleSheet::ThunkInfoNum,
+        0,
         "StyleSheet", "flash.text", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -663,10 +676,6 @@ namespace fl_text
     const ClassInfo StyleSheetCI = {
         &StyleSheetTI,
         ClassTraits::fl_text::StyleSheet::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_text::StyleSheet::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_text::StyleSheet::ti,

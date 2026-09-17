@@ -6,6 +6,7 @@ Created     :   Mar, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -173,7 +174,9 @@ public:
 
     void    Acquire1()
     {
+#ifdef SF_BUILD_DEBUG
         SF_ASSERT(GetSize() < NumOfReservedElem);
+#endif
         ++pCurrent;
         *(UPInt*)pCurrent = 0;
     }
@@ -237,8 +240,8 @@ public:
 public:
     void Reserve(UInt16 n);
     void ReleaseReserved(ValueType* first SF_DEBUG_ARG(UInt16 prevReservNum));
-    // Pop values in case of exception.
-    void PopReserved(ValueType* current);
+    // Preserve return value in case of retVal == true.
+    void PopReserved(ValueType* current, bool retVal);
 
     // ***** High-performance Stack Access
 

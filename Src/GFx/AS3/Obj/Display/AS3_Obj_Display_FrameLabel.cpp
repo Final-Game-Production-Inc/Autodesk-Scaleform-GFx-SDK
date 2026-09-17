@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::FrameLabel, Instances::fl_display::FrameLabel::mid_frameGet, SInt32> TFunc_Instances_FrameLabel_frameGet;
 typedef ThunkFunc0<Instances::fl_display::FrameLabel, Instances::fl_display::FrameLabel::mid_nameGet, ASString> TFunc_Instances_FrameLabel_nameGet;
 
@@ -74,17 +69,23 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 FrameLabel::tito[FrameLabel::ThunkInfoNum] = {
+    //    0, 1, 
+    // };
+    const TypeInfo* FrameLabel::tit[2] = {
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo FrameLabel::ti[FrameLabel::ThunkInfoNum] = {
-        {TFunc_Instances_FrameLabel_frameGet::Func, &AS3::fl::int_TI, "frame", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_FrameLabel_nameGet::Func, &AS3::fl::StringTI, "name", NULL, Abc::NS_Public, CT_Get, 0, 0},
+        {TFunc_Instances_FrameLabel_frameGet::Func, &FrameLabel::tit[0], "frame", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_FrameLabel_nameGet::Func, &FrameLabel::tit[1], "name", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
     };
 
     FrameLabel::FrameLabel(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::FrameLabel::FrameLabel()"
 //##protect##"InstanceTraits::FrameLabel::FrameLabel()"
-        SetMemSize(sizeof(Instances::fl_display::FrameLabel));
 
     }
 
@@ -101,24 +102,27 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    FrameLabel::FrameLabel(VM& vm)
-    : Traits(vm, AS3::fl_display::FrameLabelCI)
+
+    FrameLabel::FrameLabel(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::FrameLabel::FrameLabel()"
 //##protect##"ClassTraits::FrameLabel::FrameLabel()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::FrameLabel(vm, AS3::fl_display::FrameLabelCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> FrameLabel::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) FrameLabel(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) FrameLabel(vm, AS3::fl_display::FrameLabelCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::FrameLabelCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -129,6 +133,11 @@ namespace fl_display
 {
     const TypeInfo FrameLabelTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_display::FrameLabel::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::FrameLabel::ThunkInfoNum,
+        0,
         "FrameLabel", "flash.display", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -136,10 +145,6 @@ namespace fl_display
     const ClassInfo FrameLabelCI = {
         &FrameLabelTI,
         ClassTraits::fl_display::FrameLabel::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::FrameLabel::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::FrameLabel::ti,

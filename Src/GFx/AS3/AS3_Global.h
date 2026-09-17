@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,6 +29,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define SF_AS3_VERSION_IME
 #define SF_AS3_VERSION_REST
 #define SF_AS3_VERSION_SHARED_OBJECT
+#define SF_AS3_VERSION_AIR
+#if defined(SF_ENABLE_ANE) && defined(SF_AS3_VERSION_AIR) 
+	#define SF_AS3_VERSION_EXTENSION_CONTEXT
+#endif
 
 #ifdef GFX_AS3_SUPPORT
 
@@ -44,6 +49,7 @@ namespace fl
     extern const ClassInfo NumberCI;
     extern const ClassInfo NamespaceCI;
     extern const ClassInfo ArrayCI;
+    extern const ClassInfo DomainCI;
 }
 
 namespace fl_vec
@@ -109,7 +115,18 @@ namespace fl_display
     extern const ClassInfo FrameLabelCI;
     extern const ClassInfo GradientTypeCI;
     extern const ClassInfo GraphicsCI;
+    extern const ClassInfo GraphicsBitmapFillCI;
+    extern const ClassInfo GraphicsEndFillCI;
+    extern const ClassInfo GraphicsGradientFillCI;
+    extern const ClassInfo GraphicsPathCI;
+    extern const ClassInfo GraphicsPathCommandCI;
+    extern const ClassInfo GraphicsSolidFillCI;
+    extern const ClassInfo GraphicsStrokeCI;
+    extern const ClassInfo GraphicsPathWindingCI;
     extern const ClassInfo IBitmapDrawableCI;
+    extern const ClassInfo IGraphicsFillCI;
+    extern const ClassInfo IGraphicsPathCI;
+    extern const ClassInfo IGraphicsDataCI;
     extern const ClassInfo InteractiveObjectCI;
     extern const ClassInfo InterpolationMethodCI;
     extern const ClassInfo JointStyleCI;
@@ -147,6 +164,7 @@ namespace fl_errors
 
 namespace fl_events
 {
+    extern const ClassInfo AccelerometerEventCI;
     extern const ClassInfo ActivityEventCI;
     extern const ClassInfo AsyncErrorEventCI;
     extern const ClassInfo ContextMenuEventCI;
@@ -157,6 +175,7 @@ namespace fl_events
     extern const ClassInfo EventPhaseCI;
     extern const ClassInfo FocusEventCI;
     extern const ClassInfo FullScreenEventCI;
+    extern const ClassInfo GeolocationEventCI;
     extern const ClassInfo HTTPStatusEventCI;
     extern const ClassInfo IEventDispatcherCI;
     extern const ClassInfo IOErrorEventCI;
@@ -164,6 +183,7 @@ namespace fl_events
     extern const ClassInfo MouseEventCI;
     extern const ClassInfo NetStatusEventCI;
     extern const ClassInfo ProgressEventCI;
+	extern const ClassInfo OutputProgressEventCI;
     extern const ClassInfo SecurityErrorEventCI;
     extern const ClassInfo StatusEventCI;
     extern const ClassInfo SyncEventCI;
@@ -182,7 +202,7 @@ namespace fl_events
 namespace fl_external
 {
     extern const ClassInfo ExternalInterfaceCI;
-    extern const ClassInfo ExternalInterfaceCI;
+    extern const ClassInfo ExtensionContextCI;
 }
 
 namespace fl_filters
@@ -388,6 +408,12 @@ namespace fl_net
     extern const ClassInfo URLRequestDefaultsCI;
 }
 
+namespace fl_sensors
+{
+    extern const ClassInfo AccelerometerCI;
+    extern const ClassInfo GeolocationCI;
+}
+
 namespace fl_printing
 {
     extern const ClassInfo PrintJobCI;
@@ -508,6 +534,7 @@ namespace Classes
         &AS3::fl::DateCI,
         &AS3::fl::MathCI,
         &AS3::fl::RegExpCI,
+        &AS3::fl::DomainCI,
         &AS3::fl_display::ActionScriptVersionCI,
         &AS3::fl_display::AVM1MovieCI,
         &AS3::fl_display::BitmapCI,
@@ -521,6 +548,17 @@ namespace Classes
         &AS3::fl_display::GradientTypeCI,
         &AS3::fl_display::GraphicsCI,
         &AS3::fl_display::IBitmapDrawableCI,
+        &AS3::fl_display::IGraphicsFillCI,
+        &AS3::fl_display::IGraphicsPathCI,
+        &AS3::fl_display::IGraphicsDataCI,
+        &AS3::fl_display::GraphicsBitmapFillCI,
+        &AS3::fl_display::GraphicsEndFillCI,
+        &AS3::fl_display::GraphicsGradientFillCI,
+        &AS3::fl_display::GraphicsPathCI,
+        &AS3::fl_display::GraphicsPathCommandCI,
+        &AS3::fl_display::GraphicsPathWindingCI,
+        &AS3::fl_display::GraphicsSolidFillCI,
+        &AS3::fl_display::GraphicsStrokeCI,
         &AS3::fl_display::InteractiveObjectCI,
         &AS3::fl_display::InterpolationMethodCI,
         &AS3::fl_display::JointStyleCI,
@@ -550,6 +588,7 @@ namespace Classes
         &AS3::fl_errors::MemoryErrorCI,
         &AS3::fl_errors::ScriptTimeoutErrorCI,
         &AS3::fl_errors::StackOverflowErrorCI,
+        &AS3::fl_events::AccelerometerEventCI,
         &AS3::fl_events::ActivityEventCI,
         &AS3::fl_events::AsyncErrorEventCI,
         &AS3::fl_events::ContextMenuEventCI,
@@ -560,6 +599,7 @@ namespace Classes
         &AS3::fl_events::EventPhaseCI,
         &AS3::fl_events::FocusEventCI,
         &AS3::fl_events::FullScreenEventCI,
+        &AS3::fl_events::GeolocationEventCI,
         &AS3::fl_events::HTTPStatusEventCI,
         &AS3::fl_events::IEventDispatcherCI,
         &AS3::fl_events::IOErrorEventCI,
@@ -604,8 +644,8 @@ namespace Classes
         &AS3::fl_geom::RectangleCI,
         &AS3::fl_geom::TransformCI,
         &AS3::fl_net::URLRequestCI,
+        &AS3::fl_sensors::AccelerometerCI,
         &AS3::fl_system::ApplicationDomainCI,
-        &AS3::fl_system::DomainCI,
         &AS3::fl_system::CapabilitiesCI,
         &AS3::fl_system::LoaderContextCI,
         &AS3::fl_system::SecurityCI,
@@ -666,7 +706,6 @@ namespace Classes
         &AS3::fl::XMLListCI,
         &AS3::fl::QNameCI,
         &AS3::fl_net::XMLSocketCI,
-        &AS3::fl_security::XMLSignatureValidatorCI,
         &AS3::fl_xml::XMLDocumentCI,
         &AS3::fl_xml::XMLNodeCI,
         &AS3::fl_xml::XMLNodeTypeCI,
@@ -728,6 +767,8 @@ namespace Classes
         &AS3::fl_security::RevocationCheckSettingsCI,
         &AS3::fl_security::SignatureStatusCI,
         &AS3::fl_security::SignerTrustSettingsCI,
+        &AS3::fl_security::XMLSignatureValidatorCI,
+        &AS3::fl_sensors::GeolocationCI,
         &AS3::fl_utils::CompressionAlgorithmCI,
 #endif // SF_AS3_VERSION_AIR
 #ifdef SF_AS3_VERSION_SOUND
@@ -744,6 +785,9 @@ namespace Classes
         &AS3::fl_system::IMECI,
         &AS3::fl_system::IMEConversionModeCI,
 #endif // SF_AS3_VERSION_IME
+#ifdef SF_AS3_VERSION_EXTENSION_CONTEXT
+        &AS3::fl_external::ExtensionContextCI,
+#endif // SF_AS3_VERSION_EXTENSION_CONTEXT
 #ifdef SF_AS3_VERSION_VIDEO
         &AS3::fl_media::CameraCI,
 #endif // SF_AS3_VERSION_VIDEO
@@ -788,4 +832,3 @@ namespace Classes
 #endif // GFX_AS3_SUPPORT
 
 #endif
-

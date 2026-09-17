@@ -7,6 +7,7 @@ Created     :   April 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,6 +19,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define INC_SF_Render_Buffer_H
 
 #include "Kernel/SF_RefCount.h"
+#include "Kernel/SF_Debug.h"
 #include "Render_Image.h"
 
 
@@ -36,9 +38,10 @@ enum RenderBufferType
     RBuffer_Default,
     // User-specified platform-specific render target.
     RBuffer_User,           
-    RBuffer_Temporary,      // Created with CreateTempRenderTarget.
-    RBuffer_Texture,        // Created from user texture.
-    RBuffer_DepthStencil    // Created with CreateDepthStencilBuffer.
+    RBuffer_Temporary,          // Created with CreateTempRenderTarget.
+    RBuffer_Texture,            // Created from user texture.
+    RBuffer_DepthStencil,       // Created with CreateDepthStencilBuffer (temporary).
+    RBuffer_UserDepthStencil    // Created with CreateDepthStencilBuffer (not temporary).
 };
 
 
@@ -190,8 +193,7 @@ public:
     // Marks a render target as in use/not in use for this frame. SetInUse
     // is called automatically when render target is applied to the HAL; it
     // is also cleared automatically on EndFrame.
-    virtual void        SetInUse(RenderTargetUse inUse) { SetInUse(inUse == RTUse_InUse ? true : false); }
-    virtual void        SetInUse(bool inUse)            { SetInUse(inUse ? RTUse_InUse : RTUse_Unused); }
+    virtual void        SetInUse(RenderTargetUse inUse) { SF_UNUSED(inUse); SF_DEBUG_ASSERT(0, "This should only be called for derived instances"); }
 
 protected:
     // Rectangle that is a part of render target
@@ -226,8 +228,8 @@ public:
 class DepthStencilBuffer : public RenderBuffer
 {   
 public:
-    DepthStencilBuffer(RenderBufferManager* manager, const ImageSize& bufferSize)
-        : RenderBuffer(manager, RBuffer_DepthStencil, bufferSize)
+    DepthStencilBuffer(RenderBufferManager* manager, const ImageSize& bufferSize, bool temporary=true)
+        : RenderBuffer(manager, temporary ? RBuffer_DepthStencil : RBuffer_UserDepthStencil, bufferSize)
     { }
 
     virtual ~DepthStencilBuffer() { }
@@ -275,7 +277,7 @@ public:
     //  - We would like to abstract this away on memory systems.
     //  - Managed separately from RTs
     //  - May need extra flags to distinguish between matching buffers, such as MSAA.
-    virtual DepthStencilBuffer* CreateDepthStencilBuffer(const ImageSize& size) = 0;
+    virtual DepthStencilBuffer* CreateDepthStencilBuffer(const ImageSize& size, bool temporary=true) = 0;
 };
 
 

@@ -10,12 +10,15 @@ Created     :   Jan 15, 2010
 Authors     :   Mustafa Thamer
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
 
 **************************************************************************/
+// Fix Warning 4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
+#include <type_traits>
 
 namespace Scaleform { namespace Render {
 
@@ -63,7 +66,17 @@ public:
     SF_INLINE T Distance(const Point3<T> &pt) const  { return Distance(pt.x, pt.y, pt.z); }
     SF_INLINE T Distance() const                      { return T(sqrt(DistanceSquared())); }
 
-    SF_INLINE T Magnitude() const                     { return sqrt(x*x+y*y+z*z); }
+    SF_INLINE T Magnitude() const {
+        if constexpr (std::is_same_v<T, float>) {
+            // 对于float类型，使用sqrtf（返回float）
+            return sqrtf(x * x + y * y + z * z);
+        }
+        else {
+            // 对于double等其他类型，使用sqrt（返回对应类型）
+            return sqrt(x * x + y * y + z * z);
+        }
+    }
+
     SF_INLINE void Normalize() 
     {
         T length = Magnitude();

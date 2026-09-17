@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,59 +36,102 @@ namespace Classes
 }
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 NativeWindow_tito[44] = {
+    //    0, 1, 2, 4, 5, 7, 8, 9, 10, 12, 13, 14, 16, 18, 19, 20, 22, 23, 24, 25, 26, 28, 29, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 44, 46, 47, 48, 50, 52, 54, 55, 56, 57, 58, 
+    // };
+    const TypeInfo* NativeWindow_tit[60] = {
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_display::NativeMenuTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_display::StageTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        NULL, 
+        NULL, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, 
+        NULL, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::NativeWindowTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::NativeWindowTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+    };
     const ThunkInfo NativeWindow_ti[44] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "active", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "alwaysInFront", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "alwaysInFront", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl_geom::RectangleTI, "bounds", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "bounds", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "closed", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "displayState", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "height", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "maximizable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_geom::PointTI, "maxSize", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "maxSize", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "menu", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "minimizable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_geom::PointTI, "minSize", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "minSize", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "resizable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_display::StageTI, "stage", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "systemChrome", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "title", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "title", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "transparent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "type", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "visible", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "visible", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "width", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "x", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "x", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "y", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "y", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "activate", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "close", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_geom::PointTI, "globalToScreen", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "maximize", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "minimize", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "notifyUser", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "orderInBackOf", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "orderInFrontOf", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "orderToBack", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "orderToFront", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "restore", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "startMove", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "startResize", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[0], "active", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[1], "alwaysInFront", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[2], "alwaysInFront", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[4], "bounds", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[5], "bounds", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[7], "closed", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[8], "displayState", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[9], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[10], "height", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[12], "maximizable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[13], "maxSize", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[14], "maxSize", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[16], "menu", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[18], "minimizable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[19], "minSize", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[20], "minSize", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[22], "resizable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[23], "stage", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[24], "systemChrome", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[25], "title", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[26], "title", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[28], "transparent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[29], "type", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[30], "visible", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[31], "visible", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[33], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[34], "width", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[36], "x", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[37], "x", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[39], "y", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[40], "y", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[42], "activate", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[43], "close", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[44], "globalToScreen", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[46], "maximize", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[47], "minimize", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[48], "notifyUser", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[50], "orderInBackOf", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[52], "orderInFrontOf", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[54], "orderToBack", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[55], "orderToFront", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[56], "restore", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[57], "startMove", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindow_tit[58], "startResize", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -95,24 +139,27 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    NativeWindow::NativeWindow(VM& vm)
-    : Traits(vm, AS3::fl_display::NativeWindowCI)
+
+    NativeWindow::NativeWindow(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::NativeWindow::NativeWindow()"
 //##protect##"ClassTraits::NativeWindow::NativeWindow()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::EventDispatcher(vm, AS3::fl_display::NativeWindowCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> NativeWindow::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) NativeWindow(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) NativeWindow(vm, AS3::fl_display::NativeWindowCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::NativeWindowCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -123,6 +170,11 @@ namespace fl_display
 {
     const TypeInfo NativeWindowTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_display::NativeWindow::InstanceType),
+        0,
+        0,
+        44,
+        0,
         "NativeWindow", "flash.display", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -130,10 +182,6 @@ namespace fl_display
     const ClassInfo NativeWindowCI = {
         &NativeWindowTI,
         ClassTraits::fl_display::NativeWindow::MakeClassTraits,
-        0,
-        0,
-        44,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::NativeWindow_ti,

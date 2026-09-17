@@ -6,6 +6,7 @@ Created     :   March, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -107,6 +108,9 @@ static const char* AS3BuiltinTable[] =
 #ifdef GFX_ENABLE_ANALOG_GAMEPAD
     "gamePadAnalogChange",
 #endif
+
+    "update",
+	"status",
 
     "textInput",
     "change",

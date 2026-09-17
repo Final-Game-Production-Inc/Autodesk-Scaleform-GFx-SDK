@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -44,45 +45,67 @@ MeshBuffer::~MeshBuffer()
         SF_FREE(BufferData);
 }
 
-bool MeshBuffer::DoMap()
+bool MeshBuffer::DoMap(UPInt offset, UPInt size)
 {
-    SF_ASSERT(!pData);
-    if (pHal->Caps & Cap_MapBuffer)
+    MeshCache::BufferUpdateType updateType = pHal->GetMeshCache().GetBufferUpdateType();
+    if (!pData)
     {
-#if !defined(SF_USE_GLES_ANY)
-        // Unbind the current VAO, so it doesn't get modified if this is an index buffer.
-        if (GetHAL()->CheckGLVersion(3,0) && !(GetHAL()->Caps & Cap_NoVAO))
-            glBindVertexArray(0);
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-        glBindVertexArrayOES(0);
+        if (updateType == MeshCache::BufferUpdate_MapBuffer || updateType == MeshCache::BufferUpdate_MapBufferUnsynchronized)
+        {
+#if !defined(SF_USE_GLES)
+            // Unbind the current VAO, so it doesn't get modified if this is an index buffer.
+            if (GetHAL()->ShouldUseVAOs())
+                glBindVertexArray(0);
 #endif
 
-        //if (Buffer != MeshBuffer::CurrentBuffer)
-        {
-            glBindBuffer(Type, Buffer);
-            MeshBuffer::CurrentBuffer = Buffer;
+            //if (Buffer != MeshBuffer::CurrentBuffer)
+            {
+                glBindBuffer(Type, Buffer);
+                MeshBuffer::CurrentBuffer = Buffer;
+            }
+
+#if !defined(SF_USE_GLES)
+            if (updateType == MeshCache::BufferUpdate_MapBufferUnsynchronized)
+            {
+                // Map the entire buffer, but specify that it is unsynchronized, and manual flushing. 
+                // We use fencing to ensure that the portions of the buffer we overwrite are not currently
+                // in use by the GPU.
+                pData = glMapBufferRange(Type, 0, Size, GL_MAP_WRITE_BIT|GL_MAP_FLUSH_EXPLICIT_BIT|GL_MAP_UNSYNCHRONIZED_BIT);
+            }
+            else
+#endif
+            if (updateType == MeshCache::BufferUpdate_MapBuffer)
+            {
+                pData = glMapBuffer(Type, GL_WRITE_ONLY);
+            }
         }
-        pData = glMapBuffer(Type, GL_WRITE_ONLY);
+        else
+        {
+            // Not using MapBuffer, allocate client memory.
+            if (!BufferData)
+                BufferData = (UByte*)SF_ALLOC(Size, StatRender_MeshStaging_Mem);
+            pData = BufferData;
+        }
     }
-    else
+
+    // If we are using a method that does region updating, then record the portions that were modified.
+    if (pData != 0 && (updateType == MeshCache::BufferUpdate_UpdateBuffer || updateType == MeshCache::BufferUpdate_MapBufferUnsynchronized))
     {
-        if (!BufferData)
-            BufferData = (UByte*)SF_ALLOC(Size, StatRender_Buffers_Mem);
-        pData = BufferData;
+        MeshBufferUpdateEntry e(offset, size);
+        MeshBufferUpdates.PushBack(e);
     }
+
     return pData != 0;
 }
 
 void MeshBuffer::Unmap()
 {
+    MeshCache::BufferUpdateType updateType = pHal->GetMeshCache().GetBufferUpdateType();
     if (pData && Buffer)
     {
-#if !defined(SF_USE_GLES_ANY)
-        // Unbind the current VAO, so it doesn't get modified if this is an index buffer.
-        if (GetHAL()->CheckGLVersion(3,0) && !(GetHAL()->Caps & Cap_NoVAO))
+#if !defined(SF_USE_GLES)
+        if (GetHAL()->ShouldUseVAOs())
             glBindVertexArray(0);
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-        glBindVertexArrayOES(0);
 #endif
 
         //if (Buffer != MeshBuffer::CurrentBuffer)
@@ -90,39 +113,59 @@ void MeshBuffer::Unmap()
             glBindBuffer(Type, Buffer);
             MeshBuffer::CurrentBuffer = Buffer;
         }
-        if (pHal->Caps & Cap_MapBuffer)
+        
+#if !defined(SF_USE_GLES)
+        if (updateType == MeshCache::BufferUpdate_MapBufferUnsynchronized)
+        {
+            // Flush the portions of the buffer that were modified.
+            for (unsigned i =0; i < MeshBufferUpdates.GetSize(); ++i)
+            {
+                const MeshBufferUpdateEntry& e = MeshBufferUpdates[i];
+                SF_UNUSED(e); // warning if glFlushMappedBufferRange is a no-op.
+                glFlushMappedBufferRange(Type, e.Offset, e.Size);
+            }
+        }
+#endif
+        
+        if (updateType == MeshCache::BufferUpdate_MapBufferUnsynchronized || updateType == MeshCache::BufferUpdate_MapBuffer)
         {
             GLboolean result = glUnmapBuffer(Type); // XXX - data loss can occur here
             SF_ASSERT(result);
             SF_UNUSED(result);
         }
-        else if (pHal->Caps & Cap_BufferUpdate)
+        else if (updateType == MeshCache::BufferUpdate_UpdateBuffer)
         {
-            glBufferSubData(Type, 0, Size, pData);       
+            // Update the portions of the buffer that were modified.
+            for (unsigned i =0; i < MeshBufferUpdates.GetSize(); ++i)
+            {
+                const MeshBufferUpdateEntry& e = MeshBufferUpdates[i];
+                glBufferSubData(Type, e.Offset, e.Size, ((char*)pData) +e.Offset);
+            }
         }
     }
+    MeshBufferUpdates.Clear();
     pData = 0;
 }
 
 UByte*  MeshBuffer::GetBufferBase() const
 {
-    return (pHal->Caps & Cap_UseMeshBuffers) ? 0 : BufferData;
+    MeshCache::BufferUpdateType updateType = pHal->GetMeshCache().GetBufferUpdateType();
+    return (updateType == MeshCache::BufferUpdate_ClientBuffers) ? BufferData : 0;
 }
 
 bool MeshBuffer::allocBuffer()
 {
+    MeshCache::BufferUpdateType updateType = pHal->GetMeshCache().GetBufferUpdateType();
     if (Buffer)
         glDeleteBuffers(1, &Buffer);
 
-#if !defined(SF_USE_GLES_ANY)
+#if !defined(SF_USE_GLES)
     // Unbind the current VAO, so it doesn't get modified if this is an index buffer.
-    if (GetHAL()->CheckGLVersion(3,0) && !(GetHAL()->Caps & Cap_NoVAO))
+    if (GetHAL()->ShouldUseVAOs())
         glBindVertexArray(0);
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-    glBindVertexArrayOES(0);
 #endif
 
-    if (pHal->Caps & Cap_UseMeshBuffers)
+    if (updateType != MeshCache::BufferUpdate_ClientBuffers)
     {
         glGenBuffers(1, &Buffer);
 
@@ -160,6 +203,8 @@ MeshCache::MeshCache(MemoryHeap* pheap, const MeshCacheParams& params)
     VertexBuffers(GL_ARRAY_BUFFER, pheap, calcVBGranularity(params.MemGranularity)),
     IndexBuffers(GL_ELEMENT_ARRAY_BUFFER, pheap,
                  calcIBGranularity(params.MemGranularity, VertexBuffers.GetGranularity())),
+    UseSeparateIndexBuffers(false),
+    BufferUpdate(BufferUpdate_MapBufferUnsynchronized),
     Mapped(false), VBSizeEvictedInMap(0),
     MaskEraseBatchVertexBuffer(0),
     MaskEraseBatchVAO(0)
@@ -180,10 +225,49 @@ bool    MeshCache::Initialize(HAL* phal)
     // Determine GL-capability settings. Needs to be called after the GL context is created.
     adjustMeshCacheParams(&Params);
 
+    // Determine which mesh-buffer update method to use.
+    BufferUpdate = BufferUpdate_Count;
+    for (unsigned method = BufferUpdate_MapBufferUnsynchronized; method < BufferUpdate_Count; ++method)
+    {
+        switch(method)
+        {
+            case BufferUpdate_MapBufferUnsynchronized:
+                if ((pHal->Caps & (Cap_Sync|Cap_MapBufferRange)) == (Cap_Sync|Cap_MapBufferRange))
+                    BufferUpdate = BufferUpdate_MapBufferUnsynchronized;
+                break;
+            case BufferUpdate_ClientBuffers:
+                // Only restriction on using client buffers is the use of VAOs
+                if (!pHal->ShouldUseVAOs())
+                    BufferUpdate = BufferUpdate_ClientBuffers;
+                break;
+            case BufferUpdate_MapBuffer:
+                if (pHal->Caps & Cap_MapBuffer)
+                    BufferUpdate = BufferUpdate_MapBuffer;
+                break;
+            case BufferUpdate_UpdateBuffer:
+                BufferUpdate = BufferUpdate_UpdateBuffer;
+                break;
+        }
+        
+        // If we have found a suitable method, quit.
+        if (BufferUpdate != BufferUpdate_Count)
+            break;
+    }
+    
+    if (BufferUpdate == BufferUpdate_Count)
+    {
+        SF_DEBUG_ASSERT(0, "Unable to use any buffer update method.");
+        return false;
+    }
+    
     if (!StagingBuffer.Initialize(pHeap, Params.StagingBufferSize))
         return false;
 
     UseSeparateIndexBuffers = true;
+
+    VertexBuffers.SetGranularity(calcVBGranularity(Params.MemGranularity));
+    IndexBuffers.SetGranularity(calcIBGranularity(Params.MemGranularity,
+        VertexBuffers.GetGranularity()));
 
     if (!createStaticVertexBuffers())
     {
@@ -208,11 +292,9 @@ void MeshCache::Reset(bool lost)
         destroyBuffers(MeshBuffer::AT_None, lost);
         if (MaskEraseBatchVertexBuffer)
             glDeleteBuffers(1, &MaskEraseBatchVertexBuffer);
-#if !defined(SF_USE_GLES_ANY)
+#if !defined(SF_USE_GLES)
         if (MaskEraseBatchVAO)
             glDeleteVertexArrays(1, &MaskEraseBatchVAO);
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-        glDeleteVertexArraysOES(1, &MaskEraseBatchVAO);
 #endif
 
         MaskEraseBatchVAO = 0;
@@ -226,6 +308,8 @@ void MeshCache::Reset(bool lost)
 void MeshCache::ClearCache()
 {
     destroyBuffers(MeshBuffer::AT_Chunk);
+    StagingBuffer.Reset();
+    StagingBuffer.Initialize(pHeap, Params.StagingBufferSize);
     SF_ASSERT(BatchCacheItemHash.GetSize() == 0);
 }
 
@@ -275,10 +359,6 @@ bool MeshCache::SetParams(const MeshCacheParams& argParams)
                 }
                 return false;
             }
-
-            VertexBuffers.SetGranularity(calcVBGranularity(params.MemGranularity));
-            IndexBuffers.SetGranularity(calcIBGranularity(params.MemGranularity,
-                                        VertexBuffers.GetGranularity()));
         }
     }
     Params = params;
@@ -287,24 +367,9 @@ bool MeshCache::SetParams(const MeshCacheParams& argParams)
 
 void MeshCache::adjustMeshCacheParams(MeshCacheParams* p)
 {
-    // TBD: Detect/record HW instancing capability.
+    if (p->MaxBatchInstances > SF_RENDER_MAX_BATCHES)
+        p->MaxBatchInstances = SF_RENDER_MAX_BATCHES;
 
-    // No shaders on GLES 1.1, so detecting the number of batches is not possible, because it's 1.
-#if !defined(SF_USE_GLES)
-    // Get the maximum number of uniforms, which will determine the maximum batch count.
-    // This can be as low as 128 on GLES2.0 platforms.
-
-    GLint maxUniforms = (pHal->Caps & Cap_MaxUniforms) >> Cap_MaxUniforms_Shift;
-
-    SF_ASSERT(maxUniforms >= 64); // should be guaranteed by both GL and GLES.
-    unsigned maxInstances = Alg::Min<unsigned>(SF_RENDER_MAX_BATCHES, 
-    maxUniforms / ShaderInterface::GetMaximumRowsPerInstance());
-#else
-    unsigned maxInstances = 1;
-#endif
-
-    if (p->MaxBatchInstances > maxInstances)
-        p->MaxBatchInstances = maxInstances;
     if (p->VBLockEvictSizeLimit < 1024 * 256)
         p->VBLockEvictSizeLimit = 1024 * 256;
 
@@ -315,9 +380,53 @@ void MeshCache::adjustMeshCacheParams(MeshCacheParams* p)
 }
 
 
+void MeshCache::destroyPendingBuffers()
+{
+    // Destroy any pending buffers that are waiting to be destroyed (if possible).
+    List<Render::MeshBuffer> remainingBuffers;
+    MeshBuffer* p = (MeshBuffer*)PendingDestructionBuffers.GetFirst();
+    while (!PendingDestructionBuffers.IsNull(p))
+    {
+        MeshCacheListSet::ListSlot& pendingFreeList = CacheList.GetSlot(MCL_PendingFree);
+        MeshCacheItem* pitem = (MeshCacheItem*)pendingFreeList.GetFirst();
+        bool itemsRemaining = false;
+        MeshBuffer* pNext = (GL::MeshBuffer*)p->pNext;
+        p->RemoveNode();
+        while (!pendingFreeList.IsNull(pitem))
+        {
+            if ((pitem->pVertexBuffer == p) || (pitem->pIndexBuffer == p))
+            {
+                // If the fence is still pending, cannot destroy the buffer.
+                if ( pitem->GPUFence && pitem->GPUFence->IsPending(FenceType_Vertex) )
+                {
+                    itemsRemaining = true;
+                    remainingBuffers.PushFront(p);
+                    break;
+                }
+            }
+            pitem = (MeshCacheItem*)pitem->pNext;
+        }
+        if ( !itemsRemaining )
+        {
+            delete p;
+        }
+        p = pNext;
+    }
+    PendingDestructionBuffers.PushListToFront(remainingBuffers);
+}
+
 void MeshCache::EndFrame()
 {
+    SF_AMP_SCOPE_RENDER_TIMER(__FUNCTION__, Amp_Profile_Level_Medium);
+
     CacheList.EndFrame();
+
+    // Try and reclaim memory from items that have already been destroyed, but not freed.
+    CacheList.EvictPendingFree(IndexBuffers.Allocator);
+    CacheList.EvictPendingFree(VertexBuffers.Allocator);
+
+    destroyPendingBuffers();
+
 
     // Simple Heuristic used to shrink cache. Shrink is possible once the
     // (Total_Frame_Size + LRUTailSize) exceed the allocated space by more then
@@ -344,9 +453,14 @@ void MeshCache::EndFrame()
 
             MeshBufferSet&  mbs = (p->GetBufferType() == GL_ARRAY_BUFFER) ?
                                   (MeshBufferSet&)VertexBuffers : (MeshBufferSet&)IndexBuffers;
-            // Evict first!
-            evictMeshesInBuffer(CacheList.GetSlots(), MCL_ItemCount, p);
-            mbs.DestroyBuffer(p);
+
+            // Evict first! This may fail if a query is pending on a mesh inside the buffer. In that case,
+            // simply store the buffer to be destroyed later.
+            bool allEvicted = evictMeshesInBuffer(CacheList.GetSlots(), MCL_ItemCount, p);
+            mbs.DestroyBuffer(p, false, allEvicted);
+            if ( !allEvicted )
+                PendingDestructionBuffers.PushBack(p);
+
 
 #ifdef SF_RENDER_LOG_CACHESIZE
             LogDebugMessage(Log_Message,
@@ -356,6 +470,7 @@ void MeshCache::EndFrame()
         }
     }    
 }
+
 
 
 // Adds a fixed-size buffer to cache reserve; expected to be released at Release.
@@ -413,42 +528,32 @@ bool MeshCache::createInstancingVertexBuffer()
 
 bool MeshCache::createMaskEraseBatchVertexBuffer()
 {
-    VertexXY16iAlpha pbuffer[6 * SF_RENDER_MAX_BATCHES];
-    fillMaskEraseVertexBuffer<VertexXY16iAlpha>(pbuffer, SF_RENDER_MAX_BATCHES);
+    VertexXY16iInstance pbuffer[6 * SF_RENDER_MAX_BATCHES];
+    fillMaskEraseVertexBuffer<VertexXY16iAlpha>(reinterpret_cast<VertexXY16iAlpha*>(pbuffer), SF_RENDER_MAX_BATCHES);
 
     glGenBuffers(1, &MaskEraseBatchVertexBuffer);
-#if !defined(SF_USE_GLES_ANY)
-    if (GetHAL()->CheckGLVersion(3, 0) && !(GetHAL()->Caps & Cap_NoVAO))
+#if !defined(SF_USE_GLES)
+    if (GetHAL()->ShouldUseVAOs())
     {
         glGenVertexArrays(1, &MaskEraseBatchVAO);
         glBindVertexArray(MaskEraseBatchVAO);
     }
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-    glGenVertexArraysOES(1, &MaskEraseBatchVAO);
-    glBindVertexArrayOES(MaskEraseBatchVAO);
 #endif
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, MaskEraseBatchVertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(pbuffer), pbuffer, GL_STATIC_DRAW);
 
-#if !defined(SF_USE_GLES_ANY)
-    if (GetHAL()->CheckGLVersion(3, 0) && !(GetHAL()->Caps & Cap_NoVAO))
+#if !defined(SF_USE_GLES)
+    if (GetHAL()->ShouldUseVAOs())
     {
         // Fill out the VAO now.
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0, 2, GL_SHORT, false, VertexXY16iAlpha::Format.Size, 0);
-        glVertexAttribPointer(1, 1, GL_UNSIGNED_BYTE, false, VertexXY16iAlpha::Format.Size, (GLvoid*)4);
+        glVertexAttribPointer(0, 2, GL_SHORT, false, VertexXY16iInstance::Format.Size, 0);
+        glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, false, VertexXY16iInstance::Format.Size, (GLvoid*)4);
         glBindVertexArray(0);
     }
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-    // Fill out the VAO now.
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(0, 2, GL_SHORT, false, VertexXY16iAlpha::Format.Size, 0);
-    glVertexAttribPointer(1, 1, GL_UNSIGNED_BYTE, false, VertexXY16iAlpha::Format.Size, (GLvoid*)4);
-    glBindVertexArrayOES(0);
 #endif
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -475,9 +580,10 @@ void MeshCache::UnlockBuffers()
 }
 
 
-void MeshCache::evictMeshesInBuffer(MeshCacheListSet::ListSlot* plist, UPInt count,
+bool MeshCache::evictMeshesInBuffer(MeshCacheListSet::ListSlot* plist, UPInt count,
                                     MeshBuffer* pbuffer)
 {
+    bool evictionFailed = false;
     for (unsigned i=0; i< count; i++)
     {
         MeshCacheItem* pitem = (MeshCacheItem*)plist[i].GetFirst();
@@ -485,40 +591,71 @@ void MeshCache::evictMeshesInBuffer(MeshCacheListSet::ListSlot* plist, UPInt cou
         {
             if ((pitem->pVertexBuffer == pbuffer) || (pitem->pIndexBuffer == pbuffer))
             {
+                // Evict returns the number of bytes released. If this is zero, it means the mesh
+                // was still in use. 
+                if ( Evict(pitem) == 0 )
+                {
+                    evictionFailed = true;
+                    SF_ASSERT(pitem->Type == MeshCacheItem::Mesh_Destroyed);
+
+                    // We still need to delete all the addresses allocated in the buffer, because it is 
+                    // going to be deleted, and AllocAddr will break otherwise.
+                    if ( pitem->pVertexBuffer == pbuffer)
+                    {
+                        VertexBuffers.Free(pitem->VBAllocSize, pitem->pVertexBuffer, pitem->VBAllocOffset);
+                        pitem->pVertexBuffer = 0;
+                    }
+                    if ( pitem->pIndexBuffer == pbuffer)
+                    {
+                        IndexBuffers.Free(pitem->IBAllocSize, pitem->pIndexBuffer, pitem->IBAllocOffset);
+                        pitem->pIndexBuffer = 0;
+                    }
+                }
+
                 // Evict may potentially modify the cache items, so start again.
                 // This is less than ideal, but better than accessing a dangling pointer.
-                Evict(pitem);
                 pitem = (MeshCacheItem*)plist[i].GetFirst();
+                continue;
             }
-            else
-            {
-                pitem = (MeshCacheItem*)pitem->pNext;
-            }
+            pitem = (MeshCacheItem*)pitem->pNext;
         }
     }
+    return !evictionFailed;
 }
 
 
 UPInt MeshCache::Evict(Render::MeshCacheItem* pbatch, AllocAddr* pallocator, MeshBase* pskipMesh)
 {
     MeshCacheItem* p = (MeshCacheItem*)pbatch;
-    // - Free allocator data.
-    UPInt vbfree = VertexBuffers.Free(p->VBAllocSize, p->pVertexBuffer, p->VBAllocOffset);
-    UPInt ibfree = IndexBuffers.Free(p->IBAllocSize, p->pIndexBuffer, p->IBAllocOffset);
-    UPInt freedSize = pallocator ? ((&VertexBuffers.GetAllocator() == pallocator) ? vbfree : ibfree) : vbfree + ibfree;
+
+    // If a fence is not pending, then the memory for the item can be reclaimed immediately.
+    if ( !p->GPUFence || !p->GPUFence->IsPending(FenceType_Vertex))
+    {
+	    // - Free allocator data.
+        UPInt vbfree = p->pVertexBuffer ? VertexBuffers.Free(p->VBAllocSize, p->pVertexBuffer, p->VBAllocOffset) : 0;
+        UPInt ibfree = p->pIndexBuffer  ? IndexBuffers.Free(p->IBAllocSize, p->pIndexBuffer, p->IBAllocOffset) : 0;
+	    UPInt freedSize = pallocator ? ((&VertexBuffers.GetAllocator() == pallocator) ? vbfree : ibfree) : vbfree + ibfree;
 
     // If we are using VAOs, then destroy the VAO now, it will not be used again.
-#if !defined(SF_USE_GLES_ANY)
-    if (GetHAL()->CheckGLVersion(3,0) && !(GetHAL()->Caps & Cap_NoVAO) && p->VAO != 0)
-        glDeleteVertexArrays(1, &p->VAO);
-#elif defined(GL_ES_VERSION_2_0) && defined(SF_OS_IPHONE)
-    glDeleteVertexArraysOES(1, &p->VAO);
+#if !defined(SF_USE_GLES)
+        if (GetHAL()->ShouldUseVAOs() && p->VAO != 0)
+            glDeleteVertexArrays(1, &p->VAO);
 #endif
-    p->VAO = 0;
+        p->VAO = 0;
 
-    VBSizeEvictedInMap += (unsigned)  p->VBAllocSize;
-    p->Destroy(pskipMesh);
-    return freedSize;
+        VBSizeEvictedInMap += (unsigned)  p->VBAllocSize;
+        p->Destroy(pskipMesh, true);
+    	return freedSize;
+	}
+    else
+    {
+        // Still in use, push it on the pending to delete list.
+        // It should be valid for this to be called multiple times for a single mesh (for example, in a PendingFree situation).
+        p->Destroy(pskipMesh, false);
+        CacheList.PushFront(MCL_PendingFree, p);
+        return 0;
+    }
+
 }
 
 
@@ -533,70 +670,105 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
 
     // If allocation failed... need to apply swapping or grow buffer.
     MeshCacheItem* pitems;
-    MeshCacheListSet::ListSlot& prevFrameList = CacheList.GetSlot(MCL_PrevFrame);
-    MeshCacheListSet::ListSlot& thisFrameList = CacheList.GetSlot(MCL_ThisFrame);
+    bool needMoreSpace = true;
 
-    // 1) First, apply LRU (least recently used) swapping from data stale in
-    //    earlier frames until the total size 
+    // #1. Try and reclaim memory from items that have already been destroyed, but not freed.
+    //     These cannot be reused, so it is best to evict their memory first, if possible.
+    if (CacheList.EvictPendingFree(mbs.Allocator))
+        needMoreSpace = false;
 
-    if ((getTotalSize() + MinSupportedGranularity) <= Params.MemLimit)
+    // #2. Then, apply LRU (least recently used) swapping from data stale in
+    //    earlier frames until the total size
+    if (needMoreSpace && (getTotalSize() + MinSupportedGranularity) <= Params.MemLimit)
     {
         if (CacheList.EvictLRUTillLimit(MCL_LRUTail, mbs.GetAllocator(),
                                         size, Params.LRUTailSize))
-                                        goto alloc_size_available;
-
-        // TBD: May cause spinning? Should we have two error codes?
-        SF_ASSERT(size <= mbs.GetGranularity());
-        if (size > mbs.GetGranularity())
-            return false;
-
-        UPInt allocSize = Alg::PMin(Params.MemLimit - getTotalSize(), mbs.GetGranularity());
-        if (size <= allocSize)
         {
-            MeshBuffer* pbuff = mbs.CreateBuffer(allocSize, MeshBuffer::AT_Chunk, 0, pHeap, pHal);
-            if (pbuff)
+            needMoreSpace = false;
+        }
+        else
+        {
+            SF_DEBUG_ASSERT(size <= mbs.GetGranularity(), "Attempt to allocate mesh larger than MeshCache granularity.");
+            if (size > mbs.GetGranularity())
+                return false;
+
+            UPInt allocSize = Alg::PMin(Params.MemLimit - getTotalSize(), mbs.GetGranularity());
+            if (size <= allocSize)
             {
-                ChunkBuffers.PushBack(pbuff);
+                MeshBuffer* pbuff = mbs.CreateBuffer(allocSize, MeshBuffer::AT_Chunk, 0, pHeap, pHal);
+                if (pbuff)
+                {
+                    ChunkBuffers.PushBack(pbuff);
 #ifdef SF_RENDER_LOG_CACHESIZE
-                LogDebugMessage(Log_Message, "Cache grew to %dK\n", getTotalSize() / 1024);
+                    LogDebugMessage(Log_Message, "Cache grew to %dK\n", getTotalSize() / 1024);
 #endif
-                goto alloc_size_available;
+                    needMoreSpace = false;
+                }
             }
         }
     }
 
-    if (CacheList.EvictLRU(MCL_LRUTail, mbs.GetAllocator(), size))
-        goto alloc_size_available;
+    if (needMoreSpace && CacheList.EvictLRU(MCL_LRUTail, mbs.GetAllocator(), size))
+        needMoreSpace = false;
 
     if (VBSizeEvictedInMap > Params.VBLockEvictSizeLimit)
         return false;
 
-    // 2) Apply MRU (most recently used) swapping to the current frame content.
+    // #3. Apply MRU (most recently used) swapping to the current frame content.
     // NOTE: MRU (GetFirst(), pNext iteration) gives
     //       2x improvement here with "Stars" test swapping.
-    pitems = (MeshCacheItem*)prevFrameList.GetFirst();
-    while(!prevFrameList.IsNull(pitems))
+    if (needMoreSpace)
     {
-        if (Evict(pitems, &mbs.GetAllocator()) >= size)
-            goto alloc_size_available;
+        MeshCacheListSet::ListSlot& prevFrameList = CacheList.GetSlot(MCL_PrevFrame);
         pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+        while(!prevFrameList.IsNull(pitems))
+        {
+            if (!pitems->GPUFence || !pitems->GPUFence->IsPending(FenceType_Vertex))
+            {
+                if (Evict(pitems, &mbs.GetAllocator()) >= size)
+                {
+                    needMoreSpace = false;
+                    break;
+                }
+
+                // Get the first item in the list, because and the head of the list will now be different, due to eviction.
+                pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+            }
+            else
+            {
+                pitems = (MeshCacheItem*)prevFrameList.GetNext(pitems);
+            }
+        }
     }
     
-    pitems = (MeshCacheItem*)thisFrameList.GetFirst();
-    while(!thisFrameList.IsNull(pitems))
+    // #4. If MRU swapping didn't work for ThisFrame items due to them still
+    // being processed by the GPU and we are being asked to wait, wait
+    // until fences are passed to evict items.
+    if (needMoreSpace)
     {
-        if (Evict(pitems, &mbs.GetAllocator()) >= size)
-            goto alloc_size_available;
+        MeshCacheListSet::ListSlot& thisFrameList = CacheList.GetSlot(MCL_ThisFrame);
         pitems = (MeshCacheItem*)thisFrameList.GetFirst();
+        while(waitForCache && !thisFrameList.IsNull(pitems))
+        {
+            if ( pitems->GPUFence )
+                pitems->GPUFence->WaitFence(FenceType_Vertex);
+            if (Evict(pitems, &mbs.GetAllocator()) >= size)
+            {
+                needMoreSpace = false;
+                break;
+            }
+            pitems = (MeshCacheItem*)thisFrameList.GetFirst();
+        }
     }
-    return false;
+    
+    if (needMoreSpace)
+        return false;
 
     // At this point we know we have a large enough block either due to
     // swapping or buffer growth, so allocation shouldn't fail.
-alloc_size_available:
     if (!mbs.Alloc(size, pbuffer, poffset))
     {
-        SF_ASSERT(0);
+        SF_DEBUG_ASSERT(0, "Expected MeshCache to have enough memory to allocate mesh, but allocation failed.");
         return false;
     }
 
@@ -609,6 +781,8 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
                                  MeshCacheItem::MeshContent &mc,
                                  bool waitForCache)
 {
+    SF_AMP_SCOPE_RENDER_TIMER(__FUNCTION__, Amp_Profile_Level_Medium);
+
     Primitive* prim = pbatch->GetPrimitive();
 
     if (mc.IsLargeMesh())
@@ -625,10 +799,16 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
         return true;
     }
 
+    // Prepare and Pin mesh data with the StagingBuffer. NOTE: this must happen before calculating mesh sizes.
+    // This stage updates the mesh vertex/index counts, so calculating them first, it could be incorrect, for
+    // example in the case of MeshCache::ClearCache, and changing ToleranceParams.
+    StagingBufferPrep   meshPrep(this, mc, prim->GetVertexFormat(), false);
+
     // NOTE: We always know that meshes in one batch fit into Mesh Staging Cache.
     unsigned totalVertexCount, totalIndexCount;
     pbatch->CalcMeshSizes(&totalVertexCount, &totalIndexCount);
 
+    SF_ASSERT(totalVertexCount && totalIndexCount);
     SF_ASSERT(pbatch->pFormat);
 
     Render::MeshCacheItem* batchData = 0;
@@ -643,14 +823,16 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
                                  totalVertexCount, totalIndexCount, waitForCache, 0);
     if (allocResult != Alloc_Success)
     {
-        // Return 'true' for state error (we can't recover by swapping cache and re-trying).
+        // Return 'true' for state error/too big (we can't recover by swapping cache and re-trying).
         return (allocResult == Alloc_Fail) ? false : true;
     }
 
     pbatch->SetCacheItem(batchData);
 
-    // Prepare and Pin mesh data with the StagingBuffer.
-    StagingBufferPrep meshPrep(this, mc, prim->GetVertexFormat(), false);
+    // This step either generates the mesh into the staging buffer, or locates an existing MeshCacheItem
+    // that we can copy the mesh from. It must be done after creating the cache item, because that may
+    // evict the item that would be copied from.
+    meshPrep.GenerateMeshes(batchData);
 
     // Copy meshes into the Vertex/Index buffers.
 
@@ -724,8 +906,8 @@ handle_alloc_fail:
         goto handle_alloc_fail;
     }
 
-    pvdata = pvb->Map(MappedBuffers);
-    pidata = pib->Map(MappedBuffers);
+    pvdata = pvb->Map(MappedBuffers, vbOffset, vertexBufferSize);
+    pidata = pib->Map(MappedBuffers, ibOffset, indexCount * sizeof(IndexType));
 
     if (!pvdata || !pidata)
         goto handle_alloc_fail;
@@ -751,7 +933,7 @@ handle_alloc_fail:
 void MeshCache::GetStats(Stats* stats)
 {
     *stats = Stats();
-    unsigned memType = (pHal->Caps & Cap_UseMeshBuffers) ? MeshBuffer_GpuMem : 0;
+    unsigned memType = (BufferUpdate != BufferUpdate_ClientBuffers) ? MeshBuffer_GpuMem : 0;
 
     stats->TotalSize[memType + MeshBuffer_Vertex] = VertexBuffers.GetTotalSize();
     stats->UsedSize[memType + MeshBuffer_Vertex] = VertexBuffers.Allocator.GetFreeSize() << MeshCache_AllocatorUnitShift;

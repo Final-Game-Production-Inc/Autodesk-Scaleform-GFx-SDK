@@ -6,6 +6,7 @@ Created     :   January 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -252,12 +253,6 @@ bool Texture::Initialize()
         {
 initialize_texture_fail_after_create0:
             SF_DEBUG_ERROR(1, "CreateTexture failed - IDirect3DTexture9::CreateTexture failed");
-            // Texture creation failed, release all textures and fail.
-initialize_texture_fail_after_create:
-            ReleaseHWTextures();
-            if (State != State_Lost)
-                State = State_InitFailed;
-            return false;
         }
 
         // Staging-backed textures get a staging buffer of the same size.
@@ -287,7 +282,10 @@ initialize_texture_fail_after_create:
     if (pImage && !Render::Texture::Update())
     {
         SF_DEBUG_ERROR(1, "CreateTexture failed - couldn't initialize texture");
-        goto initialize_texture_fail_after_create;
+        ReleaseHWTextures();
+        if (State != State_Lost)
+            State = State_InitFailed;
+        return false;
     }
 
     State = State_Valid;
@@ -929,6 +927,20 @@ void TextureManager::BeginScene()
         FilterType[i] = D3DTEXF_FORCE_DWORD;
         CurrentTextures[i] = 0;
         pDevice->SetTexture(i, 0);
+
+        // Set sampler parameters to known values, that GFx will not modify during its rendering.
+        union 
+        {
+            float fbias;
+            DWORD d;
+        } bias;
+        bias.fbias = -0.75f;
+        pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, bias.d );
+        pDevice->SetSamplerState(i, D3DSAMP_ELEMENTINDEX, 0);
+        pDevice->SetSamplerState(i, D3DSAMP_SRGBTEXTURE, 0);
+
+        // Set texture coordinate indices to match their stages, as we will be using the programmable pipeline.
+        pDevice->SetTextureStageState(i, D3DTSS_TEXCOORDINDEX, i);
     }    
 }
 

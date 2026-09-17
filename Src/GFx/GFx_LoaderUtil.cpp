@@ -21,11 +21,31 @@ otherwise accompanies this software in either electronic or hard copy form.
 void    GFx_ValidateEvaluation();
 
 // Internal GFC Evaluation License Reader
-#ifdef SF_BUILD_EVAL
+#if  defined (SF_BUILD_EVAL)
 #define SF_EVAL(x) GFx_##x
 #define SF_LIB_NAME_S "GFx"
 #define SF_PRODUCT_ID SCALEFORM
 #define SF_LICENSE_FILE "sf_license.txt"
+#include "GFCValidateEval.cpp"
+#elif defined (SF_BUILD_CONSUMER)
+#define SF_EVAL(x) GFx_##x
+#define SF_LIB_NAME_S "GFx"
+#define SF_PRODUCT_ID SCALEFORM
+#if defined(SF_OS_ANDROID) && !defined(SF_BUILD_UNITY)
+#define SF_LICENSE_FILE "sf_consumer_license_android_mobile.txt"
+#elif defined(SF_OS_ANDROID) && defined (SF_BUILD_UNITY)
+#define SF_LICENSE_FILE "sf_consumer_license_android_unity.txt"
+#elif defined(SF_OS_IPHONE) && !defined(SF_BUILD_UNITY)
+#define SF_LICENSE_FILE "sf_consumer_license_ios_mobile.txt"
+#elif defined(SF_OS_IPHONE) && defined(SF_BUILD_UNITY)
+#define SF_LICENSE_FILE "sf_consumer_license_ios_unity.txt"
+#elif defined(SF_OS_WIN32)
+#define SF_LICENSE_FILE "sf_consumer_license_pc_unity.txt"
+#elif defined(SF_OS_MAC)
+#define SF_LICENSE_FILE "sf_consumer_license_mac_unity.txt"
+#else
+#define SF_LICENSE_FILE "sf_consumer_license.txt"
+#endif
 #include "GFCValidateEval.cpp"
 #else
 void    GFx_ValidateEvaluation() { }

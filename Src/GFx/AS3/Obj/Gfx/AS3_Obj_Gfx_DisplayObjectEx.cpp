@@ -108,7 +108,22 @@ namespace Classes { namespace fl_gfx
     }
 //##protect##"class_$methods"
 //##protect##"class_$methods"
-
+    void DisplayObjectEx::setInvertedMask(const Value& result, Instances::fl_display::DisplayObject* o, bool b) {
+        SF_UNUSED3(result, o, b);
+        if (o)
+        {
+            SF_ASSERT(o->pDispObj);
+            o->pDispObj->SetInvertedMask(b);
+        }
+    }
+    void DisplayObjectEx::getInvertedMask(bool& result, Instances::fl_display::DisplayObject* o) {
+        SF_UNUSED2(result, o);
+        if (o)
+        {
+            SF_ASSERT(o->pDispObj);
+            result = o->pDispObj->GetInvertedMask();
+        }
+    }
 }} // namespace Classes
 
 typedef ThunkFunc2<Classes::fl_gfx::DisplayObjectEx, Classes::fl_gfx::DisplayObjectEx::mid_disableBatching, const Value, Instances::fl_display::DisplayObject*, bool> TFunc_Classes_DisplayObjectEx_disableBatching;
@@ -118,6 +133,10 @@ typedef ThunkFunc1<Classes::fl_gfx::DisplayObjectEx, Classes::fl_gfx::DisplayObj
 typedef ThunkFunc2<Classes::fl_gfx::DisplayObjectEx, Classes::fl_gfx::DisplayObjectEx::mid_setRendererFloat, const Value, Instances::fl_display::DisplayObject*, Value::Number> TFunc_Classes_DisplayObjectEx_setRendererFloat;
 typedef ThunkFunc1<Classes::fl_gfx::DisplayObjectEx, Classes::fl_gfx::DisplayObjectEx::mid_getRendererFloat, Value::Number, Instances::fl_display::DisplayObject*> TFunc_Classes_DisplayObjectEx_getRendererFloat;
 
+// 4.5.32 Update Of The AS3 API
+typedef ThunkFunc2<Classes::fl_gfx::DisplayObjectEx, Classes::fl_gfx::DisplayObjectEx::mid_setInvertedMask, const Value, Instances::fl_display::DisplayObject*, bool> TFunc_Classes_DisplayObjectEx_setInvertedMask;
+typedef ThunkFunc1<Classes::fl_gfx::DisplayObjectEx, Classes::fl_gfx::DisplayObjectEx::mid_getInvertedMask, bool, Instances::fl_display::DisplayObject*> TFunc_Classes_DisplayObjectEx_getInvertedMask;
+
 template <> const TFunc_Classes_DisplayObjectEx_disableBatching::TMethod TFunc_Classes_DisplayObjectEx_disableBatching::Method = &Classes::fl_gfx::DisplayObjectEx::disableBatching;
 template <> const TFunc_Classes_DisplayObjectEx_isBatchingDisabled::TMethod TFunc_Classes_DisplayObjectEx_isBatchingDisabled::Method = &Classes::fl_gfx::DisplayObjectEx::isBatchingDisabled;
 template <> const TFunc_Classes_DisplayObjectEx_setRendererString::TMethod TFunc_Classes_DisplayObjectEx_setRendererString::Method = &Classes::fl_gfx::DisplayObjectEx::setRendererString;
@@ -125,34 +144,63 @@ template <> const TFunc_Classes_DisplayObjectEx_getRendererString::TMethod TFunc
 template <> const TFunc_Classes_DisplayObjectEx_setRendererFloat::TMethod TFunc_Classes_DisplayObjectEx_setRendererFloat::Method = &Classes::fl_gfx::DisplayObjectEx::setRendererFloat;
 template <> const TFunc_Classes_DisplayObjectEx_getRendererFloat::TMethod TFunc_Classes_DisplayObjectEx_getRendererFloat::Method = &Classes::fl_gfx::DisplayObjectEx::getRendererFloat;
 
+// Scaleform 4.5.32 Update Of The AS3 API
+template <> const TFunc_Classes_DisplayObjectEx_setInvertedMask::TMethod TFunc_Classes_DisplayObjectEx_setInvertedMask::Method = &Classes::fl_gfx::DisplayObjectEx::setInvertedMask;
+template <> const TFunc_Classes_DisplayObjectEx_getInvertedMask::TMethod TFunc_Classes_DisplayObjectEx_getInvertedMask::Method = &Classes::fl_gfx::DisplayObjectEx::getInvertedMask;
+
+
 namespace ClassTraits { namespace fl_gfx
 {
-    const ThunkInfo DisplayObjectEx::ti[DisplayObjectEx::ThunkInfoNum] = {
-        {TFunc_Classes_DisplayObjectEx_disableBatching::Func, NULL, "disableBatching", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_DisplayObjectEx_isBatchingDisabled::Func, &AS3::fl::BooleanTI, "isBatchingDisabled", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_DisplayObjectEx_setRendererString::Func, NULL, "setRendererString", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_DisplayObjectEx_getRendererString::Func, &AS3::fl::StringTI, "getRendererString", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_DisplayObjectEx_setRendererFloat::Func, NULL, "setRendererFloat", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_DisplayObjectEx_getRendererFloat::Func, &AS3::fl::NumberTI, "getRendererFloat", NULL, Abc::NS_Public, CT_Method, 1, 1},
+    // const UInt16 DisplayObjectEx::tito[DisplayObjectEx::ThunkInfoNum] = {
+    //    0, 3, 5, 8, 10, 13, 16, 18
+    // };
+    const TypeInfo* DisplayObjectEx::tit[20] = {
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl_display::DisplayObjectTI, 
+
+        // For Adapt Scaelform 4.5.32 API,
+        // So, DisplayObjectEx::tit Should Be 20 Is Right.
+        // OtherWise, There's Has A Bug To Fail To Load.
+        NULL, &AS3::fl_display::DisplayObjectTI,& AS3::fl::BooleanTI,
+        & AS3::fl::BooleanTI,& AS3::fl_display::DisplayObjectTI,
     };
-    DisplayObjectEx::DisplayObjectEx(VM& vm)
-    : Traits(vm, AS3::fl_gfx::DisplayObjectExCI)
+    const ThunkInfo DisplayObjectEx::ti[DisplayObjectEx::ThunkInfoNum] = {
+        {TFunc_Classes_DisplayObjectEx_disableBatching::Func, &DisplayObjectEx::tit[0], "disableBatching", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_DisplayObjectEx_isBatchingDisabled::Func, &DisplayObjectEx::tit[3], "isBatchingDisabled", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_DisplayObjectEx_setRendererString::Func, &DisplayObjectEx::tit[5], "setRendererString", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_DisplayObjectEx_getRendererString::Func, &DisplayObjectEx::tit[8], "getRendererString", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_DisplayObjectEx_setRendererFloat::Func, &DisplayObjectEx::tit[10], "setRendererFloat", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_DisplayObjectEx_getRendererFloat::Func, &DisplayObjectEx::tit[13], "getRendererFloat", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+
+        // 4.5.32 API Usued
+        {TFunc_Classes_DisplayObjectEx_setInvertedMask::Func, &DisplayObjectEx::tit[16], "setInvertedMask", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_DisplayObjectEx_getInvertedMask::Func, &DisplayObjectEx::tit[18], "getInvertedMask", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL}
+    };
+
+    DisplayObjectEx::DisplayObjectEx(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::DisplayObjectEx::DisplayObjectEx()"
 //##protect##"ClassTraits::DisplayObjectEx::DisplayObjectEx()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_gfx::DisplayObjectExCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::DisplayObjectEx(*this));
 
     }
 
     Pickable<Traits> DisplayObjectEx::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) DisplayObjectEx(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) DisplayObjectEx(vm, AS3::fl_gfx::DisplayObjectExCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::DisplayObjectExCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -163,6 +211,11 @@ namespace fl_gfx
 {
     const TypeInfo DisplayObjectExTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_gfx::DisplayObjectEx::InstanceType),
+        ClassTraits::fl_gfx::DisplayObjectEx::ThunkInfoNum,
+        0,
+        0,
+        0,
         "DisplayObjectEx", "scaleform.gfx", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -170,10 +223,6 @@ namespace fl_gfx
     const ClassInfo DisplayObjectExCI = {
         &DisplayObjectExTI,
         ClassTraits::fl_gfx::DisplayObjectEx::MakeClassTraits,
-        ClassTraits::fl_gfx::DisplayObjectEx::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_gfx::DisplayObjectEx::ti,
         NULL,
         NULL,

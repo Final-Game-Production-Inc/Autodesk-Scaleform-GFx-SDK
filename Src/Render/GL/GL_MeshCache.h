@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -39,10 +40,10 @@ class MeshCacheItem : public Render::MeshCacheItem
     friend class VertexBuilder_Core30;
     friend class VertexBuilder_VAOES;
 
-    MeshBuffer*         pVertexBuffer;
-    MeshBuffer*         pIndexBuffer;
-    UPInt               VBAllocOffset, VBAllocSize;
-    UPInt               IBAllocOffset, IBAllocSize;
+    MeshBuffer*     pVertexBuffer;
+    MeshBuffer*     pIndexBuffer;
+    UPInt           VBAllocOffset, VBAllocSize;
+    UPInt           IBAllocOffset, IBAllocSize;
 
     GLuint              VAO;            // The vertex array object name this item uses. 
     const VertexFormat* VAOFormat;      // The vertex format used to construct the current VAO.
@@ -97,17 +98,34 @@ protected:
 
     friend class MeshBufferSet;
 
+    struct MeshBufferUpdateEntry
+    {
+        MeshBufferUpdateEntry() : Offset(0), Size(0) { }
+        MeshBufferUpdateEntry(UPInt o, UPInt s) : Offset(o), Size(s) { }
+        UPInt Offset;
+        UPInt Size;
+    };
+    typedef ArrayConstPolicy<0, 8, true> NeverShrinkPolicy;
+    ArrayLH<MeshBufferUpdateEntry, StatRender_MeshCacheMgmt_Mem, NeverShrinkPolicy> MeshBufferUpdates;
+
 public:
     MeshBuffer(HAL* phal, GLenum btype, UPInt size, AllocType type, unsigned arena)
         : Render::MeshBuffer(size, type, arena)
-    { pHal = phal; Buffer = 0; BufferData = 0; pNextLock = 0; Type = btype; CurrentBuffer = 0xffffffff; }
+    { 
+        pHal = phal; 
+        Buffer = 0; 
+        BufferData = 0; 
+        pNextLock = 0; 
+        Type = btype; 
+        CurrentBuffer = 0xffffffff; 
+    }
     ~MeshBuffer();
 
     inline  UPInt   GetIndex() const { return Index; }
     inline  HAL* GetHAL() const { return pHal; }
 
     bool    allocBuffer();
-    bool    DoMap();
+    bool    DoMap(UPInt offset, UPInt size);
     void    Unmap();
     GLuint  GetBuffer() { return Buffer; }
     UByte*  GetBufferBase() const;
@@ -138,17 +156,17 @@ public:
         }
     };
 
-    inline  UByte*  Map(MapList& lockedBuffers)
+    inline  UByte*  Map(MapList& lockedBuffers, UPInt offset, UPInt size)
     {
         if (!pData)
         {  
-            if (!DoMap())
-            {
-                SF_DEBUG_WARNING(1, "Render::MeshCache - Vertex/IndexBuffer map failed");
-                return 0;
-            }
             lockedBuffers.Add(this);
         }
+        if (!DoMap(offset, size))
+            {
+            SF_DEBUG_WARNONCE(1, "Render::MeshCache - Vertex/IndexBuffer map failed");
+                return 0;
+            }
         return (UByte*)pData;
     }
 };
@@ -238,6 +256,8 @@ public:
         UPInt largestSize = 0;
         for (UPInt i = 0; i< Buffers.GetSize(); i++)
         {
+            if (!Buffers[i])
+                continue;
             if (Buffers[i]->Size > size)
                 return true;
             if (Buffers[i]->Size > largestSize)
@@ -248,7 +268,7 @@ public:
         return false;
     }
 
-    void        DestroyBuffer(MeshBuffer* pbuffer, bool lost = false)
+    void        DestroyBuffer(MeshBuffer* pbuffer, bool lost = false, bool deleteBuffer = true)
     {
         Allocator.RemoveSegment(pbuffer->GetIndex() << MeshCache_AddressToIndexShift,
             SizeToAllocatorUnit(pbuffer->GetSize()));
@@ -256,6 +276,7 @@ public:
         Buffers[pbuffer->GetIndex()] = 0;
         if (lost)
             pbuffer->Buffer = 0;
+        if (deleteBuffer)
         delete pbuffer;
     }
 
@@ -286,6 +307,20 @@ public:
 
 class MeshCache : public Render::MeshCache
 {      
+public:
+    // List of possible strategies used to update buffers within the mesh cache. They are listed in order of preference,
+    // however, all system may not support all of these methods.
+    enum BufferUpdateType
+    {
+        BufferUpdate_MapBufferUnsynchronized,   // Use glMapBufferRange, with no synchronization. glFenceSync is used to ensure consistency.
+        BufferUpdate_ClientBuffers,             // Use client-memory buffers. Client memory is modified directly, and reissued to the GPU every draw.
+        BufferUpdate_MapBuffer,                 // Use glMapBuffer to update buffers. VBOs are used, without client backing. GPU may stall.
+        BufferUpdate_UpdateBuffer,              // Use glBuffer[Sub]Data to update the buffers. VBOs are used, with client memory backing. GPU may stall.
+        BufferUpdate_Count
+    };
+
+protected:
+    
     friend class HAL;    
 
     enum {
@@ -298,6 +333,7 @@ class MeshCache : public Render::MeshCache
     // Allocators managing the buffers. 
     MeshBufferSet               VertexBuffers, IndexBuffers;
     bool                        UseSeparateIndexBuffers;
+    BufferUpdateType            BufferUpdate;
 
     // Mapped buffer into.
     bool                        Mapped;
@@ -307,10 +343,13 @@ class MeshCache : public Render::MeshCache
     // freeing them in the opposite order (to support proper IB/VB balancing).
     // NOTE: Must use base MeshBuffer type for List<> to work with internal casts.
     List<Render::MeshBuffer>    ChunkBuffers;
+    // If a MeshBuffer could not be immediately destroyed (the GPU is using one of its meshes)
+    // It is temporarily stored in this list until it is no longer in use.
+    List<Render::MeshBuffer>    PendingDestructionBuffers;
 
     GLuint                      MaskEraseBatchVertexBuffer;
     GLuint                      MaskEraseBatchVAO;
-    
+
     inline MeshCache* getThis() { return this; }
     inline HAL* GetHAL() const { return pHal; }
 
@@ -326,7 +365,7 @@ class MeshCache : public Render::MeshCache
     // Allocates Vertex/Index buffer of specified size and adds it to free list.
     bool            allocCacheBuffers(UPInt size, MeshBuffer::AllocType type, unsigned arena = 0);
 
-    void            evictMeshesInBuffer(MeshCacheListSet::ListSlot* plist, UPInt count,
+    bool            evictMeshesInBuffer(MeshCacheListSet::ListSlot* plist, UPInt count,
                                         MeshBuffer* pbuffer);
 
     // Allocates a number of bytes in the specified buffer, while evicting LRU data.
@@ -335,10 +374,18 @@ class MeshCache : public Render::MeshCache
                                 MeshBufferSet& mbs, UPInt size, bool waitForCache);
     
     void            destroyBuffers(MeshBuffer::AllocType at = MeshBuffer::AT_None, bool lost = false);
+
+    // adjustMeshCacheParams can be called with either valid or null device.
+    // Valid device is specified once MeshCache is initialized.
     void            adjustMeshCacheParams(MeshCacheParams* p); 
+
+    // If buffers could not be deleted immediately (their meshes were still in use), they are stored
+    // in PendingDestructionBuffers and destroyed in this function (if possible).
+    void            destroyPendingBuffers();
 
 public:
 
+    
     MeshCache(MemoryHeap* pheap, const MeshCacheParams& params);    
     ~MeshCache();
 
@@ -378,6 +425,8 @@ public:
                                        bool waitForCache, const VertexFormat* pDestFormat);
 
     virtual void GetStats(Stats* stats);
+    
+    virtual BufferUpdateType GetBufferUpdateType() const { return BufferUpdate; }
 };
 
 

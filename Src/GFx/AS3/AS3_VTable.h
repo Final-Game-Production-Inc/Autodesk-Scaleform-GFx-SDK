@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -44,7 +45,7 @@ public:
     {
         return VTMethods[ind.Get()];
     }
-    // Similar to Get(), but it will convert MethodInd to VTableInd.
+    // Similar to GetRaw(), but it will convert MethodInd to VTableInd.
     Value GetValue(AbsoluteIndex ind) const;
 	SF_DEBUG_CODE(const ASString& GetName(AbsoluteIndex ind) const { return Names[ind.Get()]; } )
     Traits& GetTraits() const

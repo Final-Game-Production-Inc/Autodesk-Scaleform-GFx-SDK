@@ -6,6 +6,7 @@ Created     :   February, 2010
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -14,6 +15,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 
 #include "Amp_ViewStats.h"
+#ifdef SF_ENABLE_STATS
 #include "Kernel/SF_HeapNew.h"
 #include "GFx/GFx_Player.h"
 #include "Amp_Server.h"
@@ -471,11 +473,14 @@ void ViewStats::GetStats(StatBag* bag, bool reset)
         timerStat.AddTicks(stats->DisplayTime);
         bag->Add(StatMV_Display_Tks, &timerStat);
         timerStat.Reset();
-        timerStat.AddTicks(stats->TesselationTime);
-        bag->Add(StatMV_Tessellate_Tks, &timerStat);
+        timerStat.AddTicks(stats->FontThrashingTime);
+        bag->Add(StatMV_FontThrash_Tks, &timerStat);
         timerStat.Reset();
         timerStat.AddTicks(stats->GradientGenTime);
         bag->Add(StatMV_GradientGen_Tks, &timerStat);
+        timerStat.Reset();
+        timerStat.AddTicks(stats->FontMissTime);
+        bag->Add(StatMV_FontMiss_Tks, &timerStat);
     }
 
     if (reset)
@@ -981,6 +986,7 @@ void ViewStats::UpdateStats(UInt64 functionId, UInt32 functionTime, UInt32 funct
         case Amp_Native_Function_Id_ObjectInterface_GetText:
             frameProfile->UserTime += functionTime;
             frameProfile->GetVariableTime += functionTime;
+            ++frameProfile->UserCalls;
             break;
         case Amp_Native_Function_Id_SetVariable:
         case Amp_Native_Function_Id_SetVariableArray:
@@ -991,6 +997,7 @@ void ViewStats::UpdateStats(UInt64 functionId, UInt32 functionTime, UInt32 funct
         case Amp_Native_Function_Id_ObjectInterface_SetText:
             frameProfile->UserTime += functionTime;
             frameProfile->SetVariableTime += functionTime;
+            ++frameProfile->UserCalls;
             break;
         case Amp_Native_Function_Id_Invoke:
         case Amp_Native_Function_Id_InvokeAlias:
@@ -1000,6 +1007,7 @@ void ViewStats::UpdateStats(UInt64 functionId, UInt32 functionTime, UInt32 funct
         case Amp_Native_Function_Id_ObjectInterface_InvokeClosure:
             frameProfile->UserTime += functionTime;
             frameProfile->InvokeTime += functionTime;
+            ++frameProfile->UserCalls;
             break;
         case Amp_Native_Function_Id_Display:
         case Amp_Native_Function_Id_NextCapture:
@@ -1010,7 +1018,7 @@ void ViewStats::UpdateStats(UInt64 functionId, UInt32 functionTime, UInt32 funct
             frameProfile->PresentTime += functionTime;
             break;
         case Amp_Native_Function_Id_Tessellate:
-            frameProfile->TesselationTime += functionTime;
+            // no longer care about this. Report thrashing (eviction) time instead, which includes tessellation
             break;
         case Amp_Native_Function_Id_GlyphTextureMapper_Create:
             frameProfile->NumFontCacheTextureUpdates += functionCalls;
@@ -1020,7 +1028,12 @@ void ViewStats::UpdateStats(UInt64 functionId, UInt32 functionTime, UInt32 funct
             break;
         case Amp_Native_Function_Id_GlyphCache_RasterizeGlyph:
         case Amp_Native_Function_Id_GlyphCache_RasterizeShadow:
+            frameProfile->FontMissTime += functionTime;
             frameProfile->FontMisses += functionCalls;
+            break;
+        case Amp_Native_Function_Id_GlyphCache_EvictText:
+            frameProfile->FontThrashing += functionCalls;
+            frameProfile->FontThrashingTime += functionTime;
             break;
         }
     }
@@ -1030,3 +1043,5 @@ void ViewStats::UpdateStats(UInt64 functionId, UInt32 functionTime, UInt32 funct
 } // namespace AMP
 } // namespace GFx
 } // namespace Scaleform
+
+#endif

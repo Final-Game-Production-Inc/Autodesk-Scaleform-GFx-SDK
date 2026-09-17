@@ -8,6 +8,7 @@ Created     :   November 25, 2008
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -386,10 +387,12 @@ public: // shouldn't be public but some compilers (such as ps3) complain
 public:
     struct Stats
     {
+        Ptr<AmpStats> AdvanceStats;
         unsigned RootsNumber;
         unsigned RootsFreedTotal;
-
-        Stats() { RootsNumber = RootsFreedTotal = 0; }
+        void ResetStats() { RootsNumber = RootsFreedTotal = 0; }
+        Stats(AmpStats* advanceStats) 
+            : AdvanceStats(advanceStats) { ResetStats(); } 
     };
 public:
     RefCountCollector():FirstFreeRootIndex(SF_MAX_UPINT), Flags(0) { pLastPtr = &ListRoot; }
@@ -679,6 +682,9 @@ bool RefCountCollector<Stat>::Collect(Stats* pstat)
         return false;
     }
 
+    AmpStats* ampStats = (pstat != NULL) ? pstat->AdvanceStats : NULL;
+    SF_AMP_SCOPE_TIMER_ID(ampStats, "GC::Collect", Amp_Native_Function_Id_GcCollect);
+
     SF_GC_PRINT("++++++++ Starting collecting");
     UPInt  initialNRoots     = 0;
     UPInt  totalKillListSize = 0;
@@ -829,6 +835,11 @@ bool RefCountCollector<Stat>::Collect(Stats* pstat)
         // to avoid negative difference between RootsNumber and RootsFreedTotal.
         pstat->RootsNumber              = (unsigned)initialNRoots;
         pstat->RootsFreedTotal          = (unsigned)Alg::PMin(initialNRoots, totalKillListSize);
+        if (ampStats)
+        {
+            ampStats->AddGcRoots(pstat->RootsNumber);
+            ampStats->AddGcFreedRoots(pstat->RootsFreedTotal);
+        }
     }
     SF_GC_PRINT("-------- Finished collecting\n");
     return true;

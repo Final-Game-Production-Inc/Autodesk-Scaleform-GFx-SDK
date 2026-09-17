@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_filters::BevelFilter, Instances::fl_filters::BevelFilter::mid_angleGet, Value::Number> TFunc_Instances_BevelFilter_angleGet;
 typedef ThunkFunc1<Instances::fl_filters::BevelFilter, Instances::fl_filters::BevelFilter::mid_angleSet, const Value, Value::Number> TFunc_Instances_BevelFilter_angleSet;
 typedef ThunkFunc0<Instances::fl_filters::BevelFilter, Instances::fl_filters::BevelFilter::mid_blurXGet, Value::Number> TFunc_Instances_BevelFilter_blurXGet;
@@ -100,13 +95,14 @@ namespace Instances { namespace fl_filters
     void BevelFilter::angleGet(Value::Number& result)
     {
 //##protect##"instance::BevelFilter::angleGet()"
-        result = SF_RADTODEG(GetBevelFilterData()->GetAngle());
+        result = SF_RADTODEG(GetBevelFilterData()->GetAngle()) - 180.0;
 //##protect##"instance::BevelFilter::angleGet()"
     }
     void BevelFilter::angleSet(const Value& result, Value::Number value)
     {
 //##protect##"instance::BevelFilter::angleSet()"
         SF_UNUSED(result);
+        value += 180.0;
         GetBevelFilterData()->SetAngleDistance((float)SF_DEGTORAD((float)value), GetBevelFilterData()->GetDistance());
 //##protect##"instance::BevelFilter::angleSet()"
     }
@@ -120,6 +116,7 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::BevelFilter::blurXSet()"
         SF_UNUSED(result);
+        value = Alg::Max(0.0, value);
         GetBevelFilterData()->GetParams().BlurX = PixelsToTwips((float)value);
 //##protect##"instance::BevelFilter::blurXSet()"
     }
@@ -133,6 +130,7 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::BevelFilter::blurYSet()"
         SF_UNUSED(result);
+        value = Alg::Max(0.0, value);
         GetBevelFilterData()->GetParams().BlurY = PixelsToTwips((float)value);
 //##protect##"instance::BevelFilter::blurYSet()"
     }
@@ -187,7 +185,9 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::BevelFilter::knockoutSet()"
         SF_UNUSED(result);
-        GetBevelFilterData()->GetParams().Mode |= (value ? Render::BlurFilterParams::Mode_Knockout : 0);
+        unsigned& mode = GetBevelFilterData()->GetParams().Mode;
+        mode &= ~Render::BlurFilterParams::Mode_Knockout;
+        mode |= (value ? Render::BlurFilterParams::Mode_Knockout : 0);
 //##protect##"instance::BevelFilter::knockoutSet()"
     }
     void BevelFilter::qualityGet(SInt32& result)
@@ -247,7 +247,10 @@ namespace Instances { namespace fl_filters
     void BevelFilter::typeGet(ASString& result)
     {
 //##protect##"instance::BevelFilter::typeGet()"
-        if ( GetBevelFilterData()->GetParams().Mode & Render::BlurFilterParams::Mode_Inner )
+        unsigned& mode = GetBevelFilterData()->GetParams().Mode;
+        if ((mode & Render::BlurFilterParams::Mode_Highlight))
+            result = "full";
+        else if (mode & Render::BlurFilterParams::Mode_Inner)
             result = "inner";
         else
             result = "outer";
@@ -257,17 +260,17 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::BevelFilter::typeSet()"
         SF_UNUSED(result);
+        unsigned& mode = GetBevelFilterData()->GetParams().Mode;
+        mode &= ~(Render::BlurFilterParams::Mode_Inner | Render::BlurFilterParams::Mode_Highlight);
         if ( value == "inner" )
-        {
-            GetBevelFilterData()->GetParams().Mode |= Render::BlurFilterParams::Mode_Inner;
-        }
+            mode |= Render::BlurFilterParams::Mode_Inner;
         else if ( value == "outer" )
         {
-            GetBevelFilterData()->GetParams().Mode &= ~Render::BlurFilterParams::Mode_Inner;
+            // No additional flags.
         }
-        else if ( value == "full" )
+        else // "full" is the default if the string is not recognized as a valid type. No expection is thrown.
         {
-            WARN_NOT_IMPLEMENTED("instance::BevelFilter::typeSet() - full");
+            mode |= Render::BlurFilterParams::Mode_Highlight;
         }
 //##protect##"instance::BevelFilter::typeSet()"
     }
@@ -335,6 +338,9 @@ namespace Instances { namespace fl_filters
         ASString type = sm.CreateConstString("inner");
         bool knock(false);
 
+        if ( argc >= 13 )
+            return GetVM().ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, GetVM() SF_DEBUG_ARG("flash.filters::BevelFilter()") SF_DEBUG_ARG(0) SF_DEBUG_ARG(12) SF_DEBUG_ARG(argc)));
+
         if ( argc >= 1 && !argv[0].Convert2Number(dist)) return;
         if ( argc >= 2 && !argv[1].Convert2Number(angl)) return;
         if ( argc >= 3 && !argv[2].Convert2UInt32(highC)) return;
@@ -368,40 +374,69 @@ namespace Instances { namespace fl_filters
 
 namespace InstanceTraits { namespace fl_filters
 {
+    // const UInt16 BevelFilter::tito[BevelFilter::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 
+    // };
+    const TypeInfo* BevelFilter::tit[37] = {
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl_filters::BitmapFilterTI, 
+    };
     const ThunkInfo BevelFilter::ti[BevelFilter::ThunkInfoNum] = {
-        {TFunc_Instances_BevelFilter_angleGet::Func, &AS3::fl::NumberTI, "angle", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_angleSet::Func, NULL, "angle", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_blurXGet::Func, &AS3::fl::NumberTI, "blurX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_blurXSet::Func, NULL, "blurX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_blurYGet::Func, &AS3::fl::NumberTI, "blurY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_blurYSet::Func, NULL, "blurY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_distanceGet::Func, &AS3::fl::NumberTI, "distance", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_distanceSet::Func, NULL, "distance", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_highlightAlphaGet::Func, &AS3::fl::NumberTI, "highlightAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_highlightAlphaSet::Func, NULL, "highlightAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_highlightColorGet::Func, &AS3::fl::uintTI, "highlightColor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_highlightColorSet::Func, NULL, "highlightColor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_knockoutGet::Func, &AS3::fl::BooleanTI, "knockout", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_knockoutSet::Func, NULL, "knockout", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_qualityGet::Func, &AS3::fl::int_TI, "quality", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_qualitySet::Func, NULL, "quality", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_shadowAlphaGet::Func, &AS3::fl::NumberTI, "shadowAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_shadowAlphaSet::Func, NULL, "shadowAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_shadowColorGet::Func, &AS3::fl::uintTI, "shadowColor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_shadowColorSet::Func, NULL, "shadowColor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_strengthGet::Func, &AS3::fl::NumberTI, "strength", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_strengthSet::Func, NULL, "strength", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_typeGet::Func, &AS3::fl::StringTI, "type", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BevelFilter_typeSet::Func, NULL, "type", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_BevelFilter_clone::Func, &AS3::fl_filters::BitmapFilterTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_BevelFilter_angleGet::Func, &BevelFilter::tit[0], "angle", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_angleSet::Func, &BevelFilter::tit[1], "angle", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_blurXGet::Func, &BevelFilter::tit[3], "blurX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_blurXSet::Func, &BevelFilter::tit[4], "blurX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_blurYGet::Func, &BevelFilter::tit[6], "blurY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_blurYSet::Func, &BevelFilter::tit[7], "blurY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_distanceGet::Func, &BevelFilter::tit[9], "distance", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_distanceSet::Func, &BevelFilter::tit[10], "distance", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_highlightAlphaGet::Func, &BevelFilter::tit[12], "highlightAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_highlightAlphaSet::Func, &BevelFilter::tit[13], "highlightAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_highlightColorGet::Func, &BevelFilter::tit[15], "highlightColor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_highlightColorSet::Func, &BevelFilter::tit[16], "highlightColor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_knockoutGet::Func, &BevelFilter::tit[18], "knockout", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_knockoutSet::Func, &BevelFilter::tit[19], "knockout", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_qualityGet::Func, &BevelFilter::tit[21], "quality", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_qualitySet::Func, &BevelFilter::tit[22], "quality", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_shadowAlphaGet::Func, &BevelFilter::tit[24], "shadowAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_shadowAlphaSet::Func, &BevelFilter::tit[25], "shadowAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_shadowColorGet::Func, &BevelFilter::tit[27], "shadowColor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_shadowColorSet::Func, &BevelFilter::tit[28], "shadowColor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_strengthGet::Func, &BevelFilter::tit[30], "strength", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_strengthSet::Func, &BevelFilter::tit[31], "strength", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_typeGet::Func, &BevelFilter::tit[33], "type", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_typeSet::Func, &BevelFilter::tit[34], "type", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BevelFilter_clone::Func, &BevelFilter::tit[36], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     BevelFilter::BevelFilter(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"InstanceTraits::BevelFilter::BevelFilter()"
 //##protect##"InstanceTraits::BevelFilter::BevelFilter()"
-        SetMemSize(sizeof(Instances::fl_filters::BevelFilter));
 
     }
 
@@ -418,24 +453,27 @@ namespace InstanceTraits { namespace fl_filters
 
 namespace ClassTraits { namespace fl_filters
 {
-    BevelFilter::BevelFilter(VM& vm)
-    : Traits(vm, AS3::fl_filters::BevelFilterCI)
+
+    BevelFilter::BevelFilter(VM& vm, const ClassInfo& ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"ClassTraits::BevelFilter::BevelFilter()"
 //##protect##"ClassTraits::BevelFilter::BevelFilter()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_filters::BevelFilter(vm, AS3::fl_filters::BevelFilterCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> BevelFilter::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) BevelFilter(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) BevelFilter(vm, AS3::fl_filters::BevelFilterCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_filters::BevelFilterCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -446,6 +484,11 @@ namespace fl_filters
 {
     const TypeInfo BevelFilterTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_filters::BevelFilter::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_filters::BevelFilter::ThunkInfoNum,
+        0,
         "BevelFilter", "flash.filters", &fl_filters::BitmapFilterTI,
         TypeInfo::None
     };
@@ -453,10 +496,6 @@ namespace fl_filters
     const ClassInfo BevelFilterCI = {
         &BevelFilterTI,
         ClassTraits::fl_filters::BevelFilter::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_filters::BevelFilter::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_filters::BevelFilter::ti,

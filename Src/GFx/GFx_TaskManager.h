@@ -10,6 +10,7 @@ Notes       :   A Task is a unit of work that can be executed
                 on several threads.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -93,7 +94,7 @@ public:
     
     // Obtains Id describing this task.    
     inline TaskId      GetTaskId() const    { return ThisTaskId; }
-    inline TaskType    GetTaskType() const  { return (TaskType)(GetTaskId() & Type_Mask); }
+    inline TaskType    GetTaskType() const  { return (TaskType)(static_cast<uint32_t>(GetTaskId()) & static_cast<uint32_t>(Type_Mask)); }
     inline TaskState   GetTaskState() const { return CurrentState; }
 
 

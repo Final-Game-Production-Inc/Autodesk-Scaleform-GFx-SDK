@@ -328,7 +328,7 @@ private:
         pNext->pPrev = pPrev;
         RefCount &= ~Flag_InList; 
 #if defined(SF_BUILD_DEBUG) || defined(SF_BUILD_DEBUGOPT)
-        pPrev = pNext = reinterpret_cast<const RefCountBaseGC*>(~0u);
+        pPrev = pNext = reinterpret_cast<const RefCountBaseGC*>(~uintptr_t(0));
 #endif
     }
     void ReleaseInternal(GFC_GC_DEBUG_PARAMS_DEF) const;
@@ -338,8 +338,8 @@ public:
     { 
         _pRCC = prcc;
 #if defined(SF_BUILD_DEBUG) || defined(SF_BUILD_DEBUGOPT)
-        pPrev = pNext         = reinterpret_cast<const RefCountBaseGC*>(~0u);
-        pPrevRoot = pNextRoot = reinterpret_cast<const RefCountBaseGC*>(~0u);
+        pPrev = pNext         = reinterpret_cast<const RefCountBaseGC*>(~uintptr_t(0));
+        pPrevRoot = pNextRoot = reinterpret_cast<const RefCountBaseGC*>(~uintptr_t(0));
 #endif
     }
 
@@ -857,7 +857,9 @@ void RefCountCollector<Stat>::AddRoot(const RefCountBaseGC<Stat>* root, bool for
 
     SF_ASSERT(!root->IsDelayedRelease());
     SF_ASSERT(!root->IsInList());
+#ifdef GFX_AS3_VERBOSE
     SF_ASSERT(!root->IsRoot());
+#endif
 
     // figure out which root is this and get the appropriate RootDesc
     RootDesc& r = GetRootDesc(root);
@@ -907,7 +909,7 @@ bool RefCountCollector<Stat>::Collect(unsigned uptoGeneration, bool upgradeGen, 
         }
         return false;
     }
-    AmpStats* ampStats = (pstat)?pstat->AdvanceStats:0;
+    AmpStats* ampStats = (pstat != NULL) ? pstat->AdvanceStats : NULL;
     SF_AMP_SCOPE_TIMER_ID(ampStats, "GC::Collect", Amp_Native_Function_Id_GcCollect);
     Flags |= Flags_InCollect;
 
@@ -1211,36 +1213,36 @@ bool RefCountCollector<Stat>::Collect(unsigned uptoGeneration, bool upgradeGen, 
             if (hasFinalize)
             {
                 RootDesc& rootsHead = FinalizeRoots;
-                const RefCountBaseGC<Stat>* cur = rootsHead.pRootHead;
+                const RefCountBaseGC<Stat>* curGC = rootsHead.pRootHead;
 
-                while(cur)
+                while(curGC)
                 {
                     // remove cur from the roots list
-                    rootsHead.pRootHead = cur->pNextRoot;
+                    rootsHead.pRootHead = curGC->pNextRoot;
                     if (rootsHead.pRootHead)
                         rootsHead.pRootHead->pPrevRoot = NULL;
-                    cur->ClearInRootList();
+                    curGC->ClearInRootList();
 
-                    if (cur->ToBeFinalized())
+                    if (curGC->ToBeFinalized())
                     {
-                        SF_ASSERT(cur->HasFinalize());
-                        cur->ClearFinalize(); // avoid the second finalization
-                        cur->Increment(); // avoid releasing during Finalize
-                        const_cast<RefCountBaseGC<Stat>* >(cur)->Finalize_GC();
-                        cur->Decrement();
+                        SF_ASSERT(curGC->HasFinalize());
+                        curGC->ClearFinalize(); // avoid the second finalization
+                        curGC->Increment(); // avoid releasing during Finalize
+                        const_cast<RefCountBaseGC<Stat>* >(curGC)->Finalize_GC();
+                        curGC->Decrement();
 
                         // Make sure, the node is still in Root state to process it 
                         // at next iteration as usual. It must have 'Buffered' flag set.
-                        if (cur->IsInRootList())
-                            RemoveFromRoots(cur);
-                        cur->SetState(RefCountBaseGC<Stat>::State_InUse);
+                        if (curGC->IsInRootList())
+                            RemoveFromRoots(curGC);
+                        curGC->SetState(RefCountBaseGC<Stat>::State_InUse);
                         
                         // Downgrade generation to 'newborn' to force processing.
-                        cur->SetGen(RefCountBaseGC<Stat>::Gen_NewBorn);
+                        curGC->SetGen(RefCountBaseGC<Stat>::Gen_NewBorn);
 
-                        AddRoot(cur);
+                        AddRoot(curGC);
                     }
-                    cur = rootsHead.pRootHead;
+                    curGC = rootsHead.pRootHead;
                 }
             }
         }

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,12 +31,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 using namespace Render;
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_text::TextFormat, Instances::fl_text::TextFormat::mid_alignGet, ASString> TFunc_Instances_TextFormat_alignGet;
 typedef ThunkFunc1<Instances::fl_text::TextFormat, Instances::fl_text::TextFormat::mid_alignSet, const Value, const ASString&> TFunc_Instances_TextFormat_alignSet;
 typedef ThunkFunc0<Instances::fl_text::TextFormat, Instances::fl_text::TextFormat::mid_blockIndentGet, Value> TFunc_Instances_TextFormat_blockIndentGet;
@@ -714,51 +709,91 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
+    // const UInt16 TextFormat::tito[TextFormat::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52, 
+    // };
+    const TypeInfo* TextFormat::tit[54] = {
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        NULL, 
+        NULL, NULL, 
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, 
+        NULL, NULL, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+    };
     const ThunkInfo TextFormat::ti[TextFormat::ThunkInfoNum] = {
-        {TFunc_Instances_TextFormat_alignGet::Func, &AS3::fl::StringTI, "align", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_alignSet::Func, NULL, "align", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_blockIndentGet::Func, NULL, "blockIndent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_blockIndentSet::Func, NULL, "blockIndent", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_boldGet::Func, NULL, "bold", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_boldSet::Func, NULL, "bold", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_bulletGet::Func, NULL, "bullet", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_bulletSet::Func, NULL, "bullet", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_colorGet::Func, NULL, "color", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_colorSet::Func, NULL, "color", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_fontGet::Func, &AS3::fl::StringTI, "font", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_fontSet::Func, NULL, "font", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_indentGet::Func, NULL, "indent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_indentSet::Func, NULL, "indent", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_italicGet::Func, NULL, "italic", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_italicSet::Func, NULL, "italic", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_kerningGet::Func, NULL, "kerning", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_kerningSet::Func, NULL, "kerning", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_leadingGet::Func, NULL, "leading", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_leadingSet::Func, NULL, "leading", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_leftMarginGet::Func, NULL, "leftMargin", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_leftMarginSet::Func, NULL, "leftMargin", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_letterSpacingGet::Func, NULL, "letterSpacing", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_letterSpacingSet::Func, NULL, "letterSpacing", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_rightMarginGet::Func, NULL, "rightMargin", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_rightMarginSet::Func, NULL, "rightMargin", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_sizeGet::Func, NULL, "size", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_sizeSet::Func, NULL, "size", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_tabStopsGet::Func, &AS3::fl::ArrayTI, "tabStops", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_tabStopsSet::Func, NULL, "tabStops", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_targetGet::Func, &AS3::fl::StringTI, "target", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_targetSet::Func, NULL, "target", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_underlineGet::Func, NULL, "underline", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_underlineSet::Func, NULL, "underline", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextFormat_urlGet::Func, &AS3::fl::StringTI, "url", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextFormat_urlSet::Func, NULL, "url", NULL, Abc::NS_Public, CT_Set, 1, 1},
+        {TFunc_Instances_TextFormat_alignGet::Func, &TextFormat::tit[0], "align", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_alignSet::Func, &TextFormat::tit[1], "align", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_blockIndentGet::Func, &TextFormat::tit[3], "blockIndent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_blockIndentSet::Func, &TextFormat::tit[4], "blockIndent", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_boldGet::Func, &TextFormat::tit[6], "bold", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_boldSet::Func, &TextFormat::tit[7], "bold", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_bulletGet::Func, &TextFormat::tit[9], "bullet", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_bulletSet::Func, &TextFormat::tit[10], "bullet", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_colorGet::Func, &TextFormat::tit[12], "color", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_colorSet::Func, &TextFormat::tit[13], "color", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_fontGet::Func, &TextFormat::tit[15], "font", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_fontSet::Func, &TextFormat::tit[16], "font", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_indentGet::Func, &TextFormat::tit[18], "indent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_indentSet::Func, &TextFormat::tit[19], "indent", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_italicGet::Func, &TextFormat::tit[21], "italic", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_italicSet::Func, &TextFormat::tit[22], "italic", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_kerningGet::Func, &TextFormat::tit[24], "kerning", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_kerningSet::Func, &TextFormat::tit[25], "kerning", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_leadingGet::Func, &TextFormat::tit[27], "leading", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_leadingSet::Func, &TextFormat::tit[28], "leading", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_leftMarginGet::Func, &TextFormat::tit[30], "leftMargin", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_leftMarginSet::Func, &TextFormat::tit[31], "leftMargin", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_letterSpacingGet::Func, &TextFormat::tit[33], "letterSpacing", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_letterSpacingSet::Func, &TextFormat::tit[34], "letterSpacing", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_rightMarginGet::Func, &TextFormat::tit[36], "rightMargin", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_rightMarginSet::Func, &TextFormat::tit[37], "rightMargin", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_sizeGet::Func, &TextFormat::tit[39], "size", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_sizeSet::Func, &TextFormat::tit[40], "size", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_tabStopsGet::Func, &TextFormat::tit[42], "tabStops", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_tabStopsSet::Func, &TextFormat::tit[43], "tabStops", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_targetGet::Func, &TextFormat::tit[45], "target", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_targetSet::Func, &TextFormat::tit[46], "target", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_underlineGet::Func, &TextFormat::tit[48], "underline", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_underlineSet::Func, &TextFormat::tit[49], "underline", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_urlGet::Func, &TextFormat::tit[51], "url", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextFormat_urlSet::Func, &TextFormat::tit[52], "url", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
     };
 
     TextFormat::TextFormat(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::TextFormat::TextFormat()"
 //##protect##"InstanceTraits::TextFormat::TextFormat()"
-        SetMemSize(sizeof(Instances::fl_text::TextFormat));
 
     }
 
@@ -775,24 +810,27 @@ namespace InstanceTraits { namespace fl_text
 
 namespace ClassTraits { namespace fl_text
 {
-    TextFormat::TextFormat(VM& vm)
-    : Traits(vm, AS3::fl_text::TextFormatCI)
+
+    TextFormat::TextFormat(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::TextFormat::TextFormat()"
 //##protect##"ClassTraits::TextFormat::TextFormat()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_text::TextFormat(vm, AS3::fl_text::TextFormatCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> TextFormat::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TextFormat(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TextFormat(vm, AS3::fl_text::TextFormatCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_text::TextFormatCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -803,6 +841,11 @@ namespace fl_text
 {
     const TypeInfo TextFormatTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_text::TextFormat::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_text::TextFormat::ThunkInfoNum,
+        0,
         "TextFormat", "flash.text", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -810,10 +853,6 @@ namespace fl_text
     const ClassInfo TextFormatCI = {
         &TextFormatTI,
         ClassTraits::fl_text::TextFormat::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_text::TextFormat::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_text::TextFormat::ti,

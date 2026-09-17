@@ -6,6 +6,7 @@ Created     :   July 14, 2008
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -311,7 +312,7 @@ bool DebugStorageMH::AddAlloc(PageInfoMH* parentInfo, UPInt parentAddr, UPInt th
 
         DebugDataPtr parent;
         findDebugData(parentInfo, parentAddr, &parent);
-        SF_ASSERT(parent.pSelf != 0);
+        SF_DEBUG_ASSERT(parent.pSelf != 0, "Error, allocation was not allocated in a heap (perhaps it was a stack allocation?).");
         if (data->Info.StatId == Stat_Default_Mem)
         {
             data->Info.StatId = parent.pSelf->Info.StatId;

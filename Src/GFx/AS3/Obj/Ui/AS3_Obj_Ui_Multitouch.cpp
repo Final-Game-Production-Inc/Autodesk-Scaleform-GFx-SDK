@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -143,32 +144,46 @@ template <> const TFunc_Classes_Multitouch_supportsTouchEventsGet::TMethod TFunc
 
 namespace ClassTraits { namespace fl_ui
 {
-    const ThunkInfo Multitouch::ti[Multitouch::ThunkInfoNum] = {
-        {TFunc_Classes_Multitouch_inputModeGet::Func, &AS3::fl::StringTI, "inputMode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Multitouch_inputModeSet::Func, NULL, "inputMode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_Multitouch_maxTouchPointsGet::Func, &AS3::fl::int_TI, "maxTouchPoints", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Multitouch_supportedGesturesGet::Func, NULL, "supportedGestures", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Multitouch_supportsGestureEventsGet::Func, &AS3::fl::BooleanTI, "supportsGestureEvents", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Multitouch_supportsTouchEventsGet::Func, &AS3::fl::BooleanTI, "supportsTouchEvents", NULL, Abc::NS_Public, CT_Get, 0, 0},
+    // const UInt16 Multitouch::tito[Multitouch::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 6, 
+    // };
+    const TypeInfo* Multitouch::tit[7] = {
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        NULL, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
     };
-    Multitouch::Multitouch(VM& vm)
-    : Traits(vm, AS3::fl_ui::MultitouchCI)
+    const ThunkInfo Multitouch::ti[Multitouch::ThunkInfoNum] = {
+        {TFunc_Classes_Multitouch_inputModeGet::Func, &Multitouch::tit[0], "inputMode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Multitouch_inputModeSet::Func, &Multitouch::tit[1], "inputMode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Multitouch_maxTouchPointsGet::Func, &Multitouch::tit[3], "maxTouchPoints", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Multitouch_supportedGesturesGet::Func, &Multitouch::tit[4], "supportedGestures", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Multitouch_supportsGestureEventsGet::Func, &Multitouch::tit[5], "supportsGestureEvents", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Multitouch_supportsTouchEventsGet::Func, &Multitouch::tit[6], "supportsTouchEvents", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+    };
+
+    Multitouch::Multitouch(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Multitouch::Multitouch()"
 //##protect##"ClassTraits::Multitouch::Multitouch()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_ui::MultitouchCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_ui::Multitouch(*this));
 
     }
 
     Pickable<Traits> Multitouch::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Multitouch(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Multitouch(vm, AS3::fl_ui::MultitouchCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_ui::MultitouchCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -179,6 +194,11 @@ namespace fl_ui
 {
     const TypeInfo MultitouchTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_ui::Multitouch::InstanceType),
+        ClassTraits::fl_ui::Multitouch::ThunkInfoNum,
+        0,
+        0,
+        0,
         "Multitouch", "flash.ui", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -186,10 +206,6 @@ namespace fl_ui
     const ClassInfo MultitouchCI = {
         &MultitouchTI,
         ClassTraits::fl_ui::Multitouch::MakeClassTraits,
-        ClassTraits::fl_ui::Multitouch::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_ui::Multitouch::ti,
         NULL,
         NULL,

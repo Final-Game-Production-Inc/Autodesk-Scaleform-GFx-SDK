@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -39,6 +40,7 @@ namespace Classes
 }
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -72,6 +74,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_text::TextField, Instances::fl_text::TextField::mid_alwaysShowSelectionGet, bool> TFunc_Instances_TextField_alwaysShowSelectionGet;
 typedef ThunkFunc1<Instances::fl_text::TextField, Instances::fl_text::TextField::mid_alwaysShowSelectionSet, const Value, bool> TFunc_Instances_TextField_alwaysShowSelectionSet;
 typedef ThunkFunc0<Instances::fl_text::TextField, Instances::fl_text::TextField::mid_antiAliasTypeGet, ASString> TFunc_Instances_TextField_antiAliasTypeGet;
@@ -897,10 +901,18 @@ namespace Instances { namespace fl_text
         if (GetTextField()->GetCharBoundaries(&charBounds, charIndex))
         {
             Value argv[4];
+#if 0
+            // Old code.
             argv[0].SetNumber(Alg::IRound(TwipsToPixels(charBounds.x1)));
             argv[1].SetNumber(Alg::IRound(TwipsToPixels(charBounds.y1)));
             argv[2].SetNumber(Alg::IRound(TwipsToPixels(charBounds.Width())));
             argv[3].SetNumber(Alg::IRound(TwipsToPixels(charBounds.Height())));
+#else
+            argv[0].SetNumber(TwipsToPixels(charBounds.x1));
+            argv[1].SetNumber(TwipsToPixels(charBounds.y1));
+            argv[2].SetNumber(TwipsToPixels(charBounds.Width()));
+            argv[3].SetNumber(TwipsToPixels(charBounds.Height()));
+#endif
 
             ASVM& asvm = static_cast<ASVM&>(GetVM());
             asvm.ConstructInstance(result, asvm.RectangleClass, 4, argv);
@@ -984,12 +996,22 @@ namespace Instances { namespace fl_text
         if (GetTextField()->GetLineMetrics(unsigned(lineIndex), &metrics))
         {
             Value argv[6];
+#if 0
+            // Old code.
             argv[0].SetNumber(Alg::IRound(TwipsToPixels(metrics.Ascent)));
             argv[1].SetNumber(Alg::IRound(TwipsToPixels(metrics.Descent)));
             argv[2].SetNumber(Alg::IRound(TwipsToPixels(metrics.Height)));
             argv[3].SetNumber(Alg::IRound(TwipsToPixels(metrics.Leading)));
             argv[4].SetNumber(Alg::IRound(TwipsToPixels(metrics.Width)));
             argv[5].SetNumber(Alg::IRound(TwipsToPixels(metrics.FirstCharXOff)));
+#else
+            argv[0].SetNumber(TwipsToPixels(metrics.Ascent));
+            argv[1].SetNumber(TwipsToPixels(metrics.Descent));
+            argv[2].SetNumber(TwipsToPixels(metrics.Height));
+            argv[3].SetNumber(TwipsToPixels(metrics.Leading));
+            argv[4].SetNumber(TwipsToPixels(metrics.Width));
+            argv[5].SetNumber(TwipsToPixels(metrics.FirstCharXOff));
+#endif
 
             ASVM& asvm = static_cast<ASVM&>(GetVM());
 
@@ -1067,8 +1089,8 @@ namespace Instances { namespace fl_text
         if (ptxtDisp->HasStyleSheet())
             return;
 
-        const Text::TextFormat* ptextFmt = ptxtDisp->GetDefaultTextFormat();
-        const Text::ParagraphFormat* pparaFmt = ptxtDisp->GetDefaultParagraphFormat();
+        ConstPtr<Text::TextFormat> ptextFmt = ptxtDisp->GetDefaultTextFormat();
+        ConstPtr<Text::ParagraphFormat> pparaFmt = ptxtDisp->GetDefaultParagraphFormat();
 
         unsigned len = value.GetLength();
         UPInt startPos = ptxtDisp->GetEditorKit()->GetBeginSelection();
@@ -1077,12 +1099,12 @@ namespace Instances { namespace fl_text
         wchar_t buf[1024];
         if (len < sizeof(buf)/sizeof(buf[0]))
         {
-            UTF8Util::DecodeString(buf, value.ToCStr());
+            UTF8Util::DecodeStringSafe(buf, 1024, value.ToCStr());
             ptxtDisp->ReplaceText(buf, startPos, endPos);
         }
         else {
             wchar_t* pbuf = (wchar_t*)SF_ALLOC((len + 1) * sizeof(wchar_t), StatMV_Text_Mem);
-            UTF8Util::DecodeString(pbuf, value.ToCStr());
+            UTF8Util::DecodeStringSafe(pbuf, len + 1, value.ToCStr());
             ptxtDisp->ReplaceText(pbuf, startPos, endPos);
             SF_FREE(pbuf);
         }
@@ -1110,8 +1132,8 @@ namespace Instances { namespace fl_text
         unsigned endPos   = unsigned(endIndex);
         if (beginIndex >= 0 && endIndex >= 0 && startPos <= endPos)
         {
-            const Text::TextFormat* ptextFmt;
-            const Text::ParagraphFormat* pparaFmt;
+            ConstPtr<Text::TextFormat> ptextFmt;
+            ConstPtr<Text::ParagraphFormat> pparaFmt;
             UPInt prevLen = ptxtDisp->GetTextLength();
             UPInt newLen  = prevLen - (endPos - startPos) + len;
             if (startPos >= prevLen)
@@ -1120,19 +1142,23 @@ namespace Instances { namespace fl_text
                 pparaFmt = ptxtDisp->GetDefaultParagraphFormat();
             }
             else
-                ptxtDisp->GetTextAndParagraphFormat(&ptextFmt, &pparaFmt, startPos);
-            if (ptextFmt) ptextFmt->AddRef(); // save format from possible releasing
-            if (pparaFmt) pparaFmt->AddRef(); // save format from possible releasing
+            {
+                const Text::TextFormat* _ptextFmt;
+                const Text::ParagraphFormat* _pparaFmt;
+                ptxtDisp->GetTextAndParagraphFormat(&_ptextFmt, &_pparaFmt, startPos);
+                ptextFmt = _ptextFmt;
+                pparaFmt = _pparaFmt;
+            }
 
             wchar_t buf[1024];
             if (len < sizeof(buf)/sizeof(buf[0]))
             {
-                UTF8Util::DecodeString(buf, newText.ToCStr());
+                UTF8Util::DecodeStringSafe(buf, 1024, newText.ToCStr());
                 ptxtDisp->ReplaceText(buf, startPos, endPos);
             }
             else {
                 wchar_t* pbuf = (wchar_t*)SF_ALLOC((len + 1) * sizeof(wchar_t), StatMV_Text_Mem);
-                UTF8Util::DecodeString(pbuf, newText.ToCStr());
+                UTF8Util::DecodeStringSafe(pbuf, len + 1, newText.ToCStr());
                 ptxtDisp->ReplaceText(pbuf, startPos, endPos);
                 SF_FREE(pbuf);
             }
@@ -1148,8 +1174,6 @@ namespace Instances { namespace fl_text
             if (ptextFmt)	
                 ptxtDisp->SetTextFormat(*ptextFmt, startPos, startPos + len);
 			
-            if (ptextFmt) ptextFmt->Release();
-            if (pparaFmt) pparaFmt->Release();
             ptxtDisp->SetDirtyFlag();
         }
 //##protect##"instance::TextField::replaceText()"
@@ -1286,98 +1310,189 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
+    // const UInt16 TextField::tito[TextField::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 27, 29, 30, 32, 33, 35, 36, 38, 39, 41, 42, 43, 45, 46, 47, 48, 50, 51, 53, 54, 55, 57, 58, 60, 61, 63, 64, 66, 67, 68, 69, 71, 72, 74, 75, 77, 78, 80, 81, 82, 83, 85, 86, 88, 89, 91, 92, 94, 96, 98, 101, 103, 105, 108, 110, 112, 114, 116, 118, 120, 123, 125, 129, 132, 
+    // };
+    const TypeInfo* TextField::tit[136] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_text::TextFormatTI, 
+        NULL, &AS3::fl_text::TextFormatTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_text::StyleSheetTI, 
+        NULL, &AS3::fl_text::StyleSheetTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl_text::TextLineMetricsTI, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl_text::TextFormatTI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl_text::TextFormatTI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+    };
+    const Abc::ConstValue TextField::dva[4] = {
+        {Abc::CONSTANT_Int, 4}, {Abc::CONSTANT_Int, 4}, 
+        {Abc::CONSTANT_Int, 4}, {Abc::CONSTANT_Int, 4}, 
+    };
     const ThunkInfo TextField::ti[TextField::ThunkInfoNum] = {
-        {TFunc_Instances_TextField_alwaysShowSelectionGet::Func, &AS3::fl::BooleanTI, "alwaysShowSelection", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_alwaysShowSelectionSet::Func, NULL, "alwaysShowSelection", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_antiAliasTypeGet::Func, &AS3::fl::StringTI, "antiAliasType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_antiAliasTypeSet::Func, NULL, "antiAliasType", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_autoSizeGet::Func, &AS3::fl::StringTI, "autoSize", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_autoSizeSet::Func, NULL, "autoSize", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_backgroundGet::Func, &AS3::fl::BooleanTI, "background", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_backgroundSet::Func, NULL, "background", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_backgroundColorGet::Func, &AS3::fl::uintTI, "backgroundColor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_backgroundColorSet::Func, NULL, "backgroundColor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_borderGet::Func, &AS3::fl::BooleanTI, "border", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_borderSet::Func, NULL, "border", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_borderColorGet::Func, &AS3::fl::uintTI, "borderColor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_borderColorSet::Func, NULL, "borderColor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_bottomScrollVGet::Func, &AS3::fl::int_TI, "bottomScrollV", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_caretIndexGet::Func, &AS3::fl::int_TI, "caretIndex", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_condenseWhiteGet::Func, &AS3::fl::BooleanTI, "condenseWhite", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_condenseWhiteSet::Func, NULL, "condenseWhite", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_defaultTextFormatGet::Func, &AS3::fl_text::TextFormatTI, "defaultTextFormat", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_defaultTextFormatSet::Func, NULL, "defaultTextFormat", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_displayAsPasswordGet::Func, &AS3::fl::BooleanTI, "displayAsPassword", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_displayAsPasswordSet::Func, NULL, "displayAsPassword", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_embedFontsGet::Func, &AS3::fl::BooleanTI, "embedFonts", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_embedFontsSet::Func, NULL, "embedFonts", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_gridFitTypeGet::Func, &AS3::fl::StringTI, "gridFitType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_gridFitTypeSet::Func, NULL, "gridFitType", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_htmlTextGet::Func, &AS3::fl::StringTI, "htmlText", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_htmlTextSet::Func, NULL, "htmlText", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_lengthGet::Func, &AS3::fl::int_TI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_maxCharsGet::Func, &AS3::fl::int_TI, "maxChars", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_maxCharsSet::Func, NULL, "maxChars", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_maxScrollHGet::Func, &AS3::fl::int_TI, "maxScrollH", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_maxScrollVGet::Func, &AS3::fl::int_TI, "maxScrollV", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_mouseWheelEnabledGet::Func, &AS3::fl::BooleanTI, "mouseWheelEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_mouseWheelEnabledSet::Func, NULL, "mouseWheelEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_multilineGet::Func, &AS3::fl::BooleanTI, "multiline", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_multilineSet::Func, NULL, "multiline", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_numLinesGet::Func, &AS3::fl::int_TI, "numLines", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_restrictGet::Func, &AS3::fl::StringTI, "restrict", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_restrictSet::Func, NULL, "restrict", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_scrollHGet::Func, &AS3::fl::int_TI, "scrollH", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_scrollHSet::Func, NULL, "scrollH", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_scrollVGet::Func, &AS3::fl::int_TI, "scrollV", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_scrollVSet::Func, NULL, "scrollV", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_selectableGet::Func, &AS3::fl::BooleanTI, "selectable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_selectableSet::Func, NULL, "selectable", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_selectionBeginIndexGet::Func, &AS3::fl::int_TI, "selectionBeginIndex", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_selectionEndIndexGet::Func, &AS3::fl::int_TI, "selectionEndIndex", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_sharpnessGet::Func, &AS3::fl::NumberTI, "sharpness", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_sharpnessSet::Func, NULL, "sharpness", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_styleSheetGet::Func, &AS3::fl_text::StyleSheetTI, "styleSheet", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_styleSheetSet::Func, NULL, "styleSheet", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_textGet::Func, &AS3::fl::StringTI, "text", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_textSet::Func, NULL, "text", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_textColorGet::Func, &AS3::fl::uintTI, "textColor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_textColorSet::Func, NULL, "textColor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_textHeightGet::Func, &AS3::fl::NumberTI, "textHeight", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_textWidthGet::Func, &AS3::fl::NumberTI, "textWidth", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_thicknessGet::Func, &AS3::fl::NumberTI, "thickness", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_thicknessSet::Func, NULL, "thickness", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_typeGet::Func, &AS3::fl::StringTI, "type", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_typeSet::Func, NULL, "type", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_useRichTextClipboardGet::Func, &AS3::fl::BooleanTI, "useRichTextClipboard", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_useRichTextClipboardSet::Func, NULL, "useRichTextClipboard", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_wordWrapGet::Func, &AS3::fl::BooleanTI, "wordWrap", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextField_wordWrapSet::Func, NULL, "wordWrap", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TextField_appendText::Func, NULL, "appendText", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getCharBoundaries::Func, &AS3::fl_geom::RectangleTI, "getCharBoundaries", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getCharIndexAtPoint::Func, &AS3::fl::int_TI, "getCharIndexAtPoint", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_TextField_getFirstCharInParagraph::Func, &AS3::fl::int_TI, "getFirstCharInParagraph", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getImageReference::Func, &AS3::fl_display::DisplayObjectTI, "getImageReference", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getLineIndexAtPoint::Func, &AS3::fl::int_TI, "getLineIndexAtPoint", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_TextField_getLineIndexOfChar::Func, &AS3::fl::int_TI, "getLineIndexOfChar", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getLineLength::Func, &AS3::fl::int_TI, "getLineLength", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getLineMetrics::Func, &AS3::fl_text::TextLineMetricsTI, "getLineMetrics", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getLineOffset::Func, &AS3::fl::int_TI, "getLineOffset", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getLineText::Func, &AS3::fl::StringTI, "getLineText", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getParagraphLength::Func, &AS3::fl::int_TI, "getParagraphLength", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_getTextFormat::Func, &AS3::fl_text::TextFormatTI, "getTextFormat", NULL, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_TextField_replaceSelectedText::Func, NULL, "replaceSelectedText", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_TextField_replaceText::Func, NULL, "replaceText", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_TextField_setSelection::Func, NULL, "setSelection", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_TextField_setTextFormat::Func, NULL, "setTextFormat", NULL, Abc::NS_Public, CT_Method, 1, 3},
+        {TFunc_Instances_TextField_alwaysShowSelectionGet::Func, &TextField::tit[0], "alwaysShowSelection", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_alwaysShowSelectionSet::Func, &TextField::tit[1], "alwaysShowSelection", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_antiAliasTypeGet::Func, &TextField::tit[3], "antiAliasType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_antiAliasTypeSet::Func, &TextField::tit[4], "antiAliasType", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_autoSizeGet::Func, &TextField::tit[6], "autoSize", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_autoSizeSet::Func, &TextField::tit[7], "autoSize", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_backgroundGet::Func, &TextField::tit[9], "background", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_backgroundSet::Func, &TextField::tit[10], "background", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_backgroundColorGet::Func, &TextField::tit[12], "backgroundColor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_backgroundColorSet::Func, &TextField::tit[13], "backgroundColor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_borderGet::Func, &TextField::tit[15], "border", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_borderSet::Func, &TextField::tit[16], "border", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_borderColorGet::Func, &TextField::tit[18], "borderColor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_borderColorSet::Func, &TextField::tit[19], "borderColor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_bottomScrollVGet::Func, &TextField::tit[21], "bottomScrollV", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_caretIndexGet::Func, &TextField::tit[22], "caretIndex", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_condenseWhiteGet::Func, &TextField::tit[23], "condenseWhite", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_condenseWhiteSet::Func, &TextField::tit[24], "condenseWhite", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_defaultTextFormatGet::Func, &TextField::tit[26], "defaultTextFormat", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_defaultTextFormatSet::Func, &TextField::tit[27], "defaultTextFormat", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_displayAsPasswordGet::Func, &TextField::tit[29], "displayAsPassword", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_displayAsPasswordSet::Func, &TextField::tit[30], "displayAsPassword", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_embedFontsGet::Func, &TextField::tit[32], "embedFonts", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_embedFontsSet::Func, &TextField::tit[33], "embedFonts", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_gridFitTypeGet::Func, &TextField::tit[35], "gridFitType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_gridFitTypeSet::Func, &TextField::tit[36], "gridFitType", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_htmlTextGet::Func, &TextField::tit[38], "htmlText", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_htmlTextSet::Func, &TextField::tit[39], "htmlText", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_lengthGet::Func, &TextField::tit[41], "length", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_maxCharsGet::Func, &TextField::tit[42], "maxChars", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_maxCharsSet::Func, &TextField::tit[43], "maxChars", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_maxScrollHGet::Func, &TextField::tit[45], "maxScrollH", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_maxScrollVGet::Func, &TextField::tit[46], "maxScrollV", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_mouseWheelEnabledGet::Func, &TextField::tit[47], "mouseWheelEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_mouseWheelEnabledSet::Func, &TextField::tit[48], "mouseWheelEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_multilineGet::Func, &TextField::tit[50], "multiline", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_multilineSet::Func, &TextField::tit[51], "multiline", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_numLinesGet::Func, &TextField::tit[53], "numLines", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_restrictGet::Func, &TextField::tit[54], "restrict", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_restrictSet::Func, &TextField::tit[55], "restrict", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_scrollHGet::Func, &TextField::tit[57], "scrollH", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_scrollHSet::Func, &TextField::tit[58], "scrollH", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_scrollVGet::Func, &TextField::tit[60], "scrollV", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_scrollVSet::Func, &TextField::tit[61], "scrollV", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_selectableGet::Func, &TextField::tit[63], "selectable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_selectableSet::Func, &TextField::tit[64], "selectable", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_selectionBeginIndexGet::Func, &TextField::tit[66], "selectionBeginIndex", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_selectionEndIndexGet::Func, &TextField::tit[67], "selectionEndIndex", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_sharpnessGet::Func, &TextField::tit[68], "sharpness", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_sharpnessSet::Func, &TextField::tit[69], "sharpness", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_styleSheetGet::Func, &TextField::tit[71], "styleSheet", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_styleSheetSet::Func, &TextField::tit[72], "styleSheet", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_textGet::Func, &TextField::tit[74], "text", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_textSet::Func, &TextField::tit[75], "text", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_textColorGet::Func, &TextField::tit[77], "textColor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_textColorSet::Func, &TextField::tit[78], "textColor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_textHeightGet::Func, &TextField::tit[80], "textHeight", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_textWidthGet::Func, &TextField::tit[81], "textWidth", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_thicknessGet::Func, &TextField::tit[82], "thickness", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_thicknessSet::Func, &TextField::tit[83], "thickness", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_typeGet::Func, &TextField::tit[85], "type", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_typeSet::Func, &TextField::tit[86], "type", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_useRichTextClipboardGet::Func, &TextField::tit[88], "useRichTextClipboard", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_useRichTextClipboardSet::Func, &TextField::tit[89], "useRichTextClipboard", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_wordWrapGet::Func, &TextField::tit[91], "wordWrap", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextField_wordWrapSet::Func, &TextField::tit[92], "wordWrap", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_appendText::Func, &TextField::tit[94], "appendText", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getCharBoundaries::Func, &TextField::tit[96], "getCharBoundaries", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getCharIndexAtPoint::Func, &TextField::tit[98], "getCharIndexAtPoint", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_TextField_getFirstCharInParagraph::Func, &TextField::tit[101], "getFirstCharInParagraph", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getImageReference::Func, &TextField::tit[103], "getImageReference", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getLineIndexAtPoint::Func, &TextField::tit[105], "getLineIndexAtPoint", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_TextField_getLineIndexOfChar::Func, &TextField::tit[108], "getLineIndexOfChar", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getLineLength::Func, &TextField::tit[110], "getLineLength", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getLineMetrics::Func, &TextField::tit[112], "getLineMetrics", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getLineOffset::Func, &TextField::tit[114], "getLineOffset", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getLineText::Func, &TextField::tit[116], "getLineText", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getParagraphLength::Func, &TextField::tit[118], "getParagraphLength", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_getTextFormat::Func, &TextField::tit[120], "getTextFormat", NULL, Abc::NS_Public, CT_Method, 0, 2, 0, 2, &TextField::dva[0]},
+        {TFunc_Instances_TextField_replaceSelectedText::Func, &TextField::tit[123], "replaceSelectedText", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TextField_replaceText::Func, &TextField::tit[125], "replaceText", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_TextField_setSelection::Func, &TextField::tit[129], "setSelection", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_TextField_setTextFormat::Func, &TextField::tit[132], "setTextFormat", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 2, &TextField::dva[2]},
     };
 
     TextField::TextField(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::InteractiveObject(vm, ci)
     {
 //##protect##"InstanceTraits::TextField::TextField()"
 //##protect##"InstanceTraits::TextField::TextField()"
-        SetMemSize(sizeof(Instances::fl_text::TextField));
 
     }
 
@@ -1394,24 +1509,27 @@ namespace InstanceTraits { namespace fl_text
 
 namespace ClassTraits { namespace fl_text
 {
-    TextField::TextField(VM& vm)
-    : Traits(vm, AS3::fl_text::TextFieldCI)
+
+    TextField::TextField(VM& vm, const ClassInfo& ci)
+    : fl_display::InteractiveObject(vm, ci)
     {
 //##protect##"ClassTraits::TextField::TextField()"
 //##protect##"ClassTraits::TextField::TextField()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_text::TextField(vm, AS3::fl_text::TextFieldCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> TextField::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TextField(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TextField(vm, AS3::fl_text::TextFieldCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_text::TextFieldCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1422,6 +1540,11 @@ namespace fl_text
 {
     const TypeInfo TextFieldTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_text::TextField::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_text::TextField::ThunkInfoNum,
+        0,
         "TextField", "flash.text", &fl_display::InteractiveObjectTI,
         TypeInfo::None
     };
@@ -1429,10 +1552,6 @@ namespace fl_text
     const ClassInfo TextFieldCI = {
         &TextFieldTI,
         ClassTraits::fl_text::TextField::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_text::TextField::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_text::TextField::ti,

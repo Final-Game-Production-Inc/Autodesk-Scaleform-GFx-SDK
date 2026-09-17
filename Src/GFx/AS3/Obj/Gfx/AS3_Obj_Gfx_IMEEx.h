@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,6 +36,11 @@ namespace fl_gfx
     extern const TypeInfo IMECandidateListStyleTI;
     extern const ClassInfo IMECandidateListStyleCI;
 } // namespace fl_gfx
+namespace fl_display
+{
+    extern const TypeInfo SpriteTI;
+    extern const ClassInfo SpriteCI;
+} // namespace fl_display
 namespace fl
 {
     extern const TypeInfo StringTI;
@@ -61,7 +67,7 @@ namespace Classes { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class IMEEx : public Traits
+    class IMEEx : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -69,12 +75,16 @@ namespace ClassTraits { namespace fl_gfx
 #endif
     public:
         typedef Classes::fl_gfx::IMEEx ClassType;
+        typedef InstanceTraits::fl_events::EventDispatcher InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        IMEEx(VM& vm);
+        IMEEx(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 5 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[9];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

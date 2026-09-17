@@ -6,6 +6,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -62,7 +63,7 @@ void    SimpleMeshCache::releaseAllBuffers()
 void    SimpleMeshCache::ClearCache()
 {
     CacheList.EvictAll();
-    
+
     // Release all dynamically allocated buffers.
     SimpleMeshBuffer* pbuffer = (SimpleMeshBuffer*)Buffers.GetFirst();
     while(!Buffers.IsNull(pbuffer))
@@ -73,20 +74,14 @@ void    SimpleMeshCache::ClearCache()
             releaseMeshBuffer(p);
     }
 
-    SF_ASSERT(BatchCacheItemHash.GetSize() == 0);
-}
+    StagingBuffer.Reset();
+    StagingBuffer.Initialize(pHeap, Params.StagingBufferSize);
 
-void SimpleMeshCache::BeginFrame()
-{
-    if ( pRenderSync )
-        pRenderSync->BeginFrame();
+    SF_ASSERT(BatchCacheItemHash.GetSize() == 0);
 }
 
 void    SimpleMeshCache::EndFrame()
 {
-    if ( pRenderSync )
-        pRenderSync->EndFrame();
-
     CacheList.EndFrame();
 
     // Try and reclaim memory from items that have already been destroyed, but not freed.
@@ -283,9 +278,18 @@ bool    SimpleMeshCache::allocBuffer(UPInt* poffset, UPInt size, bool waitForCac
     pitems = (MeshCacheItem*)prevFrameList.GetFirst();
     while(!prevFrameList.IsNull(pitems))
     {
-        if (Evict(pitems, &Allocator) >= size)
-            goto alloc_size_available;
-        pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+        if (!pitems->GPUFence || !pitems->GPUFence->IsPending(FenceType_Vertex))
+        {
+            if (Evict(pitems, &Allocator) >= size)
+                goto alloc_size_available;
+
+            // Get the first item in the list, because and the head of the list will now be different, due to eviction.
+            pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+        }
+        else
+        {
+            pitems = (MeshCacheItem*)prevFrameList.GetNext(pitems);
+        }
     }
 
     // Force command buffer kick-off in case we'll be swapping
@@ -424,6 +428,11 @@ bool SimpleMeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
         return true;
     }
 
+    // Prepare and Pin mesh data with the StagingBuffer. NOTE: this must happen before calculating mesh sizes.
+    // This stage updates the mesh vertex/index counts, so calculating them first, it could be incorrect, for
+    // example in the case of MeshCache::ClearCache.
+    StagingBufferPrep   meshPrep(this, mc, prim->GetVertexFormat(), true);
+
     // NOTE: We always know that meshes in one batch fit into Mesh Staging Cache.
     unsigned totalVertexCount, totalIndexCount;
     pbatch->CalcMeshSizes(&totalVertexCount, &totalIndexCount);
@@ -462,8 +471,10 @@ bool SimpleMeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
 
 	pbatch->SetCacheItem(batchData);
 
-    // Prepare and Pin mesh data with the StagingBuffer.
-    StagingBufferPrep   meshPrep(this, mc, pbatch->GetPrimitive()->GetVertexFormat(), true, batchData);
+    // This step is a verification that the mesh is now either in the staging buffer, in an existing MeshCacheItem
+    // that we can copy the mesh from. It must be done after creating the cache item, because that may
+    // evict the item that would be copied from.
+    meshPrep.GenerateMeshes(batchData);
 
     // Copy meshes into the Vertex/Index buffers.
     // All the meshes have been pinned, so we can

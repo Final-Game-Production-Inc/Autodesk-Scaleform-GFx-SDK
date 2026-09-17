@@ -6,6 +6,7 @@ Created     :   December 2009
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -15,6 +16,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #ifndef INCLUDE_GFX_AMP_STREAM_H
 #define INCLUDE_GFX_AMP_STREAM_H
+
+#include "GFxConfig.h"
+#ifdef SF_ENABLE_STATS
 
 #include "Kernel/SF_File.h"
 
@@ -92,5 +96,7 @@ private:
 } // namespace GFx
 } // namespace Scaleform
 
+
+#endif
 
 #endif

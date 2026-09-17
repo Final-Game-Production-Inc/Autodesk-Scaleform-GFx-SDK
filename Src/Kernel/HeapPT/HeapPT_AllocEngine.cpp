@@ -7,6 +7,7 @@ Created     :   2009
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -180,10 +181,11 @@ HeapSegment* AllocEngine::allocSegment(unsigned  segType, UPInt dataSize,
     if (Limit && Footprint + dataSize > Limit && pLimHandler)
     {
         LockSafe::TmpUnlocker unlocker(GlobalRoot->GetLock());
+        ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
         *limHandlerOK = 
             ((MemoryHeap::LimitHandler*)pLimHandler)->
                 OnExceedLimit(pHeap, Footprint + dataSize - Limit);
-        return 0;
+        --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
     }
 
     *limHandlerOK = false;
@@ -240,10 +242,11 @@ HeapSegment* AllocEngine::allocSegmentNoGranulator(UPInt dataSize,
 {
     if (Limit && Footprint + dataSize > Limit && pLimHandler)
     {
+        ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
         *limHandlerOK = 
             ((MemoryHeap::LimitHandler*)pLimHandler)->
                 OnExceedLimit(pHeap, Footprint + dataSize - Limit);
-        return 0;
+        --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
     }
 
     *limHandlerOK = false;
@@ -687,9 +690,11 @@ void* AllocEngine::reallocSysDirect(HeapSegment* seg, void* oldPtr, UPInt newSiz
     {
         if (Limit && Footprint + newSize - oldSize > Limit && pLimHandler)
         {
+            ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
             bool limHandlerOK = 
                 ((MemoryHeap::LimitHandler*)pLimHandler)->
                     OnExceedLimit(pHeap, Footprint + newSize - oldSize - Limit);
+            --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
 
             if (!limHandlerOK || Footprint + newSize - oldSize > Limit)
                 return reallocGeneral(seg, oldPtr, oldSize, newSize, seg->Alignment);

@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,10 +36,16 @@ namespace fl
 {
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
+    extern const TypeInfo NumberTI;
+    extern const ClassInfo NumberCI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
     extern const TypeInfo ArrayTI;
     extern const ClassInfo ArrayCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
+    extern const TypeInfo uintTI;
+    extern const ClassInfo uintCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_gfx
@@ -61,7 +68,7 @@ namespace Classes { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class SystemEx : public Traits
+    class SystemEx : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -69,14 +76,19 @@ namespace ClassTraits { namespace fl_gfx
 #endif
     public:
         typedef Classes::fl_gfx::SystemEx ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        SystemEx(VM& vm);
+        SystemEx(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 4 };
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 8 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[14];
+        static const Abc::ConstValue dva[3];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

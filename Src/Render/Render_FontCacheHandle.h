@@ -6,6 +6,7 @@ Created     :   6/18/2007
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -31,7 +32,7 @@ namespace Scaleform { namespace Render {
 // associated GlyphCache (synchronization exchange protocol
 // in FontHandle allows FontCacheHandleManager to be released on any thread).
 class GlyphCache;
-class FontCacheHandleManager : public RefCountBase<FontCacheHandleManager, Stat_Default_Mem> // TO DO: Stat
+class FontCacheHandleManager : public RefCountBase<FontCacheHandleManager, StatRender_Font_Mem>
 {
     friend class Font;
     friend class FontCacheHandle;
@@ -79,7 +80,7 @@ private:
 
 
 //------------------------------------------------------------------------
-class FontCacheHandle : public ListNode<FontCacheHandle>, public NewOverrideBase<StatRender_Font_Mem> // TO DO: StatID
+class FontCacheHandle : public ListNode<FontCacheHandle>, public NewOverrideBase<StatRender_Font_Mem>
 {
     friend class Font;
 public:

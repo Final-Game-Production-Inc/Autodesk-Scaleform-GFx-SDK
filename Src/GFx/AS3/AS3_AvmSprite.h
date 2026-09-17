@@ -60,6 +60,7 @@ class AvmSprite :
     public AvmDisplayObjContainer,
     public AvmSpriteBase
 {
+    friend class Stage;
 public:
     FixedBitSetLH<StatMV_ActionScript_Mem>  InitActionsExecuted;
     enum
@@ -182,6 +183,11 @@ public:
     virtual void    ExecuteFrameTags(unsigned frame);
     virtual void    CloneInternalData(const InteractiveObject* src);
 
+    virtual TopMostResult GetTopMostEntity(const Render::PointF &localPt, TopMostDescr* pdescr,
+                                           const ArrayPOD<UByte>& hitTest)
+    {
+        return AvmDisplayObjContainer::GetTopMostEntity(localPt, pdescr, hitTest);
+    }
     virtual void    FillTabableArray(InteractiveObject::FillTabableParams* params)
     {
         AvmDisplayObjContainer::FillTabableArray(params);

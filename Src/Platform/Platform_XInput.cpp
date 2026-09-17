@@ -6,6 +6,7 @@ Created     :   June 2, 2009
 Authors     :   Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -185,8 +186,27 @@ void GamePad::Update( XInputEventAdapter& app )
 			bool oldD = (Pads[k].InputState.Gamepad.sThumbLY <  -stickThreshold);
 			bool curU = (newState.Gamepad.sThumbLY >  stickThreshold);
 			bool oldU = (Pads[k].InputState.Gamepad.sThumbLY >  stickThreshold);
+			bool curRR = (newState.Gamepad.sThumbRX >  stickThreshold);
+			bool curLR = (newState.Gamepad.sThumbRX < -stickThreshold);
+			bool curDR = (newState.Gamepad.sThumbRY < -stickThreshold);
+			bool curUR = (newState.Gamepad.sThumbRY >  stickThreshold);
 
-			Pads[k].nLStickLeft = Pads[k].nLStickRight = Pads[k].nLStickUp = Pads[k].nLStickDown = false;
+            float curXL = (float)newState.Gamepad.sThumbLX / 32768.0f;
+            float curYL = (float)newState.Gamepad.sThumbLY / 32768.0f;
+            float curXR = (float)newState.Gamepad.sThumbRX / 32768.0f;
+            float curYR = (float)newState.Gamepad.sThumbRY / 32768.0f;
+
+            if (curR || curL || curD || curU)
+            {
+                app.OnPadStick(k, Pad_LT, curXL, curYL);
+            }
+
+            if (curRR || curLR || curDR || curUR)
+            {
+                app.OnPadStick(k, Pad_RT, curXR, curYR);
+            }
+
+            Pads[k].nLStickLeft = Pads[k].nLStickRight = Pads[k].nLStickUp = Pads[k].nLStickDown = false;
 			if (curR)
 			{
 				if (oldR && msgtime >= Pads[k].LastRepeatTime + Pads[k].RepeatDelay)
@@ -281,8 +301,14 @@ void GamePad::Update( XInputEventAdapter& app )
 			Pads[k].LStickRight = Pads[k].nLStickRight;
 			Pads[k].LStickUp = Pads[k].nLStickUp;
 
+            // Temporarily(?) enabling controller-as-mouse on PC. It won't interfere with the mouse functionality
+            // on Windows as long as the customer isn't trying to use the mouse and a pad stick at the same time,
+            // which is unlikely, and being able to use the pad stick as a mouse is useful for prototyping console
+            // content on Windows. (holtzr 3/4/2013)
+#if 0
 			if (app.IsConsole())
-			{
+#endif
+            {
 				Pads[k].MouseXadj = float(newState.Gamepad.sThumbRX) * moveScaleFactor * delta;
 				Pads[k].MouseYadj = -float(newState.Gamepad.sThumbRY) * moveScaleFactor * delta;
 

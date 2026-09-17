@@ -6,6 +6,7 @@ Created     :   May 20, 2008
 Authors     :   Michael Antonov, Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -13,16 +14,14 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 **************************************************************************/
 
+#include "GFxConfig.h"
+
+#ifdef SF_ENABLE_STATS
+
 #include "SF_Stats.h"
 #include "SF_Atomic.h"
 #include "SF_Memory.h"
 #include "SF_Debug.h"
-
-#ifndef SF_ENABLE_STATS
-
-namespace { char dummySF_StatsVar; }; // to disable warning LNK4221 on PC/Xbox
-
-#else
 
 namespace Scaleform {
 
@@ -152,7 +151,7 @@ struct StatDescRegistry
 
         Desc_PageShift       = 3,
         Desc_PageSize        = 1 << Desc_PageShift,
-        Desc_PageTableSize   = Stat_MaxId / Desc_PageSize,
+        Desc_PageTableSize   = static_cast<unsigned int>(Stat_MaxId) / static_cast<unsigned int>(Desc_PageSize),
 
         // Page table entries are set to this value if no memory or slot
         // is allocated to them. We rely on default zero-initialization 

@@ -7,6 +7,7 @@ Created     :   June, 2007
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -82,7 +83,7 @@ public:
     void EndContentParsing() { DoContentParsing = false; }
 
     // helper funcs
-    static int EncodeCharTo(UInt32 uniChar, Char* pdestBuf) { SF_UNUSED2(uniChar, pdestBuf); return 0; } // need to be specialized
+    static int EncodeCharTo(UInt32 uniChar, Char* pdestBuf, UPInt destBufSz) { SF_UNUSED2(uniChar, pdestBuf); return 0; } // need to be specialized
 
     static bool IsSpace(UInt32 c)
     {
@@ -296,8 +297,9 @@ inline UInt32 SGMLCharIter<wchar_t>::DecodeCurrentChar()
 }
 
 template <>
-inline int SGMLCharIter<wchar_t>::EncodeCharTo(UInt32 uniChar, wchar_t* pdestBuf)
+inline int SGMLCharIter<wchar_t>::EncodeCharTo(UInt32 uniChar, wchar_t* pdestBuf, UPInt destBufSz)
 {
+    SF_UNUSED(destBufSz);
     *pdestBuf = (wchar_t)uniChar;
     return 1;
 }
@@ -316,10 +318,10 @@ inline UInt32 SGMLCharIter<char>::DecodeCurrentChar()
 }
 
 template <>
-inline int SGMLCharIter<char>::EncodeCharTo(UInt32 uniChar, char* pdestBuf)
+inline int SGMLCharIter<char>::EncodeCharTo(UInt32 uniChar, char* pdestBuf, UPInt destBufSz)
 {
     SPInt off = 0;
-    UTF8Util::EncodeChar(pdestBuf, &off, uniChar);
+    UTF8Util::EncodeCharSafe(pdestBuf, destBufSz, &off, uniChar);
     return (int)off;
 }
 
@@ -408,7 +410,7 @@ void    SGMLParser<Char>::AppendCharToBuf(UInt32 uniChar)
         else
             pBuffer = (Char*)SF_REALLOC(pBuffer, BufSize * sizeof(Char), StatRender_Text_Mem);
     }
-    BufPos += Iter.EncodeCharTo(uniChar, pBuffer + BufPos);
+    BufPos += Iter.EncodeCharTo(uniChar, pBuffer + BufPos, (BufSize - BufPos));
 }
 
 template <class Char>

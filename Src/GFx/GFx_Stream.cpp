@@ -9,6 +9,7 @@ Notes       :   wrapper class, for loading variable-length data from a
                 Stream, and keeping track of SWF tag boundaries.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -719,12 +720,9 @@ Double Stream::ReadDouble()
     // Go through a union to avoid pointer strict aliasing problems.
     union {
         UInt64 ival;
-        Double dval;
+        double dval;
     };
     ival = 0;
-#ifdef SF_NO_DOUBLE
-    SF_ASSERT(false);
-#else
     //AB: for XBox360 and PS3 float should be aligned on boundary of 8!
     SF_COMPILER_ASSERT(sizeof(Double) == sizeof(UInt32)*2);
     int shift = 0;
@@ -733,7 +731,6 @@ Double Stream::ReadDouble()
         ival |= (UInt64(pBuffer[Pos++]) << shift);
         shift += 8;
     }
-#endif
     return dval;
 }
 
@@ -828,9 +825,9 @@ void    Stream::LogBytes(unsigned numOfBytes)
         if (rowCount >= ROW_BYTES)
         {
             LogParse("    ");
-            for (int i = 0; i < ROW_BYTES; i++)
+            for (int i_inner = 0; i_inner < ROW_BYTES; i_inner++)
             {
-                LogParse("%c", rowBuf[i]);
+                LogParse("%c", rowBuf[i_inner]);
             }
 
             LogParse("\n");

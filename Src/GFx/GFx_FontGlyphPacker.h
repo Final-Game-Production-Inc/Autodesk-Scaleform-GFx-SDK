@@ -6,6 +6,7 @@ Created     :   6/14/2007
 Authors     :   Maxim Shemanarev, Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -51,6 +52,8 @@ class FontGlyphPacker : public RefCountBaseNTS<FontGlyphPacker, Stat_Default_Mem
 
     struct GlyphGeometryKey
     {
+        // Make sure the member variables stay with no padding
+        // Padding breaks the hash function that uses this struct as a key
         const FontResource*                 pFont;
         const Render::ShapeDataInterface*   pShape;
         UInt32                              Hash;

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::TimerEvent, Instances::fl_events::TimerEvent::mid_clone, SPtr<Instances::fl_events::Event> > TFunc_Instances_TimerEvent_clone;
 typedef ThunkFunc0<Instances::fl_events::TimerEvent, Instances::fl_events::TimerEvent::mid_toString, ASString> TFunc_Instances_TimerEvent_toString;
 typedef ThunkFunc0<Instances::fl_events::TimerEvent, Instances::fl_events::TimerEvent::mid_updateAfterEvent, const Value> TFunc_Instances_TimerEvent_updateAfterEvent;
@@ -94,18 +89,25 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 TimerEvent::tito[TimerEvent::ThunkInfoNum] = {
+    //    0, 1, 2, 
+    // };
+    const TypeInfo* TimerEvent::tit[3] = {
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+    };
     const ThunkInfo TimerEvent::ti[TimerEvent::ThunkInfoNum] = {
-        {TFunc_Instances_TimerEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_TimerEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_TimerEvent_updateAfterEvent::Func, NULL, "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_TimerEvent_clone::Func, &TimerEvent::tit[0], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TimerEvent_toString::Func, &TimerEvent::tit[1], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TimerEvent_updateAfterEvent::Func, &TimerEvent::tit[2], "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     TimerEvent::TimerEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::TimerEvent::TimerEvent()"
 //##protect##"InstanceTraits::TimerEvent::TimerEvent()"
-        SetMemSize(sizeof(Instances::fl_events::TimerEvent));
 
     }
 
@@ -142,24 +144,27 @@ namespace ClassTraits { namespace fl_events
         {"TIMER_COMPLETE", NULL, OFFSETOF(Classes::fl_events::TimerEvent, TIMER_COMPLETE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    TimerEvent::TimerEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::TimerEventCI)
+
+    TimerEvent::TimerEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::TimerEvent::TimerEvent()"
 //##protect##"ClassTraits::TimerEvent::TimerEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::TimerEvent(vm, AS3::fl_events::TimerEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::TimerEvent(*this));
 
     }
 
     Pickable<Traits> TimerEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TimerEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TimerEvent(vm, AS3::fl_events::TimerEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::TimerEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -170,6 +175,11 @@ namespace fl_events
 {
     const TypeInfo TimerEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::TimerEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::TimerEvent::MemberInfoNum,
+        InstanceTraits::fl_events::TimerEvent::ThunkInfoNum,
+        0,
         "TimerEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -177,10 +187,6 @@ namespace fl_events
     const ClassInfo TimerEventCI = {
         &TimerEventTI,
         ClassTraits::fl_events::TimerEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::TimerEvent::MemberInfoNum,
-        InstanceTraits::fl_events::TimerEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::TimerEvent::mi,
         InstanceTraits::fl_events::TimerEvent::ti,

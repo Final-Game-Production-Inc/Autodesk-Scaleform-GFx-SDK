@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="scaleform" default="">
+
+    <property name="my.package" value="${package.name}" />
+
+    <fail message="ndk.dir is missing. Make sure to add it to local.properties." unless="ndk.dir" />
+
+    <condition property="ndkbuilder" value="${ndk.dir}/ndk-build">
+        <os family="unix" />
+    </condition>
+    <condition property="ndkbuilder" value="${ndk.dir}/ndk-build.cmd">
+        <and>
+        <os family="windows" />
+            <not>
+                <isset property="env.NSIGHT_TEGRA_GDBSERVER_DIR" />
+            </not>
+        </and>
+    </condition>
+    <!-- Workaround for WinSxS bug in MSVC that prevents call to .cmd script from working correctly -->
+    <condition property="ndkbuilder" value="rundll32.exe">
+        <isset property="env.NSIGHT_TEGRA_GDBSERVER_DIR" />
+    </condition>
+
+    <!-- Workaround for bug in dependency order in Android SDK 20/21 -->
+    <target name="-build-setup" depends="-pre-build,android_rules.-build-setup" />
+
+    <target name="-pre-build">
+        
+        <echo message="Cleaning up files and directories." />
+        <delete dir="bin" />
+        <delete dir="gen" />
+        <delete dir="src" />
+        <mkdir dir="bin" />
+        <mkdir dir="gen" />
+        <mkdir dir="src" />
+        <delete file="res/values/strings.xml" />
+        
+        <echo message="Running ndk-build." />
+        <exec executable="${ndkbuilder}" failonerror="true" />
+
+        <echo message="Copying FMOD Jar into project libs directory." />
+        <copy file="../../../../3rdParty/fmod/Android/lib/fmodex.jar" todir="libs" overwrite="true" />
+
+        <echo message="Copying Android Manifest to project root directory." />
+        <copy file="base/AndroidManifest.xmlbase" tofile="./AndroidManifest.xml" overwrite="true" encoding="utf-8">
+            <filterset>
+                <filter token="CONFIG.PACKAGE_NAME" value="${package.name}" />
+                <filter token="CONFIG.APP_NAME" value="${app.name}" />
+                <filter token="CONFIG.ORIENTATIONS" value="${app.orientations}" />
+            </filterset>
+        </copy>
+
+        <echo message="Copying Android Manifest to project bin directory." />
+        <copy file="AndroidManifest.xml" tofile="bin/AndroidManifest.xml" overwrite="true" encoding="utf-8" />
+        
+        <echo message="Copying strings.xml to project resource directory." />
+        <copy file="base/strings.xml" todir="res/values" overwrite="true" encoding="utf-8">
+            <filterset>
+                <filter token="CONFIG.APP_DISPLAY_NAME" value="${app.displayname}" />
+            </filterset>
+        </copy>
+        
+        <pathconvert property="my.package.dir">
+            <chainedmapper>
+                <flattenmapper/>
+                 <unpackagemapper from="*" to="*" />
+            </chainedmapper>
+            <path path="${my.package}" />
+         </pathconvert>
+        <echo message="Copying Java Files to project src directory." />
+        <copy todir="src/${my.package.dir}/${app.name}" overwrite="true" encoding="utf-8">
+            <fileset dir="base">
+                  <include name="**/*.java" />
+            </fileset>
+            <filterset>
+                <filter token="CONFIG.PACKAGE_NAME" value="${package.name}" />
+                <filter token="CONFIG.APP_NAME" value="${app.name}" />
+            </filterset>
+        </copy>
+        
+    </target>
+
+    <target name="-pre-clean">
+
+        <exec executable="${ndkbuilder}" failonerror="true">
+            <arg value="clean" />
+        </exec>
+        
+        <echo message="Cleaning up files and directories." />
+        <delete dir="bin" />
+        <delete dir="gen" />
+        <delete dir="libs" />
+        <delete dir="obj" />
+        <delete dir="src" />
+        <mkdir dir="src" />
+        <delete file="res/values/strings.xml" />
+
+    </target>
+    
+  
+    <target name="-package-resources" depends="-crunch">
+
+        <!-- only package resources if *not* a library project -->
+        <do-only-if-not-library elseText="Library project: do not package resources..." >
+            <aapt executable="${aapt}"
+                    command="package"
+                    versioncode="${version.code}"
+                    versionname="${version.name}"
+                    debug="${build.is.packaging.debug}"
+                    manifest="${out.manifest.abs.file}"
+                    assets="${asset.absolute.dir}"
+                    androidjar="${project.target.android.jar}"
+                    apkfolder="${out.absolute.dir}"
+                    nocrunch="${build.packaging.nocrunch}"
+                    resourcefilename="${resource.package.file.name}"
+                    resourcefilter="${aapt.resource.filter}"
+                    libraryResFolderPathRefid="project.library.res.folder.path"
+                    libraryPackagesRefid="project.library.packages"
+                    libraryRFileRefid="project.library.bin.r.file.path"
+                    previousBuildType="${build.last.target}"
+                    buildType="${build.target}"
+                    ignoreAssets="${aapt.ignore.assets}">
+                <res path="${out.res.absolute.dir}" />
+                <res path="${resource.absolute.dir}" />
+                <nocompress extension="vgxproj" /> 
+                <nocompress extension="lua" /> 
+                <nocompress extension="wav"/> 
+                <nocompress extension="ttf" /> 
+                <nocompress extension="otf" /> 
+            </aapt>
+        </do-only-if-not-library>
+
+    </target>
+
+    <target name="start">
+        
+        <xpath input="AndroidManifest.xml"
+               expression="/manifest/@package"
+               output="manifest.package" />
+        <xpath input="AndroidManifest.xml"
+               expression="/manifest/application/activity[intent-filter/action/@android:name='android.intent.action.MAIN']/@android:name"
+               output="manifest.main" />
+        <echo level="info">Restart main activity ${manifest.package}/${manifest.main}</echo>
+        <exec executable="${android.platform.tools.dir}/adb">
+            <arg value="shell"/>
+            <arg value="am"/>
+            <arg value="start"/>
+            <arg value="-S"/>
+            <arg value="-a"/>
+            <arg value="android.intent.action.MAIN"/>
+            <arg value="-n"/>
+            <arg value="${manifest.package}/${manifest.main}"/>
+        </exec>
+
+ </target>
+    
+</project>

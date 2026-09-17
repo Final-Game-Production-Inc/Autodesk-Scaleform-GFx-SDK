@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::TransformGestureEvent, Instances::fl_events::TransformGestureEvent::mid_offsetXGet, Value::Number> TFunc_Instances_TransformGestureEvent_offsetXGet;
 typedef ThunkFunc1<Instances::fl_events::TransformGestureEvent, Instances::fl_events::TransformGestureEvent::mid_offsetXSet, const Value, Value::Number> TFunc_Instances_TransformGestureEvent_offsetXSet;
 typedef ThunkFunc0<Instances::fl_events::TransformGestureEvent, Instances::fl_events::TransformGestureEvent::mid_offsetYGet, Value::Number> TFunc_Instances_TransformGestureEvent_offsetYGet;
@@ -325,27 +320,43 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 TransformGestureEvent::tito[TransformGestureEvent::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 
+    // };
+    const TypeInfo* TransformGestureEvent::tit[17] = {
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo TransformGestureEvent::ti[TransformGestureEvent::ThunkInfoNum] = {
-        {TFunc_Instances_TransformGestureEvent_offsetXGet::Func, &AS3::fl::NumberTI, "offsetX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TransformGestureEvent_offsetXSet::Func, NULL, "offsetX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TransformGestureEvent_offsetYGet::Func, &AS3::fl::NumberTI, "offsetY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TransformGestureEvent_offsetYSet::Func, NULL, "offsetY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TransformGestureEvent_rotationGet::Func, &AS3::fl::NumberTI, "rotation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TransformGestureEvent_rotationSet::Func, NULL, "rotation", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TransformGestureEvent_scaleXGet::Func, &AS3::fl::NumberTI, "scaleX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TransformGestureEvent_scaleXSet::Func, NULL, "scaleX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TransformGestureEvent_scaleYGet::Func, &AS3::fl::NumberTI, "scaleY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TransformGestureEvent_scaleYSet::Func, NULL, "scaleY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TransformGestureEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_TransformGestureEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_TransformGestureEvent_offsetXGet::Func, &TransformGestureEvent::tit[0], "offsetX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_offsetXSet::Func, &TransformGestureEvent::tit[1], "offsetX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_offsetYGet::Func, &TransformGestureEvent::tit[3], "offsetY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_offsetYSet::Func, &TransformGestureEvent::tit[4], "offsetY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_rotationGet::Func, &TransformGestureEvent::tit[6], "rotation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_rotationSet::Func, &TransformGestureEvent::tit[7], "rotation", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_scaleXGet::Func, &TransformGestureEvent::tit[9], "scaleX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_scaleXSet::Func, &TransformGestureEvent::tit[10], "scaleX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_scaleYGet::Func, &TransformGestureEvent::tit[12], "scaleY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_scaleYSet::Func, &TransformGestureEvent::tit[13], "scaleY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_clone::Func, &TransformGestureEvent::tit[15], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TransformGestureEvent_toString::Func, &TransformGestureEvent::tit[16], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     TransformGestureEvent::TransformGestureEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::GestureEvent(vm, ci)
     {
 //##protect##"InstanceTraits::TransformGestureEvent::TransformGestureEvent()"
 //##protect##"InstanceTraits::TransformGestureEvent::TransformGestureEvent()"
-        SetMemSize(sizeof(Instances::fl_events::TransformGestureEvent));
 
     }
 
@@ -386,24 +397,27 @@ namespace ClassTraits { namespace fl_events
         {"GESTURE_ZOOM", NULL, OFFSETOF(Classes::fl_events::TransformGestureEvent, GESTURE_ZOOM), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    TransformGestureEvent::TransformGestureEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::TransformGestureEventCI)
+
+    TransformGestureEvent::TransformGestureEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::GestureEvent(vm, ci)
     {
 //##protect##"ClassTraits::TransformGestureEvent::TransformGestureEvent()"
 //##protect##"ClassTraits::TransformGestureEvent::TransformGestureEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::TransformGestureEvent(vm, AS3::fl_events::TransformGestureEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::TransformGestureEvent(*this));
 
     }
 
     Pickable<Traits> TransformGestureEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TransformGestureEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TransformGestureEvent(vm, AS3::fl_events::TransformGestureEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::TransformGestureEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -414,6 +428,11 @@ namespace fl_events
 {
     const TypeInfo TransformGestureEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::TransformGestureEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::TransformGestureEvent::MemberInfoNum,
+        InstanceTraits::fl_events::TransformGestureEvent::ThunkInfoNum,
+        0,
         "TransformGestureEvent", "flash.events", &fl_events::GestureEventTI,
         TypeInfo::None
     };
@@ -421,10 +440,6 @@ namespace fl_events
     const ClassInfo TransformGestureEventCI = {
         &TransformGestureEventTI,
         ClassTraits::fl_events::TransformGestureEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::TransformGestureEvent::MemberInfoNum,
-        InstanceTraits::fl_events::TransformGestureEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::TransformGestureEvent::mi,
         InstanceTraits::fl_events::TransformGestureEvent::ti,

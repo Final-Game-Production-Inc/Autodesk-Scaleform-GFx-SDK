@@ -27,12 +27,12 @@ class RenderEvent : public Render::RenderEvent
 public:
     virtual ~RenderEvent() { }
 
-    virtual void Begin( String eventName )
+    virtual void Begin( const char* eventName )
     {
         // PIX events only take wide-character strings.
         wchar_t dest[256];
         size_t  chars;
-        mbstowcs_s(&chars, dest, eventName.ToCStr(), 256);
+        mbstowcs_s(&chars, dest, eventName, 256);
         D3DPERF_BeginEvent(D3DCOLOR_XRGB(0,0,0), dest);
     }
     virtual void End()

@@ -6,6 +6,7 @@ Created     :   Aug 7, 2007
 Authors     :   Maxim Shemanarev, Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -240,10 +241,10 @@ void DrawingContext::BeginBitmapFill(FillType fillType,
         fs.pFill->pImage = img;
         switch(fillType)
         {
-        case Fill_TiledImage:           fs.pFill->FillMode.Fill = ( Render::Wrap_Repeat | Render::Sample_Point ); break;
-        case Fill_TiledSmoothImage:     fs.pFill->FillMode.Fill = ( Render::Wrap_Repeat | Render::Sample_Linear ); break;
-        case Fill_ClippedImage:         fs.pFill->FillMode.Fill = ( Render::Wrap_Clamp | Render::Sample_Point ); break;
-        case Fill_ClippedSmoothImage:   fs.pFill->FillMode.Fill = ( Render::Wrap_Clamp | Render::Sample_Linear ); break;
+        case Fill_TiledImage:           fs.pFill->FillMode.Fill = ( static_cast<uint32_t>(Render::Wrap_Repeat) | static_cast<uint32_t>(Render::Sample_Point) ); break;
+        case Fill_TiledSmoothImage:     fs.pFill->FillMode.Fill = ( static_cast<uint32_t>(Render::Wrap_Repeat) | static_cast<uint32_t>(Render::Sample_Linear) ); break;
+        case Fill_ClippedImage:         fs.pFill->FillMode.Fill = ( static_cast<uint32_t>(Render::Wrap_Clamp) | static_cast<uint32_t>(Render::Sample_Point) ); break;
+        case Fill_ClippedSmoothImage:   fs.pFill->FillMode.Fill = ( static_cast<uint32_t>(Render::Wrap_Clamp) | static_cast<uint32_t>(Render::Sample_Linear) ); break;
         default:                        break;
         }
         Shapes->UpdateFillStyle(styleIdx, fs);

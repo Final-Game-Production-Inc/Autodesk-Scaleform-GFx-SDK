@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -47,12 +48,19 @@ namespace fl
     extern const ClassInfo StringCI;
     extern const TypeInfo ObjectTI;
     extern const ClassInfo ObjectCI;
+    extern const TypeInfo int_TI;
+    extern const ClassInfo int_CI;
 } // namespace fl
 namespace fl_system
 {
     extern const TypeInfo ApplicationDomainTI;
     extern const ClassInfo ApplicationDomainCI;
 } // namespace fl_system
+namespace fl_net
+{
+    extern const TypeInfo URLRequestTI;
+    extern const ClassInfo URLRequestCI;
+} // namespace fl_net
 
 namespace ClassTraits { namespace fl_html
 {
@@ -81,17 +89,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_html
 {
-    class HTMLLoader : public Traits
+    class HTMLLoader : public fl_display::Sprite
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::HTMLLoader"; }
 #endif
     public:
-        typedef Classes::fl_html::HTMLLoader ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::Sprite InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        HTMLLoader(VM& vm);
+        HTMLLoader(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

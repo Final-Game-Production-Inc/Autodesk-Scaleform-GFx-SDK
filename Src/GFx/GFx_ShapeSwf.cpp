@@ -6,6 +6,7 @@ Created     :   Sep 1, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -200,10 +201,10 @@ public:
             FillStyle.pFill->ImageMatrix = textureMatrix;
             switch( type )
             {
-            case Fill_TiledImage:           FillStyle.pFill->FillMode.Fill = ( Wrap_Repeat | Sample_Point ); break;
-            case Fill_TiledSmoothImage:     FillStyle.pFill->FillMode.Fill = ( Wrap_Repeat | Sample_Linear ); break;
-            case Fill_ClippedImage:         FillStyle.pFill->FillMode.Fill = ( Wrap_Clamp | Sample_Point ); break;
-            case Fill_ClippedSmoothImage:   FillStyle.pFill->FillMode.Fill = ( Wrap_Clamp | Sample_Linear ); break;
+            case Fill_TiledImage:           FillStyle.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Repeat) | static_cast<uint32_t>(Sample_Point)); break;
+            case Fill_TiledSmoothImage:     FillStyle.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Repeat) | static_cast<uint32_t>(Sample_Linear)); break;
+            case Fill_ClippedImage:         FillStyle.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Clamp) | static_cast<uint32_t>(Sample_Point)); break;
+            case Fill_ClippedSmoothImage:   FillStyle.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Clamp) | static_cast<uint32_t>(Sample_Linear)); break;
             }
 
             if (!p->GetResourceHandle(&imageRes, bitmapResourceId) || !imageRes.GetResourcePtr())
@@ -1169,16 +1170,16 @@ bool    ShapeSwfReader::Read(LoadProcess* p, TagType tagType, unsigned lenInByte
         unsigned offset = 0;
 
         // pathFlags, memsz, numbits fill and line (1 b), end-of-shape record (1 b), shapes cnt, paths cnt
-        unsigned newMemBlockSize = 1 + 1 ; 
+        unsigned innerNewMemBlockSize = 1 + 1 ; 
 #ifdef SF_BUILD_DEBUG
-        newMemBlockSize += 4; // signature
+        innerNewMemBlockSize += 4; // signature
         offset += 4;
 #endif
         pmemBlock[offset++] = 0; // num bits in fill & line styles
         pmemBlock[offset++] = 0; // end-of-shape record
-        if (memBlockSize > newMemBlockSize)
+        if (memBlockSize > innerNewMemBlockSize)
         {
-            ppathAllocator->ReallocLastBlock(pmemBlock, memBlockSize, newMemBlockSize); 
+            ppathAllocator->ReallocLastBlock(pmemBlock, memBlockSize, innerNewMemBlockSize); 
         }
 
     }
@@ -1242,10 +1243,12 @@ bool    ShapeDataBase::DefPointTestLocal(Render::ShapeMeshProvider* pshapeMeshPr
 
     Ptr<Render::Scale9GridInfo> s9g;
 
+#if defined (GFX_ENABLE_SCALE9_HITTEST)
     if (pinst && pinst->DoesScale9GridExist())
     {
         s9g = *pinst->CreateScale9Grid();
     }
+#endif //GFX_ENABLE_SCALE9_HITTEST
 
     RectF b = pshapeMeshProvider->GetIdentityBounds();
 

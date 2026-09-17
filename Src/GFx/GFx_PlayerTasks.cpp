@@ -11,6 +11,7 @@ visible by other player files should be placed
 in GFxCharacter.h.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -110,11 +111,29 @@ void LoadVarsTask::Execute()
 
     // File loading protocol
     Ptr<File> pfile;
-    pfile = *pLoadStates->OpenFile(fileName.ToCStr());
-    if (pfile)
-        Succeeded = MovieImpl::ReadTextData(&Data, pfile, &FileLen, false);
+    Array<UByte> bytes;
+    if (URLBuilder::IsProtocol(fileName))
+    {
+#ifdef SF_ENABLE_HTTP_LOADING
+        if (URLBuilder::SendURLRequest(&bytes, fileName) && !bytes.IsEmpty())
+        {
+            pfile = *SF_NEW MemoryFile(fileName, bytes.GetDataPtr(), (int)bytes.GetSize());
+        }
+#endif
+    }
     else
+    {
+        pfile = *pLoadStates->OpenFile(fileName.ToCStr());
+    }
+
+    if (pfile)
+    {
+        Succeeded = MovieImpl::ReadTextData(&Data, pfile, &FileLen, false);
+    }
+    else
+    {
         Succeeded = false;
+    }
 
     AtomicOps<unsigned>::Store_Release(&Done, 1);
 }
@@ -184,11 +203,28 @@ void LoadBinaryTask::Execute()
 
     // File loading protocol
     Ptr<File> pfile;
-    pfile = *pLoadStates->OpenFile(fileName.ToCStr());
-    if (pfile)
-        Succeeded = MovieImpl::ReadBinaryData(&Data, pfile, &FileLen);
+    Array<UByte> bytes;
+    if (URLBuilder::IsProtocol(fileName))
+    {
+#ifdef SF_ENABLE_HTTP_LOADING
+        if (URLBuilder::SendURLRequest(&bytes, fileName) && !bytes.IsEmpty())
+        {
+            pfile = *SF_NEW MemoryFile(fileName, bytes.GetDataPtr(), (int)bytes.GetSize());
+        }
+#endif
+    }
     else
+    {
+        pfile = *pLoadStates->OpenFile(fileName.ToCStr());
+    }
+    if (pfile)
+    {
+        Succeeded = MovieImpl::ReadBinaryData(&Data, pfile, &FileLen);
+    }
+    else
+    {
         Succeeded = false;
+    }
 
     AtomicOps<unsigned>::Store_Release(&Done, 1);
 }

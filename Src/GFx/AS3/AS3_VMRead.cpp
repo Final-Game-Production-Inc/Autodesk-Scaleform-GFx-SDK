@@ -6,6 +6,7 @@ Created     :   September, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,7 +21,9 @@ namespace Scaleform { namespace GFx { namespace AS3
     ///////////////////////////////////////////////////////////////////////////
     void StackReader::Read(Multiname& obj)
     {
-        switch (obj.GetKind())
+        const Abc::MultinameKind k = obj.GetKind();
+
+        switch (k)
         {
         case Abc::MN_QName:
         case Abc::MN_QNameA:

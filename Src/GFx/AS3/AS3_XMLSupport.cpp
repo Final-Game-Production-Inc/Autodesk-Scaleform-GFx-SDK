@@ -52,7 +52,6 @@ public:
     virtual bool Add(Value& result, Object& l, Object& r) const; 
     virtual CheckResult ToXMLString(VM& vm, Value& v) const;
     virtual void DescribeType(VM& vm, SPtr<Instances::fl::XML>& result, const Value& value) const;
-    virtual CheckResult GetDescendants(Value& v, const Multiname& mn) const;
 
     // XML
     virtual const ClassTraits::Traits* GetClassTraitsXML() const;
@@ -84,8 +83,8 @@ private:
 XMLSupportImpl::XMLSupportImpl(VM& vm) 
 : XMLSupport(vm, true)
 , VMRef(vm) 
-, TraitsXML(vm.PrepareClassTraits(SF_HEAP_NEW(vm.GetMemoryHeap()) ClassTraits::fl::XML(vm)))
-, TraitsXMLList(vm.PrepareClassTraits(SF_HEAP_NEW(vm.GetMemoryHeap()) ClassTraits::fl::XMLList(vm)))
+, TraitsXML(vm.PrepareClassTraits(static_cast<ClassTraits::fl::XML*>(ClassTraits::fl::XML::MakeClassTraits(vm).GetPtr())))
+, TraitsXMLList(vm.PrepareClassTraits(static_cast<ClassTraits::fl::XMLList*>(ClassTraits::fl::XMLList::MakeClassTraits(vm).GetPtr())))
 {
 }
 
@@ -247,7 +246,7 @@ CheckResult XMLSupportImpl::ToXMLString(VM& vm, Value& v) const
         }
         else
         {
-            if (!v.ToPrimitiveValue() || !v.IsPrimitive())
+            if (!v.ToPrimitiveValue(*sm.GetStringManager()) || !v.IsPrimitive())
                 return false;
 
             // We shouldn't get any exception here because we are converting a 
@@ -322,8 +321,8 @@ void XMLSupportImpl::DescribeMetaData(VM& vm, Instances::fl::XMLElement& xml, co
 
                 if (item.GetKeyInd() > 0)
                 {
-                    const StringDataPtr k = cp.GetString(AbsoluteIndex(item.GetKeyInd()));
-                    arg->AddAttr(pns, _key, sm.CreateString(k.ToCStr(), k.GetSize()));
+                    const StringDataPtr kPtr = cp.GetString(AbsoluteIndex(item.GetKeyInd()));
+                    arg->AddAttr(pns, _key, sm.CreateString(kPtr.ToCStr(), kPtr.GetSize()));
                 }
 
                 const StringDataPtr v = cp.GetString(AbsoluteIndex(item.GetValueInd()));
@@ -405,10 +404,10 @@ void XMLSupportImpl::DescribeTraits(VM& vm, Instances::fl::XMLElement& xml, cons
                             {
                                 // Multiname
                                 const NamespaceSet::TContainer& nss = mn.GetNamespaceSet().GetNamespaces();
-                                const UPInt size = nss.GetSize();
-                                for (UPInt i = 0; i < size ; ++i)
+                                const UPInt UPsize = nss.GetSize();
+                                for (UPInt upi = 0; upi < UPsize ; ++upi)
                                 {
-                                    const Instances::fl::Namespace& cur_ns = *nss[i];
+                                    const Instances::fl::Namespace& cur_ns = *nss[upi];
                                     const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(name, cur_ns, ud_itr.GetFile().GetAppDomain());
 
                                     if (ctr)
@@ -624,11 +623,6 @@ void XMLSupportImpl::DescribeTraits(VM& vm, Instances::fl::XMLElement& xml, cons
                         // We shouldn't retrieve parameters for getters/setters.
                         if (si.IsMethod())
                         {
-                            const Abc::MiInd method_ind(real_func.GetMethodInfoInd());
-                            SF_ASSERT(real_tr.GetFilePtr());
-                            VMAbcFile& file = *real_tr.GetFilePtr();
-                            const Abc::ConstPool& cp = file.GetConstPool();
-                            const Abc::MethodInfo& mi = file.GetMethodInfo(method_ind);
                             const UPInt size = mi.GetParamCount();
                             const UPInt first_opt_param_num = size - mi.GetOptionalParamCount();
 
@@ -647,11 +641,11 @@ void XMLSupportImpl::DescribeTraits(VM& vm, Instances::fl::XMLElement& xml, cons
 
                                 // type
                                 const Abc::Multiname& abc_type = mi.GetParamType(cp, i);
-                                Multiname type(file, abc_type);
-                                if (type.IsAnyType())
+                                Multiname typeMulti(file, abc_type);
+                                if (typeMulti.IsAnyType())
                                     param->AddAttr(pns, _type, sm.CreateConstString("*"));
                                 else
-                                    param->AddAttr(pns, _type, GetQualifiedName(type.GetNamespace(), type.GetName().AsString()));
+                                    param->AddAttr(pns, _type, GetQualifiedName(typeMulti.GetNamespace(), typeMulti.GetName().AsString()));
 
                                 // optional
                                 param->AddAttr(pns, _optional, i >= first_opt_param_num ? _true : _false);
@@ -659,9 +653,12 @@ void XMLSupportImpl::DescribeTraits(VM& vm, Instances::fl::XMLElement& xml, cons
                         }
 
                         // metadata.
-                        const Abc::TraitInfo* ti = si.GetTraitInfoPtr();
-                        if (ti)
-                            DescribeMetaData(vm, *code, file, *ti);
+                        {
+                            const Abc::TraitInfo* ti = si.GetTraitInfoPtr();
+                            const VMAbcFile* abcfile = si.GetFilePtr();
+                            if (ti && abcfile)
+                                DescribeMetaData(vm, *code, *abcfile, *ti);
+                        }
                     }
                     else
                     {
@@ -682,7 +679,7 @@ void XMLSupportImpl::DescribeTraits(VM& vm, Instances::fl::XMLElement& xml, cons
                             if (!(thunk.MinArgNum_ == 0 && thunk.MaxArgNum_ == SF_AS3_VARARGNUM))
                             {
                                 // We have arguments.
-                                const unsigned arg_num = thunk.MaxArgNum_ == SF_AS3_VARARGNUM ? thunk.MinArgNum_ : thunk.MaxArgNum_;
+                                const unsigned arg_num = static_cast<unsigned>(thunk.MaxArgNum_ == SF_AS3_VARARGNUM ? thunk.MinArgNum_ : thunk.MaxArgNum_);
 
                                 for (unsigned i = 0; i < arg_num; ++i)
                                 {
@@ -813,34 +810,6 @@ void XMLSupportImpl::DescribeType(VM& vm, SPtr<Instances::fl::XML>& result, cons
 
         DescribeTraits(vm, *xml, tr);
     }
-}
-
-CheckResult XMLSupportImpl::GetDescendants(Value& v, const Multiname& mn) const
-{
-    bool result = false;
-
-    if (IsXMLObject(v))
-    {
-        Pickable<Instances::fl::XMLList> list = MakeXMLList();
-
-        Instances::fl::XML* obj = static_cast<Instances::fl::XML*>(v.GetObject());
-        obj->GetDescendants(*list, mn);
-        // args.ArgObject is a reference.
-        v = list;
-        result = true;
-    }
-    else if (IsXMLListObject(v))
-    {
-        Pickable<Instances::fl::XMLList> list = MakeXMLList();
-
-        Instances::fl::XMLList* obj = static_cast<Instances::fl::XMLList*>(v.GetObject());
-        obj->GetDescendants(*list, mn);
-        // args.ArgObject is a reference.
-        v = list;
-        result = true;
-    }
-
-    return result;
 }
 
 const ClassTraits::Traits* XMLSupportImpl::GetClassTraitsXML() const

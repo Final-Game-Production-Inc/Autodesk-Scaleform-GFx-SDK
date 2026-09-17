@@ -6,6 +6,7 @@ Created     :   Mar 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -236,30 +237,30 @@ enum PVR2PixelType
 * constants
 *****************************************************************************/
 
-const UInt32 PVRTEX_MIPMAP		    = (1<<8);		// has mip map levels
-const UInt32 PVRTEX_TWIDDLE		    = (1<<9);		// is twiddled
-const UInt32 PVRTEX_BUMPMAP		    = (1<<10);		// has normals encoded for a bump map
-const UInt32 PVRTEX_TILING		    = (1<<11);		// is bordered for tiled pvr
-const UInt32 PVRTEX_CUBEMAP		    = (1<<12);		// is a cubemap/skybox
-const UInt32 PVRTEX_FALSEMIPCOL	    = (1<<13);		// are there false coloured MIP levels
-const UInt32 PVRTEX_VOLUME		    = (1<<14);		// is this a volume texture
+//const UInt32 PVRTEX_MIPMAP		    = (1<<8);		// has mip map levels
+//const UInt32 PVRTEX_TWIDDLE		    = (1<<9);		// is twiddled
+//const UInt32 PVRTEX_BUMPMAP		    = (1<<10);		// has normals encoded for a bump map
+//const UInt32 PVRTEX_TILING		    = (1<<11);		// is bordered for tiled pvr
+//const UInt32 PVRTEX_CUBEMAP		    = (1<<12);		// is a cubemap/skybox
+//const UInt32 PVRTEX_FALSEMIPCOL	    = (1<<13);		// are there false coloured MIP levels
+//const UInt32 PVRTEX_VOLUME		    = (1<<14);		// is this a volume texture
 const UInt32 PVRTEX_ALPHA			= (1<<15);		// v2.1 is there transparency info in the texture
-const UInt32 PVRTEX_VERTICAL_FLIP	= (1<<16);		// v2.1 is the texture vertically flipped
+//const UInt32 PVRTEX_VERTICAL_FLIP	= (1<<16);		// v2.1 is the texture vertically flipped
 
 const UInt32 PVRTEX_PIXELTYPE		= 0xff;			// pixel type is always in the last 16bits of the flags
 const UInt32 PVRTEX_IDENTIFIER	    = 0x21525650;	// the pvr identifier is the characters 'P','V','R'
-
-const UInt32 PVRTEX_V1_HEADER_SIZE  = 44;			// old header size was 44 for identification purposes
+//
+//const UInt32 PVRTEX_V1_HEADER_SIZE  = 44;			// old header size was 44 for identification purposes
 const UInt32 PVRTEX_V2_HEADER_SIZE  = 52;           // added, v2 header size.
-
-const UInt32 PVRTC2_MIN_TEXWIDTH	= 16;
-const UInt32 PVRTC2_MIN_TEXHEIGHT	= 8;
-const UInt32 PVRTC4_MIN_TEXWIDTH	= 8;
-const UInt32 PVRTC4_MIN_TEXHEIGHT	= 8;
-const UInt32 ETC_MIN_TEXWIDTH		= 4;
-const UInt32 ETC_MIN_TEXHEIGHT		= 4;
-const UInt32 DXT_MIN_TEXWIDTH		= 4;
-const UInt32 DXT_MIN_TEXHEIGHT		= 4;
+//
+//const UInt32 PVRTC2_MIN_TEXWIDTH	= 16;
+//const UInt32 PVRTC2_MIN_TEXHEIGHT	= 8;
+//const UInt32 PVRTC4_MIN_TEXWIDTH	= 8;
+//const UInt32 PVRTC4_MIN_TEXHEIGHT	= 8;
+//const UInt32 ETC_MIN_TEXWIDTH		= 4;
+//const UInt32 ETC_MIN_TEXHEIGHT		= 4;
+//const UInt32 DXT_MIN_TEXWIDTH		= 4;
+//const UInt32 DXT_MIN_TEXHEIGHT		= 4;
 
 enum PVR3PixelType
 {
@@ -408,7 +409,7 @@ static bool Image_ParsePVRHeader(PVRHeaderInfo* pinfo, const UByte* buf, const U
     if(head == 0x50565203 ||
         head == 0x03525650) //PVR3
     {
-        pinfo->Version = head; 
+        pinfo->Version = 0x50565203; // always use PVRTEX3_IDENT.
         buf = ParseUInt32(buf, &pinfo->pfFlags);
         buf = ParseUInt64(buf,&pinfo->PVR3Format);
         buf = ParseUInt32(buf, &pinfo->ColorSpace);

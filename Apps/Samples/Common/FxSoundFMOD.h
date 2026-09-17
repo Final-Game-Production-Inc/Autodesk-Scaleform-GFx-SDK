@@ -6,6 +6,7 @@ Created     :   Feb, 2009
 Authors     :   Maxim Didenko, Andrew Reisse, Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,7 +21,12 @@ otherwise accompanies this software in either electronic or hard copy form.
 #if defined(GFX_ENABLE_SOUND) && defined(GFX_SOUND_FMOD)
 
 #include <fmod.hpp>
+#include <fmod_common.h>
 #include "Sound/Sound_SoundRendererFMOD.h"
+
+#include "GFx/GFx_Loader.h"
+#include "Kernel/SF_File.h"
+#include "Kernel/SF_Debug.h"
 
 #ifdef SF_OS_PS3
 #include <cell/audio.h>
@@ -47,7 +53,7 @@ class FxSoundFMOD : public NewOverrideBase<Stat_Default_Mem>
     bool Initialized;
 
 public:
-    FxSoundFMOD(): pFMOD(NULL), Initialized(false) {}    
+    FxSoundFMOD() : pFMOD(NULL), Initialized(false) {}    
 
 #if defined(SF_OS_PS3)
     bool Initialize(const CellSpurs* pspurs);
@@ -57,29 +63,14 @@ public:
     bool Initialize();
 #endif    
 
-    void Finalize()
-    {
-        Initialized = false;
+    void Finalize();
 
-        if (pSoundRenderer)
-            pSoundRenderer->Finalize();
-        pSoundRenderer = NULL;
-
-        if (pFMOD) {
-            pFMOD->release();
-            pFMOD = NULL;
-        }
-        if (pFMODHeap) {
-            pFMODHeap->Release();
-            pFMODHeap = 0;
-        }
-    }
-
-    bool IsInitialized() const { return Initialized; }
-    Sound::SoundRenderer* GetSoundRenderer() { return pSoundRenderer; }
-    FMOD::System *GetFMOD() { return pFMOD; }
+    bool IsInitialized() const                  { return Initialized; }
+    Sound::SoundRenderer* GetSoundRenderer()    { return pSoundRenderer; }
+    FMOD::System *GetFMOD()                     { return pFMOD; }
 
     static MemoryHeap *pFMODHeap;
+    static FileOpenerBase *pFileOpener;
 };
 
 }} // namespace Scaleform::GFx

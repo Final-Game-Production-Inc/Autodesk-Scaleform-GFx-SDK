@@ -7,6 +7,7 @@ Created     :   Sep, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,6 +35,11 @@ namespace fl_display
     extern const TypeInfo ShaderDataTI;
     extern const ClassInfo ShaderDataCI;
 } // namespace fl_display
+namespace fl_utils
+{
+    extern const TypeInfo ByteArrayTI;
+    extern const ClassInfo ByteArrayCI;
+} // namespace fl_utils
 namespace fl
 {
     extern const TypeInfo StringTI;
@@ -64,17 +70,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_display
 {
-    class Shader : public Traits
+    class Shader : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Shader"; }
 #endif
     public:
-        typedef Classes::fl_display::Shader ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Shader(VM& vm);
+        Shader(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

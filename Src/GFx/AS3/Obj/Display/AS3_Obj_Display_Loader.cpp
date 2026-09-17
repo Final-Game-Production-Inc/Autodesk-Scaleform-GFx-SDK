@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -33,6 +34,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -45,6 +47,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_display::Loader, Instances::fl_display::Loader::mid_contentGet, SPtr<Instances::fl_display::DisplayObject> > TFunc_Instances_Loader_contentGet;
 typedef ThunkFunc0<Instances::fl_display::Loader, Instances::fl_display::Loader::mid_contentLoaderInfoGet, SPtr<Instances::fl_display::LoaderInfo> > TFunc_Instances_Loader_contentLoaderInfoGet;
 typedef ThunkFunc0<Instances::fl_display::Loader, Instances::fl_display::Loader::mid_close, const Value> TFunc_Instances_Loader_close;
@@ -94,10 +98,9 @@ namespace Instances { namespace fl_display
 //##protect##"instance::Loader::close()"
         SF_UNUSED1(result);
 
-        //?
         ASVM& vm = static_cast<ASVM&>(GetVM());
         MovieRoot* root = vm.GetMovieRoot();
-        root->UnloadMovie(this);
+        root->CancelMovieLoading(this);
 //##protect##"instance::Loader::close()"
     }
     void Loader::load(const Value& result, Instances::fl_net::URLRequest* request, Instances::fl_system::LoaderContext* context)
@@ -112,10 +115,32 @@ namespace Instances { namespace fl_display
         }
 
         // check if we need to unload already loaded movie first.
-        if (pContentLoaderInfo && pContentLoaderInfo->GetContentDispObj())
-            root->UnloadMovie(this);
+        // !AB: Flash doesn't unload previously loaded movie (in the case when
+        // the same Loader is used for multiple loadings, see 
+        // Test\AS3\SWF\Loader\test_mult_load_same_loader).
+        //if (pContentLoaderInfo && pContentLoaderInfo->GetContentDispObj())
+        //    root->UnloadMovie(this);
 
-        root->AddNewLoadQueueEntry(request, this);
+        LoadQueueEntry::LoadMethod method = LoadQueueEntry::LM_None;
+        ASString requestMethod = request->methodGet().ToUpper();
+        if (requestMethod == "GET")
+        {
+            method = LoadQueueEntry::LM_Get;
+        }
+        else if (requestMethod == "POST")
+        {
+            method = LoadQueueEntry::LM_Post;
+        }
+        else if (requestMethod == "PUT")
+        {
+            method = LoadQueueEntry::LM_Put;
+        }
+        else if (requestMethod == "DELETE")
+        {
+            method = LoadQueueEntry::LM_Delete;
+        }
+        
+        root->AddNewLoadQueueEntry(request, this, method);
 //##protect##"instance::Loader::load()"
     }
     void Loader::loadBytes(const Value& result, Instances::fl_utils::ByteArray* bytes, Instances::fl_system::LoaderContext* context)
@@ -131,8 +156,8 @@ namespace Instances { namespace fl_display
         }
 
         // check if we need to unload already loaded movie first.
-        if (pContentLoaderInfo && pContentLoaderInfo->GetContentDispObj())
-            root->UnloadMovie(this);
+        //if (pContentLoaderInfo && pContentLoaderInfo->GetContentDispObj())
+        //    root->UnloadMovie(this);
 
         root->AddNewLoadQueueEntry(bytes, this);
 //##protect##"instance::Loader::loadBytes()"
@@ -242,7 +267,11 @@ namespace Instances { namespace fl_display
         return pDispObj;
     }
 
-    void Loader::ResetContent() { pContentLoaderInfo->ResetContent(); }
+    void Loader::ResetContent() 
+    { 
+        if (pContentLoaderInfo)
+            pContentLoaderInfo->ResetContent(); 
+    }
 
     void Loader::ExecuteProgressEvent(UPInt bytesLoaded, UPInt totalBytes)
     {
@@ -331,23 +360,37 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 Loader::tito[Loader::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 6, 9, 10, 
+    // };
+    const TypeInfo* Loader::tit[12] = {
+        &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::LoaderInfoTI, 
+        NULL, 
+        NULL, &AS3::fl_net::URLRequestTI, &AS3::fl_system::LoaderContextTI, 
+        NULL, &AS3::fl_utils::ByteArrayTI, &AS3::fl_system::LoaderContextTI, 
+        NULL, 
+        NULL, &AS3::fl::BooleanTI, 
+    };
+    const Abc::ConstValue Loader::dva[1] = {
+        {Abc::CONSTANT_True, 0}, 
+    };
     const ThunkInfo Loader::ti[Loader::ThunkInfoNum] = {
-        {TFunc_Instances_Loader_contentGet::Func, &AS3::fl_display::DisplayObjectTI, "content", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Loader_contentLoaderInfoGet::Func, &AS3::fl_display::LoaderInfoTI, "contentLoaderInfo", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Loader_close::Func, NULL, "close", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Loader_load::Func, NULL, "load", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Loader_loadBytes::Func, NULL, "loadBytes", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Loader_unload::Func, NULL, "unload", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Loader_unloadAndStop::Func, NULL, "unloadAndStop", NULL, Abc::NS_Public, CT_Method, 0, 1},
+        {TFunc_Instances_Loader_contentGet::Func, &Loader::tit[0], "content", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Loader_contentLoaderInfoGet::Func, &Loader::tit[1], "contentLoaderInfo", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Loader_close::Func, &Loader::tit[2], "close", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Loader_load::Func, &Loader::tit[3], "load", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Loader_loadBytes::Func, &Loader::tit[6], "loadBytes", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Loader_unload::Func, &Loader::tit[9], "unload", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Loader_unloadAndStop::Func, &Loader::tit[10], "unloadAndStop", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 1, &Loader::dva[0]},
     };
 
     Loader::Loader(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::DisplayObjectContainer(vm, ci)
     {
 //##protect##"InstanceTraits::Loader::Loader()"
         SetTraitsType(Traits_Loader);
 //##protect##"InstanceTraits::Loader::Loader()"
-        SetMemSize(sizeof(Instances::fl_display::Loader));
 
     }
 
@@ -364,25 +407,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    Loader::Loader(VM& vm)
-    : Traits(vm, AS3::fl_display::LoaderCI)
+
+    Loader::Loader(VM& vm, const ClassInfo& ci)
+    : fl_display::DisplayObjectContainer(vm, ci)
     {
 //##protect##"ClassTraits::Loader::Loader()"
         SetTraitsType(Traits_Loader);
 //##protect##"ClassTraits::Loader::Loader()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::Loader(vm, AS3::fl_display::LoaderCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Loader::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Loader(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Loader(vm, AS3::fl_display::LoaderCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::LoaderCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -393,6 +439,11 @@ namespace fl_display
 {
     const TypeInfo LoaderTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::Loader::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::Loader::ThunkInfoNum,
+        0,
         "Loader", "flash.display", &fl_display::DisplayObjectContainerTI,
         TypeInfo::None
     };
@@ -400,10 +451,6 @@ namespace fl_display
     const ClassInfo LoaderCI = {
         &LoaderTI,
         ClassTraits::fl_display::Loader::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::Loader::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::Loader::ti,

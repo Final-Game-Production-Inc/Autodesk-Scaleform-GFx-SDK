@@ -8,6 +8,7 @@ Authors     :   Artem Bolgar, Michael Antonov, TU
 Notes       :   Significantly modified for GFx 3.0
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -25,7 +26,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 namespace Scaleform { namespace GFx {
 
 DisplayList::DisplayList() 
-: DepthToIndexMap(NULL), pCachedChar(NULL), Flags(0) 
+: DepthToIndexMap(NULL), pCachedChar(NULL), ModId(0), Flags(0) 
 {
 }
 
@@ -41,7 +42,7 @@ SPInt DisplayList::FindDisplayIndex(const DisplayObjectBase* ch) const
 }
 
 // Like the above, but looks for an exact match, and returns -1 if failed.
-UPInt DisplayList::GetDisplayIndex(int depth)
+UPInt DisplayList::GetDisplayIndex(int depth) const
 {
     UPInt index = FindDisplayIndex(depth);
     if (index >= DisplayObjectArray.GetSize()
@@ -54,7 +55,7 @@ UPInt DisplayList::GetDisplayIndex(int depth)
 }
 
 
-DisplayObjectBase*   DisplayList::GetDisplayObjectAtDepth(int depth, bool* pisMarkedForRemove)
+DisplayObjectBase*   DisplayList::GetDisplayObjectAtDepth(int depth, bool* pisMarkedForRemove) const
 {
     UPInt index = GetDisplayIndex(depth);
     if (index != SF_MAX_UPINT)
@@ -66,6 +67,28 @@ DisplayObjectBase*   DisplayList::GetDisplayObjectAtDepth(int depth, bool* pisMa
             if (pisMarkedForRemove)
                 *pisMarkedForRemove = DisplayObjectArray[index].IsMarkedForRemove();
             return ch;
+        }
+    }
+
+    return NULL;
+}
+
+DisplayObjectBase* DisplayList::GetCharacterAtDepth(
+    int depth, ResourceId id, UPInt* pindex) const
+{
+    UPInt index = GetDisplayIndex(depth);
+    if (index != SF_MAX_UPINT)
+    {
+        for (UPInt n = DisplayObjectArray.GetSize(); index < n; ++index)
+        {
+            Ptr<DisplayObjectBase>  ch = DisplayObjectArray[index].GetDisplayObject();
+            SF_ASSERT(ch);
+            if (ch->GetDepth() == depth && ch->GetId() == id)
+            {
+                if (pindex)
+                    *pindex = index;
+                return ch;
+            }
         }
     }
 
@@ -150,6 +173,7 @@ bool    DisplayList::SwapDepths(DisplayObjectBase* owner, int depth1, int depth2
         ch2->SetCreateFrame(frame + 1);
     }
 
+    ++ModId;
     CheckAndInvalidateDepthMappings();
     return true;
 }
@@ -166,6 +190,7 @@ bool    DisplayList::SwapEntriesAtIndexes(DisplayObjectBase* owner, UPInt origIn
         (origIndex2 < DisplayObjectArray.GetSize() && GetDisplayObject(origIndex2)->HasIndirectTransform()))
         return false;
 
+    ++ModId;
     DisplayObjectArray[origIndex1] = DisplayObjectArray[origIndex2];
     DisplayObjectArray[origIndex2] = e;
     return SwapRenderTreeNodes(owner, origIndex1, origIndex2);
@@ -302,7 +327,8 @@ void    DisplayList::AddDisplayObject(DisplayObjectBase* owner, const CharPosInf
     ch->SetClipDepth(pos.ClipDepth);
     ch->SetBlendMode((DisplayObjectBase::BlendType)pos.BlendMode);
     ch->SetFilters(pos.pFilters.GetPtr());
-    ch->SetVisible(pos.Visible ? true : false);
+    if (pos.HasVisibility())
+        ch->SetVisible(pos.Visible ? true : false);
 
     // Insert into the display list...
     SF_ASSERT(index == FindDisplayIndex(depth));
@@ -312,6 +338,7 @@ void    DisplayList::AddDisplayObject(DisplayObjectBase* owner, const CharPosInf
 
 void    DisplayList::AddDisplayObject(DisplayObjectBase* owner, UPInt index, DisplayObjectBase* ch)
 {
+    ++ModId;
     AddEntryAtIndex(owner, index, ch);
     ch->SetUnloaded(false);
 
@@ -328,6 +355,7 @@ void DisplayList::AddEntryAtIndex(DisplayObjectBase* owner, UPInt index, Display
     DisplayEntry di;    
     di.SetDisplayObject(ch);
 
+    ++ModId;
     SF_ASSERT(index <= DisplayObjectArray.GetSize());
     DisplayObjectArray.InsertAt(index, di);
 
@@ -362,6 +390,7 @@ void    DisplayList::MoveDisplayObject(DisplayObjectBase* owner, const CharPosIn
         return;
     }
 
+    ++ModId;
     // Object re-added, unmark for remove.
     di.ClearMarkForRemove();
     if (!di.IsInRenderTree())
@@ -426,6 +455,7 @@ void    DisplayList::ReplaceDisplayObject(DisplayObjectBase* owner, const CharPo
         return;
     }
     
+    ++ModId;
     Ptr<DisplayObjectBase>  poldCh = di.GetDisplayObject();
     SF_ASSERT(poldCh);
 
@@ -452,7 +482,10 @@ void    DisplayList::ReplaceDisplayObject(DisplayObjectBase* owner, const CharPo
     ch->SetRatio(pos.Ratio);
     ch->SetClipDepth(pos.ClipDepth);    
     ch->SetFilters(pos.pFilters);
-    ch->SetVisible(pos.Visible ? true : false);
+    if (pos.HasVisibility())
+        ch->SetVisible(pos.Visible ? true : false);
+    else
+        ch->SetVisible(poldCh->GetVisible());
 
     ReplaceRenderTreeNode(owner, index);
 
@@ -473,6 +506,7 @@ void    DisplayList::ReplaceDisplayObjectAtIndex(DisplayObjectBase* owner, UPInt
         return;
     }
 
+    ++ModId;
     pCachedChar = NULL;
     DisplayList::DisplayEntry &e = GetDisplayEntry(index);
     e.SetDisplayObject(ch);
@@ -512,6 +546,7 @@ void    DisplayList::RemoveDisplayObject(DisplayObjectBase* owner, int depth, Re
 
     SF_ASSERT(ch->GetDepth() == depth);
     pCachedChar = NULL;
+    ++ModId;
     
     if (id != ResourceId::InvalidId)
     {
@@ -572,6 +607,7 @@ bool DisplayList::RemoveDisplayObject(DisplayObjectBase* owner, const DisplayObj
     SPInt index = FindDisplayIndex(ch);
     if (index >= 0)
     {
+        ++ModId;
         UnloadDisplayObjectAtIndex(owner, UPInt(index));
         pCachedChar = NULL;
     }
@@ -584,6 +620,7 @@ void DisplayList::RemoveEntryAtIndex(DisplayObjectBase* owner, UPInt index)
     RemoveFromRenderTree(owner, index);
     DisplayObjectArray.RemoveAt(index);
     pCachedChar = NULL;
+    ++ModId;
     CheckAndInvalidateDepthMappings();
 }
 
@@ -638,6 +675,7 @@ void    DisplayList::Clear(DisplayObjectBase* owner)
         pCachedChar = NULL;
         DisplayEntry&   di = DisplayObjectArray[0];     
         SF_ASSERT(di.GetDisplayObject());
+        ++ModId;
         di.GetDisplayObject()->OnUnload(); // this can change the DisplayObjectArray, so we need to remove element-by-element
         RemoveFromRenderTree(owner, 0);
         di.GetDisplayObject()->SetParent(NULL); //!AB: clear the parent for children in the display list 
@@ -656,6 +694,7 @@ bool    DisplayList::UnloadAll(DisplayObjectBase* owner)
     // don't replace DisplayObjectArray.GetSize() by pre-saved variable here! 
     for (UPInt i = 0; i < DisplayObjectArray.GetSize(); )
     {
+        ++ModId;
         // we need to correct index only if UnloadDisplayObjectAtIndex returns true;
         // this means, that the element at the index 'i' was removed and
         // we don't need to increment the index to get the next element.
@@ -730,6 +769,7 @@ void    DisplayList::UnloadMarkedObjects(DisplayObjectBase* owner)
         }
     }
     pCachedChar = NULL;
+    ++ModId;
 }
 
 // Replaces treenode at the specified index. New display entry should be already
@@ -927,7 +967,8 @@ void    DisplayList::InsertIntoRenderTree(DisplayObjectBase* owner, UPInt index)
 
                 const DisplayEntry& maskEntry = DisplayObjectArray[maskEntryIdx];
 
-                if (ch->GetDepth() <= maskEntry.GetClipDepth() && ch->GetDepth() > maskEntry.GetDepth())
+                if (ch->GetDepth() <= maskEntry.GetClipDepth() && 
+                    (ch->GetDepth() > maskEntry.GetDepth() || ch->GetDepth() == INVALID_DEPTH))
                 {
                     // masked!
                     masked = true;

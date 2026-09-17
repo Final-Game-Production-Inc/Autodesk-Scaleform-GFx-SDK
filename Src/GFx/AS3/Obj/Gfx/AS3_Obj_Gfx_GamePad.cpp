@@ -7,6 +7,7 @@ Created     :   Jul, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -119,27 +120,36 @@ namespace ClassTraits { namespace fl_gfx
         {"PAD_LT", NULL, OFFSETOF(Classes::fl_gfx::GamePad, PAD_LT), Abc::NS_Public, SlotInfo::BT_Value, 1},
     };
 
-    const ThunkInfo GamePad::ti[GamePad::ThunkInfoNum] = {
-        {TFunc_Classes_GamePad_supportsAnalogEvents::Func, &AS3::fl::BooleanTI, "supportsAnalogEvents", NULL, Abc::NS_Public, CT_Method, 0, 0},
+    // const UInt16 GamePad::tito[GamePad::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* GamePad::tit[1] = {
+        &AS3::fl::BooleanTI, 
     };
-    GamePad::GamePad(VM& vm)
-    : Traits(vm, AS3::fl_gfx::GamePadCI)
+    const ThunkInfo GamePad::ti[GamePad::ThunkInfoNum] = {
+        {TFunc_Classes_GamePad_supportsAnalogEvents::Func, &GamePad::tit[0], "supportsAnalogEvents", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+    };
+
+    GamePad::GamePad(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::GamePad::GamePad()"
 //##protect##"ClassTraits::GamePad::GamePad()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_gfx::GamePadCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::GamePad(*this));
 
     }
 
     Pickable<Traits> GamePad::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) GamePad(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) GamePad(vm, AS3::fl_gfx::GamePadCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::GamePadCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -150,6 +160,11 @@ namespace fl_gfx
 {
     const TypeInfo GamePadTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::GamePad::InstanceType),
+        ClassTraits::fl_gfx::GamePad::ThunkInfoNum,
+        ClassTraits::fl_gfx::GamePad::MemberInfoNum,
+        0,
+        0,
         "GamePad", "scaleform.gfx", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -157,10 +172,6 @@ namespace fl_gfx
     const ClassInfo GamePadCI = {
         &GamePadTI,
         ClassTraits::fl_gfx::GamePad::MakeClassTraits,
-        ClassTraits::fl_gfx::GamePad::ThunkInfoNum,
-        ClassTraits::fl_gfx::GamePad::MemberInfoNum,
-        0,
-        0,
         ClassTraits::fl_gfx::GamePad::ti,
         ClassTraits::fl_gfx::GamePad::mi,
         NULL,

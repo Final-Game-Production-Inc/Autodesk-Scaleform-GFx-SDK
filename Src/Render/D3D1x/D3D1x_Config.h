@@ -6,6 +6,7 @@ Created     :   Mar 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -21,10 +22,17 @@ otherwise accompanies this software in either electronic or hard copy form.
 #error SF_D3D_VERSION must be defined, and must be 10 or 11.
 #endif
 
-// In VS2011+ d3d11_1.h should exist. Include d3d11_1.h unconditionally (even in D3D10), because
-// d3d10.h does not include the common ID3DUserAnnotation interfaces.
-#if defined(SF_OS_WINMETRO) || (_MSC_VER >= 1700)   
+#if defined(SF_DURANGO_MONOLITHIC)
+    // In Durango July 2013 XDK, the monolithic runtime was added. It conflicts with any 'stock' D3D include files.
+    #include <d3d11_x.h>
+#elif defined(SF_OS_WINMETRO) || (_MSC_VER >= 1700)   
+    // In VS2011+ d3d11_1.h should exist. Include d3d11_1.h unconditionally (even in D3D10), because
+    // d3d10.h does not include the common ID3DUserAnnotation interfaces.
     #include <d3d11_1.h>
+#endif
+
+#if !defined(SF_DURANGO_MONOLITHIC)
+    #include <d3dcommon.h>
 #endif
 
 #if (SF_D3D_VERSION == 10 )
@@ -75,8 +83,13 @@ otherwise accompanies this software in either electronic or hard copy form.
     };
 
 #elif (SF_D3D_VERSION == 11 )
-    #if !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__)
+    #if !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__) && !defined(SF_DURANGO_MONOLITHIC)
         #include <d3d11.h>
+    #endif
+
+    #if defined(SF_DURANGO_MONOLITHIC)
+//        typedef ID3D11DeviceX           ID3D11Device;
+//        typedef ID3D11DeviceContextX    ID3D11DeviceContext;
     #endif
 
     #define D3D10(...)    

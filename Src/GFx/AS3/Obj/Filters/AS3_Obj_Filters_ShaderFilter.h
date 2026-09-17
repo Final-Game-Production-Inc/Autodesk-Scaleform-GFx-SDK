@@ -62,17 +62,19 @@ namespace Classes { namespace fl_filters
     
 namespace ClassTraits { namespace fl_filters
 {
-    class ShaderFilter : public Traits
+    class ShaderFilter : public fl_filters::BitmapFilter
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::ShaderFilter"; }
 #endif
     public:
-        typedef Classes::fl_filters::ShaderFilter ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_filters::BitmapFilter InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        ShaderFilter(VM& vm);
+        ShaderFilter(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

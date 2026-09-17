@@ -7,6 +7,7 @@ Created     :   Jan 10, 2008
 Authors     :   Maxim Didenko, Dmitry Polenur, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -165,7 +166,15 @@ enum ViewFlagConstants
     View_GL20              = 0x20000,
     
     // Forces the shader system in D3D9 to use SM2.0 shaders, even if it is capable of SM3.0.
-    View_ShaderModel20     = 0x40000
+    View_ShaderModel20     = 0x40000,
+
+    // Enables additional output by the graphics/driver layer. Only applicable to OpenGL 3.x+.
+    View_DebugMessages     = 0x80000,
+    // Allowed orientations
+    View_Portrait          = 0x100000,
+    View_ReversePortrait   = 0x200000,
+    View_Landscape         = 0x400000,
+    View_ReverseLandscape  = 0x800000
 };
 
 enum StereoFormats
@@ -204,6 +213,7 @@ struct ViewConfig
     unsigned        StereoFormat;
     Point<int>      WindowPos;
     Size<unsigned>  MinSize;
+    const Args*     CommandLineArgs;    // The args passed to the App on the commandline.
 
     ViewConfig()
         : ViewFlags(0), ColorBits(-1), DepthBits(-1), StencilBits(-1), ViewSize(0), Orientation(0), StereoFormat(Stereo_None), WindowPos(0), MinSize(0) { }
@@ -275,7 +285,7 @@ public:
         virtual void  ConfigureWindow(ViewConfig& newConfig) = 0;
     };
 
-    Device(Render::ThreadCommandQueue *commandQueue = 0);
+    Device(Render::ThreadCommandQueue *commandQueue);
     ~Device();
 
     Render::HAL* GetHAL() const;
@@ -366,6 +376,91 @@ enum ControllerIndexMasks
 };
 
 //------------------------------------------------------------------------
+
+// ***** Class ExtensionContext
+class FREFunctionBase
+{
+public:
+	FREFunctionBase(const char* Name) : StrName(Name)							{ }
+	virtual ~FREFunctionBase()													{ }
+
+	virtual bool Call(unsigned argc, const Scaleform::GFx::Value* const argv, Scaleform::GFx::Value* const result)
+		{ SF_UNUSED3(argc, argv, result); return false; }
+
+	// Name
+	const String& GetName() const											{ return StrName; }
+protected:
+	String StrName;
+};
+
+// ***** Class ExtensionContext
+class ExtensionContext
+{
+public:
+	ExtensionContext(const char* Name) 
+		: StrName(Name), ActionScriptDataValue(0)							{ }
+	virtual ~ExtensionContext()												{ }
+
+	virtual void Dispose()													{ }
+	virtual bool GenerateFREFunctions()										{ return false; }
+	virtual FREFunctionBase* GetFREFunction(const char* functionName) const	{ SF_UNUSED(functionName); return NULL; }
+
+	// Name
+	const String& GetName() const											{ return StrName; }
+
+	// ActionScriptData
+	GFx::Value* GetActionScriptData() const									{ return ActionScriptDataValue; }
+	void SetActionScriptData(GFx::Value* asData)							{ ActionScriptDataValue = asData; }
+protected:
+	String StrName;
+	GFx::Value* ActionScriptDataValue;
+};
+
+// ***** Class Extension
+class Extension
+{
+public:
+	Extension(const char* Name, const char* NativeLibraryPath) 
+		: StrName(Name), StrNativeLibraryPath(NativeLibraryPath)		{ }
+	virtual ~Extension()												{ }
+
+	virtual void Initializer()											{ }	
+	virtual void Finalizer()											{ }
+	virtual bool CreateContext(const char* contextType)					{ SF_UNUSED(contextType); return false; }
+	virtual ExtensionContext* GetContext(const char* contextType) const { SF_UNUSED(contextType); return NULL; }
+	virtual bool RemoveContext(const char* contextType)					{ SF_UNUSED(contextType); return false; }
+
+	// Properties
+	const String& GetName() const										{ return StrName; }
+	const String& GetNativeLibraryPath() const							{ return StrNativeLibraryPath; }
+protected:
+	String StrName, StrNativeLibraryPath;
+
+};
+
+// ***** Class Extension Manager 
+class ExtensionManager
+{
+public:
+    virtual ~ExtensionManager() { }
+	virtual bool Call(const char* extensionID, const char* contextID, const char* functionName, unsigned argc, const Scaleform::GFx::Value* const argv, Scaleform::GFx::Value* const result)
+		{ SF_UNUSED6(extensionID, contextID, functionName, argc, argv, result); return false; }
+	
+	virtual void DispatchStatusEventAsync(const ExtensionContext& context, const String& eventName, const String& eventParam)
+		{ SF_UNUSED3(context, eventName, eventParam); }
+
+	virtual void InitNativeExtension(const String& extensionName, const String& initializer)	{ SF_UNUSED2(extensionName, initializer); }
+	virtual const char* GetExtensionDirectory(const char* extensionID)							{ SF_UNUSED(extensionID); return NULL; }
+	virtual void InitializeExtensionContext(const char* extensionID, const char* contextID)		{ SF_UNUSED2(extensionID, contextID); }
+	virtual void FinalizeExtensionContext(const char* extensionID, const char* contextID)		{ SF_UNUSED2(extensionID, contextID); }
+	
+	virtual GFx::Value*	GetActionScriptData(const char* extensionID, const char* contextID)		{ SF_UNUSED2(extensionID, contextID); return NULL; }
+	virtual void SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data)	{ SF_UNUSED3(extensionID, contextID, data); }
+
+	virtual Extension* GetExtension(const char* ExtensionID) const								{ SF_UNUSED(ExtensionID); return NULL; }
+};
+
+//------------------------------------------------------------------------
 // ***** AppImplBase
 // AppImpl is a base application class that provides base functionality for
 // all derived AppImpl. There should be one AppImpl per platform/renderer API.
@@ -392,14 +487,42 @@ public:
     virtual bool            IsMultitouchSupported() const { return false; }
     virtual bool            IsDisplayActive() const { return true; }
 
+	// Extension context
+	virtual void InitNativeExtensionManager(ArrayLH<Extension*> *freExtensionArray)			{ SF_UNUSED(freExtensionArray); }
+	virtual ExtensionManager* GetExtensionManager()		{ return NULL; }
+	virtual bool Call(const char* ExtensionID, const char* ContextID, const char* FunctionName, unsigned argc, const Scaleform::GFx::Value* const argv, Scaleform::GFx::Value* const result) 
+		{ SF_UNUSED6(ExtensionID, ContextID, FunctionName, argc, argv, result); return false; }
+
+	virtual const char* GetExtensionDirectory(const char* extensionID)									{ SF_UNUSED(extensionID); return NULL; }
+	virtual void FinalizeExtensionContext(const char* extensionID, const char* contextID)				{ SF_UNUSED2(extensionID, contextID); }
+	virtual void InitializeExtensionContext(const char* extensionID, const char* contextID)				{ SF_UNUSED2(extensionID, contextID); }
+	virtual GFx::Value*	GetActionScriptData(const char* extensionID, const char* contextID)				{ SF_UNUSED2(extensionID, contextID); return NULL; }
+	virtual void SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data)	{ SF_UNUSED3(extensionID, contextID, data); }
+	virtual void SetMovie(Ptr<Scaleform::GFx::Movie> pmovie)											{ SF_UNUSED(pmovie); }
+
     // Invoked when a virtual keyboard must be opened.
     // 'textBox' contains bounds of a textfield in world coordinates (stage), in pixels.
     virtual void            HandleVirtualKeyboardOpen(bool multiline, const Render::RectF& textBox) 
         { SF_UNUSED2(multiline,textBox); }
+
     // Invoked when a virtual keyboard must be closed 
     virtual void            HandleVirtualKeyboardClose() { }
 
     virtual void            ProcessUrl(const String& url) { SF_UNUSED(url); }
+
+	// Accelerometer
+	virtual bool			RegisterAccelerometer(int accelerometerId)		{ SF_UNUSED(accelerometerId); return false; }
+	virtual bool			UnregisterAccelerometer(int accelerometerId)	{ SF_UNUSED(accelerometerId); return false; }
+	virtual bool			IsAccelerometerMuted() const			{ return true; }
+	virtual bool			IsAccelerometerSupported() const		{ return false; }
+	virtual void			SetAccelerometerInterval(int accelerometerId, int interval)	{ SF_UNUSED2(accelerometerId, interval); }
+
+	// Geolocation
+	virtual bool			RegisterGeolocation(int geolocationId)		{ SF_UNUSED(geolocationId); return false; }
+	virtual bool			UnregisterGeolocation(int geolocationId)	{ SF_UNUSED(geolocationId); return false; }
+	virtual bool			IsGeolocationMuted() const			{ return true; }
+	virtual bool			IsGeolocationSupported() const		{ return false; }
+	virtual void			SetGeolocationInterval(int geolocationId, int interval)	{ SF_UNUSED2(geolocationId, interval); }
 
 public:
     AppBase*        pApp;
@@ -597,6 +720,16 @@ public:
 
     virtual bool    OnOrientation(unsigned orientation, bool force = false)
     { SF_UNUSED2(orientation, force); return false; }
+
+	virtual void	OnAccelerometerUpdate(int idAcc, double timestamp, double accelerationX, double accelerationY, double accelerationZ)
+	{ SF_UNUSED5(idAcc, timestamp, accelerationX, accelerationY, accelerationZ); }
+
+	virtual void OnGeolocationUpdate(int idGeo, double latitude, double longitude, double altitude, double hAccuracy, double vAccuracy, double speed, double heading, double timestamp)
+	{ SF_UNUSED9(idGeo, latitude, longitude, altitude, hAccuracy, vAccuracy, speed, heading, timestamp); }
+
+	virtual void OnStatus(String* code, String* level, String* extensionId, String* contextId)
+	{ SF_UNUSED4(code, level, extensionId, contextId); }
+
 
     // Used for stereo
     virtual void    OnConfigurationChange(const ViewConfig& newConfig)

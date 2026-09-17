@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,21 +33,29 @@ namespace Classes
 }
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_desktop
 {
+    // const UInt16 DockIcon_tito[6] = {
+    //    0, 1, 3, 4, 6, 7, 
+    // };
+    const TypeInfo* DockIcon_tit[9] = {
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl_display::NativeMenuTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, 
+    };
+    const Abc::ConstValue DockIcon_dva[1] = {
+        {Abc::CONSTANT_Utf8, 3}, 
+    };
     const ThunkInfo DockIcon_ti[6] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::ArrayTI, "bitmaps", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "bitmaps", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "menu", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "bounce", NULL, Abc::NS_Public, CT_Method, 0, 1},
+        {ThunkInfo::EmptyFunc, &DockIcon_tit[0], "bitmaps", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &DockIcon_tit[1], "bitmaps", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &DockIcon_tit[3], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &DockIcon_tit[4], "menu", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &DockIcon_tit[6], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &DockIcon_tit[7], "bounce", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 1, &DockIcon_dva[0]},
     };
 
 }} // namespace InstanceTraits
@@ -54,24 +63,27 @@ namespace InstanceTraits { namespace fl_desktop
 
 namespace ClassTraits { namespace fl_desktop
 {
-    DockIcon::DockIcon(VM& vm)
-    : Traits(vm, AS3::fl_desktop::DockIconCI)
+
+    DockIcon::DockIcon(VM& vm, const ClassInfo& ci)
+    : fl_desktop::InteractiveIcon(vm, ci)
     {
 //##protect##"ClassTraits::DockIcon::DockIcon()"
 //##protect##"ClassTraits::DockIcon::DockIcon()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::EventDispatcher(vm, AS3::fl_desktop::DockIconCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> DockIcon::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) DockIcon(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) DockIcon(vm, AS3::fl_desktop::DockIconCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_desktop::DockIconCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -82,6 +94,11 @@ namespace fl_desktop
 {
     const TypeInfo DockIconTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_desktop::DockIcon::InstanceType),
+        0,
+        0,
+        6,
+        0,
         "DockIcon", "flash.desktop", &fl_desktop::InteractiveIconTI,
         TypeInfo::None
     };
@@ -89,10 +106,6 @@ namespace fl_desktop
     const ClassInfo DockIconCI = {
         &DockIconTI,
         ClassTraits::fl_desktop::DockIcon::MakeClassTraits,
-        0,
-        0,
-        6,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_desktop::DockIcon_ti,

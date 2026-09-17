@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -55,24 +56,27 @@ namespace ClassTraits { namespace fl_desktop
         {"NONE", NULL, OFFSETOF(Classes::fl_desktop::NativeDragActions, NONE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    NativeDragActions::NativeDragActions(VM& vm)
-    : Traits(vm, AS3::fl_desktop::NativeDragActionsCI)
+
+    NativeDragActions::NativeDragActions(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::NativeDragActions::NativeDragActions()"
 //##protect##"ClassTraits::NativeDragActions::NativeDragActions()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_desktop::NativeDragActionsCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_desktop::NativeDragActions(*this));
 
     }
 
     Pickable<Traits> NativeDragActions::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) NativeDragActions(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) NativeDragActions(vm, AS3::fl_desktop::NativeDragActionsCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_desktop::NativeDragActionsCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -83,6 +87,11 @@ namespace fl_desktop
 {
     const TypeInfo NativeDragActionsTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_desktop::NativeDragActions::InstanceType),
+        0,
+        ClassTraits::fl_desktop::NativeDragActions::MemberInfoNum,
+        0,
+        0,
         "NativeDragActions", "flash.desktop", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -90,10 +99,6 @@ namespace fl_desktop
     const ClassInfo NativeDragActionsCI = {
         &NativeDragActionsTI,
         ClassTraits::fl_desktop::NativeDragActions::MakeClassTraits,
-        0,
-        ClassTraits::fl_desktop::NativeDragActions::MemberInfoNum,
-        0,
-        0,
         NULL,
         ClassTraits::fl_desktop::NativeDragActions::mi,
         NULL,

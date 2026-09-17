@@ -8,6 +8,7 @@ Created     :   June 21, 2005
 Authors     :   Michael Antonov, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -485,15 +486,15 @@ public:
         };
 
         DisplayInfo() : VarsSet(0)                     {}
-        DisplayInfo(Double x, Double y) : VarsSet(0)   { SetFlags(V_x | V_y); X = x; Y = y; }
-        DisplayInfo(Double rotation) : VarsSet(0)      { SetFlags(V_rotation); Rotation = rotation; }
+        DisplayInfo(double x, double y) : VarsSet(0)   { SetFlags(V_x | V_y); X = x; Y = y; }
+        DisplayInfo(double rotation) : VarsSet(0)      { SetFlags(V_rotation); Rotation = rotation; }
         DisplayInfo(bool visible) : VarsSet(0)         { SetFlags(V_visible); Visible = visible; }
 
         SF_INLINE void    Clear()                         { VarsSet = 0; }
 
-        void    Initialize(UInt16 varsSet, Double x, Double y, Double rotation, Double xscale, 
-                           Double yscale, Double alpha, bool visible,
-                           Double z, Double xrotation, Double yrotation, Double zscale, Double fov, 
+        void    Initialize(UInt16 varsSet, double x, double y, double rotation, double xscale, 
+                           double yscale, double alpha, bool visible,
+                           double z, double xrotation, double yrotation, double zscale, double fov, 
                            const Matrix3F *pviewm, const Matrix4F *pprojm, Render::EdgeAAMode edgeaaMode)
         {
             VarsSet = varsSet;
@@ -516,18 +517,18 @@ public:
             EdgeAAMode = edgeaaMode;
         }
 
-        SF_INLINE void    SetX(Double x)                  { SetFlags(V_x); X = x; }
-        SF_INLINE void    SetY(Double y)                  { SetFlags(V_y); Y = y; }
-        SF_INLINE void    SetRotation(Double degrees)     { SetFlags(V_rotation); Rotation = degrees; }
-        SF_INLINE void    SetXScale(Double xscale)        { SetFlags(V_xscale); XScale = xscale; }    // 100 == 100%
-        SF_INLINE void    SetYScale(Double yscale)        { SetFlags(V_yscale); YScale = yscale; }    // 100 == 100%
-        SF_INLINE void    SetAlpha(Double alpha)          { SetFlags(V_alpha); Alpha = alpha; }
+        SF_INLINE void    SetX(double x)                  { SetFlags(V_x); X = x; }
+        SF_INLINE void    SetY(double y)                  { SetFlags(V_y); Y = y; }
+        SF_INLINE void    SetRotation(double degrees)     { SetFlags(V_rotation); Rotation = degrees; }
+        SF_INLINE void    SetXScale(double xscale)        { SetFlags(V_xscale); XScale = xscale; }    // 100 == 100%
+        SF_INLINE void    SetYScale(double yscale)        { SetFlags(V_yscale); YScale = yscale; }    // 100 == 100%
+        SF_INLINE void    SetAlpha(double alpha)          { SetFlags(V_alpha); Alpha = alpha; }
         SF_INLINE void    SetVisible(bool visible)        { SetFlags(V_visible); Visible = visible; }
-        SF_INLINE void    SetZ(Double z)                  { SetFlags(V_z); Z = z; }
-        SF_INLINE void    SetXRotation(Double degrees)    { SetFlags(V_xrotation); XRotation = degrees; }
-        SF_INLINE void    SetYRotation(Double degrees)    { SetFlags(V_yrotation); YRotation = degrees; }
-        SF_INLINE void    SetZScale(Double zscale)        { SetFlags(V_zscale); ZScale = zscale; }    // 100 == 100%
-        SF_INLINE void    SetFOV(Double fov)              { SetFlags(V_FOV); FOV = fov; }
+        SF_INLINE void    SetZ(double z)                  { SetFlags(V_z); Z = z; }
+        SF_INLINE void    SetXRotation(double degrees)    { SetFlags(V_xrotation); XRotation = degrees; }
+        SF_INLINE void    SetYRotation(double degrees)    { SetFlags(V_yrotation); YRotation = degrees; }
+        SF_INLINE void    SetZScale(double zscale)        { SetFlags(V_zscale); ZScale = zscale; }    // 100 == 100%
+        SF_INLINE void    SetFOV(double fov)              { SetFlags(V_FOV); FOV = fov; }
         SF_INLINE void    SetProjectionMatrix3D(const Matrix4F *pmat)  
         { 
             if (pmat) 
@@ -550,10 +551,10 @@ public:
         }
         SF_INLINE void  SetEdgeAAMode(Render::EdgeAAMode edgeaaMode)    { SetFlags(V_edgeaaMode); EdgeAAMode = edgeaaMode; }
 
-        SF_INLINE void    SetPosition(Double x, Double y)         { SetFlags(V_x | V_y); X = x; Y = y; }
-        SF_INLINE void    SetScale(Double xscale, Double yscale)  { SetFlags(V_xscale | V_yscale); XScale = xscale; YScale = yscale; }
+        SF_INLINE void    SetPosition(double x, double y)         { SetFlags(V_x | V_y); X = x; Y = y; }
+        SF_INLINE void    SetScale(double xscale, double yscale)  { SetFlags(V_xscale | V_yscale); XScale = xscale; YScale = yscale; }
 
-        SF_INLINE void    Set(Double x, Double y, Double rotation, Double xscale, Double yscale, Double alpha, bool visible)
+        SF_INLINE void    Set(double x, double y, double rotation, double xscale, double yscale, double alpha, bool visible)
         {
             X = x;
             Y = y;
@@ -564,8 +565,8 @@ public:
             Visible = visible;
             SetFlags(V_x | V_y | V_rotation | V_xscale | V_yscale | V_alpha | V_visible);
         }
-        SF_INLINE void    Set(Double x, Double y, Double rotation, Double xscale, Double yscale, Double alpha, bool visible,
-            Double z, Double xrotation, Double yrotation, Double zscale)
+        SF_INLINE void    Set(double x, double y, double rotation, double xscale, double yscale, double alpha, bool visible,
+            double z, double xrotation, double yrotation, double zscale)
         {
             X = x;
             Y = y;
@@ -601,17 +602,17 @@ public:
         SF_INLINE bool    IsFlagSet(unsigned flag) const    { return 0 != (VarsSet & flag); }
 
     private:
-        Double              X;
-        Double              Y;
-        Double              Rotation;
-        Double              XScale;
-        Double              YScale;
-        Double              Alpha;
-        Double              Z;
-        Double              XRotation;
-        Double              YRotation;
-        Double              ZScale;
-        Double              FOV;
+        double              X;
+        double              Y;
+        double              Rotation;
+        double              XScale;
+        double              YScale;
+        double              Alpha;
+        double              Z;
+        double              XRotation;
+        double              YRotation;
+        double              ZScale;
+        double              FOV;
         Matrix3F            ViewMatrix3D;
         Matrix4F            ProjectionMatrix3D;
         Render::EdgeAAMode  EdgeAAMode;
@@ -624,7 +625,7 @@ public:
 
 protected:
 
-    enum ValueTypeControl
+    enum ValueTypeControl : int
     {
         // ** Special Bit Flags
         // Explicit coercion to type requested 
@@ -693,12 +694,17 @@ protected:
         GFX_VM_ABSTRACT(bool    PopBack(void* pdata, Value* pval));
         GFX_VM_ABSTRACT(bool    RemoveElements(void* pdata, unsigned idx, int count));
 
+		GFX_VM_ABSTRACT(bool    IsInstanceOf(void* pdata, const char* className) const);
+
         GFX_VM_ABSTRACT(bool    IsByteArray(void* pdata) const);
         GFX_VM_ABSTRACT(unsigned GetByteArraySize(void* pdata) const);
+		GFX_VM_ABSTRACT(void	SetByteArraySize(void* pdata, UPInt setSize));
         GFX_VM_ABSTRACT(bool    ReadFromByteArray(void* pdata, UByte *destBuff, UPInt destBuffSz) const);
         GFX_VM_ABSTRACT(bool    WriteToByteArray(void* pdata, const UByte *srcBuff, UPInt writeSize));
+		GFX_VM_ABSTRACT(void*	GetRawDataPtr(void* pdata));
 
         GFX_VM_ABSTRACT(bool    IsDisplayObjectActive(void* pdata) const);
+        GFX_VM_ABSTRACT(bool    GetParent(void* pdata, Value* pparent) const);
         GFX_VM_ABSTRACT(bool    GetDisplayInfo(void* pdata, DisplayInfo* pinfo) const);
         GFX_VM_ABSTRACT(bool    SetDisplayInfo(void* pdata, const DisplayInfo& info));
         GFX_VM_ABSTRACT(bool    GetWorldMatrix(void* pdata, Render::Matrix2F* pmat) const);
@@ -730,7 +736,7 @@ protected:
         GFX_VM_ABSTRACT(bool    CreateObjectValue(Value* pval, void* pdata, bool isdobj));
 #endif  // GFX_AS_ENABLE_USERDATA
 
-        GFX_VM_ABSTRACT(AMP::ViewStats* GetAdvanceStats() const);
+        GFX_VM_ABSTRACT(AmpStats* GetAdvanceStats() const);
 
         SF_INLINE bool    IsSameContext(ObjectInterface* pobjInterface)
         { return (pMovieRoot == pobjInterface->pMovieRoot); }
@@ -788,12 +794,12 @@ public:
         // Specify this type to request SetVariable/Invoke result to be converted 
         // to the specified type. After return of the function, the specified type
         // will *ALWAYS* be stored in the value.
-        VT_ConvertBoolean   = VTC_ConvertBit | VT_Boolean,
-        VT_ConvertInt       = VTC_ConvertBit | VT_Int,
-        VT_ConvertUInt      = VTC_ConvertBit | VT_UInt,
-        VT_ConvertNumber    = VTC_ConvertBit | VT_Number,
-        VT_ConvertString    = VTC_ConvertBit | VT_String,
-        VT_ConvertStringW   = VTC_ConvertBit | VT_StringW
+        VT_ConvertBoolean   = static_cast<int>(VTC_ConvertBit) | static_cast<int>(VT_Boolean),
+        VT_ConvertInt       = static_cast<int>(VTC_ConvertBit) | static_cast<int>(VT_Int),
+        VT_ConvertUInt      = static_cast<int>(VTC_ConvertBit) | static_cast<int>(VT_UInt),
+        VT_ConvertNumber    = static_cast<int>(VTC_ConvertBit) | static_cast<int>(VT_Number),
+        VT_ConvertString    = static_cast<int>(VTC_ConvertBit) | static_cast<int>(VT_String),
+        VT_ConvertStringW   = static_cast<int>(VTC_ConvertBit) | static_cast<int>(VT_StringW)
         // Cannot convert to VM objects
     };
 
@@ -805,11 +811,14 @@ public:
         // To create instances of Object and Array, use the Movie::CreateObject
         // and CreateArray methods.
         SF_ASSERT(type != VT_Object && type != VT_Array && type != VT_DisplayObject);
+#ifdef GFX_AS3_SUPPORT
+        SF_ASSERT(type != VT_Closure);
+#endif
         mValue.pString = 0; 
     }
     Value(SInt32 v)              : pObjectInterface(NULL), Type(VT_Int)        { mValue.IValue = v; }
     Value(UInt32 v)              : pObjectInterface(NULL), Type(VT_UInt)       { mValue.UIValue = v; }
-    Value(Double v)              : pObjectInterface(NULL), Type(VT_Number)     { mValue.NValue = v; }
+    Value(double v)              : pObjectInterface(NULL), Type(VT_Number)     { mValue.NValue = v; }
     Value(bool v)                : pObjectInterface(NULL), Type(VT_Boolean)    { mValue.BValue = v; }
     Value(const char* ps)        : pObjectInterface(NULL), Type(VT_String)     { mValue.pString = ps; }
     Value(const wchar_t* ps)     : pObjectInterface(NULL), Type(VT_StringW)    { mValue.pStringW = ps; }
@@ -866,10 +875,15 @@ public:
     }
 
     String          ToString() const;
-    const wchar_t*  ToStringW(wchar_t* pwstr, UPInt length) const;
+    const wchar_t*  ToStringW(wchar_t* pwstr, UPInt buffSz) const;
 
     // Get type based on which you can interpret the value.
-    SF_INLINE ValueType   GetType() const         { return ValueType(Type & VTC_TypeMask); }
+    SF_INLINE ValueType   GetType() const {
+        using UnderlyingType = std::underlying_type_t<ValueType>;
+        return static_cast<ValueType>(
+            static_cast<UnderlyingType>(Type) & static_cast<UnderlyingType>(VTC_TypeMask)
+            );
+    }
 
     // Check types
     SF_INLINE bool        IsUndefined() const     { return GetType() == VT_Undefined; }
@@ -883,6 +897,9 @@ public:
     SF_INLINE bool        IsStringW() const       { return GetType() == VT_StringW; }
     SF_INLINE bool        IsObject() const        { return (GetType() == VT_Object) || 
                                                           GetType() == VT_Array || 
+#ifdef GFX_AS3_SUPPORT
+                                                          GetType() == VT_Closure || 
+#endif
                                                           GetType() == VT_DisplayObject; }
     SF_INLINE bool        IsArray() const         { return GetType() == VT_Array; }
     SF_INLINE bool        IsDisplayObject() const { return GetType() == VT_DisplayObject; }
@@ -891,7 +908,12 @@ public:
     SF_INLINE bool        IsClosure() const       { return GetType() == VT_Closure; }
 #endif
 
-    SF_INLINE bool        IsOrphaned() const      { return (Type & VTC_OrphanedBit) != 0; }
+    SF_INLINE bool        IsOrphaned() const {
+        using UnderlyingType = std::underlying_type_t<ValueTypeControl>;
+        return (
+            static_cast<UnderlyingType>(Type) & static_cast<UnderlyingType>(VTC_OrphanedBit)
+            ) != 0;
+    }
 
     // Get values for each type.
     SF_INLINE bool        GetBool() const         { SF_ASSERT(IsBool());   return mValue.BValue;  }
@@ -919,7 +941,7 @@ public:
     SF_INLINE void        SetBoolean(bool v)              { ChangeType(VT_Boolean);   mValue.BValue = v; }
     SF_INLINE void        SetInt(SInt32 v)                { ChangeType(VT_Int);       mValue.IValue = v; }
     SF_INLINE void        SetUInt(UInt32 v)               { ChangeType(VT_UInt);      mValue.UIValue = v; }
-    SF_INLINE void        SetNumber(Double v)             { ChangeType(VT_Number);    mValue.NValue = v; }
+    SF_INLINE void        SetNumber(double v)             { ChangeType(VT_Number);    mValue.NValue = v; }
     SF_INLINE void        SetString(const char* p)        { ChangeType(VT_String);    mValue.pString = p; }
     SF_INLINE void        SetStringW(const wchar_t* p)    { ChangeType(VT_StringW);   mValue.pStringW = p; }
 
@@ -1071,6 +1093,12 @@ public:
     SF_INLINE bool        RemoveElement(unsigned idx)                     { return RemoveElements(idx, 1); }
     SF_INLINE bool        ClearElements()                             { return RemoveElements(0); }
 
+	SF_INLINE bool		  IsInstanceOf(const char* className) const
+	{
+		SF_ASSERT(IsObject());
+        return pObjectInterface->IsInstanceOf(mValue.pData, className);
+	}
+
     // ----------------------------------------------------------------
     // AS3 ByteArray support. These methods are valid only for the AS3
     // ByteArray type
@@ -1086,6 +1114,10 @@ public:
         // If not of ByteArray type, then returns 0. Use IsByteArray for type checking
         return pObjectInterface->GetByteArraySize(mValue.pData);
     }
+	SF_INLINE void          SetByteArraySize(UPInt setSize)
+    {
+		pObjectInterface->SetByteArraySize(mValue.pData, setSize);
+	}
     SF_INLINE bool          ReadFromByteArray(UByte *destBuff, UPInt destBuffSz)
     {
         // This method will read destBuffSz bytes from the ByteArray object, or if
@@ -1100,17 +1132,27 @@ public:
         // If false is returned, then the object is not a ByteArray type
         return pObjectInterface->WriteToByteArray(mValue.pData, srcBuff, writeSize);
     }
+	SF_INLINE void*          GetRawDataPtr()
+    {
+        return pObjectInterface->GetRawDataPtr(mValue.pData);
+    }
 #endif  // GFX_AS3_SUPPORT
 
     // ----------------------------------------------------------------
     // AS display object (MovieClips, Buttons, TextFields) support. These
     // methods are only valid for DisplayObject type
     //
-    bool        IsDisplayObjectActive() const
+    SF_INLINE bool        IsDisplayObjectActive() const
     {
         SF_ASSERT(IsDisplayObject());
         // If false is returned, then the display object does not exist on the stage.
         return pObjectInterface->IsDisplayObjectActive(mValue.pData);
+    }
+    SF_INLINE bool        GetParent(Value* pparent) const
+    {
+        SF_ASSERT(IsDisplayObject());
+        // If false is returned, then the display object does not exist on the stage.
+        return pObjectInterface->GetParent(mValue.pData, pparent);
     }
     SF_INLINE bool        GetDisplayInfo(DisplayInfo* pinfo) const
     {
@@ -1309,7 +1351,7 @@ protected:
     {
         SInt32          IValue;
         UInt32          UIValue;
-        Double          NValue;
+        double          NValue;
         bool            BValue;
         const char*     pString;
         const char**    pStringManaged;
@@ -1327,11 +1369,11 @@ protected:
     SF_INLINE bool        IsManagedValue() const   
     { 
 #ifdef SF_BUILD_DEBUG
-        bool ok = ((Type & VTC_ManagedBit) != 0);
+        bool ok = ((static_cast<unsigned int>(Type) & static_cast<unsigned int>(VTC_ManagedBit)) != 0);
         if (ok) SF_ASSERT(pObjectInterface);
         return ok;
 #else
-        return (Type & VTC_ManagedBit) != 0; 
+        return (static_cast<unsigned int>(Type) & static_cast<unsigned int>(VTC_ManagedBit)) != 0;
 #endif
     }
     SF_INLINE void        ChangeType(ValueType type) 
@@ -1535,6 +1577,33 @@ SF_INLINE Ptr<ExternalInterface> StateBag::GetExternalInterface() const
     return *(ExternalInterface*) GetStateAddRef(State::State_ExternalInterface);
 }
 
+/////////////////////////////////
+
+// *** ExtensionContextInterface State
+// An interface that represents platform specific layer for ExtensionManager.
+class ExtensionContextInterface : public State
+{
+public:
+	ExtensionContextInterface() : State(State_ExtensionContextInterface) {}
+
+	virtual bool Call(const char* extensionID, const char* contextID, const char* functionName, unsigned argc, const Scaleform::GFx::Value* const argv, Scaleform::GFx::Value* const result) = 0;
+	virtual const char* GetExtensionDirectory(const char* extensionID) = 0;
+	virtual void FinalizeExtensionContext(const char* extensionID, const char* contextID) = 0;
+	virtual void InitializeExtensionContext(const char* extensionID, const char* contextID) = 0;
+	virtual GFx::Value*	GetActionScriptData(const char* extensionID, const char* contextID) = 0;
+	virtual void SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data) = 0;
+	virtual void SetMovie(Movie* pmovie) = 0;
+};
+
+// Sets the extension manager used.
+SF_INLINE void StateBag::SetExtensionContextInterface(ExtensionContextInterface* p)
+{
+	SetState(State::State_ExtensionContextInterface, p);
+}
+SF_INLINE Ptr<ExtensionContextInterface> StateBag::GetExtensionContextInterface() const
+{
+	return *(ExtensionContextInterface*) GetStateAddRef(State::State_ExtensionContextInterface);
+}
 
 // *** MultitouchInterface State
 
@@ -1582,6 +1651,57 @@ SF_INLINE Ptr<MultitouchInterface> StateBag::GetMultitouchInterface() const
     return *(MultitouchInterface*) GetStateAddRef(State::State_MultitouchInterface);
 }
 
+
+// *** AccelerometerInterface State
+
+// An interface that represents platform specific layer for Accelerometer.
+class AccelerometerInterface : public State
+{
+public:
+    AccelerometerInterface() : State(State_AccelerometerInterface) {}
+
+	virtual bool	RegisterAccelerometer(int accelerometerId) = 0;
+	virtual bool	UnregisterAccelerometer(int accelerometerId) = 0;
+	virtual bool	IsAccelerometerMuted() const = 0;
+	virtual bool	IsAccelerometerSupported() const = 0;
+	virtual void	SetAccelerometerInterval(int accelerometerId, int interval) = 0;
+};
+
+// Sets the external interface used.
+SF_INLINE void StateBag::SetAccelerometerInterface(AccelerometerInterface* p)
+{
+    SetState(State::State_AccelerometerInterface, p);
+}
+SF_INLINE Ptr<AccelerometerInterface> StateBag::GetAccelerometerInterface() const
+{
+    return *(AccelerometerInterface*) GetStateAddRef(State::State_AccelerometerInterface);
+}
+
+
+// *** GeolocationInterface State
+
+// An interface that represents platform specific layer for Geolocation.
+class GeolocationInterface : public State
+{
+public:
+    GeolocationInterface() : State(State_GeolocationInterface) {}
+
+	virtual bool	RegisterGeolocation(int geolocationId) = 0;
+	virtual bool	UnregisterGeolocation(int geolocationId) = 0;
+	virtual bool	IsGeolocationMuted() const = 0;
+	virtual bool	IsGeolocationSupported() const = 0;
+	virtual void	SetGeolocationInterval(int geolocationId, int interval) = 0;
+};
+
+// Sets the external interface used.
+SF_INLINE void StateBag::SetGeolocationInterface(GeolocationInterface* p)
+{
+    SetState(State::State_GeolocationInterface, p);
+}
+SF_INLINE Ptr<GeolocationInterface> StateBag::GetGeolocationInterface() const
+{
+    return *(GeolocationInterface*) GetStateAddRef(State::State_GeolocationInterface);
+}
 
 // MovieDisplayHandle identifies Movie's render tree representation,
 // intended to be passed to Renderer2D::Display method on the render thread.
@@ -1634,6 +1754,9 @@ public:
     virtual void        SetPlayState(PlayState s) = 0;
     virtual PlayState   GetPlayState() const = 0;
 
+    // Validation. Returns whether or not the movie was instantiated by
+    // a correctly-licensed Scaleform instance.
+    virtual bool        IsValid() = 0;
 
     // Visibility control.
     // Make the movie visible/invisible.  An invisible movie does not
@@ -2084,7 +2207,9 @@ public:
     // specified swf file.
     virtual void        PrintObjectsReport(UInt32 flags = 0, 
                                            Log* log = NULL,  
-                                           const char* swfName = NULL) = 0;
+                                           const char* swfName = NULL,
+                                           Ptr<AmpMovieObjectDesc>* root = NULL,
+                                           MemoryHeap* heap = NULL) = 0;
 
     static SF_INLINE float SF_STDCALL GetRenderPixelScale() { return 20.f; }
 

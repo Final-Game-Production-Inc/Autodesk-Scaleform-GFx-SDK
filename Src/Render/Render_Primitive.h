@@ -7,6 +7,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -215,7 +216,7 @@ public:
 //  - Common base class for Mesh and ComplexPrimitive, separated to pass it
 //    as argument for MeshProvider.
 
-class MeshBase : public RefCountBase<MeshBase, StatRender_Mesh_Mem>, public MeshStagingNode
+class MeshBase : public RefCountBase<MeshBase, StatRender_MeshCacheMgmt_Mem>, public MeshStagingNode
 {
     // Renderer2D use not ideal here since we only have access to HAL.
     // Perhaps this should be a void* pointer?
@@ -426,7 +427,7 @@ enum PrimitiveFillType
     PrimFill_Mask,                      // { XY }
     PrimFill_SolidColor,                // { XY }
     PrimFill_VColor,                    // { XY, Color }
-    PrimFill_VColor_EAlpha,             // { XY, Color, EAlpha }
+    PrimFill_VColor_EAlpha,             // { XY, Color, EAlpha }    
     PrimFill_Texture,                   // { XY }
     PrimFill_Texture_EAlpha,            // { XY, EAlpha }
     PrimFill_Texture_VColor,            // { XY, Color, Weight1 }
@@ -436,6 +437,7 @@ enum PrimitiveFillType
     PrimFill_UVTexture,                 // { XY, UV }
     PrimFill_UVTextureAlpha_VColor,     // { XY, UV, Color }
     PrimFill_UVTextureDFAlpha_VColor,   // { XY, UV, Color }
+
     PrimFill_Type_Count
 };
 
@@ -448,8 +450,6 @@ enum PrimitiveFillFlags
     FF_Cxform       = 0x08,     // The fill requires a color transform.
     FF_3DProjection = 0x10,     // The fill is for a 3D object.
     FF_Blending     = 0x20,     // Blending operations need to be performed for the fill.
-    FF_LeaveOpen    = 0x40,     // Leaves the primitive uniform update open (eg. does not call Finish).
-                                // This is used on X360, because it may need to set the instSize variable.
 
     FF_BlendMask    = FF_Multiply | FF_Invert,     // Bitmask, which covers the fillflags associated with different blend modes.
 };
@@ -471,7 +471,7 @@ struct PrimitiveFillData
     const VertexFormat* pFormat;
 
     PrimitiveFillData()
-        : Type(PrimFill_None), SolidColor(0) { }
+        : Type(PrimFill_None), SolidColor(0), pFormat(0) { }
     PrimitiveFillData(PrimitiveFillType type, const VertexFormat* format)
         : Type(type), SolidColor(0), pFormat(format)
     { SF_ASSERT(CheckVertexFormat(type, format)); }
@@ -525,11 +525,17 @@ struct PrimitiveFillData
 
     UByte   GetTextureCount() const
     {
-        if ((Type >= PrimFill_Texture) && (Type <= PrimFill_2Texture_EAlpha))
-            return (Type >= PrimFill_2Texture) ? 2 : 1;
+        if (Type >= PrimFill_Texture)
+            return (Type == PrimFill_2Texture || Type == PrimFill_2Texture_EAlpha) ? 2 : 1;
         return 0;
     }
 
+    UByte    GetTextureMatrixCount() const
+    {
+        if (Type >= PrimFill_Texture && Type < PrimFill_UVTexture)
+            return (Type == PrimFill_2Texture || Type == PrimFill_2Texture_EAlpha) ? 2 : 1;
+        return 0;
+    }
     UPInt    GetHashValue() const 
     {
         return Type ^ SolidColor.ToColor32() ^ 
@@ -623,7 +629,7 @@ class PrimitiveFillManager;
 // and cached based on their values, they can be compared based on pointer value.
 // Used in render thread only.
 
-class PrimitiveFill : public RefCountBaseNTS<PrimitiveFill, StatRender_Fill_Mem>
+class PrimitiveFill : public RefCountBaseNTS<PrimitiveFill, StatRender_TreeCache_Mem>
 {
     void operator = (const PrimitiveFill&) { } // Assignment not allowed.
 protected:
@@ -643,8 +649,12 @@ public:
     ImageFillMode       GetFillMode(unsigned index = 0) const   { return Data.FillModes[index]; }
     const VertexFormat* GetVertexFormat() const             { return Data.pFormat; }
     UByte               GetTextureCount() const             { return Data.GetTextureCount(); }
+    UByte               GetTextureMatrixCount() const       { return Data.GetTextureMatrixCount(); }
     UPInt               GetHashValue() const                { return Data.GetHashValue(); }
     bool                RequiresBlend() const               { return Data.RequiresBlend(); }
+
+    static bool         IsSolid(PrimitiveFillType type);
+    static bool         HasTexture(PrimitiveFillType type);
 
     const PrimitiveFillData& GetData() const { return Data; }
 
@@ -671,10 +681,11 @@ inline bool operator == (const PrimitiveFill* fill, const PrimitiveFillData& dat
 // them to be reused. PrimitiveFill reuse is important fill pointer values serve as
 // keys for batch sorting.
 
-class PrimitiveFillManager : public RefCountBase<PrimitiveFillManager, StatRender_Fill_Mem>
+class PrimitiveFillManager : public RefCountBase<PrimitiveFillManager, StatRender_TreeCache_Mem>
 {
     friend  class PrimitiveFill;
     friend  class GradientImage;
+    friend  class GradientFilter;
 
     typedef HashSetLH<PrimitiveFill*, PrimitiveFill::PtrHashFunctor> FillHashSet;
     typedef HashSetLH<GradientImage*, GradientImage::PtrHashFunctor> GradientHashSet;
@@ -868,7 +879,7 @@ protected:
 // Constraints:
 //  - All the elements of DP will be drawn with the same fill style.
 
-class Primitive : public RefCountBase<Primitive, StatRender_Primitive_Mem>,
+class Primitive : public RefCountBase<Primitive, StatRender_RenderPipeline_Mem>,
                   public RenderQueueItem::Interface
 {
     friend class PrimitiveBatch;
@@ -1194,20 +1205,11 @@ private:
 // the mask area bounds with rotation - these are the areas that should be erased
 // before masks are applied.
 
-class MaskPrimitive : public RefCountBase<MaskPrimitive, StatRender_Primitive_Mem>,
+class MaskPrimitive : public RefCountBase<MaskPrimitive, StatRender_RenderPipeline_Mem>,
                       public RenderQueueItem::Interface    
 {
 public:
-    enum MaskAreaType
-    {
-        Mask_Combinable,
-        Mask_Clipped
-    };
-
-    MaskPrimitive(HAL* hal, MaskAreaType type) : pHAL(hal), Type(type) { }
-
-    MaskAreaType    GetType() const   { return Type; }
-    bool            IsClipped() const { return Type == Mask_Clipped; }
+    MaskPrimitive() { }
 
     UPInt           GetMaskCount() const { return MaskAreas.GetSize(); }
     const HMatrix*  GetMaskAreaMatrices() const { return &MaskAreas[0]; }
@@ -1220,72 +1222,118 @@ public:
     virtual void    EmitToHAL(RenderQueueItem&, RenderQueueProcessor&);
 
 private:
-    HAL*             pHAL;
-    MaskAreaType     Type;
     ArrayLH<HMatrix> MaskAreas;
+};
+
+//--------------------------------------------------------------------
+// ***** CacheablePrimitive - base class for primitive types that can be
+//       cached to a render target (and therefore not need to be re-rendered).
+//       This includes the 'area' in which they encompass, and also whether they
+//       have masks (and thus, will require a stencil/depth buffer for their target).
+class CacheablePrimitive : public RefCountBase<CacheablePrimitive, StatRender_RenderPipeline_Mem>,
+                           public RenderQueueItem::Interface
+{
+public:
+    enum CacheState
+    {
+        Cache_Uncached,     // Result is completely uncached. Must be rendered from scratch.
+        Cache_PreTarget,    // Result is step before rendering to its final target (only used with filters).
+        Cache_Target,       // Result is final for the target, simply do a Texture quad.
+        Cache_Count
+    };
+
+    static const unsigned   MaximumCachedResults = 2;
+
+    CacheablePrimitive(bool masksPresent);
+    virtual ~CacheablePrimitive();
+
+    CacheState          GetCacheState() const { return Caching; }
+    void                GetCacheResults(RenderTarget** results, unsigned count);
+    void                SetCacheResults(CacheState state, RenderTarget** results, unsigned count);
+
+    void                Insert(UPInt index, const HMatrix& m);
+    void                Remove(UPInt index, UPInt count);
+
+    const UPInt         GetAreaMatrixCount() const              { return PrimitiveArea.GetSize(); }
+    const HMatrix&      GetAreaMatrix(unsigned index =0) const  { return PrimitiveArea[index]; }
+    bool                GetMaskPresent() const                  { return MaskPresent; }
+
+protected:
+    // If some special behavior is needed when the primitive becomes uncached, it should be
+    // implemented in this function in a derived class (eg. FilterPrimitive needs to update its
+    // area matrices when it becomes uncached).
+    virtual void        uncachePrimitive(UPInt index =0) { SF_UNUSED(index); };
+
+    // CacheablePrimitives may be 'conditionally' cacheable. For example BlendPrimitive only needs
+    // to be cached when used with certain blend modes, but not others. This function reports whether
+    // the current primitive should be exempt from caching.
+    virtual bool        isExemptFromCaching() const { return false; }
+
+    CacheState              Caching;
+    Ptr<RenderTarget>       CacheResults[MaximumCachedResults];
+    ArrayLH<HMatrix>        PrimitiveArea;
+    bool                    MaskPresent;
 };
 
 //--------------------------------------------------------------------
 // ***** Filter Primitive
 enum FilterTargets
 {
-    Target_Source,      // Holds the target to be filtered. This may have already been filtered.
-    Target_Destination, // Holds the destination image.
-    Target_Original,    // Holds the original (unfiltered) source image. Need in shadow/glow/bevel.
+    Target_Source,                  // Holds the target to be filtered. This may have already been filtered.
+    Target_Destination,             // Holds the destination image.
+    Target_Original,                // Holds the original (unfiltered) source image. Need in shadow/glow/bevel.
+    Target_Alpha = Target_Original, // Holds the alpha layer target. Resume Target_Original index, as they are mutually exclusive.
     Target_Count
 };
 
-class FilterPrimitive : public RefCountBase<FilterPrimitive, StatRender_Primitive_Mem>,
-                        public RenderQueueItem::Interface    
+class FilterPrimitive : public CacheablePrimitive
 {
 public:
-    FilterPrimitive(HAL* hal, FilterSet* filters, bool maskPresent) : 
-      pHAL(hal), pFilters(filters), MaskPresent(maskPresent)
-    { SetCacheResults(Cache_Uncached, 0, 0); }
-    ~FilterPrimitive();
+    FilterPrimitive(FilterSet* filters, bool maskPresent) : 
+      CacheablePrimitive(maskPresent),
+      pFilters(filters) { }
 
-    const FilterSet*GetFilters() const          { return pFilters; }
-    const HMatrix&  GetFilterAreaMatrix() const { return FilterArea; }
-    bool            GetMaskPresent() const      { return MaskPresent; }
+    const FilterSet*         GetFilters() const          { return pFilters; }
 
-    void            Insert(UPInt index, const HMatrix& m);
-    void            Remove(UPInt index, UPInt count);
+    // RenderQueueItem::Interface impl
+    virtual void             EmitToHAL(RenderQueueItem&, RenderQueueProcessor&);
+    virtual QIPrepareResult  Prepare(RenderQueueItem&, RenderQueueProcessor&, bool waitForCache);
 
-    enum CacheState
-    {
-        Cache_Uncached,     // Filtering result is completely uncached. Must be rendered from scratch.
-        Cache_PreTarget,    // Filtering result is step before rendering to its final target.
-        Cache_Target,       // Filtering result is final for the target, simply do a Texture quad.
-        Cache_Count
-    };
+protected:
+    virtual void             uncachePrimitive(UPInt index =0);
 
-    static const unsigned   MaximumCachedResults = 2;
-    CacheState          GetCacheState() const { return Caching; }
-    void                GetCacheResults(RenderTarget** results, unsigned count);
-    void                SetCacheResults(CacheState state, RenderTarget** results, unsigned count);
+private:
+    Ptr<FilterSet>          pFilters;
+};
+
+//--------------------------------------------------------------------
+// ***** Blend Primitive
+class BlendPrimitive : public CacheablePrimitive
+{
+public:
+    BlendPrimitive(BlendMode mode, bool maskPresent) : 
+        CacheablePrimitive(maskPresent),
+        BlendModeValue(mode) { }
+
+    BlendMode       GetBlendMode() const        { return BlendModeValue; }
 
     // RenderQueueItem::Interface impl
     virtual void             EmitToHAL(RenderQueueItem&, RenderQueueProcessor&);
     virtual QIPrepareResult  Prepare(RenderQueueItem&, RenderQueueProcessor&, bool waitForCache);
 
 private:
-    HAL*                    pHAL;
-    Ptr<FilterSet>          pFilters;
-    HMatrix                 FilterArea;
-    CacheState              Caching;
-    Ptr<RenderTarget>       CacheResults[MaximumCachedResults];
-    bool                    MaskPresent;
+    BlendMode BlendModeValue;
 };
 
 //--------------------------------------------------------------------
 // ***** ViewMatrix3D Primitive
 
-class ViewMatrix3DPrimitive : public RefCountBase<ViewMatrix3DPrimitive, StatRender_Primitive_Mem>,
+class ViewMatrix3DPrimitive : public RefCountBase<ViewMatrix3DPrimitive, StatRender_RenderPipeline_Mem>,
     public RenderQueueItem::Interface    
 {
 public:
 
-    ViewMatrix3DPrimitive(HAL* hal) : pHAL(hal), bHasViewMatrix(false) { }
+    ViewMatrix3DPrimitive() : bHasViewMatrix(false) { }
     ~ViewMatrix3DPrimitive() { }
 
     void            SetViewMatrix3D(const Matrix3F &viewMat)
@@ -1301,7 +1349,6 @@ public:
     virtual void    EmitToHAL(RenderQueueItem&, RenderQueueProcessor&);
 
 private:
-    HAL*            pHAL;
     Matrix3F        ViewMatrix;
     bool            bHasViewMatrix;
 };
@@ -1309,12 +1356,12 @@ private:
 //--------------------------------------------------------------------
 // ***** ProjectionMatrix3D Primitive
 
-class ProjectionMatrix3DPrimitive : public RefCountBase<ProjectionMatrix3DPrimitive, StatRender_Primitive_Mem>,
+class ProjectionMatrix3DPrimitive : public RefCountBase<ProjectionMatrix3DPrimitive, StatRender_RenderPipeline_Mem>,
     public RenderQueueItem::Interface    
 {
 public:
 
-    ProjectionMatrix3DPrimitive(HAL* hal) : pHAL(hal), bHasProjectionMatrix(false) { }
+    ProjectionMatrix3DPrimitive() : bHasProjectionMatrix(false) { }
     ~ProjectionMatrix3DPrimitive() { }
 
     void            SetProjectionMatrix3D(const Matrix4F &projMat)
@@ -1330,25 +1377,23 @@ public:
     virtual void    EmitToHAL(RenderQueueItem&, RenderQueueProcessor&);
 
 private:
-    HAL*            pHAL;
     Matrix4F        ProjectionMatrix;
     bool            bHasProjectionMatrix;
 };
 
 //--------------------------------------------------------------------
 // ***** UserData Primitive. Used with the setRenderString/setRenderFloat extensions.
-class UserDataPrimitive : public RefCountBase<UserDataPrimitive, StatRender_Primitive_Mem>,
+class UserDataPrimitive : public RefCountBase<UserDataPrimitive, StatRender_RenderPipeline_Mem>,
     public RenderQueueItem::Interface    
 {
 public:
-    UserDataPrimitive(HAL* hal) : pHAL(hal), pUserData(0) { }
-    UserDataPrimitive(HAL* hal, UserDataState::Data* data) : pHAL(hal), pUserData(data) { }
+    UserDataPrimitive() : pUserData(0) { }
+    UserDataPrimitive(UserDataState::Data* data) : pUserData(data) { }
     ~UserDataPrimitive() { }
 
     // RenderQueueItem::Interface impl
     virtual void    EmitToHAL(RenderQueueItem&, RenderQueueProcessor&);
 private:
-    HAL*                        pHAL;
     Ptr<UserDataState::Data>    pUserData;
 };
 

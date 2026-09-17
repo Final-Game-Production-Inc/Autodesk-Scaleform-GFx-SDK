@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -164,32 +165,46 @@ template <> const TFunc_Classes_IME_setCompositionString::TMethod TFunc_Classes_
 
 namespace ClassTraits { namespace fl_system
 {
-    const ThunkInfo IME::ti[IME::ThunkInfoNum] = {
-        {TFunc_Classes_IME_conversionModeSet::Func, NULL, "conversionMode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_IME_conversionModeGet::Func, &AS3::fl::StringTI, "conversionMode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_IME_enabledGet::Func, &AS3::fl::BooleanTI, "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_IME_enabledSet::Func, NULL, "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_IME_doConversion::Func, NULL, "doConversion", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_IME_setCompositionString::Func, NULL, "setCompositionString", NULL, Abc::NS_Public, CT_Method, 1, 1},
+    // const UInt16 IME::tito[IME::ThunkInfoNum] = {
+    //    0, 2, 3, 4, 6, 7, 
+    // };
+    const TypeInfo* IME::tit[9] = {
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, 
     };
-    IME::IME(VM& vm)
-    : Traits(vm, AS3::fl_system::IMECI)
+    const ThunkInfo IME::ti[IME::ThunkInfoNum] = {
+        {TFunc_Classes_IME_conversionModeSet::Func, &IME::tit[0], "conversionMode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_IME_conversionModeGet::Func, &IME::tit[2], "conversionMode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_IME_enabledGet::Func, &IME::tit[3], "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_IME_enabledSet::Func, &IME::tit[4], "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_IME_doConversion::Func, &IME::tit[6], "doConversion", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_IME_setCompositionString::Func, &IME::tit[7], "setCompositionString", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+    };
+
+    IME::IME(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::IME::IME()"
 //##protect##"ClassTraits::IME::IME()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::EventDispatcher(vm, AS3::fl_system::IMECI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_system::IME(*this));
 
     }
 
     Pickable<Traits> IME::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) IME(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) IME(vm, AS3::fl_system::IMECI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_system::IMECI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -200,6 +215,11 @@ namespace fl_system
 {
     const TypeInfo IMETI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_system::IME::InstanceType),
+        ClassTraits::fl_system::IME::ThunkInfoNum,
+        0,
+        0,
+        0,
         "IME", "flash.system", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -207,10 +227,6 @@ namespace fl_system
     const ClassInfo IMECI = {
         &IMETI,
         ClassTraits::fl_system::IME::MakeClassTraits,
-        ClassTraits::fl_system::IME::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_system::IME::ti,
         NULL,
         NULL,

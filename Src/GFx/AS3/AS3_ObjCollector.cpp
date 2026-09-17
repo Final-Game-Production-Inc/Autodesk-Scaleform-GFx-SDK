@@ -535,16 +535,16 @@ public:
                 if (!(flags & Movie::Report_NoEllipsis) && lastArrow > 0)
                 {
                     // find next arrow
-                    UPInt ci;
-                    for (ci = lastArrow; ci < cur.GetSize(); ++ci)
+                    UPInt uci;
+                    for (uci = lastArrow; uci < cur.GetSize(); ++uci)
                     {
-                        if (ci + 1 < cur.GetSize() && cur[ci] == '<' && cur[ci + 1] == '-')
+                        if (uci + 1 < cur.GetSize() && cur[uci] == '<' && cur[uci + 1] == '-')
                             break;
                     }
                     StringBuffer sbuf(cur);
-                    if (ci + 1 < cur.GetSize())
+                    if (uci + 1 < cur.GetSize())
                     {
-                        sbuf.Resize(ci + 2);
+                        sbuf.Resize(uci + 2);
                         sbuf.AppendString(" ...\n");
                     }
                     pLog->LogMessage("%s", sbuf.ToCStr());
@@ -589,6 +589,9 @@ void ObjectCollector::Dump(UInt32 flags,
     unsigned as3ClassesCnt = 0;
     unsigned as3UserClassesCnt = 0;
     Hash<const VMAbcFile*, Array<ObjDesc> > abcFileNames;
+#ifdef SF_OBJECTS_REPORT_OTHERS
+    Array<ObjDesc> otherObjects;
+#endif
     StringHash<int> as3objsByTypes;
     Hash<const MovieDef*, Array<ObjDesc> > movieDefs;
     for(ObjHash::ConstIterator it = Objects.Begin(); it != Objects.End(); ++it)
@@ -668,6 +671,12 @@ void ObjectCollector::Dump(UInt32 flags,
                         movieDefs.Set(pas3DispObj->pDispObj->GetResourceMovieDef(), ao);
                     }
                 }
+#ifdef SF_OBJECTS_REPORT_OTHERS
+                else
+                {
+                    otherObjects.PushBack(od);
+                }
+#endif
                 break;
             }
             case ObjDesc::Obj_MovieDef:
@@ -748,6 +757,24 @@ void ObjectCollector::Dump(UInt32 flags,
         log = savedLog;
     }
 
+#ifdef SF_OBJECTS_REPORT_OTHERS
+    log->LogMessage("\nOther objects:\n");
+    log->LogMessage("\n----------------\n\n");
+    {
+        Ptr<SF::Log> savedLog = log;
+        Ptr<SortingLog> sortLog = *new SortingLog(log);
+        log = sortLog;
+
+        // find objects belonging to this VMAbcFile
+        for (UPInt j = 0; j < otherObjects.GetSize(); ++j)
+        {
+            TraceBack(log, otherObjects[j], "       ", flags, static_cast<VMAbcFile*>(NULL));
+        }
+        sortLog->TreatAndFlush(flags);
+        log = savedLog;
+    }
+#endif
+
     if (!(flags & Movie::Report_SuppressMovieDefsStats) && movieDefs.GetSize() > 1)
     {
         log->LogMessage("\nMovieDefs:                %lu", (unsigned long)movieDefs.GetSize());
@@ -815,6 +842,136 @@ void ObjectCollector::Dump(UInt32 flags,
 #endif
     return;
 }
+
+AmpMovieObjectDesc* ObjectCollector::CreateAmpDesc(const ObjDesc* currentObj, ConstObjMap& objectsDone, AmpMovieObjectDesc* childDesc, Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap)
+{
+    bool foundExisting = false;
+    Ptr<AmpMovieObjectDesc> ampDesc;
+    AmpMovieObjectDesc** ampDescFound = objectsDone.Get(currentObj);
+    if (ampDescFound != NULL)
+    {
+        foundExisting = true;
+        ampDesc = *ampDescFound;
+    }
+    else
+    {
+        ampDesc = *SF_HEAP_NEW(heap) AmpMovieObjectDesc();
+        switch (currentObj->ObjType)
+        {
+        case ObjDesc::Obj_AS3Obj:
+            ampDesc->Description = currentObj->pAS3Obj->GetAS3ObjectName().ToCStr();
+            if (ampDesc->Description.IsEmpty())
+            {
+                ampDesc->Description = currentObj->pAS3Obj->GetAS3ObjectType();
+            }
+            else
+            {
+                ampDesc->Description.AppendChar('(');
+                ampDesc->Description.AppendString(currentObj->pAS3Obj->GetAS3ObjectType());
+                ampDesc->Description.AppendChar(')');
+            }
+            break;
+        case ObjDesc::Obj_DispObj:
+            ampDesc->Description = currentObj->pDispObj->GetName().ToCStr();
+            if (ampDesc->Description.IsEmpty())
+            {
+                ampDesc->Description = currentObj->pDispObj->GetObjectTypeName();
+            }
+            else
+            {
+                ampDesc->Description.AppendChar('(');
+                ampDesc->Description.AppendString(currentObj->pDispObj->GetObjectTypeName());
+                ampDesc->Description.AppendChar(')');
+            }
+            break;
+        case ObjDesc::Obj_FontHandle:
+            ampDesc->Description = currentObj->pFontHandle->GetFontName();
+            if (ampDesc->Description.IsEmpty())
+            {
+                ampDesc->Description = "Font";
+            }
+            if (currentObj->pFontHandle->GetFontFlags() & GFx::FontHandle::FF_Bold)
+            {
+                ampDesc->Description += " Bold";
+            }
+            if (currentObj->pFontHandle->GetFontFlags() & GFx::FontHandle::FF_Italic)
+            {
+                ampDesc->Description += " Italic";
+            }
+            break;
+        case ObjDesc::Obj_MovieDef:
+            ampDesc->Description = currentObj->pMovieDef->GetFileURL();
+            if (ampDesc->Description.IsEmpty())
+            {
+                ampDesc->Description = "MovieDef";
+            }
+            break;
+        default:
+            SF_ASSERT(false);
+            break;
+        }
+    }
+
+    if (childDesc != NULL)
+    {
+        ampDesc->Children.PushBack(childDesc);
+    }
+
+    if (foundExisting)
+    {
+        return NULL;
+    }
+
+    objectsDone.Add(currentObj, ampDesc);
+
+    AmpMovieObjectDesc* parentDesc = NULL;
+    if (currentObj->pParentVoid != NULL)
+    {
+        const ObjDesc* parentObj = Objects.GetAlt(currentObj->pParentVoid);
+        SF_ASSERT(parentObj != NULL);
+        if (parentObj != NULL)
+        {
+            parentDesc = CreateAmpDesc(parentObj, objectsDone, ampDesc, rootObjects, heap);
+        }
+    }
+    else
+    {
+        AmpMovieObjectDesc* rootDesc = NULL;
+        for (UPInt i = 0; i < rootObjects->GetSize(); ++i)
+        {
+            if (rootObjects->At(i)->Description == currentObj->ParentDesc)
+            {
+                rootDesc = rootObjects->At(i);
+                break;
+            }
+        }
+        if (rootDesc == NULL)
+        {
+            rootDesc = SF_HEAP_NEW(heap) AmpMovieObjectDesc();
+            rootDesc->Description = currentObj->ParentDesc;
+            parentDesc = rootDesc;
+        }
+
+        rootDesc->Children.PushBack(ampDesc);
+    }
+    return parentDesc;
+}
+
+
+void ObjectCollector::GetTree(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap)
+{
+    ConstObjMap objectsDone;
+    for (ObjHash::ConstIterator it = Objects.Begin(); it != Objects.End(); ++it)
+    {
+        const ObjDesc& od = *it;
+        AmpMovieObjectDesc* rootObj = CreateAmpDesc(&od, objectsDone, NULL, rootObjects, heap);
+        if (rootObj != NULL)
+        {
+            rootObjects->PushBack(*rootObj);
+        }
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -910,12 +1067,12 @@ void IntervalTimer::Collect(ObjectCollector& c)
     c.AddToProcess(TimerObj, "IntervalTimer.TimerObj");
     asc.CurrentDesc = "IntervalTimer.Function";
     AS3::ForEachChild_GC(&asc, Function, CollectorFunction 
-                         SF_DEBUG_ARG(*static_cast<const RefCountBaseGC<Mem_Stat>*>(0)));
+                         SF_DEBUG_ARG(*reinterpret_cast<const RefCountBaseGC<Mem_Stat>*>((const char*)1 - 1)));
     for (UPInt j = 0; j < Params.GetSize(); ++j)
     {
         asc.CurrentDesc = "IntervalTimer.Params";
         AS3::ForEachChild_GC(&asc, Params[j], CollectorFunction 
-                             SF_DEBUG_ARG(*static_cast<const RefCountBaseGC<Mem_Stat>*>(0)));
+                            SF_DEBUG_ARG(*reinterpret_cast<const RefCountBaseGC<Mem_Stat>*>((const char*)1 - 1)));
     }
     asc.CurrentDesc = "";
 }
@@ -951,23 +1108,23 @@ void VM::Collect(ObjectCollector& c)
 
     asc.CurrentDesc = "VM.GlobalObjectValue";
     AS3::ForEachChild_GC(&asc, GlobalObjectValue, CollectorFunction 
-                         SF_DEBUG_ARG(*static_cast<const RefCountBaseGC<Mem_Stat>*>(0)));
+                         SF_DEBUG_ARG(*reinterpret_cast<const RefCountBaseGC<Mem_Stat>*>((const char*)1 - 1)));
     asc.CurrentDesc = "VM.ExceptionObj";
     AS3::ForEachChild_GC(&asc, ExceptionObj, CollectorFunction 
-                         SF_DEBUG_ARG(*static_cast<const RefCountBaseGC<Mem_Stat>*>(0)));
+                         SF_DEBUG_ARG(*reinterpret_cast<const RefCountBaseGC<Mem_Stat>*>((const char*)1 - 1)));
 
     asc.CurrentDesc = "VM.Registers";
     for (UPInt i = 0; i < RegisterFile.GetSize(); ++i)
     {
         AS3::ForEachChild_GC(&asc, RegisterFile[i], CollectorFunction 
-                             SF_DEBUG_ARG(*static_cast<const RefCountBaseGC<Mem_Stat>*>(0)));
+                             SF_DEBUG_ARG(*reinterpret_cast<const RefCountBaseGC<Mem_Stat>*>((const char*)1 - 1)));
     }
 
     asc.CurrentDesc = "VM.ScopeStack";
     for (UPInt i = 0; i < ScopeStack.GetSize(); ++i)
     {
         AS3::ForEachChild_GC(&asc, ScopeStack[i], CollectorFunction 
-                             SF_DEBUG_ARG(*static_cast<const RefCountBaseGC<Mem_Stat>*>(0)));
+                             SF_DEBUG_ARG(*reinterpret_cast<const RefCountBaseGC<Mem_Stat>*>((const char*)1 - 1)));
     }
 
     asc.CurrentDesc = "";//"sas";
@@ -995,6 +1152,7 @@ void VM::Collect(ObjectCollector& c)
     c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsUint.GetPtr(), "VM");
     c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsString.GetPtr(), "VM");
     c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsArray.GetPtr(), "VM");
+    c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsByteArray.GetPtr(), "VM");
     c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsCatch.GetPtr(), "VM");
     c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsVector.GetPtr(), "VM");
     c.AddToProcess((RefCountBaseGC<Mem_Stat>*)TraitsVector_int.GetPtr(), "VM");
@@ -1087,55 +1245,53 @@ void EventChains::Collect(ObjectCollector& c) const
     }
 }
 
-void MovieRoot::CollectObjects(UInt32 flags, 
-                               Log* log,  
-                               const char* swfName)
+MovieRoot::CollectorProcessHelper::CollectorProcessHelper(MovieRoot* mov) : MovRoot(mov)
 {
     // Suspend the GC to avoid OnExceedLimit to interfere with the obj collection.
     // MAKE SURE GC IS RE-ENABLED AT THE END, NO 'return's are allowed without it!
-    SuspendGC(true);
+    MovRoot->SuspendGC(true);
 
-    ASCollector asc(Collector);
-    Collector.pASCollector = &asc;
+    ASCollector asc(MovRoot->Collector);
+    MovRoot->Collector.pASCollector = &asc;
     //Collector.Clear();
 
     // Add all elgible objs held by MovieRoot/MovieImpl
     // MouseState
     for (unsigned i = 0; i < GFX_MAX_MICE_SUPPORTED; ++i)
     {
-        if (mMouseState[i].LastMouseOverObj)
+        if (MovRoot->mMouseState[i].LastMouseOverObj)
         {
             char s[256];
             SFsprintf(s, sizeof(s), "MouseState[%d].LastOverObj", i);
-            Collector.AddToProcess(ToAvmDisplayObj(mMouseState[i].LastMouseOverObj.GetPtr()), s);
+            MovRoot->Collector.AddToProcess(ToAvmDisplayObj(MovRoot->mMouseState[i].LastMouseOverObj.GetPtr()), s);
         }
-        for (unsigned j = 0; j < mMouseState[i].RolloverStack.GetSize(); ++j)
+        for (unsigned j = 0; j < MovRoot->mMouseState[i].RolloverStack.GetSize(); ++j)
         {
-            if (mMouseState[i].RolloverStack[j])
+            if (MovRoot->mMouseState[i].RolloverStack[j])
             {
                 char s[256];
                 SFsprintf(s, sizeof(s), "MouseState[%d].RollOverStack[%d]", i, j);
-                Collector.AddToProcess(ToAvmDisplayObj(mMouseState[i].RolloverStack[j].GetPtr()), s);
+                MovRoot->Collector.AddToProcess(ToAvmDisplayObj(MovRoot->mMouseState[i].RolloverStack[j].GetPtr()), s);
             }
         }
     }
 
-    Collector.AddToProcess(ToAvmDisplayObj(GetStage()), "MovieRoot");
+    MovRoot->Collector.AddToProcess(ToAvmDisplayObj(MovRoot->GetStage()), "MovieRoot");
 
     // Timers
-    MovieImpl* movie = GetMovieImpl();
+    MovieImpl* movie = MovRoot->GetMovieImpl();
     for (UPInt i = 0; i < movie->IntervalTimers.GetSize(); ++i)
     {
         IntervalTimer* te = static_cast<IntervalTimer*>(movie->IntervalTimers[i].GetPtr());
-        te->Collect(Collector);
+        te->Collect(MovRoot->Collector);
     }
 
     // Event chains (RENDER, EnterFrame, Activate/Deactivate, etc)
-    mEventChains.Collect(Collector);
+    MovRoot->mEventChains.Collect(MovRoot->Collector);
 
-    if (pAVM)
+    if (MovRoot->pAVM)
     {
-        pAVM->Collect(Collector);
+        MovRoot->pAVM->Collect(MovRoot->Collector);
     }
 
     // Collect fonts
@@ -1144,27 +1300,44 @@ void MovieRoot::CollectObjects(UInt32 flags,
     {        
         const GFx::FontManager::FontSet& fonts = pdefNode->pFontManager->GetCreatedFonts();
         for (GFx::FontManager::FontSet::ConstIterator it = fonts.Begin();
-             it != fonts.End(); ++it)
+            it != fonts.End(); ++it)
         {
             const GFx::FontHandle* fh = it->pNode;
-            Collector.AddToProcess(fh, pdefNode->pDefImpl);
+            MovRoot->Collector.AddToProcess(fh, pdefNode->pDefImpl);
             if (fh->pSourceMovieDef)
-                Collector.AddToProcess(fh->pSourceMovieDef, fh);
+                MovRoot->Collector.AddToProcess(fh->pSourceMovieDef, fh);
         }
         pdefNode = pdefNode->pNext;
     }
 
     // Collect imports
-    Collector.AddToProcess(movie->GetMovieDefImpl(), "Main Movie");
+    MovRoot->Collector.AddToProcess(movie->GetMovieDefImpl(), "Main Movie");
 
-    Collector.Process(asc);
+    MovRoot->Collector.Process(asc);
+}
 
-    Collector.Dump(flags, (log) ? log : GetLog(), swfName);
-
-    Collector.Clear();
+MovieRoot::CollectorProcessHelper::~CollectorProcessHelper()
+{
+    MovRoot->Collector.Clear();
 
     // re-enable GC
-    SuspendGC(false);
+    MovRoot->SuspendGC(false);
+}
+
+
+void MovieRoot::CollectObjects(UInt32 flags, 
+                               Log* log,  
+                               const char* swfName)
+{
+    CollectorProcessHelper collectorProcess(this);
+
+    Collector.Dump(flags, (log) ? log : GetLog(), swfName);
+}
+
+void MovieRoot::CollectObjects(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap)
+{
+    CollectorProcessHelper collectorProcess(this);
+    Collector.GetTree(rootObjects, heap);
 }
 
 void MovieRoot::PrintObjectsReport(UInt32 flags, 
@@ -1174,11 +1347,29 @@ void MovieRoot::PrintObjectsReport(UInt32 flags,
     if (!GetMovieImpl()->IsShutdowning())
         CollectObjects(flags, log, swfName);
 }
+
+void MovieRoot::GetObjectsTree(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap)
+{
+    if (!GetMovieImpl()->IsShutdowning())
+    {
+        CollectObjects(rootObjects, heap);
+    }
+}
+
 #else
 
-void MovieRoot::PrintObjectsReport(UInt32, Log*, const char*)
+void MovieRoot::PrintObjectsReport(UInt32 flags, 
+                                   Log* log,  
+                                   const char* swfName)
 {
+    SF_UNUSED3(flags, log, swfName);
 }
+
+void MovieRoot::GetObjectsTree(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap)
+{
+    SF_UNUSED2(rootObjects, heap);
+}
+
 
 #endif //#ifdef SF_OBJ_COLLECTOR_ENABLED
 

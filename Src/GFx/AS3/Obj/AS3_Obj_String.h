@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,6 +37,10 @@ namespace fl
     extern const ClassInfo NumberCI;
     extern const TypeInfo ArrayTI;
     extern const ClassInfo ArrayCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
+    extern const TypeInfo ObjectTI;
+    extern const ClassInfo ObjectCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl
@@ -58,7 +63,7 @@ namespace Classes { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class String : public CTraits
+    class String : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -92,6 +97,9 @@ namespace InstanceTraits { namespace fl
         static void AS3valueOf(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
         enum { ThunkInfoNum = 20 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[33];
+        static const Abc::ConstValue dva[6];
 //##protect##"instance_traits$methods"
         // Prototype related functions.
         static void toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
@@ -111,7 +119,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class String : public Traits
+    class String : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -119,12 +127,16 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::String ClassType;
+        typedef InstanceTraits::fl::String InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        String(VM& vm);
+        String(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[2];
 //##protect##"ClassTraits$methods"
         virtual bool Coerce(const Value& value, Value& result) const;
 //##protect##"ClassTraits$methods"
@@ -174,6 +186,7 @@ namespace Classes { namespace fl
         // C++ friendly wrappers for AS3 methods.
 
 //##protect##"class_$data"
+        static const TypeInfo* tit[2];
         static const ThunkInfo f[2];
 //##protect##"class_$data"
 

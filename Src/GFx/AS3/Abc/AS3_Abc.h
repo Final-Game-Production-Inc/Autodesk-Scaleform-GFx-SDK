@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -89,6 +90,12 @@ inline
 SInt32 ReadS32(const T* data, TCodeOffset& cp)
 {
     return static_cast<SInt32>(ReadU30(data, cp));
+}
+template <typename T>
+inline
+UPInt ReadUPInt(const T* data, TCodeOffset& cp)
+{
+    return static_cast<UPInt>(data[cp++]);
 }
 template <typename T>
 inline
@@ -275,17 +282,17 @@ bool IsValidValueKind(UInt8 vk);
 
 class ValueDetail
 {
-    friend class Reader;
+    friend bool Read(const UInt8*& ptr, ValueDetail& obj);
 
 public:
     ValueDetail()
-    : ValueIndex(-1)
-    , Kind(CONSTANT_Undefined)
+        : Kind(CONSTANT_Undefined)
+        , ValueIndex(-1)
     {
     }
-    ValueDetail(SInd ind, ValueKind _kind)
-    : ValueIndex(ind)
-    , Kind(_kind)
+    ValueDetail(SInd ind, ValueKind kind)
+        : Kind(static_cast<UInt8>(kind))
+        , ValueIndex(ind)
     {
     }
     
@@ -295,16 +302,34 @@ public:
     {
         return ValueIndex;
     }
-    // Return ValueKInd identifying the type of constant pool to index.
+    // Return ValueKind identifying the type of constant pool to index.
     ValueKind GetKind() const
     {
-        return Kind;
+        return static_cast<ValueKind>(Kind);
     }
     
-// private:
-public:
-    SInd        ValueIndex;
-    ValueKind   Kind;
+private:
+    UInt8   Kind;
+    SInd    ValueIndex;
+};
+
+// ConstValue is similar to the class ValueDetail, except it has a different layout.
+struct ConstValue
+{
+    // Return the index within a constant pool.
+    UInt16 GetIndex() const
+    {
+        return ValueIndex;
+    }
+    // Return ValueKind identifying the type of constant pool to index.
+    ValueKind GetKind() const
+    {
+        return static_cast<ValueKind>(Kind);
+    }
+
+    // Kind uses only five bits.
+    UInt16  Kind;
+    UInt16  ValueIndex;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1383,7 +1408,7 @@ public:
 public:
     struct OpCodeInfo
     {
-        signed char     operandCount:3;   // -1 for "invalid"
+        signed char     operandCount:4;   // -1 for "invalid"
         unsigned char   canThrow:1;       // boolean
         unsigned char   pop:2;
         unsigned char   push:2;

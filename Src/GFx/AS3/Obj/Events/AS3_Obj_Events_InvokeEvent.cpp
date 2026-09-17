@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,18 +33,20 @@ namespace Classes
 }
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 InvokeEvent_tito[3] = {
+    //    0, 1, 2, 
+    // };
+    const TypeInfo* InvokeEvent_tit[3] = {
+        &AS3::fl::ArrayTI, 
+        &AS3::fl_filesystem::FileTI, 
+        &AS3::fl_events::EventTI, 
+    };
     const ThunkInfo InvokeEvent_ti[3] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::ArrayTI, "arguments", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_filesystem::FileTI, "currentDirectory", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &InvokeEvent_tit[0], "arguments", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &InvokeEvent_tit[1], "currentDirectory", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &InvokeEvent_tit[2], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -69,24 +72,27 @@ namespace ClassTraits { namespace fl_events
         {"INVOKE", NULL, OFFSETOF(Classes::fl_events::InvokeEvent, INVOKE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    InvokeEvent::InvokeEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::InvokeEventCI)
+
+    InvokeEvent::InvokeEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::InvokeEvent::InvokeEvent()"
 //##protect##"ClassTraits::InvokeEvent::InvokeEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::Event(vm, AS3::fl_events::InvokeEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::InvokeEvent(*this));
 
     }
 
     Pickable<Traits> InvokeEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) InvokeEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) InvokeEvent(vm, AS3::fl_events::InvokeEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::InvokeEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -97,6 +103,11 @@ namespace fl_events
 {
     const TypeInfo InvokeEventTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_events::InvokeEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::InvokeEvent::MemberInfoNum,
+        3,
+        0,
         "InvokeEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -104,10 +115,6 @@ namespace fl_events
     const ClassInfo InvokeEventCI = {
         &InvokeEventTI,
         ClassTraits::fl_events::InvokeEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::InvokeEvent::MemberInfoNum,
-        3,
-        0,
         NULL,
         ClassTraits::fl_events::InvokeEvent::mi,
         InstanceTraits::fl_events::InvokeEvent_ti,

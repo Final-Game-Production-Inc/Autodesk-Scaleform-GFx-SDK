@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,8 +37,14 @@ namespace fl
     extern const ClassInfo StringCI;
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
+    extern const TypeInfo ObjectTI;
+    extern const ClassInfo ObjectCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
+    extern const TypeInfo FunctionTI;
+    extern const ClassInfo FunctionCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl
@@ -151,11 +158,14 @@ public:
     typedef ValuePtrPair DataType;
     typedef DataType KeyType;
 
-    CompareValuePtr(VM& vm, const Value& f) : Vm(vm), Func(f) {}
+    CompareValuePtr(VM& vm, const Value& f, bool desc) : Desc(desc), Vm(vm), Func(f) {}
 
 public:
     bool operator ()(const DataType& a, const DataType& b) const
     {
+        if (Desc)
+            return Compare(*b.First, *a.First) < 0;
+
         return Compare(*a.First, *b.First) < 0;
     }
     bool Equal(const DataType& a, const DataType& b) const
@@ -172,6 +182,7 @@ private:
     int Compare(const Value& a, const Value& b) const;
 
 private:
+    const bool Desc;
     VM& Vm;
     const Value& Func;
 };
@@ -287,7 +298,12 @@ public:
     const ValueArrayDH& GetContiguousPart() const { return ValueA; }
 
     // Optimized iteration.
+    // Visit all elements.
     void ForEach(ArrayFunc& f) const;
+    // Visit only dense part.
+    void ForEachDense(ArrayFunc& f) const;
+    // Visit only sparse part.
+    void ForEachSparse(ArrayFunc& f) const;
 
 public:
     typedef RefCountCollector<Mem_Stat> Collector;
@@ -486,6 +502,11 @@ namespace Instances { namespace fl
 
         SF_INLINE const ValueArrayDH& GetContiguousPart() const { return SA.GetContiguousPart(); }
 
+        // Visit only dense part.
+        SF_INLINE void ForEachDense(Impl::ArrayFunc& f) const { SA.ForEachDense(f); }
+        // Visit only sparse part.
+        SF_INLINE void ForEachSparse(Impl::ArrayFunc& f) const { SA.ForEachSparse(f); }
+
     protected:
         virtual void ForEachChild_GC(Collector* prcc, GcOp op) const;
         virtual void AS3Constructor(unsigned argc, const Value* argv);
@@ -521,6 +542,7 @@ namespace Instances { namespace fl
         virtual CheckResult GetProperty(const Multiname& prop_name, Value& value);
         virtual void GetDynamicProperty(AbsoluteIndex ind, Value& value);
         virtual CheckResult DeleteProperty(const Multiname& prop_name);
+        virtual bool HasProperty(const Multiname& prop_name, bool check_prototype);
 
 //##protect##"instance$methods"
 
@@ -661,7 +683,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class Array : public CTraits
+    class Array : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -687,6 +709,9 @@ namespace InstanceTraits { namespace fl
 
         enum { ThunkInfoNum = 20 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[39];
+        static const Abc::ConstValue dva[7];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -699,7 +724,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class Array : public Traits
+    class Array : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -707,9 +732,11 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::Array ClassType;
+        typedef InstanceTraits::fl::Array InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Array(VM& vm);
+        Array(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 5 };
         static const MemberInfo mi[MemberInfoNum];
@@ -761,6 +788,7 @@ namespace Classes { namespace fl
         const UInt32 NUMERIC;
 
 //##protect##"class_$data"
+        static const TypeInfo* tit[2];
         static const ThunkInfo ti[2];
 //##protect##"class_$data"
 

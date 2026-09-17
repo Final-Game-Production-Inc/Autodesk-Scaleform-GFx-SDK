@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -43,6 +44,8 @@ namespace fl
     extern const ClassInfo StringCI;
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
     extern const TypeInfo ArrayTI;
@@ -67,6 +70,23 @@ namespace Classes { namespace fl
 }}
 
 //##protect##"forward_declaration"
+
+namespace Instances
+{
+    namespace fl
+    {
+        class XMLList;
+        class XMLElement;
+        class XMLText;
+        class XMLAttr;
+        class XMLProcInstr;
+        class XMLComment;
+        class QName;
+    }
+}
+
+#ifdef GFX_ENABLE_XML
+
 class NamespaceArray
 {
 public:
@@ -94,20 +114,6 @@ private:
 
 class XMLParser;
 
-namespace Instances
-{
-    namespace fl
-    {
-        class XMLList;
-        class XMLElement;
-        class XMLText;
-        class XMLAttr;
-        class XMLProcInstr;
-        class XMLComment;
-        class QName;
-    }
-}
-
 CheckResult ToXMLName(VM& vm, const Value& v, SPtr<Instances::fl::QName>& result);
 CheckResult IsNameStartChar(int c);
 CheckResult IsNameChar(int c);
@@ -117,6 +123,8 @@ CheckResult IsValidName(const ASString& tag);
 
 // 13.3.5.4 [[GetNamespace]]
 Pickable<Instances::fl::Namespace> LookupNamespace(const Instances::fl::Namespace& qName, const NamespaceArray* inScopeNamespaces);
+
+#endif
 
 //##protect##"forward_declaration"
 
@@ -147,6 +155,7 @@ namespace Instances { namespace fl
         XML(InstanceTraits::Traits& t);
 
 //##protect##"instance$methods"
+#ifdef GFX_ENABLE_XML
     public:
         friend class AS3::XMLParser;
 
@@ -214,7 +223,6 @@ namespace Instances { namespace fl
         virtual Pickable<XML> DeepCopy(XML* parent);
         virtual void GetChildren(Instances::fl::XMLList& list, const Multiname& prop_name);
         virtual CheckResult GetChildIndex(UPInt& ind) const;
-        virtual void GetDescendants(XMLList& list, const Multiname& prop_name);
 
         // Can throw exceptions.
         virtual CheckResult InsertChildAt(UPInt pos, const Value& child);
@@ -253,6 +261,8 @@ namespace Instances { namespace fl
 
         virtual void ForEachChild_GC(Collector* prcc, GcOp op) const;
 
+        virtual void GetDescendants(XMLList& list, const Multiname& prop_name);
+
         virtual CheckResult SetProperty(const Multiname& prop_name, const Value& value);
         virtual CheckResult GetProperty(const Multiname& prop_name, XMLList& list);
         virtual CheckResult GetProperty(const Multiname& prop_name, Value& value);
@@ -261,6 +271,7 @@ namespace Instances { namespace fl
         virtual void GetNextPropertyName(Value& name, GlobalSlotIndex ind) const;
         virtual GlobalSlotIndex GetNextDynPropIndex(GlobalSlotIndex ind) const;
         virtual void GetNextPropertyValue(Value& value, GlobalSlotIndex ind);
+#endif
 //##protect##"instance$methods"
 
     public:
@@ -511,9 +522,11 @@ namespace Instances { namespace fl
         }
 
 //##protect##"instance$data"
+#ifdef GFX_ENABLE_XML
     protected:
         ASString    Text;
         SPtr<XML>   Parent;
+#endif
 //##protect##"instance$data"
 
     };
@@ -521,7 +534,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class XML : public CTraits
+    class XML : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -547,7 +560,10 @@ namespace InstanceTraits { namespace fl
 
         enum { ThunkInfoNum = 41 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[60];
 //##protect##"instance_traits$methods"
+#ifdef GFX_ENABLE_XML
         // Prototype related functions.
         static void toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
         static void PropertyIsEnumerableProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
@@ -560,6 +576,7 @@ namespace InstanceTraits { namespace fl
         Pickable<Instances::fl::XMLAttr> MakeInstanceAttr(Traits& t, Instances::fl::Namespace& ns, const ASString& n, const ASString& v, Instances::fl::XML* p = NULL);
         Pickable<Instances::fl::XMLProcInstr> MakeInstanceProcInstr(Traits& t, const ASString& n, const ASString& v, Instances::fl::XML* p = NULL);
         Pickable<Instances::fl::XMLComment> MakeInstanceComment(Traits& t, const ASString& n, Instances::fl::XML* p = NULL);
+#endif
 //##protect##"instance_traits$methods"
 
 //##protect##"instance_traits$data"
@@ -571,7 +588,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class XML : public Traits
+    class XML : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -579,14 +596,18 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::XML ClassType;
+        typedef InstanceTraits::fl::XML InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        XML(VM& vm);
+        XML(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 5 };
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 6 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[8];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 
@@ -618,11 +639,13 @@ namespace Classes { namespace fl
         }
 
 //##protect##"class_$methods"
+#ifdef GFX_ENABLE_XML
         virtual void Construct(Value& _this, unsigned argc, const Value* argv, bool extCall = false);
         virtual void Call(const Value& _this, Value& result, unsigned argc, const Value* const argv);
         virtual void InitPrototype(AS3::Object& obj) const;
 
         void SetDefaultValues();
+#endif
 //##protect##"class_$methods"
 
     public:
@@ -685,13 +708,18 @@ namespace Classes { namespace fl
         SInt32 prettyIndent;
 
 //##protect##"class_$data"
+#ifdef GFX_ENABLE_XML
+        static const TypeInfo* tit[4];
         static const ThunkInfo f[3];
+#endif
 //##protect##"class_$data"
 
     };
 }}
 
 //##protect##"methods"
+#ifdef GFX_ENABLE_XML
+
 namespace Instances { namespace fl
 {
     class XMLAttr : public XML
@@ -749,7 +777,7 @@ namespace Instances { namespace fl
         // Return NULL if value cannot be converted to XML.
         XML* ToXML(const Value& value) const;
         // 9.1.1.6 [[HasProperty]] (P)
-        bool HasProperty(const Multiname& prop_name);
+        virtual bool HasProperty(const Multiname& prop_name, bool check_prototype);
 
         void MakeNsPrefix(StringBuffer& buf, const Namespace& ns, bool checkDefaultNs) const;
         void MakeNsSuffix(StringBuffer& buf, const Namespace& ns, bool checkDefaultNs) const;
@@ -795,7 +823,6 @@ namespace Instances { namespace fl
         virtual Pickable<XML> DeepCopy(XML* parent);
         virtual void GetChildren(Instances::fl::XMLList& list, const Multiname& prop_name);
         virtual CheckResult GetChildIndex(UPInt& ind) const;
-        virtual void GetDescendants(XMLList& list, const Multiname& prop_name);
         virtual const Namespace& GetNamespace() const;
         virtual void SetNamespace(Namespace& ns);
         virtual void SetNamespace2(Namespace& ns);
@@ -830,6 +857,10 @@ namespace Instances { namespace fl
         virtual void SetChildren(const Value& value);
 
     protected:
+        // Inherited virtual methods.
+
+        virtual void GetDescendants(XMLList& list, const Multiname& prop_name);
+
         // 9.1.1.2 [[Put]] (P, V)
         virtual CheckResult SetProperty(const Multiname& prop_name, const Value& value);
         // This method will return false if property wasn't found or we got an exception.
@@ -962,6 +993,7 @@ private:
     ASString                Text;
     ArrayDH_POD<Kind>       KindStack;
 };
+#endif
 
 //##protect##"methods"
 

@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -50,6 +51,7 @@ namespace Instances { namespace fl
 {
     class Object;
     class Array;
+    class XMLList;
 }}
 
 class VMFile;
@@ -115,6 +117,9 @@ public:
     Multiname(const VM& vm, const StringDataPtr& qname);
     Multiname(const VM& vm, const TypeInfo& ti);
 
+    // Copy constructor. (There is a theory that compiler on Mac x64 has problems with it)
+    Multiname(const Multiname& other);
+
 public:
     // From Abc::HasMultinameKind.
 
@@ -131,18 +136,20 @@ public:
 
     Abc::MultinameKindBits getNamespaceBits() const
     {
-        return (Abc::MultinameKindBits)(Kind & Abc::MN_NS_Mask);
+        return static_cast<Abc::MultinameKindBits>(
+            static_cast<uint32_t>(Kind) & static_cast<uint32_t>(Abc::MN_NS_Mask)
+        );
     }
 
     bool IsNameLate() const
     {
-        return (GetKind() & Abc::MN_NameLate) != 0;
+        return (static_cast<uint32_t>(GetKind()) & static_cast<uint32_t>(Abc::MN_NameLate)) != 0;
     }
 
     // Attributes are used with XML.
     bool IsAttr() const
     {
-        return (GetKind() & Abc::MN_Attr) != 0;
+        return (static_cast<uint32_t>(GetKind()) & static_cast<uint32_t>(Abc::MN_Attr)) != 0;
     }
 
     bool IsQName() const
@@ -180,10 +187,7 @@ public:
     }
 
 public:
-    bool IsAnyType() const
-    {
-        return Name.IsNullOrUndefined() || (Name.IsString() && Name.AsString().IsEmpty());
-    }
+    bool IsAnyType() const;
 
     bool IsAnyNamespace() const
     {
@@ -318,10 +322,12 @@ public:
             This.IsUndefined() || 
 #if 0
             // This breaks several tests.
-            pValue == NULL ||
-#endif
+            // Mask two bits.
+            (((UPInt)pValue & ~3) == 0)
+#else
             (IsAsValue() && GetAsValue() == NULL) || 
             (IsAsObject() && GetAsObject() == NULL)
+#endif
             );
     }
     bool IsAsValue() const
@@ -411,9 +417,14 @@ enum BuiltinTraitsType
     Traits_String,
     Traits_Namespace,
     Traits_Array,
+    Traits_ByteArray,
     Traits_Date,
     Traits_Function,
     Traits_Dictionary,
+    Traits_Vector_int,
+    Traits_Vector_uint,
+    Traits_Vector_double,
+    Traits_Vector_String,
     Traits_Vector_object,
     Traits_QName,
     Traits_XML,
@@ -431,32 +442,34 @@ enum BuiltinTraitsType
     Traits_MorphShape,
     Traits_AVM1Movie,
     Traits_Bitmap,    
+    Traits_SimpleButton,
     // Following items must be derived from DisplayObjectContainer.
     Traits_DisplayObjectContainer,
     Traits_Sprite,
     Traits_MovieClip,
     Traits_Stage,
     Traits_Loader,    
-    Traits_SimpleButton,
     Traits_DisplayObject_End
 };
 
-inline
-bool IsDisplayObjectContainer(BuiltinTraitsType tt)
+inline bool IsDisplayObjectContainer(BuiltinTraitsType tt)
 {
     return tt >= Traits_DisplayObjectContainer;
 }
 
-inline
-bool IsInteractiveObject(BuiltinTraitsType tt)
+inline bool IsInteractiveObject(BuiltinTraitsType tt)
 {
     return tt == Traits_InteractiveObject || IsDisplayObjectContainer(tt);
 }
 
-inline
-bool IsSprite(BuiltinTraitsType tt)
+inline bool IsSprite(BuiltinTraitsType tt)
 {
     return tt == Traits_Sprite || tt == Traits_MovieClip;
+}
+
+inline bool IsNulableType(BuiltinTraitsType tt)
+{
+    return tt >= Traits_Boolean && tt <= Traits_Number;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -588,6 +601,11 @@ public:
     virtual CheckResult GetProperty(const Multiname& prop_name, Value& value);
     // No check is performed.
     virtual void GetDynamicProperty(AbsoluteIndex ind, Value& value);
+    // Can throw exceptions.
+    virtual bool HasProperty(const Multiname& prop_name, bool check_prototype);
+    // ECMA-357 9.1.1.8 [[Descendants]] (P)
+    // Can throw exceptions.
+    virtual void GetDescendants(Instances::fl::XMLList& list, const Multiname& prop_name);
 
     // ECMA [[Delete]]
     // Return "true" on success ...
@@ -596,12 +614,17 @@ public:
     
     // ECMA [[DefaultValue]]
     // Can throw exceptions.
-	void GetDefaultValueUnsafe(Value& result, Value::Hint hint = Value::hintNone);
+	CheckResult GetDefaultValueUnsafe(Value& result, Value::Hint hint = Value::hintNone);
     
     // called as a function ...
     // "Call" can be called on any object.
     // Can throw exceptions.
     virtual void Call(const Value& _this, Value& result, unsigned argc, const Value* const argv);
+
+    // Can throw exceptions.
+    // Virtual because of flash.utils.Proxy.
+    virtual CheckResult ExecutePropertyUnsafe(const Multiname& prop_name, Value& result, unsigned argc, const Value* argv);
+
     // It is a delayed version of the C++ constructor.
     virtual void AS3Constructor(unsigned argc, const Value* argv);
     
@@ -665,6 +688,8 @@ public:
     }
 
 public:
+
+#if 0
     // This stuff is for AOTC in case we cannot resolve name at compile time.
     // ExecutePropertyUnsafe can throw exceptions, but we are not checking for them for the time being.
 
@@ -672,7 +697,7 @@ public:
     {
         Value result;
         const ASString name = GetStringManager().CreateString(n);
-        ExecutePropertyUnsafe(name, result, 0, NULL);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, 0, NULL);
         return result;
     }
 
@@ -683,7 +708,7 @@ public:
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateString(n);
         BoxArgV1<T1> argv(a1, sm);
-        ExecutePropertyUnsafe(name, result, argv.AN, &argv.V);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, argv.AN, &argv.V);
         return result;
     }
 
@@ -694,7 +719,7 @@ public:
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateString(n);
         BoxArgV2<T1, T2> argv(a1, a2, GetStringManager());
-        ExecutePropertyUnsafe(name, result, argv.AN, &argv.V);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, argv.AN, &argv.V);
         return result;
     }
 
@@ -705,7 +730,7 @@ public:
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateString(n);
         BoxArgV3<T1, T2, T3> argv(a1, a2, a3, GetStringManager());
-        ExecutePropertyUnsafe(name, result, argv.AN, &argv.V);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, argv.AN, &argv.V);
         return result;
     }
 
@@ -716,7 +741,7 @@ public:
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateString(n);
         BoxArgV4<T1, T2, T3, T4> argv(a1, a2, a3, a4, GetStringManager());
-        ExecutePropertyUnsafe(name, result, argv.AN, &argv.V);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, argv.AN, &argv.V);
         return result;
     }
 
@@ -727,7 +752,7 @@ public:
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateString(n);
         BoxArgV5<T1, T2, T3, T4, T5> argv(a1, a2, a3, a4, a5, GetStringManager());
-        ExecutePropertyUnsafe(name, result, argv.AN, &argv.V);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, argv.AN, &argv.V);
         return result;
     }
 
@@ -738,9 +763,10 @@ public:
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateString(n);
         BoxArgV6<T1, T2, T3, T4, T5, T6> argv(a1, a2, a3, a4, a5, a6, GetStringManager());
-        ExecutePropertyUnsafe(name, result, argv.AN, &argv.V);
+        ExecutePropertyUnsafe(Multiname(GetVM().GetPublicNamespace(), name), result, argv.AN, &argv.V);
         return result;
     }
+#endif
 
 public:
     // Dynamic attributes are always in the public namespace ...
@@ -829,6 +855,7 @@ public:
     BuiltinTraitsType GetTraitsType() const;
 
     VTable& GetVT();
+    const VTable& GetVT() const;
 
     // Get Stored Scope Stack.
     const ScopeStackType& GetStoredScopeStack() const;
@@ -847,19 +874,27 @@ public:
     void constructor(Value& result);
 
 public:
-    // !!! This method should not be used in Object::hasOwnProperty() because it
-    // looks into static properties and into a prototype chain.
     // This method is not const because it can cause on demand object initialization.
+    // In case of attr == FindGet this method doesn't look into prototype.
+    // Can throw exceptions.
     void FindProperty(PropRef& result, const Multiname& mn, FindPropAttr attr = FindGet);
 
     // Searches traits on object; searchTraits are typically instance traits
     // of this object, but may also be traits for a base (when searching super).
-    SF_INLINE
-    const SlotInfo* FindFixedSlot(const ASString& name, 
-                                  const Instances::fl::Namespace& ns,
-                                  UPInt& index)
+    SF_INLINE const SlotInfo* FindFixedSlot(
+        const ASString& name, 
+        const Instances::fl::Namespace& ns,
+        UPInt& index
+        )
     {
         return AS3::FindFixedSlot(GetTraits(), name, ns, index, this);
+    }
+    SF_INLINE const SlotInfo* FindFixedSlot(
+        const Multiname& name, 
+        UPInt& index
+        )
+    {
+        return AS3::FindFixedSlot(GetVM(), GetTraits(), name, index, this);
     }
 
     SF_INLINE const Value* FindDynamicSlot(const ASString& name) const
@@ -900,7 +935,7 @@ protected:
         UserDataHolder(Movie* pmovieView, ASUserData* puserData) :
         pMovieView(pmovieView), pUserData(puserData) {}
         ~UserDataHolder();
-        void    NotifyDestroy(Object* pthis) const;
+        void    NotifyDestroy(Object* pthis);
     };
 #endif
 
@@ -912,12 +947,6 @@ public:
     virtual const char* GetAS3ObjectType() const { return "Object"; }
 #endif
 
-//protected:
-public:
-    // Can throw exceptions.
-    void ExecutePropertyUnsafe(const ASString& name, Value& result, unsigned argc, const Value* argv);
-	void ExecuteValueUnsafe(Value& value, Value& result, unsigned argc, const Value* argv);
-    
 private:
     Object(const Object&);
 
@@ -967,46 +996,46 @@ void Value::AddRefClosure() const
 
 ///////////////////////////////////////////////////////////////////////////
 SF_INLINE
-ASStringNode* GetSlotStringNode(Object* const obj, UInt32 offset)
+ASStringNode* GetSlotStringNode(const Object* const obj, UInt32 offset)
 {
     char* addr = (char*)obj + offset;
     ASStringNode** node = (ASStringNode**)addr;
     return *node;
 }
 SF_INLINE
-const char* GetSlotConstChar(Object* const obj, UInt32 offset)
+const char* GetSlotConstChar(const Object* const obj, UInt32 offset)
 {
     char* addr = (char*)obj + offset;
     const char** str = (const char**)addr;
     return *str;
 }
 SF_INLINE
-Value::Number GetSlotNumber(Object* const obj, UInt32 offset)
+Value::Number GetSlotNumber(const Object* const obj, UInt32 offset)
 {
     return *(Value::Number*)((char*)obj + offset);
 }
 SF_INLINE
-UInt32 GetSlotUInt(Object* const obj, UInt32 offset)
+UInt32 GetSlotUInt(const Object* const obj, UInt32 offset)
 {
     return *(UInt32*)((char*)obj + offset);
 }
 SF_INLINE
-SInt32 GetSlotSInt(Object* const obj, UInt32 offset)
+SInt32 GetSlotSInt(const Object* const obj, UInt32 offset)
 {
     return *(SInt32*)((char*)obj + offset);
 }
 SF_INLINE
-bool GetSlotBoolean(Object* const obj, UInt32 offset)
+bool GetSlotBoolean(const Object* const obj, UInt32 offset)
 {
     return *(bool*)((char*)obj + offset);
 }
 SF_INLINE
-Value& GetSlotValue(Object* const obj, UInt32 offset)
+Value& GetSlotValue(const Object* const obj, UInt32 offset)
 {
     return *(Value*)((char*)obj + offset);
 }
 SF_INLINE
-STPtr& GetSlotObjectAS(Object* const obj, UInt32 offset)
+STPtr& GetSlotObjectAS(const Object* const obj, UInt32 offset)
 {
     return *(STPtr*)((char*)obj + offset);
 }
@@ -1109,18 +1138,15 @@ CheckResult SetSuperProperty(VM& vm, const Traits* ot, const Value& object, cons
 CheckResult ToString(VM& vm, const Value& _this, ASString& result);
 
 ///////////////////////////////////////////////////////////////////////////
-// Can throw exceptions.
-// !!! We HAVE TO check for exceptions after calling this function.
-CheckResult CallPropertyUnsafe(VM& vm, const ASString& name, const Value& _this, Value& result, unsigned argc, const Value* argv);
-
-///////////////////////////////////////////////////////////////////////////
 namespace InstanceTraits
 {
     class Traits;
 }
 
-extern const TypeInfo ClassClassTI;
-extern const ClassInfo ClassClassCI;
+namespace fl {
+    extern const TypeInfo ClassTI;
+    extern const ClassInfo ClassCI;
+} // namespace fl {
 
 // Class is a synonym for datatype ...
 // Static part of the object ...
@@ -1139,7 +1165,7 @@ public:
     typedef Class ClassType;
     enum {IsInstance = 0, IsClass = 1};
 
-    static const TypeInfo& GetTypeInfo() { return ClassClassTI; }
+    static const TypeInfo& GetTypeInfo() { return fl::ClassTI; }
 
 public:
     // "t" are traits used to create this Class ...
@@ -1153,7 +1179,7 @@ public:
     virtual void PostInit(const Value& _this, unsigned argc, const Value* argv) const;
 
     // Get a class for a generic.
-    virtual Class& ApplyTypeArgs(unsigned argc, const Value* argv);
+    virtual const ClassTraits::Traits& ApplyTypeArgs(unsigned argc, const Value* argv);
 
     virtual void ForEachChild_GC(Collector* prcc, GcOp op) const;
     

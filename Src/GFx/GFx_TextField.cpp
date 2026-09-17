@@ -6,6 +6,7 @@ Created     :   Dec, 2009
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -73,6 +74,7 @@ TextField::TextField(TextFieldDef* def,
         *SF_HEAP_NEW(proot->GetMovieHeap()) Text::DocView(ptextAllocator, fontMgr, GetLog());
     pDocument->SetDocumentListener(&TextDocListener);
     pDocument->GetStyledText()->SetNewLine0D(); // Flash uses '\x0D' ('\r', #13) as a new-line char
+    pDocument->EnableBidirectionalText();
 
     if (def->IsBorder())
     {
@@ -112,10 +114,22 @@ TextField::TextField(TextFieldDef* def,
         CreateEditorKit();
     }
     SetNeedUpdateLayoutFlag();
+#ifdef SF_AMP_SERVER
+    if (pDef->IsAAForReadability())
+    {
+        AmpServer::GetInstance().IncrementFontOptRead();
+    }
+#endif
 }
 
 TextField::~TextField()
 {
+#ifdef SF_AMP_SERVER
+    if (pDef->IsAAForReadability())
+    {
+        AmpServer::GetInstance().DecrementFontOptRead();
+    }
+#endif
 #ifdef GFX_AS2_ENABLE_BITMAPDATA
     ClearIdImageDescAssoc();
 #endif
@@ -231,7 +245,7 @@ Ptr<Text::EditorKit> TextField::CreateEditorKit()
         if (GetTextFieldDef()->IsSelectable())
             peditor->SetSelectable();
 
-        Ptr<TextClipboard> pclipBoard = GetMovieImpl()->GetStateBagImpl()->GetTextClipboard();
+        Ptr<Clipboard> pclipBoard = GetMovieImpl()->GetStateBagImpl()->GetClipboard();
         peditor->SetClipboard(pclipBoard);
         Ptr<TextKeyMap> pkeymap = GetMovieImpl()->GetStateBagImpl()->GetTextKeyMap();
         peditor->SetKeyMap(pkeymap);
@@ -438,6 +452,26 @@ void TextField::SetStateChangeFlags(UInt8 flags)
     ModifyOptimizedPlayListLocal<TextField>();
 }
 
+// Override because pGeomData has topLeft offset for TextField
+void TextField::UpdateTransform3D()
+{
+    Matrix3F rotXMat(Matrix3F::NoInit), transMat(Matrix3F::NoInit), scaleMat(Matrix3F::NoInit), rotYMat(Matrix3F::NoInit), rotZMat(Matrix3F::NoInit);
+
+    Render::PointF topLeftOffset = pDocument->GetViewRect().TopLeft();
+    transMat = Matrix3F::Translation((float)pGeomData->X - topLeftOffset.x, (float)pGeomData->Y - topLeftOffset.y,(float)pGeomData->Z);
+    scaleMat = Matrix3F::Scaling((float)pGeomData->XScale/100.f, (float)pGeomData->YScale/100.f, (float)pGeomData->ZScale/100.f);
+
+    // MOOSE TODO - collapse this into one matrix?
+    rotXMat = pGeomData->XRotation != 0.0 ? Matrix3F::RotationX((float)SF_DEGTORAD(pGeomData->XRotation)) : Matrix3F::Identity; 
+    rotYMat = pGeomData->YRotation != 0.0 ? Matrix3F::RotationY((float)SF_DEGTORAD(pGeomData->YRotation)) : Matrix3F::Identity; 
+    rotZMat =  pGeomData->Rotation != 0.0 ? Matrix3F::RotationZ((float)SF_DEGTORAD(pGeomData->Rotation))  : Matrix3F::Identity; 
+
+    // Apply transforms in SRT order
+    Matrix3F m(transMat, Matrix3F(Matrix3F(rotZMat, rotYMat), Matrix3F(rotXMat, scaleMat)));   // operations happen right to left 
+
+    if (m.IsValid())
+        SetMatrix3D(m);
+}
 
 // Override AdvanceFrame so that variable dependencies can be updated.
 void    TextField::AdvanceFrame(bool nextFrame, float framePos)
@@ -605,7 +639,7 @@ bool    TextField::SetTextValue(const char* pnewText, bool html, bool notifyVari
                 {
                     int nchars = (int)UTF8Util::GetLength(pkey);
                     KeyBuf.Resize(nchars + 1);
-                    UTF8Util::DecodeString(KeyBuf.GetBuffer(), pkey);
+                    UTF8Util::DecodeStringSafe(KeyBuf.GetBuffer(), nchars + 1, pkey);
                     pKey = KeyBuf.GetBuffer();
                 }
                 void    SetKey() { pKey = KeyBuf.GetBuffer(); }
@@ -627,10 +661,7 @@ bool    TextField::SetTextValue(const char* pnewText, bool html, bool notifyVari
             else
             {
                 // if html, but need to pass plain text
-                Text::TextFormat txtFmt(Memory::GetHeapByAddress(this));
-                Text::ParagraphFormat paraFmt;
-                GetInitialFormats(&txtFmt, &paraFmt);                
-                pDocument->ParseHtml(pnewText, SF_MAX_UPINT, IsCondenseWhite(), NULL, GetStyleSheet(), &txtFmt, &paraFmt);
+                pDocument->ParseHtml(pnewText, SF_MAX_UPINT, IsCondenseWhite(), NULL, GetStyleSheet(), NULL, NULL);
                 pDocument->GetStyledText()->GetText(&translateInfo.KeyBuf);
                 if (ptrans->NeedStripNewLines())
                     translateInfo.KeyBuf.StripTrailingNewLines();
@@ -644,9 +675,19 @@ bool    TextField::SetTextValue(const char* pnewText, bool html, bool notifyVari
                 {
                     Text::TextFormat txtFmt(Memory::GetHeapByAddress(this));
                     Text::ParagraphFormat paraFmt;
-                    GetInitialFormats(&txtFmt, &paraFmt);                
+                    GetInitialFormats(&txtFmt, &paraFmt);  
+
+                    // Looks like Flash ignores default text format when html is set on
+                    // timeline-created textfield; instead, the initial format is used.
+                    if (!IsTimelineObjectFlagSet())
+                    {
+                        txtFmt = txtFmt.Merge(*GetDefaultTextFormat());
+                        paraFmt = paraFmt.Merge(*GetDefaultParagraphFormat());
+                    }
+
                     Text::StyledText::HTMLImageTagInfoArray imageInfoArray(Memory::GetHeapByAddress(this));
-                    pDocument->ParseHtml(translateInfo.ResultBuf.ToWStr(), SF_MAX_UPINT, IsCondenseWhite(), &imageInfoArray, GetStyleSheet(), &txtFmt, &paraFmt);
+                    pDocument->ParseHtml(translateInfo.ResultBuf.ToWStr(), SF_MAX_UPINT, IsCondenseWhite(), 
+                        &imageInfoArray, GetStyleSheet(), &txtFmt, &paraFmt);
                     if (imageInfoArray.GetSize() > 0)
                     {
                         ProcessImageTags(imageInfoArray);
@@ -677,8 +718,18 @@ bool    TextField::SetTextValue(const char* pnewText, bool html, bool notifyVari
             Text::TextFormat txtFmt(Memory::GetHeapByAddress(this));
             Text::ParagraphFormat paraFmt;
             GetInitialFormats(&txtFmt, &paraFmt);                
+
+            // Looks like Flash ignores default text format when html is set on
+            // timeline-created textfield; instead, the initial format is used.
+            if (!IsTimelineObjectFlagSet())
+            {
+                txtFmt = txtFmt.Merge(*GetDefaultTextFormat());
+                paraFmt = paraFmt.Merge(*GetDefaultParagraphFormat());
+            }
+
             Text::StyledText::HTMLImageTagInfoArray imageInfoArray(Memory::GetHeapByAddress(this));
-            pDocument->ParseHtml(pnewText, SF_MAX_UPINT, IsCondenseWhite(), &imageInfoArray, GetStyleSheet(), &txtFmt, &paraFmt);
+            pDocument->ParseHtml(pnewText, SF_MAX_UPINT, IsCondenseWhite(), &imageInfoArray, 
+                GetStyleSheet(), &txtFmt, &paraFmt);
             if (imageInfoArray.GetSize() > 0)
             {
                 ProcessImageTags(imageInfoArray);
@@ -712,6 +763,11 @@ bool    TextField::SetTextValue(const char* pnewText, bool html, bool notifyVari
     {
         // collect info about active zones for each URL
         CollectUrlZones();
+    }
+    else
+    {
+        // URLZones could already exist, need to flush them...
+        ClearUrlZones();
     }
 
     // update variable, if necessary
@@ -995,6 +1051,17 @@ void TextField::CollectUrlZones()
 #endif // GFX_ENABLE_CSS
 }
 
+void TextField::ClearUrlZones()
+{
+#ifdef GFX_ENABLE_CSS
+    if (pCSSData)
+    {
+        memset(pCSSData->MouseState, 0, sizeof(pCSSData->MouseState));
+        pCSSData->UrlZones.RemoveAll();
+    }
+#endif // GFX_ENABLE_CSS
+}
+
 void    TextField::PropagateMouseEvent(const EventId& id)
 {
     MovieImpl* proot = GetMovieImpl();
@@ -1008,13 +1075,14 @@ void    TextField::PropagateMouseEvent(const EventId& id)
     }
 
     Ptr<InteractiveObject> ptopMostChar = proot->GetMouseState(id.MouseIndex)->GetTopmostEntity();
+    bool notifyChanged = false;
 
     // if ptopMostChar != thus - means that the cursor is out of the URL => restore URL fmt
     if ((ptopMostChar != this || id.Id == EventId::Event_RollOut) && 
         HasStyleSheet() && IsHtml() && pDocument->MayHaveUrl())
     {
-        ChangeUrlFormat(Link_release, id.MouseIndex);
-        ChangeUrlFormat(Link_rollout, id.MouseIndex);
+        notifyChanged = ChangeUrlFormat(Link_release, id.MouseIndex) || notifyChanged;
+        notifyChanged = ChangeUrlFormat(Link_rollout, id.MouseIndex) || notifyChanged;
     }
 
     if (ptopMostChar == this ||
@@ -1037,7 +1105,7 @@ void    TextField::PropagateMouseEvent(const EventId& id)
                         pCSSData && pCSSData->HasASStyleSheet() && (pms->GetButtonsState() & MouseState::MouseButton_Left))
                     {
                         // apply CSS style - a:active
-                        ChangeUrlFormat(Link_press, id.MouseIndex, &urlRange);
+                        notifyChanged = ChangeUrlFormat(Link_press, id.MouseIndex, &urlRange) || notifyChanged;
                     }
                 }
 #endif // GFX_ENABLE_CSS
@@ -1073,9 +1141,9 @@ void    TextField::PropagateMouseEvent(const EventId& id)
                         pCSSData && pCSSData->HasASStyleSheet() && !(pms->GetButtonsState() & MouseState::MouseButton_Left))
                     {
                         // apply CSS style - a:active
-                        ChangeUrlFormat(Link_release, id.MouseIndex, &urlRange);
+                        notifyChanged = ChangeUrlFormat(Link_release, id.MouseIndex, &urlRange) || notifyChanged;
                     }
-                    ChangeUrlFormat(Link_release, id.MouseIndex);
+                    notifyChanged = ChangeUrlFormat(Link_release, id.MouseIndex) || notifyChanged;
                 }
 #endif // GFX_ENABLE_CSS
                 if (pDocument->HasEditorKit())
@@ -1121,17 +1189,17 @@ void    TextField::PropagateMouseEvent(const EventId& id)
                     {
                         if (!IsUrlTheSame(id.MouseIndex, urlRange))
                         {
-                            ChangeUrlFormat(Link_release, id.MouseIndex);
-                            ChangeUrlFormat(Link_rollout, id.MouseIndex);
+                            notifyChanged = ChangeUrlFormat(Link_release, id.MouseIndex) || notifyChanged;
+                            notifyChanged = ChangeUrlFormat(Link_rollout, id.MouseIndex) || notifyChanged;
                         }
-                        ChangeUrlFormat(
+                        notifyChanged = ChangeUrlFormat(
                             (pms->GetButtonsState() & MouseState::MouseButton_Left) ? Link_press : Link_rollover, 
-                            id.MouseIndex, &urlRange);
+                            id.MouseIndex, &urlRange) || notifyChanged;
                     }
                     else
                     {
-                        ChangeUrlFormat(Link_release, id.MouseIndex);
-                        ChangeUrlFormat(Link_rollout, id.MouseIndex);
+                        notifyChanged = ChangeUrlFormat(Link_release, id.MouseIndex) || notifyChanged;
+                        notifyChanged = ChangeUrlFormat(Link_rollout, id.MouseIndex) || notifyChanged;
                     }
                     SetHandCursor(urlIsUnderCursor);
                     proot->ChangeMouseCursorType(id.MouseIndex, GetCursorType());
@@ -1146,7 +1214,7 @@ void    TextField::PropagateMouseEvent(const EventId& id)
                     }
                     else if (IsHandCursor())
                     {
-                        ChangeUrlFormat(Link_rollout, id.MouseIndex);
+                        notifyChanged = ChangeUrlFormat(Link_rollout, id.MouseIndex) || notifyChanged;
                         ClearHandCursor();
                         proot->ChangeMouseCursorType(id.MouseIndex, GetCursorType());
                     }
@@ -1156,6 +1224,8 @@ void    TextField::PropagateMouseEvent(const EventId& id)
         default: break;
         }
     }
+    if (notifyChanged)
+        NotifyChanged();
     InteractiveObject::PropagateMouseEvent(id);
 }
 
@@ -1192,22 +1262,23 @@ void TextField::OnFocus(FocusEventType event, InteractiveObject* oldOrNewFocusCh
 {
     if (pDef->WasStatic())
         return;
-    if (IsSelectable())
-    {
-        // manage the selection
-        if (event == InteractiveObject::SetFocus)
-        {
-            if (!IsNoAutoSelection() && fmt == GFx_FocusMovedByKeyboard)
-            {
-                UPInt len = pDocument->GetLength();
-                SetSelection(0, (SPInt)len);
-            }
-            FocusedControllerIdx = controllerIdx;
-            if (pDocument->HasEditorKit())
-            {
-                GetEditorKit()->OnSetFocus();
-                SetDirtyFlag();
 
+    // manage the selection
+    if (event == InteractiveObject::SetFocus)
+    {
+        if (IsSelectable() && !IsNoAutoSelection() && fmt == GFx_FocusMovedByKeyboard)
+        {
+            UPInt len = pDocument->GetLength();
+            SetSelection(0, (SPInt)len);
+        }
+        FocusedControllerIdx = controllerIdx;
+        if (pDocument->HasEditorKit())
+        {
+            GetEditorKit()->OnSetFocus();
+            SetDirtyFlag();
+
+            if (!IsReadOnly())
+            {
                 VirtualKeyboardInterface* vki = GetMovieImpl()->GetVirtualKeyboardInterface();
                 if (vki)
                 {
@@ -1216,23 +1287,27 @@ void TextField::OnFocus(FocusEventType event, InteractiveObject* oldOrNewFocusCh
                 }
             }
         }
-        else if (event == InteractiveObject::KillFocus)
+    }
+    else if (event == InteractiveObject::KillFocus)
+    {
+        FocusedControllerIdx = ~0u;
+        if (pDocument->HasEditorKit())
         {
-            FocusedControllerIdx = ~0u;
-            if (pDocument->HasEditorKit())
+            if (IsSelectable() && !DoesAlwaysShowSelection())
+                GetEditorKit()->ClearSelection();
+
+            GetEditorKit()->OnKillFocus();
+            SetDirtyFlag();
+
+            if (!IsReadOnly())
             {
-                if (!DoesAlwaysShowSelection())
-                    GetEditorKit()->ClearSelection();
-
-                GetEditorKit()->OnKillFocus();
-                SetDirtyFlag();
-
                 VirtualKeyboardInterface* vki = GetMovieImpl()->GetVirtualKeyboardInterface();
                 if (vki)
                     vki->OnInputTextfieldFocusOut();
             }
         }
     }
+
     if (!IsReadOnly() || IsSelectable())
     {
         if (event == InteractiveObject::SetFocus)
@@ -1366,7 +1441,7 @@ void TextField::OnEventLoad()
 {
     // finalize the initialization. We need to initialize text here rather than in ctor
     // since the name of instance is not set yet in the ctor and setting text might cause
-    // GFxTranslator to be invoked, which uses the instance name.
+    // Translator to be invoked, which uses the instance name.
     if (pDef->DefaultText.GetLength() > 0)
     {
         SetTextValue(pDef->DefaultText.ToCStr(), IsHtml(), false);
@@ -1444,6 +1519,20 @@ DisplayObjectBase::GeomDataType& TextField::UpdateAndGetGeomData(GeomDataType* p
 #ifdef GFX_ENABLE_KEYBOARD
 bool TextField::OnKeyEvent(const EventId& id, int* pkeyMask)
 {
+#ifdef SF_BUILD_DEBUG
+    if (id.KeysState.IsScrollToggled())
+    {
+        switch(id.KeyCode)
+        {
+        case 19: // pause
+            {
+                pDocument->GetLineBuffer().Dump();
+                break;
+            }
+        default: break;
+        }
+    }
+#endif
     SF_UNUSED(pkeyMask);
     if (pDef->WasStatic())
         return false;
@@ -2025,12 +2114,13 @@ void TextField::UpdateUrlStyles()
 #endif
 }
 
-void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scaleform::Range* purlRange)
+bool TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scaleform::Range* purlRange)
 {
 #ifdef GFX_ENABLE_CSS
     if (!HasStyleSheet())
-        return;
+        return false;
 
+    bool needsUpdate = false;
     const char* styleName = NULL;
 
     //CSSHolder::UrlZone* purlZone = NULL;
@@ -2041,14 +2131,14 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
         if (pCSSData->MouseState[mouseIndex].UrlZoneIndex > 0)
         {
             if (pCSSData->MouseState[mouseIndex].HitBit)
-                return; // this mouse already has hit the url
+                return needsUpdate; // this mouse already has hit the url
             pCSSData->MouseState[mouseIndex].HitBit = true;
             UPInt urlZoneIdx = pCSSData->MouseState[mouseIndex].UrlZoneIndex - 1;
             purlZone = &pCSSData->UrlZones[urlZoneIdx];
             if (purlZone->GetData().HitCount > 0)
             {
                 ++purlZone->GetData().HitCount;
-                return; // hit counter is not zero - do nothing
+                return needsUpdate; // hit counter is not zero - do nothing
             }
         }
         else
@@ -2073,14 +2163,14 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
                 styleName = "a:active";
             }
             else
-                return;
+                return needsUpdate;
         }
         break;
     case Link_release:
         if (pCSSData->MouseState[mouseIndex].UrlZoneIndex > 0)
         {
             if (!pCSSData->MouseState[mouseIndex].HitBit)
-                return; // this mouse didn't hit the url
+                return needsUpdate; // this mouse didn't hit the url
             pCSSData->MouseState[mouseIndex].HitBit = false;
             UPInt urlZoneIdx = pCSSData->MouseState[mouseIndex].UrlZoneIndex - 1;
             if (!pCSSData->MouseState[mouseIndex].OverBit) // if neither hit nor over left - clean up
@@ -2090,7 +2180,7 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
             {
                 --purlZone->GetData().HitCount;
                 if (purlZone->GetData().HitCount != 0)
-                    return; // hit count is still bigger than zero, return
+                    return needsUpdate; // hit count is still bigger than zero, return
                 if (purlZone->GetData().OverCount > 0)
                     styleName = "a:hover";
             }
@@ -2100,7 +2190,7 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
         if (pCSSData->MouseState[mouseIndex].UrlZoneIndex > 0)
         {
             if (pCSSData->MouseState[mouseIndex].OverBit)
-                return; // this mouse already has rolled over the url
+                return needsUpdate; // this mouse already has rolled over the url
             pCSSData->MouseState[mouseIndex].OverBit = true;
             UPInt urlZoneIdx = pCSSData->MouseState[mouseIndex].UrlZoneIndex - 1;
             purlZone = &pCSSData->UrlZones[urlZoneIdx];
@@ -2109,7 +2199,7 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
                 ++purlZone->GetData().OverCount;
 
                 if (HasAvmObject()) GetAvmTextField()->OnLinkEventEx(event, (unsigned)purlZone->FirstIndex(), mouseIndex);
-                return; // over counter is not zero - do nothing
+                return needsUpdate; // over counter is not zero - do nothing
             }
         }
         else
@@ -2136,14 +2226,14 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
                 styleName = "a:hover";
             }
             else
-                return;
+                return needsUpdate;
         }
         break;
     case Link_rollout:
         if (pCSSData->MouseState[mouseIndex].UrlZoneIndex > 0)
         {
             if (!pCSSData->MouseState[mouseIndex].OverBit)
-                return; // this mouse didn't hit the url
+                return needsUpdate; // this mouse didn't hit the url
             pCSSData->MouseState[mouseIndex].OverBit = false;
             UPInt urlZoneIdx = pCSSData->MouseState[mouseIndex].UrlZoneIndex - 1;
             purlZone = &pCSSData->UrlZones[urlZoneIdx];
@@ -2156,7 +2246,7 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
                 if (HasAvmObject()) GetAvmTextField()->OnLinkEventEx(event, (unsigned)purlZone->FirstIndex(), mouseIndex);
 
                 if (purlZone->GetData().OverCount != 0)
-                    return; // over count is still bigger than zero, return
+                    return needsUpdate; // over count is still bigger than zero, return
                 if (purlZone->GetData().HitCount > 0)
                     styleName = "a:active";
             }
@@ -2171,6 +2261,7 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
         UPInt enPos = (UPInt)purlZone->NextIndex();
         pDocument->RemoveText(stPos, enPos);
         pDocument->InsertStyledText(*purlZone->GetData().SavedFmt.GetPtr(), stPos);
+        needsUpdate = true;
     }
 
     if (styleName)
@@ -2197,10 +2288,13 @@ void TextField::ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Scal
             UPInt stPos = (UPInt)purlZone->FirstIndex(), endPos = (UPInt)purlZone->NextIndex();
 
             pDocument->SetTextFormat(fmt, stPos, endPos);
+            needsUpdate = true;
         }
     }
+    return needsUpdate;
 #else
     SF_UNUSED3(event, mouseIndex, purlRange);
+    return false;
 #endif // GFX_ENABLE_CSS
 }
 
@@ -2359,18 +2453,18 @@ void TextField::SetText(const wchar_t* pnewText, bool reqHtml)
 
     enum { StackBuffSize = 512 };
     char* pbuff;
-    char stackBuff[StackBuffSize];
+    static char stackBuff[StackBuffSize];
     UPInt charSz = SFwcslen(pnewText);
 
     const UPInt maxExpansion = (sizeof(wchar_t) <= 2) ? 3 : 6;
     UPInt outSz = charSz * maxExpansion + 1;
     pbuff = outSz <= StackBuffSize ? stackBuff : (char*)SF_HEAP_AUTO_ALLOC(this, outSz);
 
-    UTF8Util::EncodeString(pbuff, pnewText);
+    UTF8Util::EncodeStringSafe(pbuff, outSz, pnewText);
 
     SetTextValue(pbuff, reqHtml);
 
-    if (charSz >= StackBuffSize) SF_FREE(pbuff);
+    if (pbuff != stackBuff) SF_FREE(pbuff);
 }
 
 void TextField::SetTextColor(UInt32 rgb)
@@ -2477,10 +2571,10 @@ void TextField::SetShadowColor(UInt32 rgb)
     if (pShadow)
     {
         // The arg is 0xRRGGBB format.
-        UInt32  rgb = pDocument->GetShadowColor();
-        pShadow->ShadowColor.SetBlue((UByte)rgb);
-        pShadow->ShadowColor.SetGreen((UByte)(rgb >> 8));
-        pShadow->ShadowColor.SetRed((UByte)(rgb >> 16));
+        UInt32 rgbShadow = pDocument->GetShadowColor();
+        pShadow->ShadowColor.SetBlue((UByte)rgbShadow);
+        pShadow->ShadowColor.SetGreen((UByte)(rgbShadow >> 8));
+        pShadow->ShadowColor.SetRed((UByte)(rgbShadow >> 16));
     }
     SetDirtyFlag();
 }
@@ -2520,7 +2614,7 @@ Ptr<Render::TreeNode> TextField::CreateRenderNode(Render::Context& context) cons
 {
     Ptr<Render::TreeText> tshp = *context.CreateEntry<Render::TreeText>();
     tshp->Init(pDocument);
-    return tshp;
+    return static_cast<Ptr<Render::TreeNode>>(tshp);
 }
 
 void TextField::NotifyChanged()
@@ -2556,6 +2650,10 @@ DocumentListener(Mask_All & (~Mask_OnLineFormat))
         {
             HandlersMask |= Mask_OnLineFormat;
         }
+        if (ptrans->HandlesBidirectionalText())
+        {
+            HandlersMask |= Mask_BidirectionalText;
+        }
     }
 }
 
@@ -2566,6 +2664,11 @@ void TextField::TextDocumentListener::TranslatorChanged()
         HandlersMask |= Mask_OnLineFormat;
     else
         HandlersMask &= (~Mask_OnLineFormat);
+
+    if (ptrans && ptrans->HandlesBidirectionalText())
+        HandlersMask |= Mask_BidirectionalText;
+    else
+        HandlersMask &= (~Mask_BidirectionalText);
 }
 
 void TextField::TextDocumentListener::OnScroll(Text::DocView&)
@@ -2622,6 +2725,26 @@ bool TextField::TextDocumentListener::View_OnLineFormat(Text::DocView&, Text::Do
     return false; 
 }
 
+// A callback that is called on bidirectional text enabled textfields. This method
+// receives original text ('text'/'textLen' parameters) and pre-allocated buffers: 
+//   'newText'  - new re-ordered text should be put there, do not overrun the length (the length is the same as 'textLen')
+//   'indexMap' - a buffer for an array of unsigned integers, that should be filled with new indices of each char. For
+//                example, if original char at index 0 was relocated to index 10, then indexMap[0] = 10.
+//   'mirrorBits'- a buffer for an array of bools (length = 'textLen'), where index is an index of char in 'newText' and the value (true/false)
+//                indicates necessity of the glyph mirroring (for example, for integral sign).
+// Should return 'true' if method was successful and the core should use contents of the buffers; false, if no changes
+// to the textfield should be applied.
+bool    TextField::TextDocumentListener::View_PrepareBidiText(Text::DocView&, const wchar_t* paraText, UPInt textLen, 
+                                        wchar_t* newParaText, unsigned* indexMap, bool* mirroredBits)
+{
+    Ptr<Translator> ptrans = GetTextField()->GetMovieImpl()->GetTranslator();
+    if (ptrans && ptrans->HandlesBidirectionalText())
+    {
+        return ptrans->OnBidirectionalText(paraText, textLen, newParaText, indexMap, mirroredBits);
+    }
+    return false;
+}
+
 void    TextField::TextDocumentListener::View_OnChanged(Text::DocView&)    
 {
     TextField* peditChar = GetTextField();
@@ -2652,6 +2775,21 @@ void    TextField::TextDocumentListener::Editor_OnCursorBlink(Text::EditorKitBas
     SF_UNUSED(cursorState);
     TextField* peditChar = GetTextField();
     peditChar->SetDirtyFlag(); //? will we blink cursor more gracefully?
+}
+
+bool TextField::TextDocumentListener::Editor_OnInsertingText(Text::EditorKitBase&, UPInt pos, UPInt len, const wchar_t* wstr)
+{
+    TextField* peditChar = GetTextField();
+    if (peditChar->HasAvmObject())
+        return peditChar->GetAvmTextField()->OnEditorInsertingText(pos, len, wstr);
+    return true;
+}
+bool TextField::TextDocumentListener::Editor_OnRemovingText(Text::EditorKitBase&, UPInt pos, UPInt len)
+{
+    TextField* peditChar = GetTextField();
+    if (peditChar->HasAvmObject())
+        return peditChar->GetAvmTextField()->OnEditorRemovingText(pos, len);
+    return true;
 }
 
 String TextField::TextDocumentListener::GetCharacterPath()

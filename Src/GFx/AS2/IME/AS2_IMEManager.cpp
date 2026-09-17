@@ -6,6 +6,7 @@ Created     :   Dec 17, 2007
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -225,7 +226,9 @@ bool IMEManager::AcquireCandidateList()
             v.SetNumber(0);
         if (v.GetNumber() < 0)
             return false;
-        if (!pmovieRoot->GetLevelMovie(GFX_CANDIDATELIST_LEVEL) && v.GetNumber() != 1)
+
+		//We need reload the candidate list	for the case user use both AS2 and AS3 movie
+        if (/*!pmovieRoot->GetLevelMovie(GFX_CANDIDATELIST_LEVEL) &&*/ v.GetNumber() != 1)
         {
 			if (GetIMEManager() && GetIMEManager()->CheckCandListExists())
 			{
@@ -265,9 +268,12 @@ bool IMEManager::AcquireCandidateList()
 					else
 					{
 #if   defined(SF_OS_WIN32)
-						char workingDir[MAX_PATH];
-						GetCurrentDirectoryA(MAX_PATH, workingDir);
-						URLBuilder::LocationInfo loc(URLBuilder::File_Regular, CandidateSwfPath, String(workingDir));
+						wchar_t workingDir[MAX_PATH];
+						GetCurrentDirectoryW(MAX_PATH, workingDir);
+						char utf8workingDir[MAX_PATH];
+						UTF8Util::EncodeStringSafe(utf8workingDir, MAX_PATH, workingDir);
+						URLBuilder::LocationInfo loc(URLBuilder::File_Regular, CandidateSwfPath, String(utf8workingDir));
+
 						String path;
 						if (purlBuilder)
 							purlBuilder->BuildURL(&path, loc);
@@ -280,9 +286,9 @@ bool IMEManager::AcquireCandidateList()
 				}
 			}
 
-			GFx::Value v;
-            v.SetNumber(1); // means - "loading"
-            pMovie->SetVariable("_global.gfx_ime_candidate_list_state", v);
+			GFx::Value va;
+            va.SetNumber(1); // means - "loading"
+            pMovie->SetVariable("_global.gfx_ime_candidate_list_state", va);
             
 			AS2::GFxAS2LoadQueueEntry* pentry = new AS2::GFxAS2LoadQueueEntry
 				(GFX_CANDIDATELIST_LEVEL, CandidateSwfPath, AS2::GFxAS2LoadQueueEntry::LM_None, false, true);

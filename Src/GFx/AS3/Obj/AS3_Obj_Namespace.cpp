@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -397,15 +398,24 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 Namespace::tito[Namespace::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 
+    // };
+    const TypeInfo* Namespace::tit[4] = {
+        NULL, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Namespace::ti[Namespace::ThunkInfoNum] = {
-        {&InstanceTraits::fl::Namespace::prefixGet, NULL, "prefix", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {&InstanceTraits::fl::Namespace::uriGet, &AS3::fl::StringTI, "uri", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {&InstanceTraits::fl::Namespace::AS3valueOf, &AS3::fl::StringTI, "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {&InstanceTraits::fl::Namespace::AS3toString, &AS3::fl::StringTI, "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
+        {&InstanceTraits::fl::Namespace::prefixGet, &Namespace::tit[0], "prefix", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {&InstanceTraits::fl::Namespace::uriGet, &Namespace::tit[1], "uri", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {&InstanceTraits::fl::Namespace::AS3valueOf, &Namespace::tit[2], "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {&InstanceTraits::fl::Namespace::AS3toString, &Namespace::tit[3], "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Namespace::Namespace(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Namespace::Namespace()"
         SetTraitsType(Traits_Namespace);
@@ -419,10 +429,10 @@ namespace InstanceTraits { namespace fl
         SF_UNUSED2(result, t); SF_ASSERT(false);
     }
 
-    void Namespace::prefixGet(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void Namespace::prefixGet(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
 //##protect##"InstanceTraits::prefixGet()"
-        SF_UNUSED3(ti, argc, argv);
+        SF_UNUSED3(cti, argc, argv);
 
         // This method is not generic.
         if (!_this.IsNamespace())
@@ -431,10 +441,10 @@ namespace InstanceTraits { namespace fl
         result = _this.AsNamespace().GetPrefix();
 //##protect##"InstanceTraits::prefixGet()"
     }
-    void Namespace::uriGet(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void Namespace::uriGet(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
 //##protect##"InstanceTraits::uriGet()"
-        SF_UNUSED3(ti, argc, argv);
+        SF_UNUSED3(cti, argc, argv);
 
         // This method is not generic.
         if (!_this.IsNamespace())
@@ -443,10 +453,10 @@ namespace InstanceTraits { namespace fl
         result = _this.AsNamespace().GetUri();
 //##protect##"InstanceTraits::uriGet()"
     }
-    void Namespace::AS3valueOf(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void Namespace::AS3valueOf(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
 //##protect##"InstanceTraits::AS3valueOf()"
-        SF_UNUSED3(ti, argc, argv);
+        SF_UNUSED3(cti, argc, argv);
 
         // This method is not generic.
         if (!_this.IsNamespace())
@@ -455,10 +465,10 @@ namespace InstanceTraits { namespace fl
         result = _this.AsNamespace().GetUri();
 //##protect##"InstanceTraits::AS3valueOf()"
     }
-    void Namespace::AS3toString(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void Namespace::AS3toString(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
 //##protect##"InstanceTraits::AS3toString()"
-        SF_UNUSED3(ti, argc, argv);
+        SF_UNUSED3(cti, argc, argv);
 
         // This method is not generic.
         if (!_this.IsNamespace())
@@ -467,16 +477,16 @@ namespace InstanceTraits { namespace fl
         result = _this.AsNamespace().GetUri();
 //##protect##"InstanceTraits::AS3toString()"
     }
-    void Namespace::valueOfProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void Namespace::valueOfProto(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
 //##protect##"InstanceTraits::valueOfProto()"
-        toStringProto(ti, vm, _this, result, argc, argv);
+        toStringProto(cti, vm, _this, result, argc, argv);
 //##protect##"InstanceTraits::valueOfProto()"
     }
-    void Namespace::toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void Namespace::toStringProto(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
 //##protect##"InstanceTraits::toStringProto()"
-        SF_UNUSED3(ti, argc, argv);
+        SF_UNUSED3(cti, argc, argv);
 
         if (_this.IsObject() && _this.GetObject())
         {
@@ -523,9 +533,16 @@ namespace InstanceTraits { namespace fl
 
 namespace Classes { namespace fl
 {
+    // const UInt16 Namespace::tito[Namespace::ThunkInfoNum] = {
+    //    0, 1, 
+    // };
+    const TypeInfo* Namespace::tit[2] = {
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Namespace::ti[Namespace::ThunkInfoNum] = {
-        {&InstanceTraits::fl::Namespace::valueOfProto, &AS3::fl::StringTI, "valueOf", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {&InstanceTraits::fl::Namespace::toStringProto, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {&InstanceTraits::fl::Namespace::valueOfProto, &Namespace::tit[0], "valueOf", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {&InstanceTraits::fl::Namespace::toStringProto, &Namespace::tit[1], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Namespace::Namespace(ClassTraits::Traits& t)
@@ -592,25 +609,28 @@ namespace Classes { namespace fl
 
 namespace ClassTraits { namespace fl
 {
-    Namespace::Namespace(VM& vm)
-    : Traits(vm, AS3::fl::NamespaceCI)
+
+    Namespace::Namespace(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Namespace::Namespace()"
         SetTraitsType(Traits_Namespace);
 //##protect##"ClassTraits::Namespace::Namespace()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Namespace(vm, AS3::fl::NamespaceCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::Namespace(*this));
 
     }
 
     Pickable<Traits> Namespace::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Namespace(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Namespace(vm, AS3::fl::NamespaceCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::NamespaceCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
     bool Namespace::Coerce(const Value& value, Value& result) const
@@ -627,6 +647,11 @@ namespace fl
 {
     const TypeInfo NamespaceTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl::Namespace::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl::Namespace::ThunkInfoNum,
+        0,
         "Namespace", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -634,10 +659,6 @@ namespace fl
     const ClassInfo NamespaceCI = {
         &NamespaceTI,
         ClassTraits::fl::Namespace::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl::Namespace::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl::Namespace::ti,

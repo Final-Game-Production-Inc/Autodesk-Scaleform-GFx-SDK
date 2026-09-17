@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<language name="Simplified">
-	<translations>
-       <entry key="$MMOKitDesc" value="我们的Scaleform MMO 工具箱是为提高性能与减少储存资源使用而设计。  它为多人在线游戏界面提供了一个现成的解决方案。  这工具箱包括了以CLIK为基础的界面工具以及即开即用的工具， 资源以及数据管理框架。" />
-	</translations>
-</language>

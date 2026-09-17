@@ -7,6 +7,7 @@ Created     :   Dec, 2009
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -68,10 +69,23 @@ public:
         virtual void    View_OnMaxScrollChanged(Text::DocView& view);
         virtual bool    View_OnLineFormat(Text::DocView&, Text::DocView::LineFormatDesc& desc);
         virtual void    View_OnChanged(Text::DocView&);
+        // A callback that is called on bidirectional text enabled textfields. This method
+        // receives original text ('text'/'textLen' parameters) and pre-allocated buffers: 
+        //   'newText'  - new re-ordered text should be put there, do not overrun the length (the length is the same as 'textLen')
+        //   'indexMap' - a buffer for an array of unsigned integers, that should be filled with new indices of each char. For
+        //                example, if original char at index 0 was relocated to index 10, then indexMap[0] = 10.
+        //   'mirrorBits'- a buffer for an array of bools (length = 'textLen'), where index is an index of char in 'newText' and the value (true/false)
+        //                indicates necessity of the glyph mirroring (for example, for integral sign).
+        // Should return 'true' if method was successful and the core should use contents of the buffers; false, if no changes
+        // to the textfield should be applied.
+        virtual bool    View_PrepareBidiText(Text::DocView&, const wchar_t* paraText, UPInt textLen, 
+            wchar_t* newParaText, unsigned* indexMap, bool* mirroredBits);
         // editor events
         virtual void    Editor_OnChanged(Text::EditorKitBase& editor);
         virtual void    Editor_OnCursorMoved(Text::EditorKitBase& editor);
         virtual void    Editor_OnCursorBlink(Text::EditorKitBase& editor, bool cursorState);
+        virtual bool    Editor_OnInsertingText(Text::EditorKitBase&, UPInt pos, UPInt len, const wchar_t*);
+        virtual bool    Editor_OnRemovingText(Text::EditorKitBase&, UPInt pos, UPInt len);
 
         virtual String  GetCharacterPath();
     };
@@ -262,6 +276,7 @@ public:
  
     // *** overloaded methods of DisplayObject
     // Override AdvanceFrame so that variable dependencies can be updated.
+    virtual void            UpdateTransform3D();
     virtual void            AdvanceFrame(bool nextFrame, float framePos);
     virtual RectF           GetBounds(const Matrix &t) const;
     virtual RectF           GetRectBounds(const Matrix &t) const { return GetBounds(t); }
@@ -344,8 +359,9 @@ public:
         pDocument->AppendHtml(putf8Str, utf8Len, condenseWhite, pimgInfoArr);
         SetNeedUpdateLayoutFlag();
     }
-    // Changes format of link according to event.
-    void                    ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Range* purlRange = NULL);
+    // Changes format of link according to event. Returns 'true' if changes were done
+    // and NotifyChanged should be called.
+    bool                    ChangeUrlFormat(LinkEvent event, unsigned mouseIndex, const Range* purlRange = NULL);
     void                    ClearAAForReadability() { pDocument->ClearAAForReadability(); }
     void                    ClearAutoFit() { pDocument->ClearAutoFit(); }
     void                    ClearAutoSizeX() { pDocument->ClearAutoSizeX(); }
@@ -356,10 +372,12 @@ public:
     void                    ClearPasswordMode() { pDocument->ClearPasswordMode(); }
     void                    ClearUseDeviceFont() { pDocument->ClearUseDeviceFont(); }
     void                    ClearWordWrap() { pDocument->ClearWordWrap(); }
+    void                    ClearUrlZones();
     void                    CollectUrlZones();
     Text::DocView::ImageSubstitutor* CreateImageSubstitutor() { return pDocument->CreateImageSubstitutor(); }
     bool                    DoesUseDeviceFont() const { return pDocument->DoesUseDeviceFont(); }
     void                    EnableSoftShadow() { pDocument->EnableSoftShadow(); }
+    void                    EnableBidirectionalText(bool en = true) { (en)?pDocument->EnableBidirectionalText():pDocument->DisableBidirectionalText(); }
     void                    ForceCompleteReformat() { pDocument->SetCompleteReformatReq(); }
     void                    ForceReformat() { pDocument->SetReformatReq(); }
     Text::DocView::ViewAlignment GetAlignment() const { return pDocument->GetAlignment(); }
@@ -394,6 +412,7 @@ public:
     }
     bool                    GetFauxBold() const { return pDocument->GetFauxBold(); }
     bool                    GetFauxItalic() const { return pDocument->GetFauxItalic(); }
+    bool                    GetForceVector() const { return pDocument->GetForceVector(); }
     UPInt                   GetFirstCharInParagraph(UPInt indexOfChar) 
     { 
         return pDocument->GetFirstCharInParagraph(indexOfChar);
@@ -490,6 +509,7 @@ public:
     bool                    IsAutoFit() const { return pDocument->IsAutoFit(); }
     bool                    IsAutoSizeX() const { return pDocument->IsAutoSizeX(); }
     bool                    IsAutoSizeY() const { return pDocument->IsAutoSizeY(); }
+    bool                    IsBidirectionalTextEnabled() const { return pDocument->IsBidirectionalTextEnabled(); }
     bool                    IsMultiline() const { return pDocument->IsMultiline(); }
     bool                    IsOverwriteMode() const;
     bool                    IsShadowHiddenObject()  const { return pDocument->IsHiddenObject(); }
@@ -537,6 +557,7 @@ public:
     }
     void                    SetFauxBold(bool v) { pDocument->SetFauxBold(v); }
     void                    SetFauxItalic(bool v) { pDocument->SetFauxItalic(v); }
+    void                    SetForceVector(bool v) { pDocument->SetForceVector(v); }
 
     // see also SetFilters(FilterSet* filters)
     void                    SetTextFilters(const TextFilter& f);    
@@ -639,6 +660,10 @@ public:
     // returns false, if default action should be prevented
     virtual bool OnCharEvent(wchar_t wcharCode, unsigned controllerIdx) =0;
     virtual void OnScroll() =0;
+
+    virtual bool OnEditorInsertingText(UPInt pos, UPInt len, const wchar_t* wstr, unsigned controllerIdx = 0) =0;
+    virtual bool OnEditorRemovingText(UPInt pos, UPInt len, unsigned controllerIdx = 0) =0;
+
     virtual bool UpdateTextFromVariable() =0;
     virtual void UpdateVariable() =0;
 };

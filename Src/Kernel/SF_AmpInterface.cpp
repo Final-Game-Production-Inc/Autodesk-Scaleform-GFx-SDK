@@ -9,6 +9,7 @@ Authors     :   Alex Mantzaris
 Notes       :   Interface to the Analyzer for Memory and Performance
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,8 +19,45 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "SF_AmpInterface.h"
 #include "SF_HeapNew.h"
+#include "SF_File.h"
 
 namespace Scaleform {
+
+// Serialization
+void AmpMovieObjectDesc::Read(File& str)
+{
+    Description.Clear();
+    UInt32 stringLength = str.ReadUInt32();
+    for (UInt32 i = 0; i < stringLength; ++i)
+    {
+        Description.AppendChar(str.ReadSByte());
+    }
+    UInt32 numChildren = str.ReadUInt32();
+    Children.Resize(numChildren);
+    for (UInt32 i = 0; i < numChildren; ++i)
+    {
+        AmpMovieObjectDesc* child = SF_HEAP_AUTO_NEW(this) AmpMovieObjectDesc();
+        child->Read(str);
+        Children[i] = *child;
+    }
+}
+
+// Serialization
+void AmpMovieObjectDesc::Write(File& str) const
+{
+    str.WriteUInt32(static_cast<UInt32>(Description.GetLength()));
+    for (UPInt i = 0; i < Description.GetLength(); ++i)
+    {
+        str.WriteSByte(Description[i]);
+    }
+    UInt32 numChildren = static_cast<UInt32>(Children.GetSize());
+    str.WriteUInt32(numChildren);
+    for (UInt32 i = 0; i < numChildren; ++i)
+    {
+        Children[i]->Write(str);
+    }
+}
+
 
 class DefaultAmpServer : public AmpServer
 {
@@ -57,7 +95,7 @@ public:
     virtual void    SetConnectionWaitTime(unsigned waitTimeMilliseconds) { SF_UNUSED(waitTimeMilliseconds); }
     virtual void    SetHeapLimit(UPInt memLimit) { SF_UNUSED(memLimit); }
     virtual void    SetInitSocketLib(bool initSocketLib) { SF_UNUSED(initSocketLib); }
-    virtual void    SetSocketImplFactory(GFx::AMP::SocketImplFactory* socketFactory) { SF_UNUSED(socketFactory); }
+    virtual void    SetSocketImplFactory(GFx::SocketImplFactory* socketFactory) { SF_UNUSED(socketFactory); }
     virtual void    AddMovie(GFx::MovieImpl* movie) { SF_UNUSED(movie); }
     virtual void    RemoveMovie(GFx::MovieImpl* movie) { SF_UNUSED(movie); }
     virtual bool    FindMovieByHeap(MemoryHeap*, GFx::MovieImpl**) { return false; }
@@ -71,8 +109,9 @@ public:
     virtual void    RemoveSound(UPInt soundMem) { SF_UNUSED(soundMem); }
     virtual void    AddStrokes(UInt32 numStrokes) { SF_UNUSED(numStrokes); }
     virtual void    RemoveStrokes(UInt32 numStrokes) { SF_UNUSED(numStrokes); }
-    virtual void    IncrementFontThrashing() { }
     virtual void    IncrementFontFailures() { }
+    virtual void    IncrementFontOptRead() { }
+    virtual void    DecrementFontOptRead() { }
     virtual void    SetRenderer(Render::Renderer2D* renderer) { SF_UNUSED(renderer); }
     virtual UInt32  GetNextSwdHandle() const { return 0; }
     virtual void    AddSwf(UInt32 swdHandle, const char* swdId, const char* filename) { SF_UNUSED3(swdHandle, swdId, filename); }

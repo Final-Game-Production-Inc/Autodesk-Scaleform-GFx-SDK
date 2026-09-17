@@ -8,6 +8,7 @@ Created     :   July 8, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -49,11 +50,14 @@ struct ChainOrderRecord
     CacheEffect::CreateFunc Factory;
 };
 
+// This sequence determines the order in which these effects are applied (first in the list is applied to the scene first). 
+// The ordering of some components matters for correct visualization with flash content. The order of the first three 
+// (Blend, Filter, Mask) are particularly important.
 ChainOrderRecord ChainOrderSequence[] = 
 {
+    { State_BlendMode,          Change_State_BlendMode,         &BlendModeEffect::Create },
     { State_Filter,             Change_State_Filter,            &FilterEffect::Create },
     { State_MaskNode,           Change_State_MaskNode,          &MaskEffect::Create },
-    { State_BlendMode,          Change_State_BlendMode,         &BlendModeEffect::Create },
     { State_ViewMatrix3D,       Change_State_ViewMatrix3D,      &ViewMatrix3DEffect::Create },
     { State_ProjectionMatrix3D, Change_State_ProjectionMatrix3D,&ProjectionMatrix3DEffect::Create },
     { State_UserData,           Change_State_UserData,          &UserDataEffect::Create }
@@ -162,7 +166,7 @@ MaskEffect::MaskEffect(TreeCacheNode* node,
                        const MaskEffectState mes, const HMatrix& areaMatrix,
                        CacheEffect* next)
 : CacheEffect(next),
-  StartEntry(node, SortKey((mes == MES_Clipped) ? SortKeyMask_PushClipped : SortKeyMask_Push)),
+  StartEntry(node, SortKey(SortKeyMask_Push)),
   EndEntry(node, SortKey(SortKeyMask_End)),
   PopEntry(node, SortKey(SortKeyMask_Pop)),
   MES(mes), BoundsMatrix(areaMatrix)
@@ -180,9 +184,8 @@ bool MaskEffect::UpdateMatrix(const MaskEffectState mes,
 
 bool MaskEffect::Update(const State* stateArg)
 {    
-    SF_ASSERT(stateArg->GetType() == State_MaskNode);
+    SF_DEBUG_ASSERT(stateArg->GetType() == State_MaskNode, "Updating MaskEffect, stateArg must be a MaskNode state.");
     SF_UNUSED(stateArg);
-//    MaskNodeState* state = (MaskNodeState*)stateArg;
     
     bool updateParent = false;
 
@@ -192,7 +195,9 @@ bool MaskEffect::Update(const State* stateArg)
     // when MaskEffectState changes (TBD: Could it do this directly?). 
 
     TreeCacheNode* node = StartEntry.pSourceNode;
-    SF_ASSERT(node);
+    SF_DEBUG_ASSERT(node, "Updating MaskEffect, previous key did not have a source node.");
+    if (!node)
+        return false;
     
     RectF       maskBounds;
     Matrix2F    maskAreaMatrix;
@@ -200,22 +205,10 @@ bool MaskEffect::Update(const State* stateArg)
     Matrix4F    viewProjMatrix;
     node->CalcViewMatrix(&viewMatrix, &viewProjMatrix);
     MaskEffectState mes = node->calcMaskBounds(&maskBounds, &maskAreaMatrix,
-                                               viewMatrix, viewProjMatrix, MES, 
-                                               node->CalcFilterFlag() ? TF_ParentFilter : 0);
+                                               viewMatrix, viewProjMatrix);
 
-    SortKeyType     keyType;
-    SortKeyMaskType keyConstructType;
-
-    if (mes == MES_Clipped)
-    {
-        keyType          = SortKey_MaskStartClipped;
-        keyConstructType = SortKeyMask_PushClipped;
-    }
-    else
-    {
-        keyType          = SortKey_MaskStart;
-        keyConstructType = SortKeyMask_Push;
-    }
+    SortKeyType     keyType          = SortKey_MaskStart;
+    SortKeyMaskType keyConstructType = SortKeyMask_Push;
 
     // If type changes, we need to re-flush the bundle.
     if (keyType != StartEntry.Key.GetType())
@@ -289,8 +282,7 @@ CacheEffect* MaskEffect::Create(TreeCacheNode* node, const State*, CacheEffect* 
     Matrix4F    viewProjMatrix;
     node->CalcViewMatrix(&viewMatrix, &viewProjMatrix);
     MaskEffectState mes = node->calcMaskBounds(&maskBounds, &maskAreaMatrix,
-                                               viewMatrix, viewProjMatrix, MES_NoMask, 
-                                               node->CalcFilterFlag() ? TF_ParentFilter : 0);
+                                               viewMatrix, viewProjMatrix);
     HMatrix     m = node->GetMatrixPool().CreateMatrix(maskAreaMatrix);
 
     return SF_HEAP_AUTO_NEW(node) MaskEffect(node, mes, m, next);
@@ -301,26 +293,45 @@ CacheEffect* MaskEffect::Create(TreeCacheNode* node, const State*, CacheEffect* 
 //--------------------------------------------------------------------
 // ***** BlendMode Effect
 
-BlendModeEffect::BlendModeEffect(TreeCacheNode* node, const BlendState& state, CacheEffect* next)
-: CacheEffect(next),
-  StartEntry(node, SortKey(SortKey_BlendModeStart, state.GetBlendMode())),
-  EndEntry(node, SortKey(SortKey_BlendModeEnd, Blend_None))
+BlendModeEffect::BlendModeEffect(TreeCacheNode* node, const HMatrix& m, const BlendState& state, CacheEffect* next)
+:   CacheEffect(next),
+    StartEntry(node, SortKey(SortKey_BlendModeStart, state.GetBlendMode())),
+    EndEntry(node, SortKey(SortKey_BlendModeEnd, BlendState::IsTargetAllocationNeededForBlendMode(state.GetBlendMode()) ? Blend_Invalid : Blend_Count)),
+    BoundsMatrix(m)
 {
+}
+
+bool BlendModeEffect::UpdateMatrix(const Matrix2F& boundsMatrix)
+{
+    // Update the matrix. TBD: we may want to support changing the bounds of the blend 
+    // operation. If this is the case, this function will need to be more complex.
+    BoundsMatrix.SetMatrix2D(boundsMatrix);     
+    return true;
+}
+
+
+void BlendModeEffect::UpdateCxform(const Cxform& cx)
+{
+    BoundsMatrix.SetCxform(cx);
 }
 
 bool BlendModeEffect::Update(const State* stateArg)
 {
     SF_ASSERT(stateArg->GetType() == State_BlendMode);
     BlendState* state = (BlendState*)stateArg;
-     
-    if (StartEntry.Key.GetData() != (SortKeyData)state->GetBlendMode())
-    {
-        // BlendModeEffects don't have pBundle objects,
-        // so it's ok to modify data without removing entry from bundle.
-        StartEntry.Key.SetData((SortKeyData)state->GetBlendMode());
-        return true;
-    }
-    return false;
+
+    // Detect when the blend is/was not cacheable, and simply change the mode.
+    bool targetNeeded = BlendState::IsTargetAllocationNeededForBlendMode(state->GetBlendMode());
+
+    // Rebuild the bundle. The blend may not have changed, but child content may
+    // have transformed, in which case the blend will need to be re-rendered. 
+    StartEntry.ClearBundle();
+    EndEntry.ClearBundle();
+
+    // Note: EndEntry use different blend values. This is to differentiate during the unprepare phase.
+    StartEntry.Key = SortKey(SortKey_BlendModeStart, state->GetBlendMode());
+    EndEntry.Key = SortKey(SortKey_BlendModeEnd, targetNeeded ? Blend_Invalid : Blend_Count);
+    return true;
 }
 
 void  BlendModeEffect::ChainNext(BundleEntryRange* chain, BundleEntryRange*)
@@ -336,7 +347,24 @@ void  BlendModeEffect::GetRange(BundleEntryRange* result)
 CacheEffect* BlendModeEffect::Create(TreeCacheNode* node, const State* stateArg, CacheEffect* next)
 {
     SF_ASSERT(stateArg->GetType() == State_BlendMode);
-    return SF_HEAP_AUTO_NEW(node) BlendModeEffect(node, *(BlendState*)stateArg, next);
+
+    Matrix3F    viewMatrix;
+    Matrix4F    viewProjMatrix;
+    Matrix2F    areaMatrix;
+    RectF       blendBounds;
+    node->CalcViewMatrix(&viewMatrix, &viewProjMatrix);
+    if (!node->calcCacheableBounds(&blendBounds, &areaMatrix, viewMatrix, viewProjMatrix ))
+    {
+        // If we fail to calculate the filter bounds, reset the matrix and bounds, as they may be invalid.
+        blendBounds.SetRect(0,0);
+        areaMatrix.SetIdentity();
+    }
+
+    HMatrix     m = node->GetMatrixPool().CreateMatrix(areaMatrix);
+    const TreeNode::NodeData* nodeData = node->GetNodeData();
+    m.SetCxform(nodeData->Cx);
+
+    return SF_HEAP_AUTO_NEW(node) BlendModeEffect(node, m, *(BlendState*)stateArg, next);
 }
 
 //--------------------------------------------------------------------
@@ -355,6 +383,18 @@ FilterEffect::FilterEffect(TreeCacheNode* node, const HMatrix& m, const FilterSt
 
     // Store the original as a UserData, don't want to modify HMatrix just for this one case.
     BoundsMatrix.SetUserDataFloat(&(m.GetMatrix2D().M[0][0]), 8);
+
+    // Create a GradientImage from the GradientData.
+    for (unsigned i = 0; i < state.GetFilterCount(); ++i)
+    {
+        const Filter* filter = state.GetFilter(i);
+        if (filter->GetFilterType() == Filter_GradientBevel ||
+            filter->GetFilterType() == Filter_GradientGlow)
+        {
+            const GradientFilter* gradientFilter = reinterpret_cast<const GradientFilter*>(filter);
+            gradientFilter->GenerateGradientImage(node->GetPrimitiveFillManager());
+        }
+    }
 }
 
 bool FilterEffect::UpdateMatrix(const Matrix2F& boundsMatrix, const Matrix2F& newNodeMatrix, bool forceUncache) 
@@ -480,7 +520,7 @@ CacheEffect* FilterEffect::Create(TreeCacheNode* node, const State* stateArg, Ca
     Matrix4F    viewProjMatrix;
     node->CalcViewMatrix(&viewMatrix, &viewProjMatrix);
     node->CalcCxform(filterCx);
-    if (!node->calcFilterBounds(&filterBounds, &filterAreaMatrix, viewMatrix, viewProjMatrix ))
+    if (!node->calcCacheableBounds(&filterBounds, &filterAreaMatrix, viewMatrix, viewProjMatrix ))
 	{
         // If we fail to calculate the filter bounds, reset the matrix and bounds, as they may be invalid.
 		filterBounds.SetRect(0,0);

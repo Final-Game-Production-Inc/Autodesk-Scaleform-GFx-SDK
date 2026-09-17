@@ -19,6 +19,13 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "FxPlayerAutotest.h"
 #include "FxPlayerAppBase.h"
 
+#if defined (SF_OS_ANDROID) && !defined (SF_ANDROID_NDK_BUILD)
+extern "C" {
+      extern void *__dso_handle __attribute__((__visibility__ ("hidden")));
+        void *__dso_handle;
+}
+#endif
+
 // *** XML Prototypes
 namespace Scaleform {
 
@@ -1086,8 +1093,8 @@ void WriteXMLNode(File& file, XML::Node* node)
 
                 // Write closing tag.
                 file.Write((const UByte*)"</", 2);
-                XML::ElementNode* enode = (XML::ElementNode*)node;
-                file.Write((const UByte*)enode->Value.ToCStr(), enode->Value.GetSize());
+                XML::ElementNode* xenode = (XML::ElementNode*)node;
+                file.Write((const UByte*)xenode->Value.ToCStr(), xenode->Value.GetSize());
                 file.Write((const UByte*)">\n", 3);
             }
             break;
@@ -1186,12 +1193,12 @@ KeyModifiers ComputeModifiers(const char* buffer, const StringHash<unsigned>& mo
 
     do 
     {
-        const char* nextStart = SFstrchr(buffer,';');
-        if (nextStart)
-            SFstrncpy(substr, 256, buffer, nextStart-buffer);
+        const char* nextStartBuffer = SFstrchr(buffer,';');
+        if (nextStartBuffer)
+            SFstrncpy(substr, 256, buffer, nextStartBuffer -buffer);
         else
             SFstrcpy(substr, 256, buffer);
-        buffer = nextStart+1;
+        buffer = nextStartBuffer +1;
 
         unsigned val;
         if (modMap.Get(substr, &val))

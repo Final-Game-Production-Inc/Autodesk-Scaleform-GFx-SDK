@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -46,8 +47,6 @@ SlotInfo::BindingType GetDataType(TCodeType ct)
 }
 
 ///////////////////////////////////////////////////////////////////////////
-#ifdef SF_AS3_ENABLE_SLOTS2
-
 void Slots::SetSlotInfo(AbsoluteIndex ind, const ASString& name, const SlotInfo& v)
 {
     SF_ASSERT(ind.IsValid());
@@ -57,19 +56,17 @@ void Slots::SetSlotInfo(AbsoluteIndex ind, const ASString& name, const SlotInfo&
     SetKey(ind, name);
 }
 
-#else
-
-void Slots::SetSlotInfo(AbsoluteIndex ind, const ASString& name, const SlotInfo& v)
+void Slots::ForEachSlot(SlotFunct& f) const
 {
-    SF_ASSERT(ind.IsValid());
-    
-    SlotContainer[ind] = v;
-    SlotContainer.SetKey(ind, name);
+    AS3::Traits::CIterator it = Begin();
+
+    for (; !it.IsEnd(); ++it)
+    {
+        const SlotInfo& si = it.GetSlotInfo();
+        f(si);
+    }
 }
 
-#endif
-
-#ifdef SF_AS3_ENABLE_SLOTS2
 void Slots::Inherit(const Slots& parent)
 {
     Parent = &parent;
@@ -132,7 +129,6 @@ Scaleform::GFx::AS3::AbsoluteIndex Slots::Add(const ASString& k, const ValueType
 
     return AbsoluteIndex(result + FirstOwnSlotNum);
 }
-#endif
 
 AbsoluteIndex Slots::FindSlotInfoIndex(const ASString& name, const Instances::fl::Namespace& ns) const
 {
@@ -320,9 +316,9 @@ CheckResult Traits::SetupSlotValues(VMAbcFile& file, const Abc::HasTraits& t, Ob
                 }
                 else
                 {
-                    Abc::Multiname mn = trait_info.GetTypeName(file.GetAbcFile());
+                    Abc::Multiname mnAbc = trait_info.GetTypeName(file.GetAbcFile());
 
-                    if (!si->SetSlotValue(GetVM(), GetVM().GetDefaultValue(file, mn), &for_obj))
+                    if (!si->SetSlotValue(GetVM(), GetVM().GetDefaultValue(file, mnAbc), &for_obj))
                         return false;
                 }
             }
@@ -736,7 +732,7 @@ void Traits::Add2VT(SlotInfo& si, const Value& v, SlotInfo::BindingType new_bt)
         }
         
         // Set the value.
-        vt.SetMethod(method_ind, v, new_bt SF_DEBUG_ARG(si.GetName()));
+        vt.SetMethod(method_ind, v, new_bt SF_DEBUG_ARG(si.GetQualifiedName()));
         
         // Rebind if necessary.
         new_bt = GetNewBT(bt, new_bt);
@@ -745,7 +741,7 @@ void Traits::Add2VT(SlotInfo& si, const Value& v, SlotInfo::BindingType new_bt)
     } else
     {
         // Add a new record to the virtual table ...
-        si.Bind(new_bt, vt.AddMethod(v, new_bt SF_DEBUG_ARG(si.GetName())));
+        si.Bind(new_bt, vt.AddMethod(v, new_bt SF_DEBUG_ARG(si.GetQualifiedName())));
     }
 }
 
@@ -783,7 +779,7 @@ void Traits::UpdateVT(const SlotInfo& si, const Value& v, SlotInfo::BindingType 
     }
 
     // Set the value.
-    vt.SetMethod(method_ind, v, new_bt SF_DEBUG_ARG(si.GetName()));
+    vt.SetMethod(method_ind, v, new_bt SF_DEBUG_ARG(si.GetQualifiedName()));
 }
 
 Instances::fl::Namespace& Traits::GetPublicNamespace() const
@@ -1011,8 +1007,8 @@ void Traits::AddSlot(const ASString& name, Pickable<const Instances::fl::Namespa
         SlotInfo(
             ns, 
             tr,
-            attr
-            SF_DEBUG_ARG(name.GetNode())
+            attr,
+            name.GetNode()
             )
         );
 
@@ -1029,8 +1025,8 @@ void Traits::AddSlot(const ASString& name, Pickable<const Instances::fl::Namespa
         SlotInfo(
             ns, 
             NULL,
-            attr
-            SF_DEBUG_ARG(name.GetNode())
+            attr,
+            name.GetNode()
             )
         );
 
@@ -1048,8 +1044,8 @@ AbsoluteIndex Traits::AddSlot(const ASString& name, Pickable<const Instances::fl
             ns, 
             file,
             ti,
-            attr
-            SF_DEBUG_ARG(name.GetNode())
+            attr,
+            name.GetNode()
             )
         );
 }
@@ -1064,8 +1060,8 @@ void Traits::AddSlotCPP(const ASString& name, Pickable<const Instances::fl::Name
         SlotInfo(
             ns, 
             tr,
-            attr
-            SF_DEBUG_ARG(name.GetNode())
+            attr,
+            name.GetNode()
             )
         );
 
@@ -1106,8 +1102,8 @@ void Traits::AddSlot(const MemberInfo& mi)
         SlotInfo(
             ns,
             NULL,
-            attr
-            SF_DEBUG_ARG(name.GetNode())
+            attr,
+            name.GetNode()
             )
         );
 
@@ -1129,7 +1125,7 @@ void Traits::Add2VT(const ClassInfo& ci, const ThunkInfo& func)
             if (func.NamespaceName == NS_AS3 || strcmp(func.NamespaceName, NS_AS3) == 0)
                 ns = Pickable<Instances::fl::Namespace>(&vm.GetAS3Namespace(), PickValue);
             else
-                ns = vm.MakeInternedNamespace(func.NsKind, func.NamespaceName);
+                ns = vm.MakeInternedNamespace(func.GetNsKind(), func.NamespaceName);
         }
         else
         {
@@ -1137,7 +1133,7 @@ void Traits::Add2VT(const ClassInfo& ci, const ThunkInfo& func)
             const bool empty_pkg_name = ci.GetPkgName() == NULL || *ci.GetPkgName() == 0;
 
             if (empty_class_name && !empty_pkg_name)
-                ns = vm.MakeInternedNamespace(func.NsKind, ci.GetPkgName());
+                ns = vm.MakeInternedNamespace(func.GetNsKind(), ci.GetPkgName());
             else
                 ns = vm.MakePublicNamespace();
         }
@@ -1148,8 +1144,8 @@ void Traits::Add2VT(const ClassInfo& ci, const ThunkInfo& func)
         SlotInfo(
             ns, 
             NULL, // !!! Result type is missing.
-            SlotInfo::aDontEnum
-            SF_DEBUG_ARG(method_name.GetNode())
+            SlotInfo::aDontEnum,
+            method_name.GetNode()
             ),
         func,
         GetDataType(func.GetCodeType())
@@ -1218,23 +1214,16 @@ CheckResult Traits::RegisterWithVT(const ASString& mn_name, const SlotInfo& nsi,
         {
             const SlotInfo::BindingType new_bt = GetNewBT(cur_bt, bt);
 
-#ifdef SF_AS3_ENABLE_SLOTS2
             // We are allowed to update VT only in case when binding types match.
             // Otherwise we will need to add a new slot with fixed binding.
             if (new_bt != bt)
                 // Duplicate SlotInfo.
                 Add2VT(mn_name, mn_ns, si, v, bt);
             else
-#endif
             {
                 UpdateVT4IM(mn_name, mn_ns, v, bt);
 
                 UpdateVT(si, v, bt);
-
-#ifndef SF_AS3_ENABLE_SLOTS2
-                if (new_bt != bt)
-                    const_cast<SlotInfo&>(si).Bind(new_bt, si.GetAValueInd());
-#endif
             }
 
             result = true;
@@ -1256,7 +1245,12 @@ VMAbcFile* Traits::GetFilePtr() const
 
 VMAppDomain& Traits::GetAppDomain() const
 {
-    return GetVM().GetFrameAppDomain();
+    VMAbcFile* file = GetFilePtr();
+
+    if (file)
+        return file->GetAppDomain();
+
+    return GetVM().GetSystemAppDomain();
 }
 
 
@@ -1388,15 +1382,26 @@ namespace fl
 
 namespace ClassTraits
 {
-    static const ThunkInfo ti[] = {
-        {&Instances::fl::Object::AS3isPrototypeOf, &AS3::fl::BooleanTI, "isPrototypeOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {&Instances::fl::Object::AS3hasOwnProperty, &AS3::fl::BooleanTI, "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {&Instances::fl::Object::AS3propertyIsEnumerable, &AS3::fl::BooleanTI, "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
+    static const TypeInfo* tit[6] = {
+        &AS3::fl::BooleanTI, &AS3::fl::ObjectTI,
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI,
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI,
+    };
+    static const ThunkInfo ti[3] = {
+        {&Instances::fl::Object::AS3isPrototypeOf, &tit[0], "isPrototypeOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
+        {&Instances::fl::Object::AS3hasOwnProperty, &tit[2], "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
+        {&Instances::fl::Object::AS3propertyIsEnumerable, &tit[4], "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
+    };
+
+    static const TypeInfo* ft[3] = {
+        &AS3::fl::ObjectTI,
+        &AS3::fl::int_TI,
+        &AS3::fl::StringTI,
     };
     static const ThunkInfo f[3] = {
-        {TFunc_prototypeGet::Func, &AS3::fl::ObjectTI, "prototype", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_lengthGet::Func, &AS3::fl::int_TI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_prototypeGet::Func, &ft[0], "prototype", NULL, Abc::NS_Public, CT_Get, 0, 0},
+        {TFunc_lengthGet::Func, &ft[1], "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
+        {TFunc_toString::Func, &ft[2], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
     };
 
     // Classes are Dynamic Objects.
@@ -1410,10 +1415,12 @@ namespace ClassTraits
         if (GetParent() == NULL)
             RegisterSlots();
 
-        for (UInt8 i = 0; i < ci.ClassMemberNum; ++i)
+        UInt16 size = ci.GetClassMemberNum();
+        for (UInt8 i = 0; i < size; ++i)
             AddSlot(ci.ClassMember[i]);
 
-        for (UInt8 i = 0; i < ci.ClassMethodNum; ++i)
+        size = ci.GetClassMethodNum();
+        for (UInt8 i = 0; i < size; ++i)
             Add2VT(ci, ci.ClassMethod[i]);
 
         // We do not need to register interface methods here.
@@ -1424,6 +1431,7 @@ namespace ClassTraits
     Traits::Traits(VM& vm, const ClassTraits::Traits* pt)
     : AS3::Traits(vm, pt, true, false)
     {
+        SF_ASSERT(pt == NULL);
         SetConstructor(vm.GetClassClass());
         SetIsClassTraits();
 
@@ -1435,8 +1443,6 @@ namespace ClassTraits
     : AS3::Traits(vm)
     {
         SetIsClassTraits();
-//         RegisterSlots();
-//         SF_ASSERT(SlotsAreBound2Values());
     }
 
     void Traits::SetInstanceTraits(Pickable<InstanceTraits::Traits> itr)
@@ -1470,7 +1476,7 @@ namespace ClassTraits
         for (unsigned i = 0; i < NUMBEROF(ClassTraits::ti); ++i)
             Add2VT(AS3::fl::ObjectCI, ClassTraits::ti[i]);
 
-        const TypeInfo TNone = {0, "", "", NULL};
+        const TypeInfo TNone = {0, 0, 0, 0, 0, 0, "", "", NULL};
         const ClassInfo CNone = {&TNone, NULL};
 
         for (unsigned i = 0; i < NUMBEROF(ClassTraits::f); ++i)
@@ -1525,7 +1531,7 @@ namespace ClassTraits
             result.SetNull();
             break;
         case Value::kInt:
-#if 0
+#if 1
             // Not converting to Number doesn't work at the moment.
             if (!vm.IsObject(*this) && tt != Traits_SInt)
                 return false;
@@ -1537,7 +1543,7 @@ namespace ClassTraits
 #endif
             break;
         case Value::kUInt:
-#if 0
+#if 1
             // Not converting to Number doesn't work at the moment.
             if (!vm.IsObject(*this) && tt != Traits_UInt)
                 return false;
@@ -1620,9 +1626,9 @@ namespace ClassTraits
         return GetInstanceTraits().GetName();
     }
 
-    ASString Traits::GetQualifiedName(QNameFormat f) const
+    ASString Traits::GetQualifiedName(QNameFormat qnf) const
     {
-        return GetInstanceTraits().GetQualifiedName(f);
+        return GetInstanceTraits().GetQualifiedName(qnf);
     }
 } // namespace ClassTraits
 

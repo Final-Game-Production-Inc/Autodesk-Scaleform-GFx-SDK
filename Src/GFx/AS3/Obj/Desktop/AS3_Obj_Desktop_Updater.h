@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -31,6 +32,16 @@ namespace fl_desktop
     extern const TypeInfo UpdaterTI;
     extern const ClassInfo UpdaterCI;
 } // namespace fl_desktop
+namespace fl_filesystem
+{
+    extern const TypeInfo FileTI;
+    extern const ClassInfo FileCI;
+} // namespace fl_filesystem
+namespace fl
+{
+    extern const TypeInfo StringTI;
+    extern const ClassInfo StringCI;
+} // namespace fl
 
 namespace ClassTraits { namespace fl_desktop
 {
@@ -56,17 +67,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_desktop
 {
-    class Updater : public Traits
+    class Updater : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Updater"; }
 #endif
     public:
-        typedef Classes::fl_desktop::Updater ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Updater(VM& vm);
+        Updater(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

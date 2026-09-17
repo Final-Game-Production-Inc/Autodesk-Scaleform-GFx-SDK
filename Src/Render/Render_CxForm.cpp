@@ -6,6 +6,7 @@ Created     :   August 17, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -143,7 +144,111 @@ bool Cxform::operator != (const Cxform& x) const
     return !(x == *this);
 }
 
-#ifdef SF_ENABLE_SIMD
+#if (defined(SF_OS_WIIU) || defined(SF_OS_WII)) && !defined(SF_BUILD_DEBUG)
+
+void Cxform::Prepend(const Cxform& c)
+{
+    asm("psq_l      fp0, 0(r4), 0, 0");     // c0
+    asm("psq_l      fp1, 8(r4), 0, 0");
+    asm("psq_l      fp2, 16(r4), 0, 0");    // c1
+    asm("psq_l      fp3, 24(r4), 0, 0");
+
+    asm("psq_l      fp4, 0(r3), 0, 0");     // m0
+    asm("psq_l      fp5, 8(r3), 0, 0");
+    asm("psq_l      fp6, 16(r3), 0, 0");    // m1
+    asm("psq_l      fp7, 24(r3), 0, 0");
+
+    asm("ps_mul     fp0, fp0, fp4");        // m0result = m0 * c0
+    asm("ps_mul     fp1, fp1, fp5");
+    asm("ps_madd    fp4, fp4, fp2, fp6");   // m1result = m0 * c1 + m1
+    asm("ps_madd    fp5, fp5, fp3, fp7");
+
+    asm("psq_st     fp0, 0(r3), 0, 0");
+    asm("psq_st     fp1, 8(r3), 0, 0");
+    asm("psq_st     fp4, 16(r3), 0, 0");
+    asm("psq_st     fp5, 24(r3), 0, 0");
+}
+
+void Cxform::Append(const Cxform& c)
+{
+    asm("psq_l      fp0, 0(r4), 0, 0");     // c0
+    asm("psq_l      fp1, 8(r4), 0, 0");
+    asm("psq_l      fp2, 16(r4), 0, 0");    // c1
+    asm("psq_l      fp3, 24(r4), 0, 0");
+
+    asm("psq_l      fp4, 0(r3), 0, 0");     // m0
+    asm("psq_l      fp5, 8(r3), 0, 0");
+    asm("psq_l      fp6, 16(r3), 0, 0");    // m1
+    asm("psq_l      fp7, 24(r3), 0, 0");
+
+    asm("ps_mul     fp4, fp4, fp0");        // m0result = m0 * c0
+    asm("ps_mul     fp5, fp5, fp1");
+    asm("ps_madd    fp0, fp0, fp6, fp2");   // m1result = c0 * m1 + c1
+    asm("ps_madd    fp1, fp1, fp7, fp3");
+
+    asm("psq_st     fp4, 0(r3), 0, 0");
+    asm("psq_st     fp5, 8(r3), 0, 0");
+    asm("psq_st     fp0, 16(r3), 0, 0");
+    asm("psq_st     fp1, 24(r3), 0, 0");
+}
+
+void Cxform::SetToAppend(const Cxform& c0, const Cxform& c1)
+{
+    asm("psq_l      fp0, 0(r4), 0, 0");     // c00
+    asm("psq_l      fp1, 8(r4), 0, 0");
+    asm("psq_l      fp2, 16(r4), 0, 0");    // c01
+    asm("psq_l      fp3, 24(r4), 0, 0");
+
+    asm("psq_l      fp4, 0(r5), 0, 0");     // c10
+    asm("psq_l      fp5, 8(r5), 0, 0");
+    asm("psq_l      fp6, 16(r5), 0, 0");    // c11
+    asm("psq_l      fp7, 24(r5), 0, 0");
+
+    asm("ps_mul     fp0, fp0, fp4");        // m0result = c00 * c10
+    asm("ps_mul     fp1, fp1, fp5");
+    asm("ps_madd    fp4, fp4, fp2, fp6");   // m1result = c10 * c01 + c11
+    asm("ps_madd    fp5, fp5, fp3, fp7");
+
+    asm("psq_st     fp0, 0(r3), 0, 0");
+    asm("psq_st     fp1, 8(r3), 0, 0");
+    asm("psq_st     fp4, 16(r3), 0, 0");
+    asm("psq_st     fp5, 24(r3), 0, 0");
+}
+
+void Cxform::Normalize_Opt(float* invScale)
+{
+    asm("psq_l      fp0, 16(r3), 0, 0");    // m1
+    asm("psq_l      fp1, 24(r3), 0, 0");
+    asm("psq_l      fp2, 0(r4), 0, 0");     // tffinv
+
+    asm("ps_mul     fp0, fp0, fp2");
+    asm("ps_mul     fp1, fp1, fp2");
+
+    asm("psq_st     fp0, 16(r3), 0, 0");
+    asm("psq_st     fp1, 24(r3), 0, 0");
+}
+
+void Cxform::Normalize()
+{
+    float invScale[] = { 1.0f / 255.0f, 1.0f / 255.0f };
+    Normalize_Opt(invScale);
+}
+
+void Cxform::GetAsFloat2x4Aligned( float (*rows)[4] ) const
+{
+    asm("psq_l      fp0, 0(r3), 0, 0");     // m0
+    asm("psq_l      fp1, 8(r3), 0, 0");
+    asm("psq_l      fp2, 16(r3), 0, 0");    // m1
+    asm("psq_l      fp3, 24(r3), 0, 0");
+
+    asm("psq_st     fp0, 0(r4), 0, 0");     // m0
+    asm("psq_st     fp1, 8(r4), 0, 0");
+    asm("psq_st     fp2, 16(r4), 0, 0");    // m1
+    asm("psq_st     fp3, 24(r4), 0, 0");
+}
+
+#elif defined(SF_ENABLE_SIMD)
+
 void Cxform::Prepend(const Cxform& c)
 {
     using namespace SIMD;
@@ -207,7 +312,7 @@ void Cxform::GetAsFloat2x4Aligned( float (*rows)[4] ) const
     IS::StoreAligned(rows[1], m1);
 }
 
-#else 
+#else
 
 void Cxform::Prepend(const Cxform& c)
 {

@@ -25,7 +25,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 namespace Scaleform { namespace Render { namespace D3D1x { 
 
 // Used to create heirarchies in PIX captures.
-#if !defined(SF_BUILD_SHIPPING) && !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__)
+#if !defined(SF_BUILD_SHIPPING) && !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__) && !defined(SF_DURANGO_MONOLITHIC)
     typedef INT (WINAPI * LPD3DPERF_BEGINEVENT)(D3DCOLOR, LPCWSTR);
     typedef INT (WINAPI * LPD3DPERF_ENDEVENT)(void);
 #endif
@@ -39,7 +39,7 @@ public:
         pContext = pctx;
         pContext->AddRef();
 
-#if !defined(SF_BUILD_SHIPPING) && !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__)
+#if !defined(SF_BUILD_SHIPPING) && !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__) && !defined(SF_DURANGO_MONOLITHIC)
         HMODULE hdll = LoadLibrary( _T("D3D9.dll") );
         if (hdll)
         {
@@ -56,13 +56,14 @@ public:
         pContext = 0;
     }
 
-    virtual void Begin( String eventName )
+    virtual void Begin( const char* eventName )
     {
-#if !defined(SF_BUILD_SHIPPING) 
+        SF_UNUSED(eventName);
+#if !defined(SF_BUILD_SHIPPING) && !defined(SF_DURANGO_MONOLITHIC)
         // PIX events only take wide-character strings.
         wchar_t dest[256];
         size_t  chars;
-        mbstowcs_s(&chars, dest, eventName.ToCStr(), 256);
+        mbstowcs_s(&chars, dest, eventName, 256);
 
 #if !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__)
         if ( BeginEventFn )
@@ -79,11 +80,11 @@ public:
             return;
         eventPtr->BeginEvent( dest );
 #endif // __ID3DUserDefinedAnnotation_FWD_DEFINED__
-#endif // SF_BUILD_SHIPPING
+#endif // SF_BUILD_SHIPPING && && !SF_DURANGO_MONOLITHIC
     }
     void End()
     {
-#if !defined(SF_BUILD_SHIPPING) 
+#if !defined(SF_BUILD_SHIPPING) && !defined(SF_DURANGO_MONOLITHIC)
 #if !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__)
         if ( EndEventFn )
             EndEventFn();
@@ -97,10 +98,10 @@ public:
             return;
         eventPtr->EndEvent();
 #endif // __ID3DUserDefinedAnnotation_FWD_DEFINED__
-#endif // SF_BUILD_SHIPPING
+#endif // SF_BUILD_SHIPPING && !SF_DURANGO_MONOLITHIC
     }
 
-#if !defined(SF_BUILD_SHIPPING) && !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__)
+#if !defined(SF_BUILD_SHIPPING) && !defined(__ID3DUserDefinedAnnotation_FWD_DEFINED__) && !defined(SF_DURANGO_MONOLITHIC)
     static LPD3DPERF_BEGINEVENT  BeginEventFn;
     static LPD3DPERF_ENDEVENT    EndEventFn;
 #endif

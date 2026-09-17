@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -39,12 +40,6 @@ namespace Classes
     class ByteArray;
 }
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::LoaderInfo, Instances::fl_display::LoaderInfo::mid_actionScriptVersionGet, UInt32> TFunc_Instances_LoaderInfo_actionScriptVersionGet;
 typedef ThunkFunc0<Instances::fl_display::LoaderInfo, Instances::fl_display::LoaderInfo::mid_applicationDomainGet, SPtr<Instances::fl_system::ApplicationDomain> > TFunc_Instances_LoaderInfo_applicationDomainGet;
 typedef ThunkFunc0<Instances::fl_display::LoaderInfo, Instances::fl_display::LoaderInfo::mid_bytesGet, SPtr<Instances::fl_utils::ByteArray> > TFunc_Instances_LoaderInfo_bytesGet;
@@ -240,7 +235,7 @@ namespace Instances { namespace fl_display
     void LoaderInfo::parametersGet(SPtr<Instances::fl::Object>& result)
     {
 //##protect##"instance::LoaderInfo::parametersGet()"
-        SF_UNUSED1(result);
+        result = GetVM().MakeObject();
         WARN_NOT_IMPLEMENTED("LoaderInfo::parametersGet()");
 //##protect##"instance::LoaderInfo::parametersGet()"
     }
@@ -420,8 +415,17 @@ namespace Instances { namespace fl_display
         }
         else
         {
-            AppDomain = &GetVM().GetFrameAppDomain().AddNewChild(GetVM());
+            AppDomain = GetVM().GetFrameAppDomain().AddNewChild(GetVM());
         }
+    }
+
+    void LoaderInfo::VerifyAppDomain()
+    {
+        if (AppDomain->IsEmpty())
+        {
+            GetVM().RemoveAppDomain(*AppDomain);
+        }
+
     }
 
     void LoaderInfo::ForEachChild_GC(Collector* prcc, GcOp op) const
@@ -437,38 +441,65 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 LoaderInfo::tito[LoaderInfo::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 
+    // };
+    const TypeInfo* LoaderInfo::tit[25] = {
+        &AS3::fl::uintTI, 
+        &AS3::fl_system::ApplicationDomainTI, 
+        &AS3::fl_utils::ByteArrayTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl_display::LoaderTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::ObjectTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_events::EventDispatcherTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+    };
     const ThunkInfo LoaderInfo::ti[LoaderInfo::ThunkInfoNum] = {
-        {TFunc_Instances_LoaderInfo_actionScriptVersionGet::Func, &AS3::fl::uintTI, "actionScriptVersion", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_applicationDomainGet::Func, &AS3::fl_system::ApplicationDomainTI, "applicationDomain", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_bytesGet::Func, &AS3::fl_utils::ByteArrayTI, "bytes", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_bytesLoadedGet::Func, &AS3::fl::uintTI, "bytesLoaded", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_bytesTotalGet::Func, &AS3::fl::uintTI, "bytesTotal", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_childAllowsParentGet::Func, &AS3::fl::BooleanTI, "childAllowsParent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_childSandboxBridgeGet::Func, &AS3::fl::ObjectTI, "childSandboxBridge", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_childSandboxBridgeSet::Func, NULL, "childSandboxBridge", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_LoaderInfo_contentGet::Func, &AS3::fl_display::DisplayObjectTI, "content", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_contentTypeGet::Func, &AS3::fl::StringTI, "contentType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_frameRateGet::Func, &AS3::fl::NumberTI, "frameRate", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_heightGet::Func, &AS3::fl::int_TI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_loaderGet::Func, &AS3::fl_display::LoaderTI, "loader", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_loaderURLGet::Func, &AS3::fl::StringTI, "loaderURL", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_parametersGet::Func, &AS3::fl::ObjectTI, "parameters", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_parentAllowsChildGet::Func, &AS3::fl::BooleanTI, "parentAllowsChild", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_parentSandboxBridgeGet::Func, &AS3::fl::ObjectTI, "parentSandboxBridge", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_parentSandboxBridgeSet::Func, NULL, "parentSandboxBridge", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_LoaderInfo_sameDomainGet::Func, &AS3::fl::BooleanTI, "sameDomain", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_sharedEventsGet::Func, &AS3::fl_events::EventDispatcherTI, "sharedEvents", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_swfVersionGet::Func, &AS3::fl::uintTI, "swfVersion", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_urlGet::Func, &AS3::fl::StringTI, "url", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_LoaderInfo_widthGet::Func, &AS3::fl::int_TI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
+        {TFunc_Instances_LoaderInfo_actionScriptVersionGet::Func, &LoaderInfo::tit[0], "actionScriptVersion", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_applicationDomainGet::Func, &LoaderInfo::tit[1], "applicationDomain", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_bytesGet::Func, &LoaderInfo::tit[2], "bytes", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_bytesLoadedGet::Func, &LoaderInfo::tit[3], "bytesLoaded", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_bytesTotalGet::Func, &LoaderInfo::tit[4], "bytesTotal", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_childAllowsParentGet::Func, &LoaderInfo::tit[5], "childAllowsParent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_childSandboxBridgeGet::Func, &LoaderInfo::tit[6], "childSandboxBridge", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_childSandboxBridgeSet::Func, &LoaderInfo::tit[7], "childSandboxBridge", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_contentGet::Func, &LoaderInfo::tit[9], "content", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_contentTypeGet::Func, &LoaderInfo::tit[10], "contentType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_frameRateGet::Func, &LoaderInfo::tit[11], "frameRate", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_heightGet::Func, &LoaderInfo::tit[12], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_loaderGet::Func, &LoaderInfo::tit[13], "loader", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_loaderURLGet::Func, &LoaderInfo::tit[14], "loaderURL", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_parametersGet::Func, &LoaderInfo::tit[15], "parameters", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_parentAllowsChildGet::Func, &LoaderInfo::tit[16], "parentAllowsChild", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_parentSandboxBridgeGet::Func, &LoaderInfo::tit[17], "parentSandboxBridge", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_parentSandboxBridgeSet::Func, &LoaderInfo::tit[18], "parentSandboxBridge", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_sameDomainGet::Func, &LoaderInfo::tit[20], "sameDomain", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_sharedEventsGet::Func, &LoaderInfo::tit[21], "sharedEvents", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_swfVersionGet::Func, &LoaderInfo::tit[22], "swfVersion", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_urlGet::Func, &LoaderInfo::tit[23], "url", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_LoaderInfo_widthGet::Func, &LoaderInfo::tit[24], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
     };
 
     LoaderInfo::LoaderInfo(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::LoaderInfo::LoaderInfo()"
 //##protect##"InstanceTraits::LoaderInfo::LoaderInfo()"
-        SetMemSize(sizeof(Instances::fl_display::LoaderInfo));
 
     }
 
@@ -508,27 +539,36 @@ template <> const TFunc_Classes_LoaderInfo_getLoaderInfoByDefinition::TMethod TF
 
 namespace ClassTraits { namespace fl_display
 {
-    const ThunkInfo LoaderInfo::ti[LoaderInfo::ThunkInfoNum] = {
-        {TFunc_Classes_LoaderInfo_getLoaderInfoByDefinition::Func, &AS3::fl_display::LoaderInfoTI, "getLoaderInfoByDefinition", NULL, Abc::NS_Public, CT_Method, 1, 1},
+    // const UInt16 LoaderInfo::tito[LoaderInfo::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* LoaderInfo::tit[2] = {
+        &AS3::fl_display::LoaderInfoTI, &AS3::fl::ObjectTI, 
     };
-    LoaderInfo::LoaderInfo(VM& vm)
-    : Traits(vm, AS3::fl_display::LoaderInfoCI)
+    const ThunkInfo LoaderInfo::ti[LoaderInfo::ThunkInfoNum] = {
+        {TFunc_Classes_LoaderInfo_getLoaderInfoByDefinition::Func, &LoaderInfo::tit[0], "getLoaderInfoByDefinition", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+    };
+
+    LoaderInfo::LoaderInfo(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::LoaderInfo::LoaderInfo()"
 //##protect##"ClassTraits::LoaderInfo::LoaderInfo()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::LoaderInfo(vm, AS3::fl_display::LoaderInfoCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_display::LoaderInfo(*this));
 
     }
 
     Pickable<Traits> LoaderInfo::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) LoaderInfo(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) LoaderInfo(vm, AS3::fl_display::LoaderInfoCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::LoaderInfoCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -539,6 +579,11 @@ namespace fl_display
 {
     const TypeInfo LoaderInfoTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::LoaderInfo::InstanceType),
+        ClassTraits::fl_display::LoaderInfo::ThunkInfoNum,
+        0,
+        InstanceTraits::fl_display::LoaderInfo::ThunkInfoNum,
+        0,
         "LoaderInfo", "flash.display", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -546,10 +591,6 @@ namespace fl_display
     const ClassInfo LoaderInfoCI = {
         &LoaderInfoTI,
         ClassTraits::fl_display::LoaderInfo::MakeClassTraits,
-        ClassTraits::fl_display::LoaderInfo::ThunkInfoNum,
-        0,
-        InstanceTraits::fl_display::LoaderInfo::ThunkInfoNum,
-        0,
         ClassTraits::fl_display::LoaderInfo::ti,
         NULL,
         InstanceTraits::fl_display::LoaderInfo::ti,

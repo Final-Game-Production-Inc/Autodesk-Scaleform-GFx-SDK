@@ -6,6 +6,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -94,11 +95,13 @@ const char* PrimitiveFill_FormatCheck[PrimFill_Type_Count] =
     "EW",   // PrimFill_2Texture_EAlpha,           { XY, Weight1, EAlpha  }
     "U",    // PrimFill_UVTexture,                 { XY, UV }
     "UC",   // PrimFill_UVTextureAlpha_VColor,     { XY, UV, Color }
-    "UC"    // PrimFill_UVTextureDFAlpha_VColor,   { XY, UV, Color }
+    "UC",   // PrimFill_UVTextureDFAlpha_VColor,   { XY, UV, Color }
 };
 
 bool    PrimitiveFillData::CheckVertexFormat(PrimitiveFillType fill, const VertexFormat* format)
 {        
+    SF_DEBUG_ASSERT(fill < PrimFill_Type_Count, "Invalid fill type.");
+
     if (!format->HasUsage(VET_Pos))
     {
         SF_DEBUG_ERROR(1, "D3D9::ShaderManager - VertexFormat missing Pos attribute");
@@ -147,6 +150,27 @@ PrimitiveFill::~PrimitiveFill()
 {
     if (pManager)
         pManager->removeFill(this);
+}
+
+// Utility function, which determines whether the fill type is a 'solid' fill color, from the
+// point of view of setting textures and color streams.
+bool PrimitiveFill::IsSolid(PrimitiveFillType type)
+{
+    switch(type)
+    {
+    case PrimFill_None:
+    case PrimFill_Mask:
+    case PrimFill_SolidColor:
+        return true;
+    default:
+        return false;
+    }
+}
+
+// Utility function, which determines which fill types use textures.
+bool PrimitiveFill::HasTexture(PrimitiveFillType type)
+{
+    return type >= PrimFill_Texture;
 }
 
 void PrimitiveFillManager::removeFill(PrimitiveFill* fill)
@@ -463,7 +487,7 @@ static unsigned Primitive_Insert = 0;
 
 Primitive::Primitive(HAL* phal, PrimitiveFill* pfill)
 : pHAL(phal), pFill(pfill), 
-  MatricesPerMesh(pfill->GetTextureCount()+1), ModifyIndex(0)
+  MatricesPerMesh(pfill->GetTextureMatrixCount()+1), ModifyIndex(0)
 {
     Primitive_CreateCount++;
     Primitive_Total++;
@@ -907,7 +931,6 @@ bool ComplexMesh::updateFills()
 
 void MaskPrimitive::Insert(UPInt index, const HMatrix& m)
 {
-    SF_ASSERT(!IsClipped() || (MaskAreas.GetSize() == 0));
     MaskAreas.InsertAt(index, m);   
 }
 void MaskPrimitive::Remove(UPInt index, UPInt count)
@@ -924,30 +947,69 @@ void MaskPrimitive::EmitToHAL(RenderQueueItem&, RenderQueueProcessor& qp)
 }
 
 //--------------------------------------------------------------------
-// ***** FilterPrimitive
+// ***** CacheablePrimitive
+CacheablePrimitive::CacheablePrimitive(bool masksPresent) :
+    MaskPresent(masksPresent)
+{
+    SetCacheResults(Cache_Uncached, 0, 0);
+}
 
-FilterPrimitive::~FilterPrimitive()
+CacheablePrimitive::~CacheablePrimitive()
 {
     for ( unsigned i =0; i < MaximumCachedResults; ++i )
         CacheResults[i] = 0;
 }
 
-void FilterPrimitive::Insert(UPInt index, const HMatrix& m)
+void CacheablePrimitive::GetCacheResults( RenderTarget** results, unsigned count )
+{
+    for ( unsigned i =0; i < count; ++i )
+    {
+        if ( i < count )
+            results[i] = CacheResults[i];
+        else
+            results[i] = 0;
+    }
+}
+
+void CacheablePrimitive::SetCacheResults( CacheState state, RenderTarget** results, unsigned count )
+{
+    Caching = state;
+    for ( unsigned i = 0; i < MaximumCachedResults; ++i)
+    {
+        if ( i < count && results != 0)
+            CacheResults[i] = results[i];
+        else
+            CacheResults[i] = 0;
+    }
+
+    // If we become uncached, we need to make sure that we notify the derived class.
+    if (state == Cache_Uncached )
+        uncachePrimitive();
+}
+
+void CacheablePrimitive::Insert(UPInt index, const HMatrix& m)
 {
     SF_UNUSED(index);
-    SF_ASSERT(index == 0); // Currently can't batch filters, should only ever be one filter.
-    FilterArea = m;
+    //SF_DEBUG_ASSERT(index == 0, "Currently can't batch filters, should only ever be one filter.");
+    PrimitiveArea.InsertAt(index, m);   
 }
-void FilterPrimitive::Remove(UPInt index, UPInt count)
+void CacheablePrimitive::Remove(UPInt index, UPInt count)
 {
     SF_UNUSED2(index, count);
-    SF_ASSERT(index == 0 && count == 1); // Currently can't batch filters, should only ever be one filter.
-    FilterArea.Clear();
+    //SF_DEBUG_ASSERT(index == 0 && count == 1, "Currently can't batch filters, should only ever be one filter.");
+    for (UPInt i = index; i < count; ++i)
+        uncachePrimitive(i);
+
+    PrimitiveArea.RemoveMultipleAt(index, count);
 }
+
+
+//--------------------------------------------------------------------
+// ***** FilterPrimitive
 
 void FilterPrimitive::EmitToHAL(RenderQueueItem& item, RenderQueueProcessor& qp)
 {
-    // qp.GetQueueFilter() - if check if more filter modes are added.
+    // qp.GetQueueFilter() - if check if more modes are added.
     PrimitiveEmitBuffer*    emitBuffer    = (PrimitiveEmitBuffer*)qp.GetEmitItemBuffer();
     if ( !emitBuffer->IsEmitting(&item) )
     {
@@ -961,44 +1023,59 @@ void FilterPrimitive::EmitToHAL(RenderQueueItem& item, RenderQueueProcessor& qp)
 
 RenderQueueItem::QIPrepareResult FilterPrimitive::Prepare(RenderQueueItem&, RenderQueueProcessor& qp, bool)
 {
-    // NOTE: Filter preparation may change the RenderQueueProcessor's filter, which will affect 
-	// subsequent items Prepare processing.
-    qp.GetHAL()->PrepareFilters(this);
+    // Only prepare the filters, if they are actually going to be rendered.
+    // NOTE: Cacheable preparation may change the RenderQueueProcessor's filter, which will affect 
+    // subsequent items Prepare processing.
+    if (qp.GetHAL()->shouldRenderFilters(this))
+        qp.GetHAL()->PrepareCacheable(this, GetFilters() == 0);
+
     return RenderQueueItem::QIP_Done;
 }
 
-void FilterPrimitive::GetCacheResults( RenderTarget** results, unsigned count )
+// Reverts the FilterArea matrix to its uncached state. This is required, because the cached
+// matrix and uncached matrices may be different, if we are caching across filter transformations.
+void FilterPrimitive::uncachePrimitive(UPInt index)
 {
-    for ( unsigned i =0; i < count; ++i )
+    if (!PrimitiveArea[index].IsNull())
     {
-        if ( i < count )
-            results[i] = CacheResults[i];
-        else
-            results[i] = 0;
+        if(PrimitiveArea[index].HasTextureMatrix(0))
+        {
+            const Matrix2F& m = PrimitiveArea[index].GetTextureMatrix(0);
+            PrimitiveArea[index].SetMatrix2D(m);
+        }
+        Matrix2F zero;
+        zero.SetZero();
+        PrimitiveArea[index].SetTextureMatrix(zero, 1);
     }
 }
 
-void FilterPrimitive::SetCacheResults( CacheState state, RenderTarget** results, unsigned count )
-{
-    Caching = state;
-    for ( unsigned i = 0; i < MaximumCachedResults; ++i)
-    {
-        if ( i < count && results != 0)
-            CacheResults[i] = results[i];
-        else
-            CacheResults[i] = 0;
-    }
+//--------------------------------------------------------------------
+// ***** BlendPrimitive
 
-    // If we become uncached, we need to make sure the matrices know, so they will not report the
-    // transformed original matrix. The current matrix is always stored in the texture matrix slot of the HMatrix.
-    if (state == Cache_Uncached && FilterArea.HasTextureMatrix(0))
+void BlendPrimitive::EmitToHAL(RenderQueueItem& item, RenderQueueProcessor& qp)
+{
+    // qp.GetQueueFilter() - if check if more modes are added.
+    PrimitiveEmitBuffer*    emitBuffer    = (PrimitiveEmitBuffer*)qp.GetEmitItemBuffer();
+    if ( !emitBuffer->IsEmitting(&item) )
     {
-        const Matrix2F& m = FilterArea.GetTextureMatrix(0);
-        Matrix2F zero;
-        zero.SetZero();
-        FilterArea.SetMatrix2D(m);
-        FilterArea.SetTextureMatrix(zero, 1);
+        emitBuffer->StartEmitting(&item, 0);
+        if (BlendModeValue < Blend_Count)
+            qp.GetHAL()->PushBlendMode(this);
+        else
+            qp.GetHAL()->PopBlendMode();
     }
+}
+
+RenderQueueItem::QIPrepareResult BlendPrimitive::Prepare(RenderQueueItem&, RenderQueueProcessor& qp, bool)
+{
+    // NOTE: Cacheable preparation may change the RenderQueueProcessor's filter, which will affect 
+    // subsequent items Prepare processing. Note: Blend_Invalid signifies the end of a mode that required
+    // a target (Blend_Count is the end of a blend mode not requiring a target)
+    if (BlendModeValue == Blend_Invalid)
+        qp.GetHAL()->PrepareCacheable(this, true);
+    else if (BlendState::IsTargetAllocationNeededForBlendMode(BlendModeValue))
+        qp.GetHAL()->PrepareCacheable(this, false);
+    return RenderQueueItem::QIP_Done;
 }
 
 //--------------------------------------------------------------------

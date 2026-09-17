@@ -7,6 +7,7 @@ Created     :   Dec, 2010
 Authors     :   Art Bolgar, Mike Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -21,7 +22,9 @@ FxRenderThread::FxRenderThread(Scaleform::RTCommandQueue::ThreadingType ttype)
 : Platform::RenderThread(ttype),  
   LastDisplayTicks(0),
   LastDrawFrameTicks(0),
-  ProfileModes(0)
+  ProfileMode(Render::Profile_None),
+  ProfileFlags(0),
+  BatchHighlight(-1)
 {
 }
 
@@ -63,12 +66,10 @@ void FxRenderThread::drawDisplayHandle(Platform::RenderThread::DisplayHandleDesc
         if (isOverlay) 
         {
             hal->SetUserMatrix(HUDUserMatrix);
-            pDevice->SetWireframe(false);
         }
         else
         {
             hal->SetUserMatrix(UserMatrix);
-            pDevice->SetWireframe(Wireframe);
         }
 
         diplayStartTicks = Timer::GetProfileTicks();
@@ -91,11 +92,6 @@ void FxRenderThread::presentOnResize()
     updateDeviceStatus();
     if ((Status == Platform::Device_Ready) && !VConfig.HasFlag(Platform::View_FSAA))
         pDevice->PresentFrame();
-}
-
-void FxRenderThread::setFontCacheConfig(Render::GlyphCacheParams fontCacheConfig)
-{
-    pRenderer->GetGlyphCacheConfig()->SetParams(fontCacheConfig);
 }
 
 /*

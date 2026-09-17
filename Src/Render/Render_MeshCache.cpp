@@ -6,6 +6,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -49,7 +50,7 @@ MeshCacheItem*  MeshCacheItem::Create(
     MeshCacheItem* p = (MeshCacheItem*)
         SF_HEAP_ALLOC(pcache->pHeap,
                       classSize + meshCount * sizeof(MeshBase*),
-                      StatRender_MeshBatch_Mem);
+                      StatRender_MeshCacheMgmt_Mem);
     if (!p) return 0;
     
     p->Type         = type;
@@ -310,6 +311,9 @@ void MeshCacheListSet::EvictAll()
 void MeshCacheListSet::EndFrame()
 {
     SF_DEBUG_WARNING(!Slots[MCL_InFlight].IsEmpty(), "Nondisplayed, prepared meshes at end of frame");
+    if (!Slots[MCL_InFlight].IsEmpty())
+        PushListToFront(MCL_PrevFrame, MCL_InFlight);
+
     PushListToFront(MCL_LRUTail, MCL_PrevFrame);
     PushListToFront(MCL_PrevFrame, MCL_ThisFrame);
     SF_ASSERT(Slots[MCL_ThisFrame].IsEmpty());
@@ -335,8 +339,12 @@ public:
           pSourceFormat(sourceFormat),
           pSingleFormat(singleFormat),  pBatchFormat(batchFormat),
           Result(MeshResult::Fail_General),
-          pVertexDataStart(0), pIndexDataStart(0)
+          pVertexDataStart(0), pIndexDataStart(0),
+          BatchData(0)
     {        
+#ifdef SF_BUILD_DEBUG
+        VertexStoredCount = 0;
+#endif
     }
 
     const MeshResult& GetResult() const { return Result; }
@@ -365,7 +373,7 @@ public:
             pMesh->LargeMesh   = true;
 
             MeshCache::AllocResult allocState = 
-                pCache->AllocCacheItem(&batchData, &pVertexDataStart, &pIndexDataStart,
+                pCache->AllocCacheItem(&BatchData, &pVertexDataStart, &pIndexDataStart,
                                        MeshCacheItem::Mesh_Regular, mc,
                                        vertexBufferSize,
                                        fills->VertexCount, fills->IndexCount,
@@ -375,7 +383,7 @@ public:
             if (allocState == MeshCache::Alloc_Success)
             {
                 setResult(MeshResult::Success_LargeMesh);
-                pCache->MoveToCacheListFront(MCL_ThisFrame, batchData);
+                pCache->MoveToCacheListFront(MCL_ThisFrame, BatchData);
             }
             else if (allocState == MeshCache::Alloc_Fail)
             {
@@ -415,7 +423,7 @@ public:
         // We could do some error checking here to make sure the
         // entire data range was uploaded...
         if (Result.IsLargeMesh())
-            pCache->PostUpdateMesh(batchData);
+            pCache->PostUpdateMesh(BatchData);
     }
 
     virtual void SetVertices(unsigned fillIndex, unsigned vertexOffset,
@@ -436,7 +444,7 @@ public:
         else
         {
             // Do copy-conversion to mesh buffer.
-            pCache->SetLargeMeshVertices(batchData, pSourceFormat, vertexOffset, (UByte*)vertices, vertexCount, pSingleFormat, pVertexDataStart);
+            pCache->SetLargeMeshVertices(BatchData, pSourceFormat, vertexOffset, (UByte*)vertices, vertexCount, pSingleFormat, pVertexDataStart);
         }
 
 #ifdef SF_BUILD_DEBUG
@@ -465,7 +473,7 @@ public:
             memcpy(dest + indexOffset, indices, sizeof(IndexType) * indexCount);
         }
         else
-            pCache->SetLargeMeshIndices(batchData, pSourceFormat, indexOffset, indices, indexCount, pSingleFormat, (UByte*)pIndexDataStart);
+            pCache->SetLargeMeshIndices(BatchData, pSourceFormat, indexOffset, indices, indexCount, pSingleFormat, (UByte*)pIndexDataStart);
     }
 
 private:    
@@ -485,7 +493,7 @@ private:
     MeshCache::MeshResult Result;
     UByte*              pVertexDataStart;
     IndexType*          pIndexDataStart;
-    Render::MeshCacheItem* batchData;
+    Render::MeshCacheItem* BatchData;
 
 #ifdef SF_BUILD_DEBUG
     unsigned            VertexStoredCount;
@@ -510,7 +518,7 @@ bool MeshStagingBuffer::Initialize(MemoryHeap* pheap, UPInt size)
 {
     if (pBuffer && (size != BufferSize))
         Reset();
-    pBuffer = (UByte*)SF_HEAP_ALLOC(pheap, size, StatRender_Buffers_Mem);
+    pBuffer = (UByte*)SF_HEAP_ALLOC(pheap, size, StatRender_MeshStaging_Mem);
     if (!pBuffer)
         return false;
     BufferSize  = size;
@@ -648,9 +656,9 @@ bool    MeshStagingBuffer::AllocateMesh(Mesh *pmesh, UPInt vertexCount, UPInt ve
 MeshCache::StagingBufferPrep::StagingBufferPrep(MeshCache* cache,
                                                 MeshCacheItem::MeshContent &mc,
                                                 const VertexFormat* format,
-                                                bool canCopyData,
-                                                MeshCacheItem * skipBatch)
-    : pCache(cache), MC(mc)
+                                                bool canCopyData)
+
+    : pCache(cache), MC(mc), CanCopyData(canCopyData), PinMeshes(true), pVertexFormat(format)
 {
     MeshStagingBuffer& sbuffer = cache->StagingBuffer;
     const unsigned     meshCount = mc.GetMeshCount();
@@ -658,10 +666,7 @@ MeshCache::StagingBufferPrep::StagingBufferPrep(MeshCache* cache,
 
     unsigned imesh;
 
-    // With buffer data allocate, generate the meshes we need if they
-    // are not already in a staging buffer or a part of another mesh.
-
-    // b) Lock all meshes that do exist.
+    // Lock all meshes that do exist.
     for (imesh = 0; imesh < meshCount; imesh++)
     {
         Mesh* pmesh = MC[imesh];
@@ -676,26 +681,38 @@ MeshCache::StagingBufferPrep::StagingBufferPrep(MeshCache* cache,
         }
     }
 
-    // c) Generate meshes that don't exist.
-    if (canCopyData)
+    // Now generate the meshes (or determine if they are in existing copyable mesh cache items).
+    GenerateMeshes(0);
+}
+
+void MeshCache::StagingBufferPrep::GenerateMeshes(MeshCacheItem * skipBatch)
+{
+    unsigned imesh;
+    const unsigned meshCount = MC.GetMeshCount();
+    MeshStagingBuffer& sbuffer = pCache->StagingBuffer;
+
+    // If we are allowed to copy the data from another buffer (eg. on consoles, where video memory is readable),
+    // determine if this mesh has a cache item that is not the one currently being allocated.
+    if (CanCopyData)
     {
         for (imesh = 0; imesh < meshCount; imesh++)
         {
             Mesh* pmesh = MC[imesh];
 
-			// Ensure that if we aren't pinned, that we have a valid cache item to copy from. skipBatch 
-			// is intended to be the new cache item to be copied into, so we cannot copy from it, if it is the only one.
+            // Ensure that if we aren't pinned, that we have a valid cache item to copy from. skipBatch 
+            // is intended to be the new cache item to be copied into, so we cannot copy from it, if it is the only one.
             if (!PinnedFlagArray[imesh] && (pmesh->CacheItems.GetSize() == 0 || 
                 (pmesh->CacheItems.GetSize() == 1 && pmesh->CacheItems[0] == skipBatch)))
             {
                 if (!sbuffer.IsCached(pmesh))
                 {
-                    MeshResult mr = pCache->GenerateMesh(pmesh, format, 0,0, false);
+                    MeshResult mr = pCache->GenerateMesh(pmesh, pVertexFormat, 0,0, false);
                     // Any mesh that fit into a staging buffer before
                     // should fit into it now.
                     SF_ASSERT(mr.Succeded() || !mr.IsLargeMesh());
                 }
-                sbuffer.PinMesh(pmesh);
+                if (PinMeshes || pmesh->PinCount == 0)
+                    sbuffer.PinMesh(pmesh);
             }
         }
     }
@@ -708,15 +725,19 @@ MeshCache::StagingBufferPrep::StagingBufferPrep(MeshCache* cache,
                 Mesh* pmesh = MC[imesh];
                 if (!sbuffer.IsCached(pmesh))
                 {
-                    MeshResult mr = pCache->GenerateMesh(pmesh, format, 0,0, false);
+                    MeshResult mr = pCache->GenerateMesh(pmesh, pVertexFormat, 0,0, false);
                     // Any mesh that fit into a staging buffer before
                     // should fit into it now.
                     SF_ASSERT(mr.Succeded() || !mr.IsLargeMesh());
                 }
-                sbuffer.PinMesh(pmesh);
+                if (PinMeshes || pmesh->PinCount == 0)
+                    sbuffer.PinMesh(pmesh);
             }
         }
     }
+
+    // Once we have pinned the meshes once, don't do it again.
+    PinMeshes = false;
 }
 
 MeshCache::StagingBufferPrep::~StagingBufferPrep()

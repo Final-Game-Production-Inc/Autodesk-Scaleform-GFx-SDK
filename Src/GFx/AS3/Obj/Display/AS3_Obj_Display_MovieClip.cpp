@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,6 +36,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -54,6 +56,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_display::MovieClip, Instances::fl_display::MovieClip::mid_currentFrameGet, SInt32> TFunc_Instances_MovieClip_currentFrameGet;
 typedef ThunkFunc0<Instances::fl_display::MovieClip, Instances::fl_display::MovieClip::mid_currentFrameLabelGet, ASString> TFunc_Instances_MovieClip_currentFrameLabelGet;
 typedef ThunkFunc0<Instances::fl_display::MovieClip, Instances::fl_display::MovieClip::mid_currentLabelGet, ASString> TFunc_Instances_MovieClip_currentLabelGet;
@@ -168,7 +172,10 @@ namespace Instances { namespace fl_display
 
         SPtr<Instances::fl_display::Scene> scene;
         currentSceneGet(scene);
-        scene->labelsGet(result);
+        if (scene)
+            scene->labelsGet(result);
+        else
+            result = NULL;
 //##protect##"instance::MovieClip::currentLabelsGet()"
     }
     void MovieClip::currentSceneGet(SPtr<Instances::fl_display::Scene>& result)
@@ -205,7 +212,7 @@ namespace Instances { namespace fl_display
                 }
             }
         }
-        else
+        if (result == NULL)
             result = CreateFakeScene();
 //##protect##"instance::MovieClip::currentSceneGet()"
     }
@@ -933,37 +940,62 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 MovieClip::tito[MovieClip::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 15, 18, 21, 22, 23, 24, 25, 26, 
+    // };
+    const TypeInfo* MovieClip::tit[27] = {
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::ArrayTI, 
+        &AS3::fl_display::SceneTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::ArrayTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, 
+        NULL, NULL, &AS3::fl::ObjectTI, 
+        NULL, NULL, &AS3::fl::ObjectTI, 
+        NULL, 
+        NULL, 
+        NULL, 
+        NULL, 
+        NULL, 
+        NULL, 
+    };
     const ThunkInfo MovieClip::ti[MovieClip::ThunkInfoNum] = {
-        {TFunc_Instances_MovieClip_currentFrameGet::Func, &AS3::fl::int_TI, "currentFrame", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_currentFrameLabelGet::Func, &AS3::fl::StringTI, "currentFrameLabel", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_currentLabelGet::Func, &AS3::fl::StringTI, "currentLabel", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_currentLabelsGet::Func, &AS3::fl::ArrayTI, "currentLabels", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_currentSceneGet::Func, &AS3::fl_display::SceneTI, "currentScene", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_enabledGet::Func, &AS3::fl::BooleanTI, "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_enabledSet::Func, NULL, "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MovieClip_framesLoadedGet::Func, &AS3::fl::int_TI, "framesLoaded", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_scenesGet::Func, &AS3::fl::ArrayTI, "scenes", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_totalFramesGet::Func, &AS3::fl::int_TI, "totalFrames", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_trackAsMenuGet::Func, &AS3::fl::BooleanTI, "trackAsMenu", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MovieClip_trackAsMenuSet::Func, NULL, "trackAsMenu", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MovieClip_addFrameScript::Func, NULL, "addFrameScript", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_MovieClip_gotoAndPlay::Func, NULL, "gotoAndPlay", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_MovieClip_gotoAndStop::Func, NULL, "gotoAndStop", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_MovieClip_nextFrame::Func, NULL, "nextFrame", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MovieClip_nextScene::Func, NULL, "nextScene", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MovieClip_play::Func, NULL, "play", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MovieClip_prevFrame::Func, NULL, "prevFrame", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MovieClip_prevScene::Func, NULL, "prevScene", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MovieClip_stop::Func, NULL, "stop", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_MovieClip_currentFrameGet::Func, &MovieClip::tit[0], "currentFrame", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_currentFrameLabelGet::Func, &MovieClip::tit[1], "currentFrameLabel", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_currentLabelGet::Func, &MovieClip::tit[2], "currentLabel", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_currentLabelsGet::Func, &MovieClip::tit[3], "currentLabels", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_currentSceneGet::Func, &MovieClip::tit[4], "currentScene", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_enabledGet::Func, &MovieClip::tit[5], "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_enabledSet::Func, &MovieClip::tit[6], "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_framesLoadedGet::Func, &MovieClip::tit[8], "framesLoaded", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_scenesGet::Func, &MovieClip::tit[9], "scenes", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_totalFramesGet::Func, &MovieClip::tit[10], "totalFrames", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_trackAsMenuGet::Func, &MovieClip::tit[11], "trackAsMenu", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_trackAsMenuSet::Func, &MovieClip::tit[12], "trackAsMenu", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_addFrameScript::Func, &MovieClip::tit[14], "addFrameScript", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_MovieClip_gotoAndPlay::Func, &MovieClip::tit[15], "gotoAndPlay", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_gotoAndStop::Func, &MovieClip::tit[18], "gotoAndStop", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_nextFrame::Func, &MovieClip::tit[21], "nextFrame", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_nextScene::Func, &MovieClip::tit[22], "nextScene", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_play::Func, &MovieClip::tit[23], "play", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_prevFrame::Func, &MovieClip::tit[24], "prevFrame", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_prevScene::Func, &MovieClip::tit[25], "prevScene", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MovieClip_stop::Func, &MovieClip::tit[26], "stop", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     MovieClip::MovieClip(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::Sprite(vm, ci)
     {
 //##protect##"InstanceTraits::MovieClip::MovieClip()"
         SetTraitsType(Traits_MovieClip);
 //##protect##"InstanceTraits::MovieClip::MovieClip()"
-        SetMemSize(sizeof(Instances::fl_display::MovieClip));
 
     }
 
@@ -980,25 +1012,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    MovieClip::MovieClip(VM& vm)
-    : Traits(vm, AS3::fl_display::MovieClipCI)
+
+    MovieClip::MovieClip(VM& vm, const ClassInfo& ci)
+    : fl_display::Sprite(vm, ci)
     {
 //##protect##"ClassTraits::MovieClip::MovieClip()"
         SetTraitsType(Traits_MovieClip);
 //##protect##"ClassTraits::MovieClip::MovieClip()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::MovieClip(vm, AS3::fl_display::MovieClipCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> MovieClip::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) MovieClip(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) MovieClip(vm, AS3::fl_display::MovieClipCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::MovieClipCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1009,6 +1044,11 @@ namespace fl_display
 {
     const TypeInfo MovieClipTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject,
+        sizeof(ClassTraits::fl_display::MovieClip::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::MovieClip::ThunkInfoNum,
+        0,
         "MovieClip", "flash.display", &fl_display::SpriteTI,
         TypeInfo::None
     };
@@ -1016,10 +1056,6 @@ namespace fl_display
     const ClassInfo MovieClipCI = {
         &MovieClipTI,
         ClassTraits::fl_display::MovieClip::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::MovieClip::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::MovieClip::ti,

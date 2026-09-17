@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -342,20 +343,26 @@ TransformFlags TreeCacheNode::updateCulling(
         RectF bounds;
 
         Matrix3F        m3(Matrix3F::NoInit);
-        if ( HasMask() || data->HasFilter() )
+
+        bool blendNeedsM3 = (data->GetState<BlendState>() != 0 && 
+            BlendState::IsTargetAllocationNeededForBlendMode(data->GetState<BlendState>()->GetBlendMode()));
+
+        if ( HasMask() || data->HasFilter() || blendNeedsM3)
+        {
             t.GetMatrix3D(flags, &m3);
+        }
 
         // Update Mask Matrix (in effect) + do mask culling.
         if (HasMask())
         {
             Matrix2F        maskAreaMatrix;
-            MaskEffect*     maskEffect = Effects.GetMaskEffect();
+            MaskEffect*     maskEffect = Effects.GetEffectOfType<MaskEffect, State_MaskNode>();
             MaskEffectState mes;
 
             // Update MaskEffect state, including its matrix.
             if (maskEffect)
             {
-                mes = calcMaskBounds(&bounds, &maskAreaMatrix, m3, t.GetViewProj(), maskEffect->GetEffectState(), flags);
+                mes = calcMaskBounds(&bounds, &maskAreaMatrix, m3, t.GetViewProj());
                 if (maskEffect->UpdateMatrix(mes, maskAreaMatrix))
                 {
                     UpdateFlags |= Change_State_MaskNode;
@@ -364,33 +371,33 @@ TransformFlags TreeCacheNode::updateCulling(
             }
             else
             {
-                mes = calcMaskBounds(&bounds, &maskAreaMatrix, m3, t.GetViewProj(), MES_NoMask, flags);
+                mes = calcMaskBounds(&bounds, &maskAreaMatrix, m3, t.GetViewProj());
             }
 
             // Adjust cullRect.
-            if (mes != MES_NoMask)
+            // TODO: This does not work properly with orientation. Disable mask culling for oriented screens.
+            if (!is3d && pRoot && ((pRoot->GetNodeData()->VP.Flags & Viewport::View_Orientation_Mask) == 0))
             {
-                if (mes == MES_Culled)
+                if (mes != MES_NoMask)
                 {
-                    reason = MaskCulled;
-                    culled = true;
-                }
-                else
-                {   
-                    // If view cullRect became empty, we are culled.
-                    if ( !is3d )
+                    if (mes == MES_Culled)
                     {
-                        t.Mat.EncloseTransform(&bounds, bounds);
+                        reason = MaskCulled;
+                        culled = true;
                     }
                     else
-                    {
-                        // View and project matrices always come from the root (for now).
-                        TransformBounds3D(t.GetViewProj(), pRoot->GetNodeData()->VP, m3, bounds );
-                    }
+                    {   
+                        // If view cullRect became empty, we are culled.
+                        if ( !is3d )
+                        {
+                            t.Mat.EncloseTransform(&bounds, bounds);
+                        }
+                        else
+                        {
+                            // View and project matrices always come from the root (for now).
+                            TransformBounds3D(t.GetViewProj(), pRoot->GetNodeData()->VP, m3, bounds );
+                        }
 
-                    // TODO: This does not work properly with orientation. Disable mask culling for oriented screens.
-                    if (!is3d || ((pRoot->GetNodeData()->VP.Flags & Viewport::View_Orientation_Mask) == 0))
-                    {
                         if ( !cullRect->IntersectRect(cullRect, bounds))
                         {
                             culled = true;
@@ -401,44 +408,10 @@ TransformFlags TreeCacheNode::updateCulling(
             }
         }
 
-        // Update the filter's matrix as well, but only if the node's matrix is changing.
-        if (data->HasFilter() && (flags & (TF_Matrix|TF_Cxform)))
-        {
-            Matrix2F m;
-            RectF filterBounds;
-            FilterEffect*  filterEffect = Effects.GetFilterEffect();
-            if ( filterEffect )
-            {
-                FilterBoundResult result = calcFilterBounds(&filterBounds, &m, m3, t.GetViewProj(), cullRect );
-                if (result != FilterBoundResult_CompletelyClipped)
-                {
-                    // Assume we can cache across the transformation.
-                    bool requiresUpdate = false;
+        // Update cacheable object here - doing it later would cause some redundant calculations.
+        updateFilterCache(data, t, flags, cullRect, m3, is3d);
+        updateBlendCache(data, t, flags, cullRect, m3, is3d);
 
-                    // Cxform for this node is not accumulated, but is required.
-                    if (flags&TF_Cxform)
-                    {
-                        Cxform cx = t.Cx;
-                        cx.Append( data->Cx );
-                        filterEffect->UpdateCxform(cx);                        
-                    }
-
-                    if (flags&TF_Matrix)
-                    {
-                        // Force filter-uncaching when a 3D or partially clipped object has a matrix change. 
-                        // We do not decompose transformation differences across 3D matrices, or detect clipping changes,
-                        // so it's undetermined whether the filter could actually cache.
-                        requiresUpdate = filterEffect->UpdateMatrix(m, t.Mat, is3d || result == FilterBoundResult_PartiallyClipped);
-                    }
-
-                    // For now, also update the filter's bundle, causing it to be re-filtered.
-                    // We will be able to handle simple matrix changes without filtering.
-                    if (requiresUpdate)
-                        filterEffect->Update(data->GetState<FilterState>());
-                }
-            }
-        }
-        
         // Check for 'alpha' culling - ie. if an object's alpha is approximately zero.
         if ((flags & TF_CullCxform) && !culled )
         {
@@ -469,10 +442,10 @@ TransformFlags TreeCacheNode::updateCulling(
             else
             {
                 // View and project matrices always come from the root (for now).
-                Matrix3F m3(Matrix3F::NoInit);
-                t.GetMatrix3D(flags, &m3);
+                Matrix3F m3f(Matrix3F::NoInit);
+                t.GetMatrix3D(flags, &m3f);
 
-                RectF viewportBounds = TransformBounds3D(t.GetViewProj(), pRoot->GetNodeData()->VP, m3, data->AproxLocalBounds, true);
+                RectF viewportBounds = TransformBounds3D(t.GetViewProj(), pRoot->GetNodeData()->VP, m3f, data->AproxLocalBounds, true);
                 if ( !cullRect->Intersects(viewportBounds))
                 {
                     // Check whether it is in the viewspace or not.
@@ -493,6 +466,9 @@ TransformFlags TreeCacheNode::updateCulling(
     if (culled && reason == TransformCulled_3D)
         culled = false;
 
+    // If this was a 2D node, but it has a 3D child, don't cull it, as this may not be accurate.
+    if (culled && reason == TransformCulled && data->GetFlags() & NF_3DChild)
+        culled = false;
 
     // Never set culled flag on the root; you should always have the stage color.
     if (culled && (this != pRoot))
@@ -541,7 +517,7 @@ bool TreeCacheNode::calcChildMaskBounds(RectF *bounds, TreeCacheNode* child)
                
     TreeCacheNode*            maskNodeCache= child->pMask;
     const TreeNode::NodeData* maskNodeData = maskNodeCache->GetNodeData();    
-    if (!maskNodeData->IsVisible() || maskNodeData->AproxParentBounds.IsEmpty())
+    if (maskNodeData->AproxParentBounds.IsEmpty())
         return false;
 
     // Figure out if there is there any 3D in the tree (in which case we need to project the bounds into clip space).
@@ -600,40 +576,28 @@ bool TreeCacheNode::calcChildMaskBounds(RectF *bounds, TreeCacheNode* child)
     return true;
 }
 
-
-
-// Pixel-area thresholds for mask modes; multiple constans to apply hysteresis.
-const float MaskClipAreasThresholds[MES_Entry_Count] =
-{
-    23500.0f,
-    23500.0f,     
-    17000.0f, // Low threshold (if already clipped, stay so).
-    30000.0f  // High threshold (if already combinable, stay so).
-};
-
 // Assume the input RectF is in twips, and expand the bounds of the rectangle to include an extra pixel on each side.
-void SnapRectToPixels(RectF& rect)
+void SnapRectToPixels(RectF& rect, float numPixels = 0.5f)
 {
-    rect.x1 = floorf(rect.x1 - PixelsToTwips(0.5f));
-    rect.y1 = floorf(rect.y1 - PixelsToTwips(0.5f));
-    rect.x2 = ceilf(rect.x2 + PixelsToTwips(0.5f));
-    rect.y2 = ceilf(rect.y2 + PixelsToTwips(0.5f));
+    rect.x1 = floorf(rect.x1 - PixelsToTwips(numPixels));
+    rect.y1 = floorf(rect.y1 - PixelsToTwips(numPixels));
+    rect.x2 = ceilf(rect.x2 + PixelsToTwips(numPixels));
+    rect.y2 = ceilf(rect.y2 + PixelsToTwips(numPixels));
 }
 
 MaskEffectState TreeCacheNode::calcMaskBounds(RectF* maskBounds,
                                               Matrix2F* boundAreaMatrix,
                                               const Matrix3F& viewMatrix,
-                                              const Matrix4F& viewProjMatrix,
-                                              MaskEffectState oldState,
-                                              unsigned flags)
+                                              const Matrix4F& viewProjMatrix)
 {
     SF_ASSERT(HasMask());
     // TBD: Assumes mask parent is this.
     SF_ASSERT(GetMask()->GetParent() == this);
 
+    float pixelSnap = 8.0f;
     const TreeNode::NodeData* data = GetNodeData();    
     const TreeNode::NodeData* maskNodeData = GetMask()->GetNodeData();
-    if (!maskNodeData->IsVisible() || !pRoot)
+    if (!pRoot)
         return MES_NoMask;
 
     // Figure out if there is there any 3D in the tree (in which case we need to project the bounds into clip space).
@@ -669,42 +633,13 @@ MaskEffectState TreeCacheNode::calcMaskBounds(RectF* maskBounds,
         maskBounds->UnionRect(&boundsUnion, data->AproxLocalBounds);
 
         // Expand to enclose pixel (could be significant with FSAA).
-        SnapRectToPixels(boundsUnion);
+        SnapRectToPixels(boundsUnion, pixelSnap);
 
-        RectF    viewUnionBounds = viewMatrix2D.EncloseTransform(boundsUnion);
-        float    fraction        = intersect.Area() / boundsUnion.Area();
-        float    viewArea        = viewUnionBounds.Area();
-        Matrix2F boundsMatrix;
-        MaskEffectState newState;
-        float    differenceArea = viewArea * (1.0f - fraction);
-
-        // Decide mask clip/combine mode based on the pixel area difference
-        // between union and intersection. Use hysteresis thresholds to avoid
-        // extraneous mode switches. TBD: Enable clipping mode for filtered objects
-        // as the viewport combinations do not currently produce correct results.
-        if (differenceArea > MaskClipAreasThresholds[oldState] && (flags & TF_ParentFilter) == 0 )
-        {
-            newState = MES_Clipped;
-            // Matrix that maps unit rect {0,0, 1,1} to bounds.
-            // Clipped area matrix is always in viewport coordinates, meaning that the
-            // following holds: (m.Shx()== 0.0f) && (m.Shy() == 0.0f). This is necessary
-            // allow clipped mask to be fully erased in HAL by transforming a unit rectangle.
-            RectF viewClipRect;
-            viewMatrix.EncloseTransform(&viewClipRect, intersect);
-            // Expand to enclose pixel (could be significant with FSAA).
-            SnapRectToPixels(viewClipRect);
-            boundAreaMatrix->SetMatrix(viewClipRect.Width(), 0.0f, viewClipRect.x1,
-                0.0f, viewClipRect.Height(), viewClipRect.y1);
-        }
-        else
-        {
-            // Combined mask; we'll clear the whole local area.
-            newState = MES_Combinable;
-            boundAreaMatrix->SetMatrix(boundsUnion.Width(), 0.0f, boundsUnion.x1,
-                0.0f, boundsUnion.Height(), boundsUnion.y1);
-            boundAreaMatrix->Append(viewMatrix2D);
-        }
-        return newState;
+        // Combined mask; we'll clear the whole local area.
+        boundAreaMatrix->SetMatrix(boundsUnion.Width(), 0.0f, boundsUnion.x1,
+            0.0f, boundsUnion.Height(), boundsUnion.y1);
+        boundAreaMatrix->Append(viewMatrix2D);
+        return MES_Combinable;
     }
     else
     {
@@ -729,7 +664,7 @@ MaskEffectState TreeCacheNode::calcMaskBounds(RectF* maskBounds,
 
         // Expand to enclose pixel (could be significant with FSAA).
         RectF viewClipRect = *maskBounds;
-        SnapRectToPixels(viewClipRect);
+        SnapRectToPixels(viewClipRect, pixelSnap);
 
         // Save the results.
         boundAreaMatrix->SetMatrix(viewClipRect.Width(), 0.0f, viewClipRect.x1, 0.0f, viewClipRect.Height(), viewClipRect.y1);
@@ -737,12 +672,13 @@ MaskEffectState TreeCacheNode::calcMaskBounds(RectF* maskBounds,
     }
 }
 
-TreeCacheNode::FilterBoundResult TreeCacheNode::calcFilterBounds(RectF* filterBounds, Matrix2F* filterAreaMatrix, 
-                                                                 const Matrix3F& viewMatrix, const Matrix4F& viewProjMatrix, RectF* cullRect)
+TreeCacheNode::CacheableBoundResult TreeCacheNode::calcCacheableBounds(
+    RectF* returnBounds, Matrix2F* areaMatrix, const Matrix3F& viewMatrix, 
+    const Matrix4F& viewProjMatrix, RectF* cullRect)
 {
     const TreeNode::NodeData* data = GetNodeData();    
     if (!pRoot)
-        return FilterBoundResult_CompletelyClipped;
+        return CacheableBoundResult_CompletelyClipped;
 
     // Figure out if there is there any 3D in the tree (in which case we need to project the bounds into clip space).
     bool has3d = data->Is3D();
@@ -759,16 +695,14 @@ TreeCacheNode::FilterBoundResult TreeCacheNode::calcFilterBounds(RectF* filterBo
     // 2D case.
     if ( !has3d )
     {
-        // Transform filters into view space.
+        // Transform local bounds into view space.
         Matrix2F viewMatrix2D;
         viewMatrix2D.SetMatrix(viewMatrix);
-        *filterBounds = data->AproxLocalBounds;
-        // AproxLocalBounds has already been expanded in NodeData::PropagateUp, no need to do it again.
-        //TreeCacheContainer::NodeData::expandByFilterBounds(GetNode(), filterBounds, filterBounds->IsEmpty());
+        *returnBounds = data->AproxLocalBounds;
 
-        // Make sure the filter is not outside of the culling rect. If it is, we could allocate
-        // a much larger render target than is required to draw the filter.
-        viewMatrix2D.EncloseTransform(&viewClipRect, *filterBounds);
+        // Make sure the area is not outside of the culling rect. If it is, we could allocate
+        // a much larger render target than is required to draw the cacheable.
+        viewMatrix2D.EncloseTransform(&viewClipRect, *returnBounds);
     }
     else
     {
@@ -778,7 +712,7 @@ TreeCacheNode::FilterBoundResult TreeCacheNode::calcFilterBounds(RectF* filterBo
     }
 
     // If there is no cullRect, use the entire screen at a minimum. This will guard
-    // against gigantic filters that are mostly offscreen.
+    // against gigantic cacheables that are mostly offscreen.
     const Viewport & vp = pRoot->GetNodeData()->VP;
     vp.GetCullRectF(&cullRectTemp);
     if ( !cullRect )
@@ -797,7 +731,7 @@ TreeCacheNode::FilterBoundResult TreeCacheNode::calcFilterBounds(RectF* filterBo
     // filter's offset or many large blur passes, you could create an extremely large offset which 
     // would be mostly offscreen, and we don't want the renderer allocating space for this.
     RectF expandedCullRect = orientCullRect;
-    data->expandByFilterBounds(&expandedCullRect, false);
+    data->expandByFilterBounds(&expandedCullRect, false);   // TBD: could be made more generic, but if this cacheable is not a filter, just returns the input.
     reasonableCullRect = orientCullRect;
     reasonableCullRect.Expand(32.0f, 32.0f);
     expandedCullRect.IntersectRect(&expandedCullRect, reasonableCullRect );
@@ -808,7 +742,7 @@ TreeCacheNode::FilterBoundResult TreeCacheNode::calcFilterBounds(RectF* filterBo
     {
         fullyVisible = false;
         if (!reasonableCullRect.IntersectRect(&tempRect, viewClipRect))
-            return FilterBoundResult_CompletelyClipped;
+            return CacheableBoundResult_CompletelyClipped;
     }
 
     // Calculate the clip rect from the tempRect, which should be only slightly larger than the cullRect.
@@ -818,9 +752,9 @@ TreeCacheNode::FilterBoundResult TreeCacheNode::calcFilterBounds(RectF* filterBo
     viewClipRect.y2 = ceilf(tempRect.y2);
 
     // Save the results.
-    *filterBounds = viewClipRect;
-    filterAreaMatrix->SetMatrix(viewClipRect.Width(), 0.0f, viewClipRect.x1, 0.0f, viewClipRect.Height(), viewClipRect.y1);
-    return fullyVisible ? FilterBoundResult_FullyVisible : FilterBoundResult_PartiallyClipped;
+    *returnBounds = viewClipRect;
+    areaMatrix->SetMatrix(viewClipRect.Width(), 0.0f, viewClipRect.x1, 0.0f, viewClipRect.Height(), viewClipRect.y1);
+    return fullyVisible ? CacheableBoundResult_FullyVisible : CacheableBoundResult_PartiallyClipped;
 }
 
 void TreeCacheNode::UpdateBundlePattern(unsigned)
@@ -887,7 +821,8 @@ bool TreeCacheNode::CalcFilterFlag() const
     const TreeCacheNode* p = this;
     while(p->GetParent())
     {
-        if ( p->GetNodeData()->HasFilter() ) 
+        const TreeCacheNode::NodeData* nodeData = p->GetNodeData();
+        if (nodeData && nodeData->HasFilter())
             return true;
         p = p->GetParent();
     }
@@ -897,8 +832,8 @@ bool TreeCacheNode::CalcFilterFlag() const
 void TreeCacheNode::CalcCxform(Cxform& dest) const
 {
     dest = GetNodeData()->Cx;
-    const TreeCacheNode* p = this;
-    while(p->GetParent())
+    const TreeCacheNode* p = GetParent();
+    while(p)
     {
         if (p->GetNodeData()->HasFilter())
             break;
@@ -936,6 +871,75 @@ Matrix4F TreeCacheNode::GetViewProj() const
 
     SF_ASSERT(false);
     return Matrix4F::Identity;
+}
+
+void TreeCacheNode::updateFilterCache( const TreeNode::NodeData* data, const TransformArgs &t, 
+                                      TransformFlags flags, RectF* cullRect, const Matrix3F& m3, bool is3d )
+{
+    if (data->HasFilter() && (flags & (TF_Matrix|TF_Cxform|TF_ForceRecache)))
+    {
+        Matrix2F m;
+        RectF filterBounds;
+        FilterEffect*  filterEffect = Effects.GetEffectOfType<FilterEffect, State_Filter>();
+        if ( filterEffect )
+        {
+            CacheableBoundResult result = calcCacheableBounds(&filterBounds, &m, m3, t.GetViewProj(), cullRect );
+            if (result != CacheableBoundResult_CompletelyClipped)
+            {
+                // Assume we can cache across the transformation.
+                bool requiresUpdate = false;
+
+                // Cxform for this node is not accumulated, but is required.
+                if (flags&TF_Cxform)
+                {
+                    Cxform cx = t.Cx;
+                    filterEffect->UpdateCxform(cx);                        
+                }
+
+                if (flags&TF_Matrix)
+                {
+                    // Force filter-uncaching when a 3D or partially clipped object has a matrix change. 
+                    // We do not decompose transformation differences across 3D matrices, or detect clipping changes,
+                    // so it's undetermined whether the filter could actually cache.
+                    requiresUpdate = filterEffect->UpdateMatrix(m, t.Mat, is3d || result == CacheableBoundResult_PartiallyClipped);
+                }
+
+
+                // Check to see whether the update should be forced.
+                requiresUpdate |= (flags&TF_ForceRecache) != 0;
+
+                // For now, also update the filter's bundle, causing it to be re-filtered.
+                // We will be able to handle simple matrix changes without filtering.
+                if (requiresUpdate)
+                    filterEffect->Update(data->GetState<FilterState>());
+            }
+        }
+    }
+}
+
+void TreeCacheNode::updateBlendCache( const TreeNode::NodeData* data, const TransformArgs &t, TransformFlags flags, RectF* cullRect, const Matrix3F& m3, bool)
+{
+    if (data->States.GetState(State_BlendMode) != 0 && (flags & (TF_Matrix|TF_Cxform)))
+    {
+        Matrix2F m;
+        RectF blendBounds;
+        BlendModeEffect*  blendEffect = Effects.GetEffectOfType<BlendModeEffect, State_BlendMode>();
+        if ( blendEffect )
+        {
+            if (flags&TF_Matrix)
+            {
+                // TBD: we may want to support changing the bounds of the blend operation. For now, assume that the blend
+                // happens over pixel centers on top of the parent target.
+                CacheableBoundResult result = calcCacheableBounds(&blendBounds, &m, m3, t.GetViewProj(), cullRect );
+                if (result != CacheableBoundResult_CompletelyClipped)
+                {
+                    blendBounds = data->AproxLocalBounds;
+                    blendEffect->UpdateMatrix(m);
+                }
+            }
+            blendEffect->UpdateCxform(t.Cx);
+        }
+    }
 }
 
 
@@ -1038,8 +1042,25 @@ void TreeCacheContainer::UpdateTransform(const TreeNode::NodeData* pbaseData,
                 if ( filterSet && filterSet->IsContributing() )
                     accumulateCxform = false;
             }
-            childFlags = (TransformFlags)(childFlags | TF_ParentFilter);
+            childFlags = (TransformFlags)(childFlags | TF_ParentCacheable);
         }
+
+        // Do not accumulate a Cxform from a parent that has a cacheable blend mode.
+        const BlendState* blendState = pbaseData->GetState<BlendState>();
+        if ( blendState && BlendState::IsTargetAllocationNeededForBlendMode(blendState->GetBlendMode()))
+        {
+            accumulateCxform = false;
+            childFlags = (TransformFlags)(childFlags | TF_ParentCacheable);
+
+            // If we encounter a BlendMode which requires a target, but has no parent with a Layer BlendMode,
+            // then enable the fullscreen blend target for the tree root. TBD: currently, once the fullscreen
+            // target is enabled, it will never be disabled, even if all required blends are removed.
+            if (blendState->GetBlendMode() == Blend_Layer)
+                childFlags = (TransformFlags)(childFlags | TF_ParentLayerBlend);
+            else if (((flags & TF_ParentLayerBlend) == 0) && pRoot)
+                pRoot->EnableBlendTarget = true;
+        }
+
         if ( accumulateCxform )
             args.Cx.SetToAppend(pchildData->Cx, t.Cx);
         else
@@ -1450,15 +1471,16 @@ void TreeCacheContainer::BuildChildPattern(BundleEntryRange* pattern, unsigned f
         if (!prevPattern.IsEmpty() && !disableMatch)
         {
             // Don't do overlap test if we're 3D - it isn't accurate.
-            bool matchNotAllowed = ((child->GetFlags() & NF_3D) == 0) && prevRects.Intersects(bounds);
+            bool child3D = (child->GetFlags() & NF_3D) != 0;
+            bool matchAllowed = !child3D && !prevRects.Intersects(bounds);
 
             // See if new pattern is sub-pattern of the old one
-            if (!matchNotAllowed)
+            if (matchAllowed)
             {
                 match = prevPattern.Match(childPattern);
                 // TBD: Chain on match?
             }
-            else
+            else if (!child3D)
             {
                 // If pattern is one-unit long and key is identical, overlaps are ok
                 if ((prevPattern.GetLength() == 1) && (childPattern.GetLength() == 1) &&
@@ -1809,7 +1831,7 @@ void TreeCacheRoot::UpdateTreeData()
                 transformChangeFlags |= Change_Matrix;
             }
 
-            // If there are no transform changes, walk up the tree and make sure that no parent filters exist.
+            // If there are no transform changes, walk up the tree and make sure that no cacheables exist.
             // If they do, they will need to be recalculated, because presumably something changed to update the
             // node's pattern.
             if ( !transformChangeFlags )
@@ -1818,18 +1840,26 @@ void TreeCacheRoot::UpdateTreeData()
                 while ( p )
                 {
                     const TreeNode::NodeData* data = p->GetNodeData();
-                    bool filterContributes = false;
+                    // bool filterContributes = false;
                     if ( data->HasFilter() )
                     {
                         const FilterState* filterState = data->GetState<FilterState>();
                         const FilterSet* filters =  filterState ? filterState->GetFilters() : 0;
                         if ( filters && filters->IsContributing() )
                         {
-                            // Just indicate something that will cause a tree rebuild
-                            transformChangeFlags |= Change_CxForm;
-                            filterContributes = true;
+                            // Indicate movement, which will cause a tree rebuild
+                            transformChangeFlags |= TF_ForceRecache;
+                            // filterContributes = true;
                             break;
                         }
+                    }
+
+                    const BlendState* blendState = data->GetState<BlendState>();
+                    if (blendState && BlendState::IsTargetAllocationNeededForBlendMode(blendState->GetBlendMode()))
+                    {
+                        // Just indicate something that will cause a tree rebuild
+                        transformChangeFlags |= TF_ForceRecache;
+                        break;
                     }
                     p = p->GetParent();
                 }
@@ -1845,13 +1875,12 @@ void TreeCacheRoot::UpdateTreeData()
                 TransformFlags flags = (TransformFlags)
                     (transformChangeFlags | (ViewValid ? TF_NeedCull : 0));
                 bool is3d = pdata->Is3D();
-                bool hasFilter = pdata->HasFilter();
                 bool anyTransformChanged = transformChangeFlags != 0;
 
                 TransformArgs  args(ViewCullRect,
                     is3d ? Matrix2F::Identity : pdata->M2D(),
                     is3d ? pdata->M3D() : Matrix3F::Identity, 
-                    hasFilter ? Cxform::Identity : pdata->Cx);
+                    pdata->Cx);
                 args.SetViewProj(pdata, NULL);
                 flags = (TransformFlags)(flags | (is3d ? TF_Has3D : TF_Has2D));
 
@@ -1889,7 +1918,7 @@ void TreeCacheRoot::UpdateTreeData()
                     anyTransformChanged |= ((p->UpdateFlags & (Change_Matrix|Change_CxForm)) != 0);
 
                     // Record whether any parent has a (contributing) filter.
-                    bool filterContributes = false;
+                    // bool filterContributes = false;
                     if ( data->HasFilter() )
                     {
                         const FilterState* filterState = data->GetState<FilterState>();
@@ -1902,14 +1931,32 @@ void TreeCacheRoot::UpdateTreeData()
                                 p->UpdateFlags |= Update_Pattern|Change_State_Filter;
                                 p->addParentToDepthPatternUpdate();
                             }
-                            flags = (TransformFlags)(flags | TF_ParentFilter);
-                            filterContributes = true;
+                            flags = (TransformFlags)(flags | TF_ParentCacheable);
+                            // filterContributes = true;
+                        }
+                    }
+
+                    // Look for cacheable blend states, and if they exist, update parents.
+                    const BlendState* blendState = data->GetState<BlendState>();
+                    if (blendState)
+                    {
+                        if (BlendState::IsTargetAllocationNeededForBlendMode(blendState->GetBlendMode()))
+                        {
+                            if (anyTransformChanged)
+                            {
+                                p->UpdateFlags |= Update_Pattern|Change_State_BlendMode;
+                                p->addParentToDepthPatternUpdate();
+                            }
+                            flags = (TransformFlags)(flags | TF_ParentCacheable);
+
+                            if (blendState->GetBlendMode() == Blend_Layer)
+                                flags = (TransformFlags)(flags | TF_ParentLayerBlend);
                         }
                     }
 
                     // Do not accumulate a Cxform from a parent that has a contributing filter. 
                     // It is applied to the filtered results, not the child objects within the filter.
-                    if ((flags&TF_ParentFilter) == 0)
+                    if ((flags&TF_ParentCacheable) == 0)
                         args.Cx.Prepend(data->Cx);
 
                     // check for first ancestor with view / perspective
@@ -1978,6 +2025,11 @@ void TreeCacheRoot::Draw()
     if (!IsDrawn())
         return;
 
+    // Enable the fullscene blend target, if a child target blend is detected. TBD: if BeginDisplay
+    // is called externally from Draw, this flag may be getting set too late. This is abnormal use-case,
+    // but still possible.
+    pRenderer2D->GetHAL()->SetFullSceneTargetBlend(EnableBlendTarget);
+
     const TreeRoot::NodeData* data = GetNodeData();
     if ( data->HasViewport() )
         pRenderer2D->GetHAL()->BeginDisplay(data->BGColor, data->VP);
@@ -1986,7 +2038,7 @@ void TreeCacheRoot::Draw()
 
     if (data->HasViewport())
     {
-        SF_AMP_SCOPE_RENDER_TIMER("HAL::EndDisplay", Amp_Profile_Level_High);
+        SF_AMP_SCOPE_RENDER_TIMER_END_DISPLAY("HAL::EndDisplay", Amp_Profile_Level_High);
         pRenderer2D->GetHAL()->EndDisplay();
     }
 }

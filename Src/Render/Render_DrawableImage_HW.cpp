@@ -17,6 +17,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Render_DrawableImage_Queue.h"
 #include "Render/Render_HAL.h"
 #include "Render/Renderer2DImpl.h"
+#include "Kernel/SF_Alg.h"
 
 namespace Scaleform { namespace Render {
 
@@ -33,7 +34,7 @@ void DICommand_CreateTexture::ExecuteHW(DICommandContext& context) const
 void DICommand_Clear::ExecuteHW(DICommandContext& context) const
 {
     context.pHAL->applyBlendMode(Blend_OverwriteAll, true, true);
-    context.pHAL->clearSolidRectangle(RectF(pImage->GetSize()), FillColor);
+    context.pHAL->clearSolidRectangle(RectF(pImage->GetSize()), FillColor, false);
     context.pHAL->applyBlendMode(Blend_None);
 }
 
@@ -62,14 +63,14 @@ void DICommand_ApplyFilter::ExecuteHWCopyAction( DICommandContext& context, Rend
     mvp.AppendTranslation(filterRect.x1, filterRect.y1);
 
     FilterSet filters(pFilter);
-    FilterPrimitive prim(context.pHAL, &filters, false);
+    Ptr<FilterPrimitive> prim = *SF_NEW FilterPrimitive(&filters, false);
     MatrixPool& mpool = context.pR2D->GetImpl()->GetMatrixPool();
     HMatrix hm = mpool.CreateMatrix(mvp);
     hm.SetMatrix2D(mvp);
-    prim.Insert(0, hm);
+    prim->Insert(0, hm);
 
     // Push the filter primitive.
-    context.pHAL->PushFilters(&prim);
+    context.pHAL->PushFilters(prim);
 
     // Draw the original content to the centre of the filter render target.
     mvpContent = Matrix2F::Scaling(2, context.pHAL->GetViewportScaling() * 2) * Matrix2F::Translation(-0.5f, -0.5f);
@@ -84,7 +85,6 @@ void DICommand_ApplyFilter::ExecuteHWCopyAction( DICommandContext& context, Rend
 void DICommand_ColorTransform::ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const
 {
     context.pHAL->applyBlendMode(pImage->IsTransparent() ? Blend_OverwriteAll : Blend_Overwrite, true, true);
-    Matrix2F mvp = Matrix2F::Scaling(2,-2) * Matrix2F::Translation(-0.5f, -0.5f);
     Cxform cx = Cx;
 
     // If the image is not transparent, then the Cxform multiplies all components by the alpha offset + alpha multiplier.
@@ -122,9 +122,16 @@ void DICommand_Draw::ExecuteHW(DICommandContext& context) const
         wasInDisplay = true;
         context.pHAL->EndDisplay();
     }
+
+    // Must flush here, to ensure everything in the previous Display has executed.
+    context.pHAL->Flush();
+
     context.pHAL->SetDisplayPass(Display_All);
     context.pHAL->applyBlendMode(Blend_Normal, true, true);
     context.pR2D->Display(pRoot);
+    
+    // Must flush here, to ensure nothing is queued from this Display.
+    context.pHAL->Flush();
 
     // If we were in an display bracket, restart it.
     if (wasInDisplay)
@@ -133,16 +140,11 @@ void DICommand_Draw::ExecuteHW(DICommandContext& context) const
     pdicontext->AddTreeRootToKillList(pRoot);
 }
 
-static UInt32 UpperPowerOfTwo(UInt32 val)
+void DICommand_Draw::ExecuteDiscard()
 {
-	val--;
-	val |= val >> 1;
-	val |= val >> 2;
-	val |= val >> 4;
-	val |= val >> 8;
-	val |= val >> 16;
-	val++;
-	return val;
+    DrawableImageContext* pdicontext = pImage->GetContext();
+    SF_DEBUG_ASSERT(pdicontext != 0, "Internal error - DrawableImageContext should survive until after all commands are discarded.");
+    pdicontext->AddTreeRootToKillList(pRoot);
 }
 
 //---------------------------------------------------------------------------------------
@@ -184,8 +186,8 @@ void DICommand_SourceRectImpl<D>::ExecuteHW(DICommandContext& context) const
         ImageSize imageSize(destClippedRect.Width(), destClippedRect.Height());
 		if(forcePOT)
 		{
-			imageSize.SetWidth(UpperPowerOfTwo(imageSize.Width));
-			imageSize.SetHeight(UpperPowerOfTwo(imageSize.Height));
+            imageSize.SetWidth(Alg::UpperPowerOfTwo(imageSize.Width));
+			imageSize.SetHeight(Alg::UpperPowerOfTwo(imageSize.Height));
 		}
         prt = *context.pHAL->CreateTempRenderTarget(imageSize, false);
         context.pHAL->PushRenderTarget(RectF(imageSize), prt, HAL::PRT_Resolve);
@@ -213,8 +215,8 @@ void DICommand_SourceRectImpl<D>::ExecuteHW(DICommandContext& context) const
 		Size<float> imageSize = destClippedRect.GetSize();
 		if(forcePOT)
 		{
-			imageSize.SetWidth((float)UpperPowerOfTwo((UInt32)imageSize.Width));
-			imageSize.SetHeight((float)UpperPowerOfTwo((UInt32)imageSize.Height));
+            imageSize.SetWidth((float)Alg::UpperPowerOfTwo((UInt32)imageSize.Width));
+            imageSize.SetHeight((float)Alg::UpperPowerOfTwo((UInt32)imageSize.Height));
 		}
         
         mvp.AppendScaling(imageSize / prts[0]->GetSize() );
@@ -245,13 +247,17 @@ void DICommand_CopyChannel::ExecuteHWCopyAction( DICommandContext& context, Rend
 
     // Figure out the channel indices
     int destChannelIndex = 0, srcChannelIndex = 0;
+    bool valid = true;
     switch( DestChannel )
     {
     case DrawableImage::Channel_Red:   destChannelIndex = 0; break;
     case DrawableImage::Channel_Green: destChannelIndex = 1; break;
     case DrawableImage::Channel_Blue:  destChannelIndex = 2; break;
     case DrawableImage::Channel_Alpha: destChannelIndex = 3; break;
-    default: SF_DEBUG_ASSERT1(0, "DrawableImage.CopyChannel - Unexpected DestChannel value (%d)", DestChannel); break;
+    default: 
+        SF_DEBUG_WARNING1(0, "DrawableImage.CopyChannel - Unexpected DestChannel value (%d)", DestChannel);
+        valid = false;
+        break;
     }
     switch( SourceChannel )
     {
@@ -259,7 +265,10 @@ void DICommand_CopyChannel::ExecuteHWCopyAction( DICommandContext& context, Rend
     case DrawableImage::Channel_Green: srcChannelIndex = 1; break;
     case DrawableImage::Channel_Blue:  srcChannelIndex = 2; break;
     case DrawableImage::Channel_Alpha: srcChannelIndex = 3; break;
-    default: SF_DEBUG_ASSERT1(0, "DrawableImage.CopyChannel - Unexpected SourceChannel value (%d)", SourceChannel); break;
+    default: 
+        SF_DEBUG_WARNING1(0, "DrawableImage.CopyChannel - Unexpected SourceChannel value (%d)", SourceChannel);
+        valid = false;
+        break;
     }
 
     // For the original image, use the identity, and mask out the destination channel.
@@ -267,7 +276,8 @@ void DICommand_CopyChannel::ExecuteHWCopyAction( DICommandContext& context, Rend
 
     // From the source, start with zero, put the source channel into the destination channel.
     memset(cxmul[1].M, 0, sizeof(cxmul[1].M));
-    cxmul[1].M[destChannelIndex][srcChannelIndex] = 1.0f;
+    if (valid)
+        cxmul[1].M[destChannelIndex][srcChannelIndex] = 1.0f;
 
     // Do the copy.
     context.pHAL->applyBlendMode(pImage->IsTransparent() ? Blend_OverwriteAll : Blend_Overwrite, true, true);
@@ -303,7 +313,7 @@ void DICommand_FillRect::ExecuteHW(DICommandContext& context) const
     if ( !pImage->IsTransparent() )
         fill.SetAlpha(0xFF);
 
-    context.pHAL->clearSolidRectangle(ApplyRect, fill);
+    context.pHAL->clearSolidRectangle(ApplyRect, fill, false);
 }
 
 //---------------------------------------------------------------------------------------
@@ -332,6 +342,7 @@ void DICommand_Merge::ExecuteHWCopyAction( DICommandContext& context, Render::Te
     }
 
     // Do the copy.
+    context.pHAL->applyBlendMode(pImage->IsTransparent() ? Blend_OverwriteAll : Blend_Overwrite, true, true);
     context.pHAL->DrawableMerge(tex, texgen, cxmul);
 }
 
@@ -361,8 +372,8 @@ void DICommand_PaletteMap::ExecuteHWCopyAction( DICommandContext& context, Rende
 void DICommand_Scroll::ExecuteHWCopyAction( DICommandContext& context, Render::Texture**tex, const Matrix2F* texgen) const
 {
     Matrix2F mvp = Matrix2F::Scaling(2,context.pHAL->GetViewportScaling() * 2) * Matrix2F::Translation(-0.5f, -0.5f);
-    context.pHAL->DrawableCopyback(tex[0], mvp, texgen[1] );
     context.pHAL->applyBlendMode(pImage->IsTransparent() ? Blend_OverwriteAll : Blend_Overwrite, true, true);
+    context.pHAL->DrawableCopyback(tex[0], mvp, texgen[1] );
 }
 
 //---------------------------------------------------------------------------------------

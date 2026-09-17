@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_filters::ColorMatrixFilter, Instances::fl_filters::ColorMatrixFilter::mid_matrixGet, SPtr<Instances::fl::Array> > TFunc_Instances_ColorMatrixFilter_matrixGet;
 typedef ThunkFunc1<Instances::fl_filters::ColorMatrixFilter, Instances::fl_filters::ColorMatrixFilter::mid_matrixSet, const Value, Instances::fl::Array*> TFunc_Instances_ColorMatrixFilter_matrixSet;
 typedef ThunkFunc0<Instances::fl_filters::ColorMatrixFilter, Instances::fl_filters::ColorMatrixFilter::mid_clone, SPtr<Instances::fl_filters::BitmapFilter> > TFunc_Instances_ColorMatrixFilter_clone;
@@ -132,6 +127,9 @@ namespace Instances { namespace fl_filters
 //##protect##"instance$methods"
     void ColorMatrixFilter::AS3Constructor(unsigned argc, const Value* argv)
     {
+        if ( argc >= 2 )
+            return GetVM().ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, GetVM() SF_DEBUG_ARG("flash.filters::ColorMatrixFilter()") SF_DEBUG_ARG(0) SF_DEBUG_ARG(1) SF_DEBUG_ARG(argc)));
+
         if (argc > 0 && IsValidArrayObject(argv[0]))
         {
             Value result;
@@ -159,18 +157,25 @@ namespace Instances { namespace fl_filters
 
 namespace InstanceTraits { namespace fl_filters
 {
+    // const UInt16 ColorMatrixFilter::tito[ColorMatrixFilter::ThunkInfoNum] = {
+    //    0, 1, 3, 
+    // };
+    const TypeInfo* ColorMatrixFilter::tit[4] = {
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl_filters::BitmapFilterTI, 
+    };
     const ThunkInfo ColorMatrixFilter::ti[ColorMatrixFilter::ThunkInfoNum] = {
-        {TFunc_Instances_ColorMatrixFilter_matrixGet::Func, &AS3::fl::ArrayTI, "matrix", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_ColorMatrixFilter_matrixSet::Func, NULL, "matrix", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_ColorMatrixFilter_clone::Func, &AS3::fl_filters::BitmapFilterTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_ColorMatrixFilter_matrixGet::Func, &ColorMatrixFilter::tit[0], "matrix", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ColorMatrixFilter_matrixSet::Func, &ColorMatrixFilter::tit[1], "matrix", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ColorMatrixFilter_clone::Func, &ColorMatrixFilter::tit[3], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     ColorMatrixFilter::ColorMatrixFilter(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"InstanceTraits::ColorMatrixFilter::ColorMatrixFilter()"
 //##protect##"InstanceTraits::ColorMatrixFilter::ColorMatrixFilter()"
-        SetMemSize(sizeof(Instances::fl_filters::ColorMatrixFilter));
 
     }
 
@@ -187,24 +192,27 @@ namespace InstanceTraits { namespace fl_filters
 
 namespace ClassTraits { namespace fl_filters
 {
-    ColorMatrixFilter::ColorMatrixFilter(VM& vm)
-    : Traits(vm, AS3::fl_filters::ColorMatrixFilterCI)
+
+    ColorMatrixFilter::ColorMatrixFilter(VM& vm, const ClassInfo& ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"ClassTraits::ColorMatrixFilter::ColorMatrixFilter()"
 //##protect##"ClassTraits::ColorMatrixFilter::ColorMatrixFilter()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_filters::ColorMatrixFilter(vm, AS3::fl_filters::ColorMatrixFilterCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> ColorMatrixFilter::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) ColorMatrixFilter(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) ColorMatrixFilter(vm, AS3::fl_filters::ColorMatrixFilterCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_filters::ColorMatrixFilterCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -215,6 +223,11 @@ namespace fl_filters
 {
     const TypeInfo ColorMatrixFilterTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_filters::ColorMatrixFilter::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_filters::ColorMatrixFilter::ThunkInfoNum,
+        0,
         "ColorMatrixFilter", "flash.filters", &fl_filters::BitmapFilterTI,
         TypeInfo::None
     };
@@ -222,10 +235,6 @@ namespace fl_filters
     const ClassInfo ColorMatrixFilterCI = {
         &ColorMatrixFilterTI,
         ClassTraits::fl_filters::ColorMatrixFilter::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_filters::ColorMatrixFilter::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_filters::ColorMatrixFilter::ti,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,12 +33,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::SimpleButton, Instances::fl_display::SimpleButton::mid_downStateGet, SPtr<Instances::fl_display::DisplayObject> > TFunc_Instances_SimpleButton_downStateGet;
 typedef ThunkFunc1<Instances::fl_display::SimpleButton, Instances::fl_display::SimpleButton::mid_downStateSet, const Value, Instances::fl_display::DisplayObject*> TFunc_Instances_SimpleButton_downStateSet;
 typedef ThunkFunc0<Instances::fl_display::SimpleButton, Instances::fl_display::SimpleButton::mid_enabledGet, bool> TFunc_Instances_SimpleButton_enabledGet;
@@ -86,23 +81,15 @@ namespace Instances { namespace fl_display
     void SimpleButton::downStateGet(SPtr<Instances::fl_display::DisplayObject>& result)
     {
 //##protect##"instance::SimpleButton::downStateGet()"
-        SF_UNUSED1(result);
-        GFx::DisplayObject* state = GetAvmButton()->GetDownStateObject();
-        if (state)
-        {
-            Instances::fl_display::DisplayObject* ido = ToAvmDisplayObj(state)->GetAS3Obj();
-            result = ido;
-            return;
-        }
-
-        result = NULL;
+        result = DownStateObject;
 //##protect##"instance::SimpleButton::downStateGet()"
     }
     void SimpleButton::downStateSet(const Value& result, Instances::fl_display::DisplayObject* value)
     {
 //##protect##"instance::SimpleButton::downStateSet()"
-        SF_UNUSED2(result, value);
+        SF_UNUSED(result);
         GetAvmButton()->SetDownStateObject(value->pDispObj);
+        DownStateObject = value;
 //##protect##"instance::SimpleButton::downStateSet()"
     }
     void SimpleButton::enabledGet(bool& result)
@@ -124,43 +111,30 @@ namespace Instances { namespace fl_display
     void SimpleButton::hitTestStateGet(SPtr<Instances::fl_display::DisplayObject>& result)
     {
 //##protect##"instance::SimpleButton::hitTestStateGet()"
-        SF_UNUSED1(result);
-        SF_ASSERT(pDispObj);
-        GFx::DisplayObject* state = GetAvmButton()->GetHitStateObject();
-        if (state)
-        {
-            result = ToAvmDisplayObj(state)->GetAS3Obj();
-        }
-        else
-            result = NULL;
+        result = HitTestStateObject;
 //##protect##"instance::SimpleButton::hitTestStateGet()"
     }
     void SimpleButton::hitTestStateSet(const Value& result, Instances::fl_display::DisplayObject* value)
     {
 //##protect##"instance::SimpleButton::hitTestStateSet()"
-        SF_UNUSED2(result, value);
+        SF_UNUSED(result);
         GetAvmButton()->SetHitStateObject(value->pDispObj);
+        HitTestStateObject = value;
 //##protect##"instance::SimpleButton::hitTestStateSet()"
     }
     void SimpleButton::overStateGet(SPtr<Instances::fl_display::DisplayObject>& result)
     {
 //##protect##"instance::SimpleButton::overStateGet()"
         SF_UNUSED1(result);
-        SF_ASSERT(pDispObj);
-        GFx::DisplayObject* state = GetAvmButton()->GetOverStateObject();
-        if (state)
-        {
-            result = ToAvmDisplayObj(state)->GetAS3Obj();
-        }
-        else
-            result = NULL;
+        result = OverStateObject;
 //##protect##"instance::SimpleButton::overStateGet()"
     }
     void SimpleButton::overStateSet(const Value& result, Instances::fl_display::DisplayObject* value)
     {
 //##protect##"instance::SimpleButton::overStateSet()"
-        SF_UNUSED2(result, value);
+        SF_UNUSED(result);
         GetAvmButton()->SetOverStateObject(value->pDispObj);
+        OverStateObject = value;
 //##protect##"instance::SimpleButton::overStateSet()"
     }
     void SimpleButton::soundTransformGet(SPtr<Instances::fl_media::SoundTransform>& result)
@@ -200,22 +174,15 @@ namespace Instances { namespace fl_display
     void SimpleButton::upStateGet(SPtr<Instances::fl_display::DisplayObject>& result)
     {
 //##protect##"instance::SimpleButton::upStateGet()"
-        SF_UNUSED1(result);
-        SF_ASSERT(pDispObj);
-        GFx::DisplayObject* state = GetAvmButton()->GetUpStateObject();
-        if (state)
-        {
-            result = ToAvmDisplayObj(state)->GetAS3Obj();
-        }
-        else
-            result = NULL;
+        result = UpStateObject;
 //##protect##"instance::SimpleButton::upStateGet()"
     }
     void SimpleButton::upStateSet(const Value& result, Instances::fl_display::DisplayObject* value)
     {
 //##protect##"instance::SimpleButton::upStateSet()"
-        SF_UNUSED2(result, value);
+        SF_UNUSED(result);
         GetAvmButton()->SetUpStateObject(value->pDispObj);
+        UpStateObject = value;
 //##protect##"instance::SimpleButton::upStateSet()"
     }
     void SimpleButton::useHandCursorGet(bool& result)
@@ -363,32 +330,52 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 SimpleButton::tito[SimpleButton::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 
+    // };
+    const TypeInfo* SimpleButton::tit[24] = {
+        &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_media::SoundTransformTI, 
+        NULL, &AS3::fl_media::SoundTransformTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+    };
     const ThunkInfo SimpleButton::ti[SimpleButton::ThunkInfoNum] = {
-        {TFunc_Instances_SimpleButton_downStateGet::Func, &AS3::fl_display::DisplayObjectTI, "downState", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_downStateSet::Func, NULL, "downState", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_enabledGet::Func, &AS3::fl::BooleanTI, "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_enabledSet::Func, NULL, "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_hitTestStateGet::Func, &AS3::fl_display::DisplayObjectTI, "hitTestState", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_hitTestStateSet::Func, NULL, "hitTestState", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_overStateGet::Func, &AS3::fl_display::DisplayObjectTI, "overState", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_overStateSet::Func, NULL, "overState", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_soundTransformGet::Func, &AS3::fl_media::SoundTransformTI, "soundTransform", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_soundTransformSet::Func, NULL, "soundTransform", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_trackAsMenuGet::Func, &AS3::fl::BooleanTI, "trackAsMenu", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_trackAsMenuSet::Func, NULL, "trackAsMenu", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_upStateGet::Func, &AS3::fl_display::DisplayObjectTI, "upState", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_upStateSet::Func, NULL, "upState", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SimpleButton_useHandCursorGet::Func, &AS3::fl::BooleanTI, "useHandCursor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SimpleButton_useHandCursorSet::Func, NULL, "useHandCursor", NULL, Abc::NS_Public, CT_Set, 1, 1},
+        {TFunc_Instances_SimpleButton_downStateGet::Func, &SimpleButton::tit[0], "downState", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_downStateSet::Func, &SimpleButton::tit[1], "downState", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_enabledGet::Func, &SimpleButton::tit[3], "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_enabledSet::Func, &SimpleButton::tit[4], "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_hitTestStateGet::Func, &SimpleButton::tit[6], "hitTestState", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_hitTestStateSet::Func, &SimpleButton::tit[7], "hitTestState", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_overStateGet::Func, &SimpleButton::tit[9], "overState", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_overStateSet::Func, &SimpleButton::tit[10], "overState", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_soundTransformGet::Func, &SimpleButton::tit[12], "soundTransform", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_soundTransformSet::Func, &SimpleButton::tit[13], "soundTransform", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_trackAsMenuGet::Func, &SimpleButton::tit[15], "trackAsMenu", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_trackAsMenuSet::Func, &SimpleButton::tit[16], "trackAsMenu", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_upStateGet::Func, &SimpleButton::tit[18], "upState", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_upStateSet::Func, &SimpleButton::tit[19], "upState", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_useHandCursorGet::Func, &SimpleButton::tit[21], "useHandCursor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SimpleButton_useHandCursorSet::Func, &SimpleButton::tit[22], "useHandCursor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
     };
 
     SimpleButton::SimpleButton(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::InteractiveObject(vm, ci)
     {
 //##protect##"InstanceTraits::SimpleButton::SimpleButton()"
         SetTraitsType(Traits_SimpleButton);
 //##protect##"InstanceTraits::SimpleButton::SimpleButton()"
-        SetMemSize(sizeof(Instances::fl_display::SimpleButton));
 
     }
 
@@ -405,25 +392,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    SimpleButton::SimpleButton(VM& vm)
-    : Traits(vm, AS3::fl_display::SimpleButtonCI)
+
+    SimpleButton::SimpleButton(VM& vm, const ClassInfo& ci)
+    : fl_display::InteractiveObject(vm, ci)
     {
 //##protect##"ClassTraits::SimpleButton::SimpleButton()"
         SetTraitsType(Traits_SimpleButton);
 //##protect##"ClassTraits::SimpleButton::SimpleButton()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::SimpleButton(vm, AS3::fl_display::SimpleButtonCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> SimpleButton::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) SimpleButton(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) SimpleButton(vm, AS3::fl_display::SimpleButtonCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::SimpleButtonCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -434,6 +424,11 @@ namespace fl_display
 {
     const TypeInfo SimpleButtonTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::SimpleButton::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::SimpleButton::ThunkInfoNum,
+        0,
         "SimpleButton", "flash.display", &fl_display::InteractiveObjectTI,
         TypeInfo::None
     };
@@ -441,10 +436,6 @@ namespace fl_display
     const ClassInfo SimpleButtonCI = {
         &SimpleButtonTI,
         ClassTraits::fl_display::SimpleButton::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::SimpleButton::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::SimpleButton::ti,

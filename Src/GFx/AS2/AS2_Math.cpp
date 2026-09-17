@@ -6,6 +6,7 @@ Created     :   January 6, 2009
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -93,14 +94,14 @@ MathCtorFunction::MathCtorFunction(ASStringContext *psc)
 :   CFunctionObject(psc, GlobalCtor)
 {
     // constant
-    this->SetConstMemberRaw(psc, "E",       (Number)2.7182818284590452354    );
-    this->SetConstMemberRaw(psc, "LN2",     (Number)0.69314718055994530942   );
-    this->SetConstMemberRaw(psc, "LOG2E",   (Number)1.4426950408889634074    );
-    this->SetConstMemberRaw(psc, "LN10",    (Number)2.30258509299404568402   );
-    this->SetConstMemberRaw(psc, "LOG10E",  (Number)0.43429448190325182765   );
-    this->SetConstMemberRaw(psc, "PI",      (Number)3.14159265358979323846   );
-    this->SetConstMemberRaw(psc, "SQRT1_2", (Number)0.7071067811865475244    );
-    this->SetConstMemberRaw(psc, "SQRT2",   (Number)1.4142135623730950488    );
+    this->SetConstMemberRaw(psc, "E",       (Double)2.7182818284590452354    );
+    this->SetConstMemberRaw(psc, "LN2",     (Double)0.69314718055994530942   );
+    this->SetConstMemberRaw(psc, "LOG2E",   (Double)1.4426950408889634074    );
+    this->SetConstMemberRaw(psc, "LN10",    (Double)2.30258509299404568402   );
+    this->SetConstMemberRaw(psc, "LOG10E",  (Double)0.43429448190325182765   );
+    this->SetConstMemberRaw(psc, "PI",      (Double)3.14159265358979323846   );
+    this->SetConstMemberRaw(psc, "SQRT1_2", (Double)0.7071067811865475244    );
+    this->SetConstMemberRaw(psc, "SQRT2",   (Double)1.4142135623730950488    );
 
     NameFunction::AddConstMembers(
         this, psc, StaticFunctionTable, 
@@ -110,11 +111,7 @@ MathCtorFunction::MathCtorFunction(ASStringContext *psc)
 void MathCtorFunction::Random(const FnCall& fn)
 {
     // Random number between 0 and 1.
-#ifdef SF_NO_DOUBLE
-    fn.Result->SetNumber((Math::GetNextRandom(fn.Env->GetMovieImpl()) & 0x7FFFFF) / float(UInt32(0x7FFFFF)));
-#else
     fn.Result->SetNumber(Math::GetNextRandom(fn.Env->GetMovieImpl())/ double(UInt32(0xFFFFFFFF)));
-#endif
 }
 
 void MathCtorFunction::Round(const FnCall& fn)

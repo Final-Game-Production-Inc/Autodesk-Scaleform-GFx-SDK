@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,15 +36,18 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "AS3_Obj_Events_FocusEvent.h"
 #include "AS3_Obj_Events_IOErrorEvent.h"
 #include "../Events/AS3_Obj_Events_NetStatusEvent.h"
-#include "../Gfx/AS3_Obj_Gfx_MouseEventEx.h"
-#include "../Gfx/AS3_Obj_Gfx_KeyboardEventEx.h"
-#include "../Gfx/AS3_Obj_Gfx_FocusEventEx.h"
-#include "../Gfx/AS3_Obj_Gfx_GamePadAnalogEvent.h"
-#include "../Gfx/AS3_Obj_Gfx_MouseCursorEvent.h"
+#include "../GFx/AS3_Obj_Gfx_MouseEventEx.h"
+#include "../GFx/AS3_Obj_Gfx_KeyboardEventEx.h"
+#include "../GFx/AS3_Obj_Gfx_FocusEventEx.h"
+#include "../GFx/AS3_Obj_Gfx_GamePadAnalogEvent.h"
+#include "../GFx/AS3_Obj_Gfx_MouseCursorEvent.h"
 #ifdef GFX_ENABLE_MOBILE_APP_SUPPORT
 #include "AS3_Obj_Events_AppLifecycleEvent.h"
 #include "AS3_Obj_Events_StageOrientationEvent.h"
 #endif
+#include "AS3_Obj_Events_StatusEvent.h"
+#include "AS3_Obj_Events_AccelerometerEvent.h"
+#include "AS3_Obj_Events_GeolocationEvent.h"
 //##protect##"includes"
 
 
@@ -52,12 +56,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc5<Instances::fl_events::EventDispatcher, Instances::fl_events::EventDispatcher::mid_addEventListener, const Value, const ASString&, const Value&, bool, SInt32, bool> TFunc_Instances_EventDispatcher_addEventListener;
 typedef ThunkFunc1<Instances::fl_events::EventDispatcher, Instances::fl_events::EventDispatcher::mid_dispatchEvent, bool, Instances::fl_events::Event*> TFunc_Instances_EventDispatcher_dispatchEvent;
 typedef ThunkFunc1<Instances::fl_events::EventDispatcher, Instances::fl_events::EventDispatcher::mid_hasEventListener, bool, const ASString&> TFunc_Instances_EventDispatcher_hasEventListener;
@@ -225,7 +223,6 @@ namespace Instances { namespace fl_events
                             ++pImpl->ButtonHandlersCnt;
                     }
                 }
-
             }
             plistenersArr->InsertAt(i, Listener(priority, listener));
             if (useWeakReference)
@@ -258,18 +255,18 @@ namespace Instances { namespace fl_events
             {
                 // need to call AS3 clone()
                 Value _this(event);
-                Value result;
+                Value resultValue;
                 Value cloneMethod;
                 Multiname cloneMethodName(GetVM().GetPublicNamespace(), GetVM().GetStringManager().CreateConstString("clone"));
                 if (event->GetProperty(cloneMethodName, cloneMethod))
                 {
-                    GetVM().ExecuteUnsafe(cloneMethod, _this, result, 0, NULL);
+                    GetVM().ExecuteUnsafe(cloneMethod, _this, resultValue, 0, NULL);
                     if (GetVM().IsException())
                         return;
                     ASVM& vm = static_cast<ASVM&>(GetVM());
-                    if (result.IsObject() && GetVM().IsOfType(result, vm.EventClass->GetClassTraits()))
+                    if (resultValue.IsObject() && GetVM().IsOfType(resultValue, vm.EventClass->GetClassTraits()))
                     {
-                        newEvent = static_cast<Instances::fl_events::Event*>(result.GetObject());
+                        newEvent = static_cast<Instances::fl_events::Event*>(resultValue.GetObject());
                     }
                 }
                 else // no clone method found, weird? (!AB)
@@ -499,6 +496,7 @@ namespace Instances { namespace fl_events
     }
 
 #endif
+
     SPtr<Instances::fl_events::NetStatusEvent> EventDispatcher::CreateNetStatusEvent(const ASString& code, const ASString& level)
     {
         Classes::fl_events::EventDispatcher& evtDispClass = 
@@ -693,6 +691,22 @@ namespace Instances { namespace fl_events
                 break;
             }
 #endif
+		case EventId::Event_AccelerometerUpdate:
+            {
+                ev = evtDispClass.CreateAccelerometerEventObject(evtId, vm.GetBuiltin(AS3Builtin_update), this).GetPtr();
+                break;
+            }
+
+		case EventId::Event_GeolocationUpdate:
+            {
+                ev = evtDispClass.CreateGeolocationEventObject(evtId, vm.GetBuiltin(AS3Builtin_update), this).GetPtr();
+                break;
+            }
+		case EventId::Event_Status:
+            {
+                ev = evtDispClass.CreateStatusEventObject(evtId, vm.GetBuiltin(AS3Builtin_status), this).GetPtr();
+                break;
+            }
 
         default: 
             return true;
@@ -1133,20 +1147,29 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 EventDispatcher::tito[EventDispatcher::ThunkInfoNum] = {
+    //    0, 6, 8, 10, 14, 
+    // };
+    const TypeInfo* EventDispatcher::tit[16] = {
+        NULL, &AS3::fl::StringTI, NULL, &AS3::fl::BooleanTI, &AS3::fl::int_TI, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_events::EventTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+    };
     const ThunkInfo EventDispatcher::ti[EventDispatcher::ThunkInfoNum] = {
-        {TFunc_Instances_EventDispatcher_addEventListener::Func, NULL, "addEventListener", NULL, Abc::NS_Public, CT_Method, 2, 5},
-        {TFunc_Instances_EventDispatcher_dispatchEvent::Func, &AS3::fl::BooleanTI, "dispatchEvent", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_EventDispatcher_hasEventListener::Func, &AS3::fl::BooleanTI, "hasEventListener", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_EventDispatcher_removeEventListener::Func, NULL, "removeEventListener", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_EventDispatcher_willTrigger::Func, &AS3::fl::BooleanTI, "willTrigger", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_EventDispatcher_addEventListener::Func, &EventDispatcher::tit[0], "addEventListener", NULL, Abc::NS_Public, CT_Method, 2, 5, 0, 0, NULL},
+        {TFunc_Instances_EventDispatcher_dispatchEvent::Func, &EventDispatcher::tit[6], "dispatchEvent", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_EventDispatcher_hasEventListener::Func, &EventDispatcher::tit[8], "hasEventListener", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_EventDispatcher_removeEventListener::Func, &EventDispatcher::tit[10], "removeEventListener", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_EventDispatcher_willTrigger::Func, &EventDispatcher::tit[14], "willTrigger", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     EventDispatcher::EventDispatcher(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::EventDispatcher::EventDispatcher()"
 //##protect##"InstanceTraits::EventDispatcher::EventDispatcher()"
-        SetMemSize(sizeof(Instances::fl_events::EventDispatcher));
 
     }
 
@@ -1218,6 +1241,7 @@ namespace Classes { namespace fl_events
     }
 
 #endif
+
     SPtr<Instances::fl_events::MouseEvent>  EventDispatcher::CreateMouseEventObject(
         const GFx::EventId& evtId, const ASString& type, Instances::fl::Object* target)
     {
@@ -1313,6 +1337,70 @@ namespace Classes { namespace fl_events
         return evt;
     }
 #endif
+
+	SPtr<Instances::fl_events::StatusEvent> EventDispatcher::CreateStatusEventObject(
+		const GFx::EventId& evtId, const ASString& type, Instances::fl::Object* target)
+	{
+		SPtr<Instances::fl_events::StatusEvent> evt;
+		const GFx::StatusEventId& seid = static_cast<const GFx::StatusEventId&>(evtId);
+		Value v(type);
+        ASVM& asvm = static_cast<ASVM&>(GetVM());
+        asvm.ConstructInstance(evt, asvm.StatusEventClass, 1, &v);
+		SF_ASSERT(evt);
+		evt->Target = target;
+        evt->Bubbles = true;
+        evt->Cancelable = false;
+		evt->Code = seid.Code->ToCStr();
+		evt->Level = seid.Level->ToCStr();
+        SF_ASSERT(evt);
+        return evt;
+	}
+
+	SPtr<Instances::fl_events::AccelerometerEvent> EventDispatcher::CreateAccelerometerEventObject(
+		const GFx::EventId& evtId, const ASString& type, Instances::fl::Object* target)
+	{
+		SPtr<Instances::fl_events::AccelerometerEvent> evt;
+		const GFx::AccelerometerEventId& aeid = static_cast<const GFx::AccelerometerEventId&>(evtId);
+		Value v(type);
+        ASVM& asvm = static_cast<ASVM&>(GetVM());
+        asvm.ConstructInstance(evt, asvm.AccelerometerEventClass, 1, &v);
+		SF_ASSERT(evt);
+		evt->Target = target;
+        evt->Bubbles = true;
+        evt->Cancelable = false;
+		evt->timestamp = aeid.Timestamp;
+		//SF_DEBUG_MESSAGE3(1, "x=%G\ty=%G\tz=%G\t\n", aeid.AccelerationX, aeid.AccelerationY, aeid.AccelerationZ);
+		evt->accelerationX = MakeValueNumber(aeid.AccelerationX);
+		evt->accelerationY = MakeValueNumber(aeid.AccelerationY);
+		evt->accelerationZ = MakeValueNumber(aeid.AccelerationZ);
+        SF_ASSERT(evt);
+        return evt;
+	}
+
+SPtr<Instances::fl_events::GeolocationEvent> EventDispatcher::CreateGeolocationEventObject(
+		const GFx::EventId& evtId, const ASString& type, Instances::fl::Object* target)
+	{
+		SPtr<Instances::fl_events::GeolocationEvent> evt;
+		const GFx::GeolocationEventId& geid = static_cast<const GFx::GeolocationEventId&>(evtId);
+		Value v(type);
+        ASVM& asvm = static_cast<ASVM&>(GetVM());
+        asvm.ConstructInstance(evt, asvm.GeolocationEventClass, 1, &v);
+		SF_ASSERT(evt);
+		evt->Target = target;
+        evt->Bubbles = true;
+        evt->Cancelable = false;
+		evt->latitude = geid.Latitude;
+		evt->longitude = geid.Longitude;
+		evt->altitude = geid.Altitude;
+		evt->hAccuracy = geid.HAccuracy;
+		evt->vAccuracy = geid.VAccuracy;
+		evt->speed = geid.Speed;
+		evt->heading = geid.Heading;
+		evt->timestamp = geid.Timestamp;
+        SF_ASSERT(evt);
+        return evt;
+	}
+
 #ifdef GFX_MULTITOUCH_SUPPORT_ENABLE
     SPtr<Instances::fl_events::TouchEvent>  EventDispatcher::CreateTouchEventObject(
         const GFx::EventId& evtId, const ASString& type, Instances::fl::Object* target)
@@ -1527,24 +1615,27 @@ namespace Classes { namespace fl_events
 
 namespace ClassTraits { namespace fl_events
 {
-    EventDispatcher::EventDispatcher(VM& vm)
-    : Traits(vm, AS3::fl_events::EventDispatcherCI)
+
+    EventDispatcher::EventDispatcher(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::EventDispatcher::EventDispatcher()"
 //##protect##"ClassTraits::EventDispatcher::EventDispatcher()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::EventDispatcher(vm, AS3::fl_events::EventDispatcherCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::EventDispatcher(*this));
 
     }
 
     Pickable<Traits> EventDispatcher::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) EventDispatcher(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) EventDispatcher(vm, AS3::fl_events::EventDispatcherCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::EventDispatcherCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1560,6 +1651,11 @@ namespace fl_events
 
     const TypeInfo EventDispatcherTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::EventDispatcher::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_events::EventDispatcher::ThunkInfoNum,
+        0,
         "EventDispatcher", "flash.events", &fl::ObjectTI,
         EventDispatcherImplements
     };
@@ -1567,10 +1663,6 @@ namespace fl_events
     const ClassInfo EventDispatcherCI = {
         &EventDispatcherTI,
         ClassTraits::fl_events::EventDispatcher::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_events::EventDispatcher::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_events::EventDispatcher::ti,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Artem Bolgar, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -21,6 +22,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "../AS3_Obj_Object.h"
 //##protect##"includes"
 #include "GFx/GFx_DrawingContext.h"
+#include "../Vec/AS3_Obj_Vec_Vector_int.h"
+#include "../Vec/AS3_Obj_Vec_Vector_double.h"
+#include "../Vec/AS3_Obj_Vec_Vector_object.h"
 #include "GFx/GFx_DisplayObject.h"
 //##protect##"includes"
 
@@ -32,7 +36,36 @@ namespace fl_display
 {
     extern const TypeInfo GraphicsTI;
     extern const ClassInfo GraphicsCI;
+    extern const TypeInfo BitmapDataTI;
+    extern const ClassInfo BitmapDataCI;
 } // namespace fl_display
+namespace fl_geom
+{
+    extern const TypeInfo MatrixTI;
+    extern const ClassInfo MatrixCI;
+} // namespace fl_geom
+namespace fl
+{
+    extern const TypeInfo BooleanTI;
+    extern const ClassInfo BooleanCI;
+    extern const TypeInfo uintTI;
+    extern const ClassInfo uintCI;
+    extern const TypeInfo NumberTI;
+    extern const ClassInfo NumberCI;
+    extern const TypeInfo StringTI;
+    extern const ClassInfo StringCI;
+    extern const TypeInfo ArrayTI;
+    extern const ClassInfo ArrayCI;
+} // namespace fl
+namespace fl_vec
+{
+    extern const TypeInfo Vector_objectTI;
+    extern const ClassInfo Vector_objectCI;
+    extern const TypeInfo Vector_intTI;
+    extern const ClassInfo Vector_intCI;
+    extern const TypeInfo Vector_doubleTI;
+    extern const ClassInfo Vector_doubleCI;
+} // namespace fl_vec
 
 namespace ClassTraits { namespace fl_display
 {
@@ -90,9 +123,14 @@ namespace Instances { namespace fl_display
         Graphics(InstanceTraits::Traits& t);
 
 //##protect##"instance$methods"
+        virtual void AS3Constructor(unsigned argc, const Value* argv);
         void AcquirePath(bool newShapeFlag);
         void CreateGradientHelper(unsigned argc, const Value* const argv, Render::ComplexFill* complexFill);
-//##protect##"instance$methods"
+    public:
+        static void FillGradientData( Instances::fl::Array* colors, Instances::fl::Array* alphas, Instances::fl::Array* ratios, GradientData* gradientData );
+    protected:
+
+        //##protect##"instance$methods"
 
     public:
         // AS3 API methods.
@@ -104,6 +142,8 @@ namespace Instances { namespace fl_display
             mid_curveTo, 
             mid_drawCircle, 
             mid_drawEllipse, 
+            mid_drawGraphicsData, 
+            mid_drawPath, 
             mid_drawRect, 
             mid_drawRoundRect, 
             mid_drawRoundRectComplex, 
@@ -120,6 +160,8 @@ namespace Instances { namespace fl_display
         void curveTo(const Value& result, Value::Number controlX, Value::Number controlY, Value::Number anchorX, Value::Number anchorY);
         void drawCircle(const Value& result, Value::Number x, Value::Number y, Value::Number radius);
         void drawEllipse(const Value& result, Value::Number x, Value::Number y, Value::Number width, Value::Number height);
+        void drawGraphicsData(const Value& result, Instances::fl_vec::Vector_object* graphicsData);
+        void drawPath(const Value& result, Instances::fl_vec::Vector_int* commands, Instances::fl_vec::Vector_double* data, const ASString& winding);
         void drawRect(const Value& result, Value::Number x, Value::Number y, Value::Number width, Value::Number height);
         void drawRoundRect(const Value& result, Value::Number x, Value::Number y, Value::Number width, Value::Number height, Value::Number ellipseWidth, Value::Number ellipseHeight = NumberUtil::NaN());
         void drawRoundRectComplex(Value& result, unsigned argc, const Value* const argv);
@@ -154,6 +196,14 @@ namespace Instances { namespace fl_display
         {
             drawEllipse(Value::GetUndefined(), x, y, width, height);
         }
+        void drawGraphicsData(Instances::fl_vec::Vector_object* graphicsData)
+        {
+            drawGraphicsData(Value::GetUndefined(), graphicsData);
+        }
+        void drawPath(Instances::fl_vec::Vector_int* commands, Instances::fl_vec::Vector_double* data, const ASString& winding)
+        {
+            drawPath(Value::GetUndefined(), commands, data, winding);
+        }
         void drawRect(Value::Number x, Value::Number y, Value::Number width, Value::Number height)
         {
             drawRect(Value::GetUndefined(), x, y, width, height);
@@ -186,7 +236,7 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
-    class Graphics : public CTraits
+    class Graphics : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -210,8 +260,11 @@ namespace InstanceTraits { namespace fl_display
 
         virtual void MakeObject(Value& result, Traits& t);
 
-        enum { ThunkInfoNum = 15 };
+        enum { ThunkInfoNum = 17 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[84];
+        static const Abc::ConstValue dva[19];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -224,17 +277,19 @@ namespace InstanceTraits { namespace fl_display
     
 namespace ClassTraits { namespace fl_display
 {
-    class Graphics : public Traits
+    class Graphics : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Graphics"; }
 #endif
     public:
-        typedef Classes::fl_display::Graphics ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::Graphics InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Graphics(VM& vm);
+        Graphics(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

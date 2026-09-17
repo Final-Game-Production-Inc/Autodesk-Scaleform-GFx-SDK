@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -40,6 +41,8 @@ namespace fl
     extern const ClassInfo BooleanCI;
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
+    extern const TypeInfo StringTI;
+    extern const ClassInfo StringCI;
     extern const TypeInfo ArrayTI;
     extern const ClassInfo ArrayCI;
 } // namespace fl
@@ -48,6 +51,11 @@ namespace fl_text
     extern const TypeInfo TextSnapshotTI;
     extern const ClassInfo TextSnapshotCI;
 } // namespace fl_text
+namespace fl_geom
+{
+    extern const TypeInfo PointTI;
+    extern const ClassInfo PointCI;
+} // namespace fl_geom
 
 namespace ClassTraits { namespace fl_display
 {
@@ -229,7 +237,7 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
-    class DisplayObjectContainer : public CTraits
+    class DisplayObjectContainer : public fl_display::InteractiveObject
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -255,6 +263,9 @@ namespace InstanceTraits { namespace fl_display
 
         enum { ThunkInfoNum = 20 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[40];
+        static const Abc::ConstValue dva[1];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -267,17 +278,19 @@ namespace InstanceTraits { namespace fl_display
     
 namespace ClassTraits { namespace fl_display
 {
-    class DisplayObjectContainer : public Traits
+    class DisplayObjectContainer : public fl_display::InteractiveObject
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::DisplayObjectContainer"; }
 #endif
     public:
-        typedef Classes::fl_display::DisplayObjectContainer ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::DisplayObjectContainer InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        DisplayObjectContainer(VM& vm);
+        DisplayObjectContainer(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

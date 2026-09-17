@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -361,6 +362,40 @@ void AvmDisplayObj::FireEvent(const EventId& id)
 // (using addChild/addChildAt)
 void AvmDisplayObj::OnAdded(bool byTimeline)
 {
+    // If noInvisibleAdvance flag set, need to check if the branch is visible
+    // or not and use this info to propagate noInvAdv flag down to the branch
+    // being attached.
+    MovieImpl* m = pDispObj->GetMovieImpl();
+    if (m->IsNoInvisibleAdvanceFlagSet())
+    {
+        // go up the parents and look for first invisible obj
+        bool vis = pDispObj->GetVisible();
+        if (vis)
+        {
+            DisplayObject* cur = pDispObj;
+            for(; cur ; cur = cur->GetParent())
+            {
+                if (!cur->GetVisible())
+                {
+                    vis = false;
+                    break;
+                }
+            }
+        }
+        // propagate noInvAdv flag
+        InteractiveObject* pi = pDispObj->CharToInteractiveObject();
+        if (pi)
+        {
+            bool noAdvGlob = !vis && m->IsNoInvisibleAdvanceFlagSet();
+            if (noAdvGlob != pi->IsNoAdvanceGlobalFlagSet())
+            {
+                pi->SetNoAdvanceGlobalFlag(noAdvGlob);
+                pi->ModifyOptimizedPlayList();
+                pi->PropagateNoAdvanceGlobalFlag();
+            }
+        }
+    }
+
     const ASString& evtName = GetAS3Root()->GetBuiltinsMgr().GetBuiltin(AS3Builtin_added);
     Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
     SetAS3ObjCollectible(as3obj); // make sure it is stored correctly (strongly)

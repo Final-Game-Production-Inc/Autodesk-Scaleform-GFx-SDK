@@ -6,6 +6,7 @@ Created     :   December 19, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -56,7 +57,7 @@ bool TreeNode::NodeData::expandByFilterBounds(RectF* bounds, bool boundsEmpty) c
     return boundsEmpty;
 }
 
-extern void SnapRectToPixels(RectF& rect);
+extern void SnapRectToPixels(RectF& rect, float numPixels = 0.5f);
 
 void TreeNode::NodeData::expandByFilterBounds( const Filter* filter, RectF* bounds )
 {
@@ -69,16 +70,19 @@ void TreeNode::NodeData::expandByFilterBounds( const Filter* filter, RectF* boun
     case Filter_Shadow:
     case Filter_Glow:
     case Filter_Bevel:
+    case Filter_GradientGlow:
+    case Filter_GradientBevel:
         {
             const BlurFilter* blurFilter = (const BlurFilter*)filter;
             const BlurFilterParams& params = blurFilter->GetParams();
 
             // The filter area must be extended even for inner shadows as the blurred area outside is still read
-            float count = (filter->GetFilterType() == Filter_Bevel ? 2.0f : 1.0f);
+            float count = (filter->GetFilterType() == Filter_Bevel || filter->GetFilterType() == Filter_GradientBevel ? 2.0f : 1.0f);
             bounds->Expand( count * (PixelsToTwips(TwipsToPixels(params.BlurX)+1) * params.Passes), 
                 count * (PixelsToTwips(TwipsToPixels(params.BlurY)+1) * params.Passes) );
 
-            if (filter->GetFilterType() == Filter_Shadow || filter->GetFilterType() == Filter_Bevel)
+            if (filter->GetFilterType() == Filter_Shadow || filter->GetFilterType() == Filter_Bevel || 
+                filter->GetFilterType() == Filter_GradientGlow || filter->GetFilterType() == Filter_GradientBevel)
             {
                 PointF offset = params.Offset;
                 if (offset.x > 0)
@@ -98,50 +102,21 @@ void TreeNode::NodeData::expandByFilterBounds( const Filter* filter, RectF* boun
     }
 }
 
-void TreeNode::NodeData::contractByFilterBounds(RectF* bounds) const
+void TreeNode::NodeData::updateOriginalBoundState(const RectF& bounds)
 {
-    const FilterState* filterState = GetState<FilterState>();
-    const FilterSet* filters = filterState ? filterState->GetFilters() : 0;
-    if ( !filters )
-        return;
-
-    for (unsigned i = 0; i < filters->GetFilterCount(); ++i )
+    // If the bounds have changed (eg. due to filter expansion), store the original in a separate state.
+    // These may be required for certain operations, for example, scale9grid calculations. If the bounds
+    // have become the same (eg. a filter was removed), then remove the state.
+    if (AproxLocalBounds != bounds)
     {
-        // Visit filters in reverse order.
-        const Filter* filter = filters->GetFilter(filters->GetFilterCount()-i-1);
-        switch( filter->GetFilterType() )
-        {
-        case Filter_Blur:
-        case Filter_Shadow:
-        case Filter_Glow:
-        case Filter_Bevel:
-            {
-                const BlurFilter* blurFilter = (const BlurFilter*)filter;
-                const BlurFilterParams& params = blurFilter->GetParams();
-
-                // The filter area must be extended even for inner shadows as the blurred area outside is still read
-                float count = params.Mode & BlurFilterParams::Mode_Highlight ? 2.0f : 1.0f;
-                bounds->Contract( count * ceilf(params.BlurX * params.Passes), 
-                    count * ceilf(params.BlurY * params.Passes) );
-
-                if (filter->GetFilterType() == Filter_Shadow || filter->GetFilterType() == Filter_Bevel)
-                {
-                    PointF offset = params.Offset;
-                    if (offset.x > 0)
-                        bounds->HContract(0, ceilf(count * fabsf(offset.x)));
-                    else
-                        bounds->HContract(ceilf(count * fabsf(offset.x)), 0);
-                    if (offset.y > 0 )
-                        bounds->HContract(0, ceilf(count * fabsf(offset.y)));
-                    else
-                        bounds->HContract(ceilf(count * fabsf(offset.y)), 0);
-                }
-                break;
-            }
-        default:
-            break;
-        }
-    }   
+        Ptr<RectFRef> orgBoundsRef = *SF_HEAP_AUTO_NEW(this) RectFRef();
+        *orgBoundsRef = bounds;
+        States.SetState(&OrigNodeBoundsState::InterfaceImpl, orgBoundsRef.GetPtr());
+    }
+    else if (GetState<OrigNodeBoundsState>())
+    {
+        States.RemoveState(State_OrigNodeBounds);
+    }
 }
 
 void TreeNode::NodeData::CopyGeomData(TreeNode* destNode, const TreeNode& srcNode)
@@ -266,17 +241,7 @@ void TreeNode::SetMatrix(const Matrix2F& m)
     unsigned flags = Change_Matrix;
     NodeData* pdata = GetWritableData(flags); // |Change_AproxBounds
     pdata->SetMatrix(m);
-    /*
-    RectF r = m.EncloseTransform(pdata->AproxLocalBounds);
-    if (r != pdata->AproxParentBounds)
-    {
-        pdata = GetWritableData(Change_AproxBounds);
-        pdata->AproxParentBounds = r;
-        if (pParent)
-            pParent->AddToPropagate();
-  
-    } */
-    
+
     // Update our own bounds, then parent if needed.
     AddToPropagate();
 }
@@ -290,17 +255,22 @@ void TreeNode::SetMatrix3D(const Matrix3F& m)
 
     NodeData* pdata = GetWritableData(flags); // |Change_AproxBounds
     pdata->SetMatrix3D(m);
-    /*
-    RectF r = m.EncloseTransform(pdata->AproxLocalBounds);
-    if (r != pdata->AproxParentBounds)
+
+    // If any object in the tree becomes 3D, then set a flag on all its ancestors. This will be used
+    // to disable culling for these objects, as workaround a 3D objects not being culled correctly.
+    if ((flags & Change_3D) && GetParent())
     {
-        pdata = GetWritableData(Change_AproxBounds);
-        pdata->AproxParentBounds = r;
-        if (pParent)
-            pParent->AddToPropagate();
-  
-    } */
-    
+        TreeNode* node = GetParent();
+        do 
+        {
+            NodeData* parentData = node->GetWritableData(flags);
+            parentData->Flags |= NF_3DChild;
+            node->AddToPropagate();
+            node = node->GetParent();
+        }
+        while (node && !node->Is3D());
+    }
+
     // Update our own bounds, then parent if needed.
     AddToPropagate();
 }
@@ -380,6 +350,13 @@ void TreeNode::SetViewMatrix3D(const Matrix3F& mat3D)
     pdata->Flags |= NF_HasViewMatrix3D;
 }
 
+void TreeNode::ClearViewMatrix3D()
+{
+    NodeData* pdata = GetWritableData(Change_State_ViewMatrix3D);
+    pdata->States.RemoveState(State_ViewMatrix3D);
+    pdata->Flags &= ~NF_HasViewMatrix3D;
+}
+
 void TreeNode::SetProjectionMatrix3D(const Matrix4F& mat3D)
 {
     // allocate space and copy
@@ -390,6 +367,13 @@ void TreeNode::SetProjectionMatrix3D(const Matrix4F& mat3D)
     pdata->Flags |= NF_HasProjectionMatrix3D;
 }
 
+void TreeNode::ClearProjectionMatrix3D()
+{
+    NodeData* pdata = GetWritableData(Change_State_ProjectionMatrix3D);
+    pdata->States.RemoveState(State_ProjectionMatrix3D);
+    pdata->Flags &= ~NF_HasProjectionMatrix3D;
+}
+
 void TreeNode::SetBlendMode(BlendMode mode)
 {
     NodeData* pdata = GetWritableData(Change_State_BlendMode);
@@ -397,6 +381,8 @@ void TreeNode::SetBlendMode(BlendMode mode)
         pdata->States.SetStateVoid(&BlendState::InterfaceImpl, (void*)mode);
     else
         pdata->States.RemoveState(State_BlendMode);
+
+    AddToPropagate();
 }
 
 void TreeNode::SetMaskNode(TreeNode* node)
@@ -600,6 +586,35 @@ bool        TreeNode::IsBatchingDisabled() const
     return false;
 }
 
+// 4.5.32 Scaleform Addition
+void        TreeNode::SetInvertedMask(bool b) {
+    NodeData* pnodeData = GetWritableData(Change_State_UserData);
+    const UserDataState* state = GetState<UserDataState>();
+    Ptr<UserDataState::Data> pdata = 0;
+    if (state)
+    {
+        pdata = state->GetUserData();
+    }
+    else
+    {
+        pdata = *SF_HEAP_AUTO_NEW(this) UserDataState::Data;
+    }
+    pdata->Flags |= UserDataState::Data::Data_InvertedMask;
+    pdata->InvertedMask = b;
+    pnodeData->States.SetState(&UserDataState::InterfaceImpl, pdata.GetPtr());
+}
+
+bool        TreeNode::GetInvertedMask() const {
+    const UserDataState* state = GetState<UserDataState>();
+    if (state)
+    {
+        UserDataState::Data* data = state->GetUserData();
+        SF_ASSERT(data);
+        return data->InvertedMask;
+    }
+    return false;
+}
+
 //--------------------------------------------------------------------
 // ***** TreeNodeArray implementation
 
@@ -711,11 +726,11 @@ bool TreeNodeArray::Insert(UPInt index, TreeNode* node)
             {
             case 0:
                 data->pNodes[1] = pNodes[0];
-                ((TreeNode**)data->pNodes)[2] = pNodes[1];
+                *(((TreeNode**)data->pNodes) + 2) = pNodes[1];
                 break;
             case 1:                
                 data->pNodes[0] = pNodes[0];
-                ((TreeNode**)data->pNodes)[2] = pNodes[1];
+                *(((TreeNode**)data->pNodes) + 2) = pNodes[1];
                 break;
             case 2:
                 data->pNodes[0] = pNodes[0];
@@ -951,7 +966,7 @@ bool TreeContainer::NodeData::PropagateUp(Context::Entry* entry) const
     UPInt           count = Children.GetSize();
     TreeNode*const* nodes = Children.GetMultipleAt(0);
 
-    RectF   bounds, parentBounds;
+    RectF   bounds, orgBounds, parentBounds;
     bool    boundsEmpty = true;
 
     for (UPInt i = 0; i< count; i++)
@@ -979,6 +994,8 @@ bool TreeContainer::NodeData::PropagateUp(Context::Entry* entry) const
 
     if (!boundsEmpty)
     {
+        orgBounds = bounds;
+
         // Must apply any filters to the bounds before it is transformed into parent space.
         boundsEmpty = expandByFilterBounds(&bounds, false );
         if ( !Is3D() )
@@ -1000,6 +1017,7 @@ bool TreeContainer::NodeData::PropagateUp(Context::Entry* entry) const
         NodeData* wdata = pc->GetWritableData(Change_AproxBounds | Change_Matrix);
         wdata->AproxLocalBounds = bounds;
         wdata->AproxParentBounds= parentBounds;
+        wdata->updateOriginalBoundState(orgBounds);
 
         // Call SignalFrameCapture to ensure that child arrays are "frozen" to
         // ensure thread safety for their content.

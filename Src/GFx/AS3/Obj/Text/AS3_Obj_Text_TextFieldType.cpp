@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -51,24 +52,27 @@ namespace ClassTraits { namespace fl_text
         {"INPUT", NULL, OFFSETOF(Classes::fl_text::TextFieldType, INPUT), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    TextFieldType::TextFieldType(VM& vm)
-    : Traits(vm, AS3::fl_text::TextFieldTypeCI)
+
+    TextFieldType::TextFieldType(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::TextFieldType::TextFieldType()"
 //##protect##"ClassTraits::TextFieldType::TextFieldType()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_text::TextFieldTypeCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_text::TextFieldType(*this));
 
     }
 
     Pickable<Traits> TextFieldType::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TextFieldType(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TextFieldType(vm, AS3::fl_text::TextFieldTypeCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_text::TextFieldTypeCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -79,6 +83,11 @@ namespace fl_text
 {
     const TypeInfo TextFieldTypeTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_text::TextFieldType::InstanceType),
+        0,
+        ClassTraits::fl_text::TextFieldType::MemberInfoNum,
+        0,
+        0,
         "TextFieldType", "flash.text", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -86,10 +95,6 @@ namespace fl_text
     const ClassInfo TextFieldTypeCI = {
         &TextFieldTypeTI,
         ClassTraits::fl_text::TextFieldType::MakeClassTraits,
-        0,
-        ClassTraits::fl_text::TextFieldType::MemberInfoNum,
-        0,
-        0,
         NULL,
         ClassTraits::fl_text::TextFieldType::mi,
         NULL,

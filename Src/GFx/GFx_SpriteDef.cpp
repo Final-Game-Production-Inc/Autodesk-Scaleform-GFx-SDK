@@ -11,6 +11,7 @@ visible by other player files should be placed
 in DisplayObjectBase.h.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -1227,7 +1228,21 @@ void PlaceObject3Tag::Unpack(PlaceObjectTag::UnpackedData& data)
     }
     if (po3Flags & PO3_BitmapCaching)
     {
-        sc.ReadU8();
+        UByte cabProperty = sc.ReadU8();
+        Ptr<Render::FilterSet> pfilters = data.Pos.pFilters;
+        if (cabProperty == 1)
+        {
+            if (!pfilters)
+            {
+                pfilters = *SF_HEAP_NEW_ID(Memory::GetGlobalHeap(), StatMD_Tags_Mem) Render::FilterSet;
+                data.Pos.pFilters = pfilters;
+            }
+            pfilters->SetCacheAsBitmap(true);
+        }
+        else if (pfilters)
+        {
+            pfilters->SetCacheAsBitmap(false);
+        }
     }
     if (po3Flags & PlaceObject3Tag::PO3_Invisible)
     {

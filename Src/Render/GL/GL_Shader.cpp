@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -15,16 +16,17 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #if !defined(SF_USE_GLES)   // Do not compile under GLES 1.1
 
+
 #include "Render/GL/GL_Shader.h"
 #include "Render/GL/GL_HAL.h"
 #include "Kernel/SF_Debug.h"
 
 #if defined(GL_ES_VERSION_2_0)
-#include "Render/GL/GLES_ExtensionMacros.h"
 #include "Render/GL/GLES_ShaderDescs.h"
+#include "Render/GL/GLES_ExtensionMacros.h"
 #else
-#include "Render/GL/GL_ExtensionMacros.h"
 #include "Render/GL/GL_ShaderDescs.h"
+#include "Render/GL/GL_ExtensionMacros.h"
 #endif
 
 #include "Render/Render_FiltersLE.h"
@@ -38,11 +40,11 @@ otherwise accompanies this software in either electronic or hard copy form.
 #endif
 
 #if defined(SF_GL_BINARY_SHADER_DEBUG) && SF_GL_BINARY_SHADER_DEBUG
-    #define SF_BINARYSHADER_DEBUG_MESSAGE(...)  SF_DEBUG_MESSAGE(__VA_ARGS__)
-    #define SF_BINARYSHADER_DEBUG_MESSAGE1(...) SF_DEBUG_MESSAGE1(__VA_ARGS__)
-    #define SF_BINARYSHADER_DEBUG_MESSAGE2(...) SF_DEBUG_MESSAGE2(__VA_ARGS__)
-    #define SF_BINARYSHADER_DEBUG_MESSAGE3(...) SF_DEBUG_MESSAGE3(__VA_ARGS__)
-    #define SF_BINARYSHADER_DEBUG_MESSAGE4(...) SF_DEBUG_MESSAGE4(__VA_ARGS__)
+    #define SF_BINARYSHADER_DEBUG_MESSAGE(x, str)                  SF_DEBUG_MESSAGE(x, str)
+    #define SF_BINARYSHADER_DEBUG_MESSAGE1(x, str, p1)             SF_DEBUG_MESSAGE1(x, str, p1)
+    #define SF_BINARYSHADER_DEBUG_MESSAGE2(x, str, p1, p2)         SF_DEBUG_MESSAGE2(x, str, p1, p2)
+    #define SF_BINARYSHADER_DEBUG_MESSAGE3(x, str, p1, p2, p3)     SF_DEBUG_MESSAGE3(x, str, p1, p2, p3)
+    #define SF_BINARYSHADER_DEBUG_MESSAGE4(x, str, p1, p2, p3, p4) SF_DEBUG_MESSAGE4(x, str, p1, p2, p3, p4)
 #else
     #define SF_BINARYSHADER_DEBUG_MESSAGE(...)
     #define SF_BINARYSHADER_DEBUG_MESSAGE1(...)
@@ -88,207 +90,173 @@ void overwriteArrayCount(char* psrcPtr, const char* arrayString, unsigned newCou
     SFstrcpy(psrcPtr, MaxShaderCodeSize, tempBuffer);
 }
 
-bool ShaderObject::Init(HAL* phal, ShaderDesc::ShaderType shader, bool testCompilation)
+// *** ShaderObject
+
+ShaderObject::ShaderObject() :
+    pHal(0),
+    pVDesc(0),
+    pFDesc(0),
+    ShaderVer(ShaderDesc::ShaderVersion_Default),
+    ComboIndex(-1),
+    Separated(false),
+    Pipeline(0)
+{
+    memset(StagePrograms, 0, sizeof(StagePrograms));
+}
+
+bool ShaderObject::Init(HAL* phal, ShaderDesc::ShaderVersion ver, unsigned comboIndex, bool separable, 
+                        HashLH<unsigned, ShaderHashEntry>& shaderHash, bool testCompilation)
 {
     SF_UNUSED(testCompilation);
+
     pHal = phal;
-    if (Prog)
-    {
-        glDeleteProgram(Prog);
-        Prog = 0;
-    }
+    ShaderVer   = ver;
+    ComboIndex  = comboIndex;
+    Separated   = separable;
+
+    ShaderDesc::ShaderType shader = ShaderDesc::GetShaderTypeForComboIndex(ComboIndex, ver);
+    pVDesc      = VertexShaderDesc::GetDesc(shader, ver);
+    pFDesc      = FragShaderDesc::GetDesc(shader, ver);
     
-    pVDesc = VertexShaderDesc::GetDesc(shader, phal->SManager.GLSLVersion);
-    pFDesc = FragShaderDesc::GetDesc(shader, phal->SManager.GLSLVersion);
+    releasePrograms();
 
     if ( !pVDesc || !pFDesc )
+    {
+        SF_DEBUG_WARNING1(1, "Failed to find shader descriptor for shader type %d", shader);
         return false;
+    }
 
-    GLint result;
-    GLuint vp = 0;
+    // Attempt to locate the shaders shaders.
+    char shaderModificationBuffer[MaxShaderCodeSize];
+    ShaderHashEntry shaders[ShaderStage_Count];
+    memset(shaders, 0, sizeof(shaders));
 
-    // Note: although we may actually modify the vertex shader source, we use the hash on the original
-    // string pointer, so that we will find duplicate shaders. This assumes that all vertex shaders will
-    // be modified in a consistent manner.
-    if (!pHal->SManager.CompiledShaderHash.Get((void*)pVDesc->pSource, &vp))
+    unsigned maxUniforms = (phal->Caps & Cap_MaxUniforms) >> Cap_MaxUniforms_Shift;
+    for ( unsigned stage = ShaderStage_Vertex; stage < ShaderStage_Count; ++stage)
     {
-        // By default, the batch shaders are compiled with a batch count of 30. However, depending
-        // on the maximum number of uniforms supported, this may not be possible, and the shader source
-        // will not compile. Thus, we need to modify the incoming source, so it can compile.
-        const char * vdescpSource = (const char*)pVDesc->pSource;
-        char modifiedShaderSource[MaxShaderCodeSize];
-        if ( pVDesc->Flags & Shader_Batch )
+        // Attempt to find the program for this stage (separated or not).
+        unsigned hashCode = getShaderPipelineHashCode(true, (ShaderStages)stage);
+        if (shaderHash.Get(hashCode, &shaders[stage]))
         {
-            unsigned maxUniforms = (phal->Caps & Cap_MaxUniforms) >> Cap_MaxUniforms_Shift;
-            unsigned maxInstances = Alg::Min<unsigned>(SF_RENDER_MAX_BATCHES, 
-                                                       maxUniforms / ShaderInterface::GetMaximumRowsPerInstance());
-
-            if ( maxInstances < SF_RENDER_MAX_BATCHES)
-            {
-			    SF_DEBUG_WARNONCE4(1, "For the default batch count of %d, %d uniforms are required."
-						      "System only supports %d uniforms, batch count will be reduced to %d\n",
-						      SF_RENDER_MAX_BATCHES, SF_RENDER_MAX_BATCHES *
-						      ShaderInterface::GetMaximumRowsPerInstance(), maxUniforms,
-						      maxInstances);
-    							  
-                vdescpSource = modifiedShaderSource;
-                UPInt originalLength = SFstrlen(pVDesc->pSource);
-                SF_ASSERT(originalLength < MaxShaderCodeSize);
-                SFstrncpy(modifiedShaderSource, MaxShaderCodeSize, pVDesc->pSource, originalLength);
-                modifiedShaderSource[originalLength] = 0;
-                overwriteArrayCount(modifiedShaderSource, "vfmuniforms", 
-                    ShaderInterface::GetCountPerInstance(pVDesc, Uniform::SU_vfmuniforms) * maxInstances);
-                overwriteArrayCount(modifiedShaderSource, "vfuniforms", 
-                    ShaderInterface::GetCountPerInstance(pVDesc, Uniform::SU_vfuniforms) * maxInstances);
-            }
+            StagePrograms[stage] = shaders[stage].Program;
+            continue;
         }
 
-        vp = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vp, 1, const_cast<const char**>(&vdescpSource), 0);
-        glCompileShader(vp);
-        glGetShaderiv(vp, GL_COMPILE_STATUS, &result);
-        if (!result)
+        if (!Separated)
         {
-            GLchar msg[512];
-            glGetShaderInfoLog(vp, sizeof(msg), 0, msg);
-            SF_DEBUG_ERROR2(!testCompilation, "%s: %s\n", vdescpSource, msg);
-            glDeleteShader(vp);
-            return 0;
+            // If we are not separated, we can also search for the shader (not the program), which may also be hashed.
+            hashCode = getShaderPipelineHashCode(false, (ShaderStages)stage);
+            if (shaderHash.Get(hashCode, &shaders[stage]))
+                continue;
         }
-        pHal->SManager.CompiledShaderHash.Set((void*)pVDesc->pSource, vp);
-    }
 
-    GLuint fp = 0;
-    if (!pHal->SManager.CompiledShaderHash.Get((void*)pFDesc->pSource, &fp))
-    {
-        fp = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fp, 1, const_cast<const char**>(&pFDesc->pSource), 0);
-        glCompileShader(fp);
-        glGetShaderiv(fp, GL_COMPILE_STATUS, &result);
-        if (!result)
-        {
-            GLchar msg[1512];
-            glGetShaderInfoLog(fp, sizeof(msg), 0, msg);
-            SF_DEBUG_ERROR2(!testCompilation, "%s: %s\n", pFDesc->pSource, msg);
-            glDeleteShader(fp);
-            return 0;
-        }
-        pHal->SManager.CompiledShaderHash.Set((void*)pFDesc->pSource, fp);
-    }
+        // We cannot find the program or shader, we must compile from source. Get the source code, so we
+        // can compile. If there is no source code, it means that this stage is not supported by this shader.
+        const char* shaderCode = getShaderPipelineCode((ShaderStages)stage, maxUniforms, shaderModificationBuffer);
+        if (!shaderCode)
+            continue;
 
-    Prog = glCreateProgram();
-    glAttachShader(Prog, vp);
-    glAttachShader(Prog, fp);
+        shaders[stage].Program = createShaderOrProgram((ShaderStages)stage, shaderCode, Separated, testCompilation);
     
-    for (int i = 0; i < pVDesc->NumAttribs; i++)
-        glBindAttribLocation(Prog, i, pVDesc->Attributes[i].Name);
+        if (!shaders[stage].Program)
+            return false;
 
-#if !defined(SF_USE_GLES_ANY) && defined(GL_VERSION_3_0)
-    // In GLSL 1.5, we need to explicitly bind the output variable to a color output.
-    if (pHal->SManager.GLSLVersion == ShaderDesc::ShaderVersion_GLSL150)
-    {
-        SF_DEBUG_ASSERT(Has_glBindFragDataLocation(), "Must have glBindFragDataLocation if using GLSL 1.5.");
-        glBindFragDataLocation(Prog, 0, "fcolor");
+        shaderHash.Set(hashCode, shaders[stage]);
     }
-#endif   
     
-#if !defined(SF_USE_GLES_ANY) && defined(SF_GL_BINARY_SHADER)
-    // In OpenGL, we must set the retrievable hint, otherwise, it won't generate a binary format we can save.
-    if (pHal->Caps & Cap_BinaryShaders)
-        glProgramParameteri(Prog, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
-#endif
-
-    glLinkProgram(Prog);
-
-#if !defined(SF_USE_GLES_ANY) && defined(GL_VERSION_3_0)
-    // In GLSL 1.5, we need to explicitly bind the output variable to a color output.
-    if (pHal->SManager.GLSLVersion == ShaderDesc::ShaderVersion_GLSL150)
+    // Now create the program (or pipeline, if we are using separate shader objects).
+    if (!createProgramOrPipeline(shaders, Separated, shaderHash))
     {
-        SF_DEBUG_ASSERT(Has_glGetFragDataLocation(), "Must have glGetFragDataLocation if using GLSL 1.5.");
-        SF_DEBUG_ASSERT(glGetFragDataLocation(Prog, "fcolor") != -1, "fcolor not bound to an output stage.");            
+        releasePrograms();
+        return false;
     }
-#endif
     
-    // The shaders will not actually be deleted until the program is destroyed.
-    // We check the status of deletion, because some platforms (iOS) generate 
-    // errors for deleting shaders multiple times.
-    GLint fstatus, vstatus;
-    glGetShaderiv(fp, GL_DELETE_STATUS, &fstatus);
-    glGetShaderiv(vp, GL_DELETE_STATUS, &vstatus);
-    if (fstatus == GL_FALSE)
-        glDeleteShader(fp);
-    if (vstatus == GL_FALSE)
-        glDeleteShader(vp);
-    
-    if (!InitUniforms())
+    // Initialize our uniforms.
+    if (!initUniforms())
     {
-        glDeleteProgram(Prog);
-        Prog = 0;
+        releasePrograms();
         return false;
     }
     
     return true;
 }
 
-bool ShaderObject::InitUniforms()
+bool ShaderObject::initUniforms()
 {
-    GLint result;
-    glGetProgramiv(Prog, GL_LINK_STATUS, &result);
-    if (!result)
-    {
-        GLchar msg[512];
-        glGetProgramInfoLog(Prog, sizeof(msg), 0, msg);
-        SF_DEBUG_ERROR1(1, "link: %s\n", msg);
-        return false;
-    }
-
     for (unsigned i = 0; i < Uniform::SU_Count; i++)
     {
-        if (pFDesc->Uniforms[i].Location >= 0 || pVDesc->Uniforms[i].Location >= 0)
-        {
-            Uniforms[i] = glGetUniformLocation(Prog, ShaderUniformNames[i]);
-
-            // It seems that the binary shaders could store uniform names with '[0]' appended on them
-            // So, if we fail to find the uniform with the original name, search for that.
-            if (Uniforms[i] < 0)
-            {
-                char arrayname[128];
-                SFstrcpy(arrayname, 128, ShaderUniformNames[i]);
-                SFstrcat(arrayname, 128, "[0]");
-                Uniforms[i] = glGetUniformLocation(Prog, arrayname);
-            }
-
-            // Couldn't find the uniform at all.
-            if (Uniforms[i] < 0 )
-            {
-                SF_DEBUG_ERROR1(1, "Failed to find uniform %s (program uniforms):", ShaderUniformNames[i]);
-                dumpUniforms();
-                return false;
-            }
-
-            if (pFDesc->Uniforms[i].Location >= 0)
-            {
-                SF_ASSERT(pVDesc->Uniforms[i].Location < 0);
-                AllUniforms[i] = pFDesc->Uniforms[i];
-            }
-            else
-                AllUniforms[i] = pVDesc->Uniforms[i];
-        }
+        if (pVDesc->Uniforms[i].Location >= 0)
+            Uniforms[i].Program = StagePrograms[ShaderStage_Vertex];
+        else if (pFDesc->Uniforms[i].Location >= 0)
+            Uniforms[i].Program = StagePrograms[ShaderStage_Frag];
         else
-            Uniforms[i] = -1;
+        {
+                Uniforms[i].Program = 0;
+                continue;
+        }
+
+        Uniforms[i].Location = glGetUniformLocation(Uniforms[i].Program, ShaderUniformNames[i]);
+
+        // It seems that the binary shaders could store uniform names with '[0]' appended on them
+        // So, if we fail to find the uniform with the original name, search for that.
+        if (Uniforms[i].Location < 0)
+        {
+            char arrayname[128];
+            SFstrcpy(arrayname, 128, ShaderUniformNames[i]);
+            SFstrcat(arrayname, 128, "[0]");
+            Uniforms[i].Location = glGetUniformLocation(Uniforms[i].Program, arrayname);
+        }
+
+        // Couldn't find the uniform at all.
+        if (Uniforms[i].Location < 0 )
+        {
+            SF_DEBUG_ERROR1(1, "Failed to find uniform %s (program uniforms):", ShaderUniformNames[i]);
+            dumpUniforms();
+            return false;
+        }
     }
-    return result != 0;
+    return true;
 }
 
 void ShaderObject::Shutdown( )
 {
-    if (Prog)
-        glDeleteProgram(Prog);
-    
-    Prog   = 0;
+    releasePrograms();
+
     pVDesc = 0;
     pFDesc = 0;
     pHal   = 0;
+}
+
+bool ShaderObject::IsInitialized() const
+{
+    return Separated ? (Pipeline != 0) : (StagePrograms[ShaderStage_Vertex] != 0);
+}
+
+void ShaderObject::ApplyShader() const
+{
+    if (Separated)
+    {
+        glBindProgramPipeline(Pipeline);
+    }
+    else
+    {
+        glUseProgram(StagePrograms[ShaderStage_Vertex]);
+    }
+}
+
+const UniformVar* ShaderObject::GetUniformVariable(unsigned var) const
+{
+    if (pVDesc->Uniforms[var].Location >= 0)
+        return &pVDesc->Uniforms[var];
+    else if (pFDesc->Uniforms[var].Location >= 0)
+        return &pFDesc->Uniforms[var];
+    else
+        return 0;
+}
+
+GLuint ShaderObject::GetUniformVariableProgram(unsigned var) const
+{
+    return Uniforms[var].Program;
 }
 
 ShaderObject::~ShaderObject()
@@ -296,139 +264,450 @@ ShaderObject::~ShaderObject()
     Shutdown();
 }
 
-bool ShaderObject::InitBinary(HAL* phal, ShaderDesc::ShaderVersion ver, unsigned comboIndex, File* pfile, void*& buffer, GLsizei& bufferSize)
+GLuint ShaderObject::createShaderOrProgram(ShaderStages stage, const char* shaderCode, bool separable, bool testCompilation)
 {
-#if defined(SF_GL_BINARY_SHADER)
-    pHal = phal;
-    if (Prog)
+    SF_UNUSED(testCompilation);
+
+    GLint result;
+    GLchar msg[512];
+
+    GLenum type = getShaderTypeForStage(stage);
+    if (!separable)
     {
-        glDeleteProgram(Prog);
-        Prog = 0;
+        GLuint shader = glCreateShader(type);
+        glShaderSource(shader, 1, const_cast<const char**>(&shaderCode), 0);
+        glCompileShader(shader);
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+        if (!result)
+        {
+            glGetShaderInfoLog(shader, sizeof(msg), 0, msg);
+            SF_DEBUG_ERROR2(!testCompilation, "%s:\n%s\n", msg, shaderCode);
+            glDeleteShader(shader);
+            return 0;
+        }
+        return shader;
     }
-
-    VertexShaderDesc::ShaderIndex vidx = VertexShaderDesc::GetShaderIndexForComboIndex(comboIndex, ver);
-    FragShaderDesc::ShaderIndex fidx = FragShaderDesc::GetShaderIndexForComboIndex(comboIndex, ver);
-    pVDesc = VertexShaderDesc::Descs[vidx];
-    pFDesc = FragShaderDesc::Descs[fidx];
-
-    if (!pVDesc || !pFDesc)
-        return false;
-
-
-    SF_BINARYSHADER_DEBUG_MESSAGE4(1, "Shader indices (v=%d - type=%d, f=%d - type = %d)", vidx, pVDesc->Type, fidx, pFDesc->Type);
-    Prog = glCreateProgram();
-
-    GLenum format = pfile->ReadSInt32();
-    GLsizei size = pfile->ReadSInt32();
-
-    SF_BINARYSHADER_DEBUG_MESSAGE2(1, "Loading binary shader (size=%d, format=%d)", size, format);
-    if (bufferSize < size)
+    else
     {
-        bufferSize = (size + 1023) & ~1023;
-        SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Allocating shader buffer, size %d", bufferSize );
-        buffer = buffer == 0 ? SF_ALLOC(bufferSize, Stat_Default_Mem) : SF_REALLOC(buffer, bufferSize, Stat_Default_Mem);
-    }
-    if (pfile->Read((UByte*)buffer, size) < size)
-    {
-        SF_DEBUG_WARNING(1, "Error reading from binary shader file (insufficient space remaining).");
-        glDeleteProgram(Prog);
-        Prog = 0;
-        return false;
-    }
+        // Note: although it would be convenient, we cannot use glCreateShaderProgramv, because of the issues #15 and #16
+        // http://www.opengl.org/registry/specs/ARB/separate_shader_objects.txt. We require shader attributes to be bound
+        // to particular locations.
+        GLuint shader = glCreateShader(type);
+        if (shader) 
+        {
+            glShaderSource(shader, 1, &shaderCode, 0);
+            glCompileShader(shader);
+            const GLuint program = glCreateProgram();
+            if (program) 
+            {
+                int compiled = GL_FALSE;
+                glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 
-    glProgramBinary(Prog, format, buffer, size);
+                // Bind the vertex attribute locations.
+                if (stage == ShaderStage_Vertex)
+                {
+                    for (int i = 0; i < pVDesc->NumAttribs; i++)
+                        glBindAttribLocation(program, i, pVDesc->Attributes[i].Name);
+                }
 
-    if (!InitUniforms())
-    {
-        glDeleteProgram(Prog);
-        Prog = 0;
-        return false;
-    }
-
-    // Save the size of the loaded binary.
-    glGetProgramiv(Prog, GL_PROGRAM_BINARY_LENGTH, &BinarySize);
-
-    //dumpUniforms();
-    return true;
-
-#else // SF_GL_BINARY_SHADER
-    return false;
+                glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
+#if !defined(SF_USE_GLES_ANY) && defined(SF_GL_BINARY_SHADER)
+                // In OpenGL, we must set the retrievable hint, otherwise, it won't generate a binary format we can save.
+                if (pHal->Caps & Cap_BinaryShaders)
+                    glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 #endif
+
+                if (compiled) 
+                {
+                    glAttachShader(program, shader);
+                    glLinkProgram(program);
+                }
+                else
+                {
+                    glGetShaderInfoLog(shader, sizeof(msg), 0, msg);
+                    SF_DEBUG_ERROR2(!testCompilation, "%s:\n%s\n", msg, shaderCode);
+                    glDeleteShader(shader);
+                    return 0;
+                }
+            }
+            glDeleteShader(shader);
+            glGetProgramiv(program, GL_LINK_STATUS, &result);
+            if (!result)
+            {
+                glGetProgramInfoLog(program, sizeof(msg), 0, msg);
+                SF_DEBUG_ERROR2(!testCompilation, "%s:\n%s\n", msg, shaderCode);
+                glDeleteProgram(program);
+                return 0;
+            }
+            return program;
+        } 
+        else 
+        {
+            return 0;
+        }
+    }
 }
 
-bool ShaderObject::SaveBinary(File* pfile, void*& buffer, GLsizei& bufferSize, GLsizei& totalSize)
+bool ShaderObject::createProgramOrPipeline( ShaderHashEntry* shaders, bool separable, HashLH<unsigned, ShaderHashEntry>& shaderHash )
 {
-#if defined(SF_GL_BINARY_SHADER)
-
-    GLsizei size;
-    glGetProgramiv(Prog, GL_PROGRAM_BINARY_LENGTH, &size);
-    SF_DEBUG_MESSAGE(size < 0, "glGetProgramiv returned GL_PROGRAM_BINARY_LENGTH == 0");
-
-    if (bufferSize < size)
+    if (!separable)
     {
-        bufferSize = (size + 1023) & ~1023;
-        buffer = buffer == 0 ? SF_ALLOC(bufferSize, Stat_Default_Mem) : SF_REALLOC(buffer, bufferSize, Stat_Default_Mem);
+        // If non-separted, and we already have a program, then skip creating the program, because it
+        // means that it was already created (loaded from binary).
+        if (StagePrograms[ShaderStage_Vertex] != 0)
+            return true;
+
+        StagePrograms[ShaderStage_Vertex] = glCreateProgram();
+        for (unsigned stage = ShaderStage_Vertex; stage < ShaderStage_Count; ++stage)
+        {
+            if (shaders[stage].Program)
+            {
+                glAttachShader(StagePrograms[ShaderStage_Vertex], shaders[stage].Program);
+
+                // If the stage exists, copy the uber-program to that stage program.
+                StagePrograms[stage] = StagePrograms[ShaderStage_Vertex];
+            }
+        }
+    }
+    else
+    {
+        glGenProgramPipelines(1, &Pipeline);
+        glBindProgramPipeline(Pipeline);
+
+        for (unsigned stage = ShaderStage_Vertex; stage < ShaderStage_Count; ++stage)
+        {
+            if (shaders[stage].Program)
+                glUseProgramStages(Pipeline, getShaderBitForStage((ShaderStages)stage), shaders[stage].Program);
+
+            StagePrograms[stage] = shaders[stage].Program;
+        }
     }
 
-    GLenum format;
-    memset(buffer, 0, bufferSize);
-    glGetProgramBinary(Prog, bufferSize, 0, &format, buffer);
-    if (size > 0)
+    if (!StagePrograms[ShaderStage_Vertex] || !StagePrograms[ShaderStage_Frag])
     {
-        pfile->WriteSInt32(format);
-        pfile->WriteSInt32(size);
-        SF_BINARYSHADER_DEBUG_MESSAGE2(1, "Saving binary shader (size=%d, format=%d) - uniforms:", size, format);
-        dumpUniforms();
+        SF_DEBUG_MESSAGE1(!StagePrograms[ShaderStage_Vertex],   "Vertex stage required in shader (type = %d).", pVDesc->Type);
+        SF_DEBUG_MESSAGE1(!StagePrograms[ShaderStage_Frag],     "Fragment stage required in shader (type = %d).", pFDesc->Type);
+        return false;
+    }
 
-        if (pfile->Write((UByte*)buffer, size) < size)
+#if !defined(SF_USE_GLES_ANY) && defined(GL_VERSION_3_0)
+    // In GLSL 1.5, we need to explicitly bind the output variable to a color output.
+    if (ShaderVer == ShaderDesc::ShaderVersion_GLSL150)
+    {
+        SF_DEBUG_ASSERT(pHal->CheckGLVersion(3,0) || pHal->CheckExtension("GL_EXT_gpu_shader4"), "Must have glBindFragDataLocation if using GLSL 1.5.");
+        glBindFragDataLocation(StagePrograms[ShaderStage_Frag], 0, "fcolor");
+    }
+#endif   
+
+    if (!separable)
+    {
+        for (int i = 0; i < pVDesc->NumAttribs; i++)
+            glBindAttribLocation(StagePrograms[ShaderStage_Vertex], i, pVDesc->Attributes[i].Name);
+
+#if !defined(SF_USE_GLES_ANY) && defined(SF_GL_BINARY_SHADER)
+        // In OpenGL, we must set the retrievable hint, otherwise, it won't generate a binary format we can save.
+        if (pHal->Caps & Cap_BinaryShaders)
+            glProgramParameteri(StagePrograms[ShaderStage_Vertex], GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+#endif
+
+        glLinkProgram(StagePrograms[ShaderStage_Vertex]);
+
+        // The shaders will not actually be deleted until the program is destroyed.
+        // We check the status of deletion, because some platforms (iOS) generate 
+        // errors for deleting shaders multiple times.        
+        GLint status;
+        for (unsigned stage = ShaderStage_Vertex; stage < ShaderStage_Count; ++stage)
         {
-            SF_DEBUG_MESSAGE(1, "Failed writing to binary shader file.");
+            if (!shaders[stage].Program)
+                continue;
+            glGetShaderiv(shaders[stage].Program, GL_DELETE_STATUS, &status);
+            if (status == GL_FALSE)
+                glDeleteShader(shaders[stage].Program);
+        }
+
+        // Check to see that the program linking succeeded.
+        GLint result;
+        glGetProgramiv(StagePrograms[ShaderStage_Vertex], GL_LINK_STATUS, &result);
+        if (!result)
+        {
+            GLchar msg[512];
+            glGetProgramInfoLog(StagePrograms[ShaderStage_Vertex], sizeof(msg), 0, msg);
+            SF_DEBUG_ERROR1(1, "link: %s\n", msg);
             return false;
         }
-        totalSize += size;
 
-        return true;
+        // Put the final shader in the shader hash (stage is ignored in non-separated mode).
+        unsigned hashCode = getShaderPipelineHashCode(true, ShaderStage_Vertex);
+
+        // Record the binary shader size.
+        ShaderHashEntry entry;
+        entry.Program = StagePrograms[ShaderStage_Vertex];
+
+        // NOTE: store binary size as zero, so we will know to save this shader.
+        shaderHash.Set(hashCode, entry);
     }
-#else
-    SF_DEBUG_MESSAGE(1, "Cannot save binary shaders, SF_GL_BINARY_SHADER is not defined.");
+
+#if !defined(SF_USE_GLES_ANY) && defined(GL_VERSION_3_0)
+    // In GLSL 1.5, we need to explicitly bind the output variable to a color output.
+    // TODO: generate fragout name from ShaderMaker.
+    if (ShaderVer == ShaderDesc::ShaderVersion_GLSL150)
+    {
+        SF_DEBUG_ASSERT(pHal->CheckGLVersion(3,0) || pHal->CheckExtension("GL_EXT_gpu_shader4"), "Must have glGetFragDataLocation if using GLSL 1.5.");
+        SF_DEBUG_ASSERT(glGetFragDataLocation(StagePrograms[ShaderStage_Frag], "fcolor") != -1, "fcolor not bound to an output stage.");            
+    }
 #endif
 
-    return false;
+    return true;
 }
 
-void ShaderObject::dumpUniforms()
+const char* ShaderObject::getShaderPipelineCode(ShaderStages stage, unsigned maxUniforms, char* modifiedShaderSource)
+{
+    SF_DEBUG_ASSERT(modifiedShaderSource, "Cannot pass in NULL for modifierShaderSource (needed, in case shader is modified)");
+    switch(stage)
+    {
+        case ShaderStage_Vertex:
+        {
+            // By default, the batch shaders are compiled with a batch count of 30. However, depending
+            // on the maximum number of uniforms supported, this may not be possible, and the shader source
+            // will not compile. Thus, we need to modify the incoming source, so it can compile.
+            const char * vdescpSource = (const char*)pVDesc->pSource;
+
+            // If we are using separated shaders, they need to declare gl_Position semantic. We cannot put this
+            // directly into ShaderMaker, because some Android platforms fail to compile if it is there.
+#if !defined(SF_USE_GLES_ANY)
+            if (Separated && ShaderVer == ShaderDesc::ShaderVersion_GLSL150)
+            {
+                UPInt originalLength = SFstrlen(vdescpSource);
+				SF_UNUSED(originalLength);
+                SF_DEBUG_ASSERT(originalLength < MaxShaderCodeSize, "Shader is too large.");
+
+                // Put it after the last directive line.
+                const char* startOfDirective = SFstrrchr(vdescpSource, '#'), *endOfDirective = 0;
+                const char* insertLocation = 0;
+                if (startOfDirective != 0)
+                    endOfDirective = insertLocation = SFstrchr(startOfDirective, '\n') +1;
+                else
+                    endOfDirective = insertLocation = vdescpSource;
+
+                SFstrncpy(modifiedShaderSource, MaxShaderCodeSize, vdescpSource, insertLocation-vdescpSource);
+                modifiedShaderSource[insertLocation-vdescpSource] = 0;
+                SFstrcat(modifiedShaderSource, MaxShaderCodeSize, "out gl_PerVertex\n{\n\tvec4 gl_Position;\n};\n");
+                SFstrcat(modifiedShaderSource, MaxShaderCodeSize, endOfDirective);
+                vdescpSource = modifiedShaderSource;
+            }
+#endif
+
+            if ( pVDesc->Flags & Shader_Batch )
+            {
+                unsigned maxInstances = Alg::Min<unsigned>(SF_RENDER_MAX_BATCHES, 
+                    maxUniforms / ShaderInterface::GetMaximumRowsPerInstance());
+
+                if ( maxInstances < SF_RENDER_MAX_BATCHES)
+                {
+                    // Distribute the uniforms that we have available to the two batching arrays.
+                    unsigned mtxUniforms  = ShaderInterface::GetCountPerInstance(pVDesc, Uniform::SU_vfmuniforms);
+                    unsigned vecUniforms  = ShaderInterface::GetCountPerInstance(pVDesc, Uniform::SU_vfuniforms);
+                    unsigned numInstances = maxUniforms / (mtxUniforms + vecUniforms);
+
+                    // We still may have enough uniforms to do SF_RENDER_MAX_BATCHES, using dynamic batch sizing.
+                    if (numInstances < SF_RENDER_MAX_BATCHES)
+                    {
+                        SF_DEBUG_WARNONCE3(1, "The default batch count is %d, up to %d uniforms are required to achieve this."
+                            "System only supports %d uniforms, batch count will be reduced.\n",
+                            SF_RENDER_MAX_BATCHES, SF_RENDER_MAX_BATCHES * ShaderInterface::GetMaximumRowsPerInstance(), maxUniforms);
+
+                        SF_DEBUG_ASSERT(SFstrlen(vdescpSource) < MaxShaderCodeSize, "Shader is too large.");
+                        SFstrcpy(modifiedShaderSource, MaxShaderCodeSize, vdescpSource);
+                        overwriteArrayCount(modifiedShaderSource, "vfmuniforms", mtxUniforms * numInstances);
+                        overwriteArrayCount(modifiedShaderSource, "vfuniforms", vecUniforms * numInstances);
+                        vdescpSource = modifiedShaderSource;
+                    }
+                }
+            }
+            return vdescpSource;
+        }
+
+        case ShaderStage_Frag:
+            return pFDesc->pSource;
+
+        default:
+            return 0;
+    }
+}
+
+unsigned ShaderObject::getShaderPipelineHashCode(bool program, ShaderStages stage)
+{
+    return getShaderPipelineHashCode(ComboIndex, ShaderVer, Separated, program, stage);
+}
+
+unsigned ShaderObject::getShaderPipelineHashCode(unsigned comboIndex, ShaderDesc::ShaderVersion ver, bool separated, 
+                                                 bool program, ShaderStages stage)
+{
+    unsigned shaderIndex = 0;
+    switch(stage)
+    {
+    case ShaderStage_Vertex:
+    {
+        if (!program || separated)
+            shaderIndex = (unsigned)VertexShaderDesc::GetShaderIndexForComboIndex(comboIndex, ver);
+        break;
+    }
+    case ShaderStage_Frag:
+    {
+        if (!program || separated)
+            shaderIndex = (unsigned)FragShaderDesc::GetShaderIndexForComboIndex(comboIndex, ver);
+        break;
+    }
+    default:
+        return 0;
+    }
+
+    // If we are not using separted pipelines, store/retrieve all programs as vertex programs. This will
+    // ensure that programs will not have duplicate entries in the shader hash.
+    if (program && !separated)
+    {
+        shaderIndex = comboIndex;
+        stage = ShaderStage_Vertex;
+    }
+
+    return (program ? 0x80000000 : 0x00000000) | ((stage& 0x7FFF) << 16) | (shaderIndex & 0xFFFF);
+}
+
+// Returns the shader type, given the shader stage.
+GLenum ShaderObject::getShaderTypeForStage(ShaderStages stage)
+{
+    switch(stage)
+    {
+    case ShaderStage_Vertex:    return GL_VERTEX_SHADER;
+    case ShaderStage_Frag:      return GL_FRAGMENT_SHADER;
+
+    // These stages do not exist on GLES.
+#if defined(GL_GEOMETRY_SHADER)
+    case ShaderStage_Geometry:  return GL_GEOMETRY_SHADER;
+#endif // GL_GEOMETRY_SHADER
+            
+#if defined(GL_TESS_CONTROL_SHADER) && defined(GL_TESS_EVALUATION_SHADER)
+    case ShaderStage_Hull:      return GL_TESS_CONTROL_SHADER;      // TODOBM: verify Hull == TESS_CONTROL
+    case ShaderStage_Domain:    return GL_TESS_EVALUATION_SHADER;
+#endif // GL_TESS_CONTROL_SHADER && GL_TESS_EVALUATION_SHADER
+            
+#if defined(GL_COMPUTE_SHADER)
+    case ShaderStage_Compute:   return GL_COMPUTE_SHADER; // Need to update glext.h
+#endif // GL_COMPUTE_SHADER
+            
+    default:
+        SF_DEBUG_ASSERT1(0, "Shader stage %d is unavailable.", stage);
+        return 0;
+    }
+}
+
+GLenum ShaderObject::getShaderBitForStage(ShaderStages stage)
+{
+    switch(stage)
+    {
+    case ShaderStage_Vertex:    return GL_VERTEX_SHADER_BIT;
+    case ShaderStage_Frag:      return GL_FRAGMENT_SHADER_BIT;
+
+        // These stages do not exist on GLES.
+#if defined(GL_GEOMETRY_SHADER)
+    case ShaderStage_Geometry:  return GL_GEOMETRY_SHADER_BIT;
+#endif // GL_GEOMETRY_SHADER
+            
+#if defined(GL_TESS_CONTROL_SHADER) && defined(GL_TESS_EVALUATION_SHADER)
+    case ShaderStage_Hull:      return GL_TESS_CONTROL_SHADER_BIT;      // TODOBM: verify Hull == TESS_CONTROL
+    case ShaderStage_Domain:    return GL_TESS_EVALUATION_SHADER_BIT;
+#endif // GL_TESS_CONTROL_SHADER && GL_TESS_EVALUATION_SHADER
+
+#if defined(GL_COMPUTE_SHADER)
+    case ShaderStage_Compute:   return GL_COMPUTE_SHADER_BIT; // Need to update glext.h
+#endif // GL_COMPUTE_SHADER
+
+    default:
+        SF_DEBUG_ASSERT1(0, "Shader stage %d is unavailable.", stage);
+        return 0;
+    }
+}
+
+void ShaderObject::releasePrograms()
+{
+    // Pipelines are not contained in the ShaderManager's hash, and should only exist in
+    // a single ShaderObject, so they should be deleted.
+    if (Separated && Pipeline != 0)
+    {
+        glDeleteProgramPipelines(1, &Pipeline);
+        Pipeline = 0;
+    }
+    memset(StagePrograms, 0, sizeof(StagePrograms));
+}
+
+void ShaderObject::dumpUniforms(unsigned shader)
 {
 #if defined(SF_GL_BINARY_SHADER_DEBUG) && SF_GL_BINARY_SHADER_DEBUG >= 2
-    GLint uniformCount;
-    glGetProgramiv(Prog, GL_ACTIVE_UNIFORMS, &uniformCount);
-    SF_DEBUG_MESSAGE1(1, "Shader has %d uniforms:", uniformCount);
-    for ( int uniform = 0; uniform < uniformCount; ++uniform)
+
+    if (shader != 0)
     {
-        char uniformName[128];
-        GLsizei length;
-        GLint size;
-        GLenum type;
-        glGetActiveUniform(Prog, uniform, 128, &length, &size, &type, uniformName);
-        SF_DEBUG_MESSAGE3(1,"\t%16s (size=%d, type=%d)", uniformName, size, type);
+        GLint uniformCount;
+            glGetProgramiv(shader, GL_ACTIVE_UNIFORMS, &uniformCount);
+            SF_DEBUG_MESSAGE2(1, "Shader program %d has %d uniforms:", shader, uniformCount);
+        for ( int uniform = 0; uniform < uniformCount; ++uniform)
+        {
+            char uniformName[128];
+            GLsizei length;
+            GLint size;
+            GLenum type;
+                glGetActiveUniform(shader, uniform, 128, &length, &size, &type, uniformName);
+            SF_DEBUG_MESSAGE3(1,"\t%16s (size=%d, type=%d)", uniformName, size, type);
+        }
     }
+    else
+    {
+        if (Separated)
+        {
+            for (unsigned prog = 0; prog < ShaderStage_Count; ++prog)
+            {
+                if (StagePrograms[prog] == 0)
+                    continue;
+                dumpUniforms(StagePrograms[prog]);
+            }
+        }
+        else
+        {
+            dumpUniforms(StagePrograms[ShaderStage_Vertex]);
+        }
+    }
+
+#else
+    SF_UNUSED(shader);
 #endif
 }
 
+// *** ShaderInterface
+
+ShaderInterface::ShaderInterface( Render::HAL* phal )
+{
+    pHal = reinterpret_cast<HAL*>(phal); 
+    memset(TextureUniforms, -1, sizeof(TextureUniforms));
+}
 
 bool ShaderInterface::SetStaticShader(ShaderDesc::ShaderType shader, const VertexFormat*)
 {
-    CurShader.pShaderObj = pHal->GetStaticShader(shader);
-    if ( !CurShader.pShaderObj || !CurShader.pShaderObj->Prog )
+    const ShaderObject* pnewShader = pHal->GetStaticShader(shader);
+
+    // Redundancy checking (don't set the same shader twice in a row).
+    if (CurShader.pShaderObj == pnewShader)
+        return true;
+
+    CurShader.pShaderObj = pnewShader;
+    if ( !CurShader.pShaderObj || !CurShader.pShaderObj->IsInitialized() )
     {
         CurShader.pVDesc = 0;
         CurShader.pFDesc = 0;
-        glUseProgram(0);
-        SF_ASSERT(0);
+        SF_DEBUG_ASSERT1(0, "Shader does not exist, or was not initialized (type=%d)", shader);
         return false;
     }
     CurShader.pVDesc = CurShader.pShaderObj->pVDesc;
     CurShader.pFDesc = CurShader.pShaderObj->pFDesc;
-    glUseProgram(CurShader.pShaderObj->Prog);
+    CurShader.pShaderObj->ApplyShader();
     
     return true;
 }
@@ -437,7 +716,7 @@ void ShaderInterface::SetTexture(Shader sd, unsigned var, Render::Texture* ptex,
 {
     GL::Texture* ptexture = (GL::Texture*)ptex;
 
-    SF_ASSERT(CurShader.pShaderObj->Uniforms[var] >= 0 ); // Expected texture uniform does not exist in this shader.
+    SF_ASSERT(CurShader.pShaderObj->Uniforms[var].Location >= 0 ); // Expected texture uniform does not exist in this shader.
     int *textureStages = 0;
     int *stageCount = 0;
     int baseLocation = sd->pFDesc->Uniforms[var].Location;
@@ -463,63 +742,118 @@ void ShaderInterface::SetTexture(Shader sd, unsigned var, Render::Texture* ptex,
         *stageCount = Alg::Max<int>(*stageCount, index+plane+1);
     }
 
-    ptex->ApplyTexture(baseLocation + index, fm);
+    // Texture::ApplyTexture applies each stage internally.
+    ptexture->ApplyTexture(baseLocation + index, fm);
 }
 
 void ShaderInterface::Finish(unsigned batchCount)
 {
-    SF_ASSERT(CurShader.pShaderObj->Prog);
+    ShaderInterfaceBase<Uniform,ShaderPair>::Finish(batchCount);
+
+    SF_DEBUG_ASSERT(CurShader.pShaderObj->IsInitialized(), "Shader trying to update uniforms, but is uninitialized.");
 
     const ShaderObject* pCurShader = CurShader.pShaderObj;
     for (int var = 0; var < Uniform::SU_Count; var++)
     {
         if (UniformSet[var])
         {
+            const UniformVar* uniformPtr = pCurShader->GetUniformVariable(var);
+            if (!uniformPtr)
+                continue;
+            const UniformVar& uniformDef = *uniformPtr;
+
             unsigned size;
-            if (pCurShader->AllUniforms[var].BatchSize > 0)
-                size = batchCount * pCurShader->AllUniforms[var].BatchSize;
-            else if (pCurShader->AllUniforms[var].ElementSize)
-                size = pCurShader->AllUniforms[var].Size / pCurShader->AllUniforms[var].ElementSize;
+            if (uniformDef.BatchSize > 0)
+                size = batchCount * uniformDef.BatchSize;
+            else if (uniformDef.ElementSize)
+                size = uniformDef.Size / uniformDef.ElementSize;
             else
                 continue;
 
-            switch (pCurShader->AllUniforms[var].ElementCount)
+            if (!pCurShader->Separated)
             {
+                switch (uniformDef.ElementCount)
+                {
                 case 16:
-                    glUniformMatrix4fv(pCurShader->Uniforms[var], size, false /* transpose */,
-                        UniformData + pCurShader->AllUniforms[var].ShadowOffset);
+                        glUniformMatrix4fv(pCurShader->Uniforms[var].Location, size, false /* transpose */,
+                            UniformData + uniformDef.ShadowOffset);
                     break;
                 case 4:
-                    glUniform4fv(pCurShader->Uniforms[var], size,
-                        UniformData + pCurShader->AllUniforms[var].ShadowOffset);
+                        glUniform4fv(pCurShader->Uniforms[var].Location, size,
+                            UniformData + uniformDef.ShadowOffset);
                     break;
                 case 3:
-                    glUniform3fv(pCurShader->Uniforms[var], size,
-                        UniformData + pCurShader->AllUniforms[var].ShadowOffset);
+                        glUniform3fv(pCurShader->Uniforms[var].Location, size,
+                            UniformData + uniformDef.ShadowOffset);
                     break;
                 case 2:
-                    glUniform2fv(pCurShader->Uniforms[var], size,
-                        UniformData + pCurShader->AllUniforms[var].ShadowOffset);
+                        glUniform2fv(pCurShader->Uniforms[var].Location, size,
+                            UniformData + uniformDef.ShadowOffset);
                     break;
                 case 1:
-                    glUniform1fv(pCurShader->Uniforms[var], size,
-                        UniformData + pCurShader->AllUniforms[var].ShadowOffset);
+                        glUniform1fv(pCurShader->Uniforms[var].Location, size,
+                            UniformData + uniformDef.ShadowOffset);
                     break;
 
                 default:
-                    SF_ASSERT(0);
+                        SF_DEBUG_ASSERT2(0, "Uniform %d has unhandled element count %d.", var, uniformDef.ElementCount);
+                }
+
+                // Set sampler stage uniforms.
+                for (int tu = 0; tu < FragShaderDesc::MaxTextureSamplers; ++tu)
+                {
+                    if ( TextureUniforms[tu].UniformVar < 0 )
+                        break;
+
+                    glUniform1iv( pCurShader->Uniforms[TextureUniforms[tu].UniformVar].Location, 
+                        TextureUniforms[tu].StagesUsed, TextureUniforms[tu].SamplerStages );
+                }
+            }
+            else
+            {
+                GLuint program = pCurShader->GetUniformVariableProgram(var);
+                SF_UNUSED(program); // if GL_EXT_separate_shaderObjects is not available.
+
+                switch (uniformDef.ElementCount)
+                {
+                case 16:
+                    glProgramUniformMatrix4fv(program, pCurShader->Uniforms[var].Location, size, false /* transpose */,
+                        UniformData + uniformDef.ShadowOffset);
+                    break;
+                case 4:
+                    glProgramUniform4fv(program, pCurShader->Uniforms[var].Location, size,
+                        UniformData + uniformDef.ShadowOffset);
+                    break;
+                case 3:
+                    glProgramUniform3fv(program, pCurShader->Uniforms[var].Location, size,
+                        UniformData + uniformDef.ShadowOffset);
+                    break;
+                case 2:
+                    glProgramUniform2fv(program, pCurShader->Uniforms[var].Location, size,
+                        UniformData + uniformDef.ShadowOffset);
+                    break;
+                case 1:
+                    glProgramUniform1fv(program, pCurShader->Uniforms[var].Location, size,
+                        UniformData + uniformDef.ShadowOffset);
+                    break;
+
+                default:
+                    SF_DEBUG_ASSERT2(0, "Uniform %d has unhandled element count %d.", var, uniformDef.ElementCount);
+                }
+
+                // Set sampler stage uniforms.
+                for (int tu = 0; tu < FragShaderDesc::MaxTextureSamplers; ++tu)
+                {
+                    if ( TextureUniforms[tu].UniformVar < 0 )
+                        break;
+
+                    GLuint gProgram = pCurShader->GetUniformVariableProgram(TextureUniforms[tu].UniformVar);                    
+                    SF_UNUSED(gProgram); // if GL_EXT_separate_shaderObjects is not available.
+                    glProgramUniform1iv( gProgram, pCurShader->Uniforms[TextureUniforms[tu].UniformVar].Location, 
+                    TextureUniforms[tu].StagesUsed, TextureUniforms[tu].SamplerStages );
+                }
             }
         }
-    }
-
-    // Set sampler stage uniforms.
-    for (int tu = 0; tu < FragShaderDesc::MaxTextureSamplers; ++tu)
-    {
-        if ( TextureUniforms[tu].UniformVar < 0 )
-            break;
-
-        glUniform1iv( pCurShader->Uniforms[TextureUniforms[tu].UniformVar], 
-            TextureUniforms[tu].StagesUsed, TextureUniforms[tu].SamplerStages );
     }
 
     memset(UniformSet, 0, Uniform::SU_Count);
@@ -540,24 +874,6 @@ unsigned ShaderInterface::GetMaximumRowsPerInstance()
         }
     }
     return MaxRowsPerInstance;
-}
-
-bool ShaderInterface::GetDynamicLoopSupport()
-{
-    // Check cached value. -1 indicates not calculated yet.
-    if ( DynamicLoops < 0 )
-    {
-        // Just try to compile a shader we know has dynamic loops, and see if it fails.
-        for ( int i = 0; i < FragShaderDesc::FSI_Count; ++i )
-        {
-            if ( FragShaderDesc::Descs[i] && FragShaderDesc::Descs[i]->Flags & Shader_DynamicLoop )
-            {
-                DynamicLoops = pHal->SManager.StaticShaders[i].Init(pHal, FragShaderDesc::Descs[i]->Type, true ) ? 1 : 0;            
-                break;
-            }
-        }
-    }
-    return DynamicLoops ? true : false;
 }
 
 unsigned ShaderInterface::GetRowsPerInstance( const VertexShaderDesc* pvdesc )
@@ -599,16 +915,28 @@ unsigned ShaderInterface::GetCountPerInstance(const VertexShaderDesc* pvdesc, Un
 
 ShaderManager::ShaderManager(ProfileViews* prof) :
     StaticShaderManagerType(prof), 
+    pHal(0),
     Caps(0),
     GLSLVersion(ShaderDesc::ShaderVersion_Default),
-    ShouldUseBinaryShaders(false)
+    DynamicLoops(-1),
+    ShouldUseBinaryShaders(false),
+    SingleBinaryShaderFile(true),
+    SeparablePipelines(false),
+    SeparablePipelineExtension(false)
 {
     memset(StaticShaders, 0, sizeof(StaticShaders));
 }
 
-static const char* ShaderHeaderString = "GFxShaders";
-static const unsigned ShaderHeaderSize = 10;
-
+// If an incompatibility between the binary shader file format is introduced, change the
+// header string, so that it will not match older versions. All files are checked with shader
+// generation timestamps, so modifying the shaders themsevles will be automatically detected.
+// 'GFxShaders'   = initial version supporting binary shaders.
+// 'GFxShadersV2' = supports loading separated binary shaders (previous version did not).
+#if defined(SF_GL_BINARY_SHADER)
+static const char* ShaderHeaderString = "GFxShadersV2";
+static const unsigned ShaderHeaderSize = 12;
+#endif
+    
 bool ShaderManager::Initialize(HAL* phal, unsigned vmcFlags)
 {
     pHal = phal;
@@ -632,7 +960,7 @@ bool ShaderManager::Initialize(HAL* phal, unsigned vmcFlags)
         }
     }
     
-    // Parse the verison string.
+    // Parse the version string.
     unsigned majorVersion, minorVersion;
     SFsscanf(reinterpret_cast<const char*>(glVersion), "%d.%d", &majorVersion, &minorVersion);
     
@@ -669,25 +997,43 @@ bool ShaderManager::Initialize(HAL* phal, unsigned vmcFlags)
     
 #endif
 
+    // NOTE: on android, some chipsets report that they have the separate_shader_objects extension, however, we link the
+    // GL runtime statically, and the library does not contain the function, and gl2ext.h does not have the define. In this
+    // case, do not allow SeparablePipelines.
+#if (defined(SF_USE_GLES2) && !defined(GL_EXT_separate_shader_objects)) || !defined(GL_ARB_separate_shader_objects)
+    SeparablePipelines          = false;
+    SeparablePipelineExtension  = false;
+#else
+    SeparablePipelineExtension  = pHal->CheckExtension("separate_shader_objects");
+    SeparablePipelines          = ((vmcFlags & HALConfig_DisableShaderPipelines) == 0) && SeparablePipelineExtension;
+#endif
+
     ShouldUseBinaryShaders = (vmcFlags & HALConfig_DisableBinaryShaders) == 0 && (Caps & Cap_BinaryShaders);
+    SingleBinaryShaderFile = (vmcFlags & HALConfig_MultipleShaderCacheFiles) == 0;
+
+    SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Using binary shaders: %s", ShouldUseBinaryShaders ? "true" : "false");
+
+    // Disable separate pipelines if binary shaders are in use. It appears that these two extensions do not always 
+    // interact with each other well. Certain drivers will not save separable programs that can be used as separable
+    // programs when reloaded. TODO: investigate and re-enable if possible.
+    if (ShouldUseBinaryShaders)
+        SeparablePipelines = false;
 
     // Attempt to load binary shaders. If successful (all loaded), just finish now.
-    if (ShouldUseBinaryShaders && loadBinaryShaders(phal))
-            return true;
+    if (ShouldUseBinaryShaders)
+        loadBinaryShaders();
 
-    // If it was not requested to compile shaders dynamically, then compile all of them now. Note that if binary
-    // shader support is on, this is overridden, and all shaders are compiled anyhow, because they will be saved
-    // immediately.
-    SF_DEBUG_WARNING((vmcFlags & HALConfig_DynamicShaderCompile) && ShouldUseBinaryShaders,
-        "Dynamic shader compilation was requested, but this is incompatible with using binary shaders, "
-        "which this system supports. Dynamic compilation flag will be ignored.\n");
+    // Check if platform supports dynamic looping. If it doesn't, blur-type filter shaders are dynamically generated.
+    // This must come after the binary shader loading, because we may load the shader that has the dynamic loops.
+    if ( !GetDynamicLoopSupport() )
+        Caps |= Cap_NoDynamicLoops;
 
-    if ( ShouldUseBinaryShaders || (vmcFlags & HALConfig_DynamicShaderCompile) == 0)
+    if ( (vmcFlags & HALConfig_DynamicShaderCompile) == 0)
     {
         for (unsigned i = 0; i < UniqueShaderCombinations; i++)
         {
             // If the InitBinary succeeded, skip recompilation.
-            if ( StaticShaders[i].Prog )
+            if ( StaticShaders[i].IsInitialized() )
                 continue;
 
             ShaderType shaderType = ShaderDesc::GetShaderTypeForComboIndex(i, GLSLVersion);
@@ -704,13 +1050,35 @@ bool ShaderManager::Initialize(HAL* phal, unsigned vmcFlags)
             if ((fdesc->Flags & Shader_DynamicLoop) && (Caps & Cap_NoDynamicLoops))
                 continue;
 
+#if !defined(GFX_ENABLE_VIDEO)
+            // If video is not enabled, reject any video shaders.
+            if ((vdesc->Flags & Shader_Video) || (fdesc->Flags & Shader_Video))
+                continue;
+#endif
+
+            // If the platform doesn't have derivatives, do no initialize shaders that use them.
+            if ((Caps & Cap_NoDerivatives) != 0 && 
+                ((vdesc->Flags & Shader_Derivatives) || (fdesc->Flags & Shader_Derivatives)))
+            {
+                continue;
+            }
+
             // If the platform doesn't support instancing, do not initialize shaders that use it.
-            if ( (fdesc->Flags & Shader_Instanced) && !HasInstancingSupport() )
+            if ( ((fdesc->Flags & Shader_Instanced) || (vdesc->Flags & Shader_Instanced)) && !HasInstancingSupport() )
                 continue;
 
-            if ( !StaticShaders[i].Init(phal, shaderType))
+            if ( !StaticShaders[i].Init(phal, GLSLVersion, i, SeparablePipelines, CompiledShaderHash))
                 return false;
         }
+
+        // If we are precompiling all shaders (and it is presumably finished now), tell the shader compiler to
+        // release its resources. 
+#if defined(SF_USE_GLES2)
+        GLint hasShaderCompiler;
+        glGetIntegerv(GL_SHADER_COMPILER, &hasShaderCompiler);
+        if (hasShaderCompiler)
+            glReleaseShaderCompiler();
+#endif
     }
 
     // Now that all shaders have been compiled, save them to disk.
@@ -718,6 +1086,12 @@ bool ShaderManager::Initialize(HAL* phal, unsigned vmcFlags)
         saveBinaryShaders();
 
     return true;
+}
+
+unsigned ShaderManager::GetNumberOfUniforms() const
+{
+    unsigned maximumUniforms =(Caps & Cap_MaxUniforms) >> Cap_MaxUniforms_Shift;
+    return maximumUniforms;
 }
 
 unsigned ShaderManager::SetupFilter(const Filter* filter, unsigned fillFlags, unsigned* passes, BlurFilterState& leBlur) const
@@ -735,10 +1109,42 @@ unsigned ShaderManager::SetupFilter(const Filter* filter, unsigned fillFlags, un
     return 0;
 }
 
+bool ShaderManager::GetDynamicLoopSupport()
+{
+    // Check cached value. -1 indicates not calculated yet.
+    if ( DynamicLoops < 0 )
+    {
+        // Just try to compile a shader we know has dynamic loops, and see if it fails.
+        for ( int i = 0; i < FragShaderDesc::FSI_Count; ++i )
+        {
+            if ( FragShaderDesc::Descs[i] && (FragShaderDesc::Descs[i]->Flags & Shader_DynamicLoop) == Shader_DynamicLoop)
+            {
+                DynamicLoops = 0;
+                
+                unsigned comboIndex = FragShaderDesc::GetShaderComboIndex(FragShaderDesc::Descs[i]->Type, GLSLVersion);
+
+                // Note: could already be initialized, due to binary shader loading.
+                if (StaticShaders[comboIndex].IsInitialized() ||
+                    StaticShaders[comboIndex].Init(pHal, GLSLVersion, comboIndex, SeparablePipelines, CompiledShaderHash, true ))
+                {
+                    DynamicLoops = 1;
+                }
+                break;
+            }
+        }
+    }
+    return DynamicLoops ? true : false;
+}
+
 bool ShaderManager::HasInstancingSupport() const
 {
     // Caps generated on InitHAL.
     return (Caps & Cap_Instancing) != 0;
+}
+
+bool ShaderManager::UsingSeparateShaderObject() const
+{
+    return SeparablePipelines;
 }
 
 void ShaderManager::Reset()
@@ -750,163 +1156,339 @@ void ShaderManager::Reset()
         saveBinaryShaders();
 #endif
 
-    // Destroy the shader programs as well.
+    HashLH<unsigned, ShaderHashEntry>::ConstIterator it;
+    for (it = CompiledShaderHash.Begin(); it != CompiledShaderHash.End(); ++it)
+    {
+        const ShaderHashEntry& e = it->Second;
+        if (e.Program && glIsProgram(e.Program))
+            glDeleteProgram(e.Program);
+    }
     CompiledShaderHash.Clear();
+
+    // Destroy the shader programs as well.
     for (unsigned i = 0; i < UniqueShaderCombinations; i++)
         StaticShaders[i].Shutdown();
+}
+
+void ShaderManager::BeginScene()
+{
+    // If we are using separated pipelines, make sure the current program is 0, otherwise it will
+    // override any shader pipelines used with glBindProgramPipeline.
+    if (SeparablePipelines)
+        glUseProgram(0);
 }
 
 void ShaderManager::saveBinaryShaders()
 {
 #if defined(SF_GL_BINARY_SHADER)
 
-    SF_BINARYSHADER_DEBUG_MESSAGE(1,"Saving Binary Shaders...");
-
     // If we support binary shaders, save them now.
     if (Caps & Cap_BinaryShaders)
     {
+        SF_BINARYSHADER_DEBUG_MESSAGE(1,"Saving Binary Shaders...\n");
+
         // Before we do anything, run through all our shaders, and see if their binary sizes have changed. If not,
         // assume no further optimizations were done, and thus, do not actually re-save the file on shutdown.
+        unsigned count = 0;
         bool needsResave = false;
-        for (unsigned shader =0; shader < UniqueShaderCombinations; ++shader)
+        GLint maximumBinarySize = 0;
+        HashLH<unsigned, ShaderHashEntry>::Iterator it = CompiledShaderHash.Begin();
+        for (it = CompiledShaderHash.Begin(); it != CompiledShaderHash.End(); ++it)
         {
-            if (StaticShaders[shader].Prog == 0)
+            unsigned program  = it->Second.Program;
+            if (!glIsProgram(program))
                 continue;
+            count++;
 
-            GLint newBinarySize;
-            glGetProgramiv(StaticShaders[shader].Prog, GL_PROGRAM_BINARY_LENGTH, &newBinarySize);
-            if (StaticShaders[shader].BinarySize != newBinarySize)
+            // Record the largest size, and see if it has changed.
+            maximumBinarySize = Alg::Max(maximumBinarySize, it->Second.BinarySize);
+            if (it->Second.BinarySize == 0)
             {
-                SF_BINARYSHADER_DEBUG_MESSAGE4(1, "Shader binary is different size (old=%d, new=%d, comboIndex=%d, prog=%d)", 
-                    StaticShaders[shader].BinarySize, newBinarySize, shader, StaticShaders[shader].Prog);
+                GLint size;
+                glGetProgramiv(program, GL_PROGRAM_BINARY_LENGTH, &size);
+                maximumBinarySize = Alg::Max(maximumBinarySize, size);
+                    SF_BINARYSHADER_DEBUG_MESSAGE3(1, "\tShader requires saving (hash=0x%08x, oldsize=%6d, newsize=%6d)\n", 
+                        it->First, it->Second.BinarySize, size);
                 needsResave = true;
-                break;
             }
         }
+
         // If we don't need to resave, then just quit now.
         if (!needsResave)
             return;
 
-        String shpath = BinaryShaderPath + "GFxShaders.cache";
-        Ptr<File>  pfile = *SF_NEW SysFile(shpath, File::Open_Write|File::Open_Create|File::Open_Truncate);
+        SF_DEBUG_ASSERT(maximumBinarySize > 0, "Maximum binary size reported as 0.");
 
-        if (pfile->IsValid())
+        // Align the maximum binary size to 32k.
+        maximumBinarySize = Alg::Align<32768>(maximumBinarySize);
+
+        Ptr<File>  pfile = 0;
+        GLsizei totalSize = 0;
+        void* buffer = SF_ALLOC(maximumBinarySize, Stat_Default_Mem);
+        
+        if (SingleBinaryShaderFile)
         {
-            GLsizei totalSize = 0;
-            GLsizei bufferSize = 0;
-            void* buffer = 0;
-
-            pfile->Write((const UByte*) ShaderHeaderString, 10);
-            pfile->WriteSInt64(SF_GFXSHADERMAKER_TIMESTAMP);
-            totalSize += ShaderHeaderSize + sizeof(SInt64);
-
-            SInt32 count = 0;
-            for (unsigned i = 0; i < UniqueShaderCombinations; i++)
+            String shpath = BinaryShaderPath + "GFxShaders.cache";
+            pfile = *SF_NEW SysFile(shpath, File::Open_Write|File::Open_Create|File::Open_Truncate);
+            if (!pfile->IsValid())
             {
-                if (StaticShaders[i].Prog)
-                    count++;
-            }
-
-            pfile->WriteSInt32(count);
-            totalSize += 4;
-
-            for (unsigned i = 0; i < UniqueShaderCombinations; i++)
-            {
-                if (StaticShaders[i].Prog)
-                {
-                    pfile->WriteSInt32(i);
-                    totalSize += sizeof(SInt32);
-                    SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Saving binary shader (comboIndex=%d)", i);
-                    if (!StaticShaders[i].SaveBinary(pfile, buffer, bufferSize, totalSize))
-                    {
-                        SF_DEBUG_WARNING1(1, "Error saving shader (comboIndex=%d)", i);
-                        pfile->Close();
-                        // Delete the contents of the file.
-                        pfile = SF_NEW SysFile(shpath.ToCStr(), File::Open_Write|File::Open_Truncate);
-                        pfile->Close();
-                        break;
-                    }
-                }
-            }
-
-            if (buffer)
+                SF_DEBUG_WARNING2(1, "Error creating binary shader cache %s: %d", shpath.ToCStr(), pfile->GetErrorCode());
                 SF_FREE(buffer);
+                return;
+            }
 
-            SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Total bytes written to shader cache file: %d", totalSize);
-            pfile->Close();
+            // Now write the file header.
+            pfile->Write((const UByte*) ShaderHeaderString, ShaderHeaderSize);
+            pfile->WriteSInt64(SF_GFXSHADERMAKER_TIMESTAMP);
+            pfile->WriteUInt32(count);
+            pfile->WriteUInt32(SeparablePipelines ? 1 : 0);
+            pfile->WriteUInt32(maximumBinarySize);
+            totalSize += ShaderHeaderSize + sizeof(SInt64) + 3 * sizeof(UInt32);
         }
-        else
-            SF_DEBUG_WARNING2(1, "Error creating binary shader cache %s: %d", shpath.ToCStr(), pfile->GetErrorCode());
+
+        // Iterate through the shader hash again, now saving all programs.
+        for (it = CompiledShaderHash.Begin(); it != CompiledShaderHash.End(); ++it)
+        {
+            unsigned hashCode = it->First;
+            unsigned program  = it->Second.Program;
+            if (!glIsProgram(program))
+                continue;
+
+            GLsizei size;
+            GLenum  format;
+            glGetProgramBinary(program, maximumBinarySize, &size, &format, buffer);
+            GLenum getBinaryError = glGetError();
+            if (getBinaryError != 0)
+            {
+                SF_DEBUG_MESSAGE3(1, "glGetProgramBinary failure. Shaders may be corrupted, resetting all Shaders (error=%d, hash=%08x, program=%8d).\n", 
+                    getBinaryError, hashCode, program);
+                Reset();
+                pfile->Close();
+                return;
+            }
+
+            if (!SingleBinaryShaderFile)
+            {
+                // Doesn't need saving.
+                if (size == it->Second.BinarySize || size == 0)
+                    continue;
+
+                char shpath[1024];
+                SFsprintf(shpath, 1024, "%sGFxShaders-%08x.cache", BinaryShaderPath.ToCStr(), hashCode);
+                pfile = *SF_NEW SysFile(shpath, File::Open_Write|File::Open_Create|File::Open_Truncate);
+                if (!pfile->IsValid())
+                {
+                    SF_DEBUG_WARNING2(1, "Error creating binary shader cache %s: %d", shpath, pfile->GetErrorCode());
+                    continue;
+                }
+
+                // Write the header and shader timestamp (into every file).
+                pfile->Write((const UByte*) ShaderHeaderString, ShaderHeaderSize);
+                pfile->WriteSInt64(SF_GFXSHADERMAKER_TIMESTAMP);
+                totalSize += ShaderHeaderSize + sizeof(SInt64);
+            }
+
+            pfile->WriteUInt32(hashCode);
+            pfile->WriteUInt32(format);
+            pfile->WriteUInt32(size);
+            if (size > 0 && pfile->Write((UByte*)buffer, size) < size)
+            {
+                SF_DEBUG_MESSAGE(1, "Failed writing to binary shader file.");
+                SF_FREE(buffer);
+                return;
+            }
+
+            // Update the binary size of the shader, so we know it's been written.
+            it->Second.BinarySize = size;
+
+            SF_BINARYSHADER_DEBUG_MESSAGE3(1, "Wrote binary shader to file (hash=%08x, format=%8d, size=%8d)\n", hashCode, format, size);
+            totalSize += size + 3 * sizeof(UInt32);
+
+            if (!SingleBinaryShaderFile)
+                pfile->Close();
+        }
+
+        SF_FREE(buffer);
+        SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Total bytes written to shader cache file(s): %d\n", totalSize);
+        if (SingleBinaryShaderFile)
+            pfile->Close();
     }
 #endif // SF_GL_BINARY_SHADER
 }
 
-bool ShaderManager::loadBinaryShaders( HAL* phal )
+bool ShaderManager::loadBinaryShaders()
 {
 #if defined(SF_GL_BINARY_SHADER)
 
     if (Caps & Cap_BinaryShaders)
     {
-        String shpath = BinaryShaderPath + "GFxShaders.cache";
-        Ptr<File>  pfile = *SF_NEW SysFile(shpath);
+        Ptr<File> pfile = 0;
+        SInt32 count = 0;
+        UInt32 maximumShaderSize = 0;
 
-        SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Shader binary file is %d bytes", pfile->GetLength());
-        if (pfile)
+        if (SingleBinaryShaderFile)
         {
-            char header[ShaderHeaderSize];
-            SInt64 version = 0;
-            SInt32 count = 0;
+            String shpath = BinaryShaderPath + "GFxShaders.cache";
+            pfile = *SF_NEW SysFile(shpath);
+            if (!loadAndVerifyShaderCacheHeader(pfile))
+                return false;
 
-            if (pfile->Read((UByte*)header, ShaderHeaderSize) < (int)ShaderHeaderSize || strncmp(header, ShaderHeaderString, ShaderHeaderSize))
+            // Read the rest of the parameters from the single-file version.
+            count               = pfile->ReadUInt32();
+            bool separate       = pfile->ReadUInt32() != 0;
+            maximumShaderSize   = pfile->ReadUInt32();
+
+            if (maximumShaderSize == 0)
             {
-                SF_DEBUG_WARNING1(1, "Binary shader file does not contain the required header (%s).", ShaderHeaderString);
-            }
-            else
-            {
-                version = pfile->ReadSInt64();
-                count = pfile->ReadSInt32();
-                if ( version != SF_GFXSHADERMAKER_TIMESTAMP )
-                {
-                    SF_DEBUG_WARNING2(version != SF_GFXSHADERMAKER_TIMESTAMP, "Binary shaders timestamps do not match executable. "
-                        "Using source shaders (bin=%lld, exe=%lld)", version, SF_GFXSHADERMAKER_TIMESTAMP);
-                    count = 0; // Will skip reading of shaders.
-                }
+                SF_DEBUG_WARNING(1, "Binary shaders indicate the maximum shader size is 0 bytes. This is invalid. Using source shaders");
+                return false;
             }
 
-            GLsizei bufferSize = 0;
-            void* buffer = 0;
-            bool initSuccess = true;
-            for (int i = 0; i < count; i++)
+            // Detect if the file was saved with a different 'separated' pipeline state. If so, just ignore the binary
+            // shaders. Likely, the HALConfig_DisableShaderPipelines has been modified for testing, so all shaders should
+            // be recompiled.
+            if (separate != SeparablePipelines)
             {
-                SInt32 comboIndex = pfile->ReadSInt32();
-                SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Loading binary shader (comboIndex=%d)", comboIndex);
-
-                // Find the shader type that goes with this combination.
-                if (!StaticShaders[comboIndex].InitBinary(phal, GLSLVersion, comboIndex, pfile, buffer, bufferSize))
-                {
-                    SF_DEBUG_WARNING(1, "Error loading some binary shaders. Using source.");
-
-                    // Kill all previously loaded binary shaders, they are likely bogus.
-                    for ( unsigned ci = 0; ci < UniqueShaderCombinations; ++ci)
-                        StaticShaders[ci].Shutdown();
-
-                    initSuccess = false;
-                    break;
-                }                    
+                SF_DEBUG_WARNING(!SeparablePipelines, "Binary shaders indicate that separate pipeline were "
+                    "used when saved, but they are currently disabled. Ignoring binary shaders.");
+                SF_DEBUG_WARNING(SeparablePipelines,  "Binary shaders indicate that separate pipeline were "
+                    "not used when saved, but they are currently enabled. Ignoring binary shaders");
+                return false;
             }
-
-            if (buffer)
-                SF_FREE(buffer);
-
-            // If we initialized all shaders successfully, stop now.
-            if (count > 0 && initSuccess)
-                return true;
         }
+        else
+        {
+            // If we are reading the shaders from disk in individual files, try to load all shaders.
+            count = UniqueShaderCombinations;
+            maximumShaderSize = 256 * 1024;     // should be large enough for even the largest shader.
+        }
+
+        void* buffer = SF_ALLOC(maximumShaderSize, Stat_Default_Mem);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (!SingleBinaryShaderFile)
+            {
+                char shpath[1024];
+                // NOTE: always use ShaderStage_Vertex, binary shader means we are not using separable pipelines.
+                unsigned hashCode = StaticShaders[i].getShaderPipelineHashCode(i, GLSLVersion, false, true, ShaderStage_Vertex);
+                SFsprintf(shpath, 1024, "%sGFxShaders-%08x.cache", BinaryShaderPath.ToCStr(), hashCode);
+                pfile = *SF_NEW SysFile(shpath);
+                if (!loadAndVerifyShaderCacheHeader(pfile))
+                    continue;
+            }
+
+            unsigned hashCode = pfile->ReadUInt32();
+            GLenum format     = pfile->ReadUInt32();
+            GLsizei size      = pfile->ReadUInt32();
+                            
+            SF_BINARYSHADER_DEBUG_MESSAGE3(1, "Loaded binary shader from file (hash=%08x, format=%8d, size=%8d)\n", hashCode, format, size);
+
+            // Load the binary program, and put it in the hash.
+            if (size > 0 )
+            {
+                if (pfile->Read((UByte*)buffer, size) < size)
+                {
+                    SF_DEBUG_WARNING(1, "Error reading from binary shader file (insufficient space remaining).");
+                    SF_FREE(buffer);
+                    return false;
+                }
+
+                // Create the program, and add it to the hash.
+                ShaderHashEntry entry;
+                entry.Program = glCreateProgram();
+
+                if (SeparablePipelineExtension)
+                {
+                    // NOTE: it is unclear in the spec whether it is possible to change the separable status of a binary program.
+                    // Because we do not store the individual separable status of each program, we must query it afterwards, to see
+                    // if it matches our current setup (whether we were able to modify it or not). If it does not match, fail loading 
+                    // this binary.
+                    if (SeparablePipelines)
+                        glProgramParameteri(entry.Program, GL_PROGRAM_SEPARABLE, GL_TRUE);
+                }
+
+                // Load the binary shader.
+                glProgramBinary(entry.Program, format, buffer, size);
+
+                if (SeparablePipelineExtension)
+                {
+                    GLint separableFlag;
+                    glGetProgramiv(entry.Program, GL_PROGRAM_SEPARABLE, &separableFlag);
+                    if ((separableFlag == GL_TRUE) != SeparablePipelines)
+                    {
+                        SF_BINARYSHADER_DEBUG_MESSAGE2(1, "Loaded shader program's GL_PROGRAM_SEPARABLE value does not "
+                            "match current state (hash=0x%08x, separable=%d). This shader will be ignored.\n",
+                            hashCode, SeparablePipelines ? 1 : 0);
+                        glDeleteProgram(entry.Program);
+                        continue;
+                    }
+                }
+
+                // Check to see if glProgramBinary failed, for instance because the driver has changed.
+                GLint linkStatus;
+                glGetProgramiv(entry.Program, GL_LINK_STATUS, &linkStatus);
+                if (linkStatus != GL_TRUE)
+                {
+                    SF_DEBUG_WARNONCE(1, "Binary shader program failed. This might indicate a driver change since the last binary shader saving - recompiling.");
+                    continue;
+                }
+
+                // Save the binary size, so we know this shader does not need resaving.
+                entry.BinarySize = size;
+                CompiledShaderHash.Add(hashCode, entry);
+            }
+        }
+
+        SF_FREE(buffer);
+        return true;
     }
 #endif // SF_GL_BINARY_SHADER
 
-    // We did not load all binary shaders.
+    // We did not load any binary shaders.
     return false;
+}
+
+bool ShaderManager::loadAndVerifyShaderCacheHeader( File* pfile )
+{
+#if defined(SF_GL_BINARY_SHADER)
+    if (!pfile || !pfile->IsValid())
+    {
+        if (SingleBinaryShaderFile)
+        {
+            SF_DEBUG_WARNING1(1, "Error reading binary shader cache, error code %d", pfile->GetErrorCode());
+        }
+        else
+        {
+            // With multiple files, don't spew a whole bunch of errors (unless in binary-shader-info-mode).
+            // These may be expected errors, if this is the first time the app has compiled shaders.
+            SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Error reading binary shader cache, error code %d", pfile->GetErrorCode());
+        }
+        return false;
+    }
+    SF_BINARYSHADER_DEBUG_MESSAGE1(1, "Shader binary file is %d bytes\n", pfile->GetLength());
+
+    char header[ShaderHeaderSize];
+    SInt64 version = 0;
+
+    if (pfile->Read((UByte*)header, ShaderHeaderSize) < (int)ShaderHeaderSize || strncmp(header, ShaderHeaderString, ShaderHeaderSize))
+    {
+        SF_DEBUG_WARNING1(1, "Binary shader file does not contain the required header (%s).", ShaderHeaderString);
+        return false;
+    }
+
+    version             = pfile->ReadSInt64();
+    if ( version != SF_GFXSHADERMAKER_TIMESTAMP )
+    {
+        SF_DEBUG_WARNING2(version != SF_GFXSHADERMAKER_TIMESTAMP, "Binary shaders timestamps do not match executable. "
+            "(bin=%lld, exe=%lld)", version, SF_GFXSHADERMAKER_TIMESTAMP);
+        return false;
+    }
+
+    return true;
+#else
+    return false;
+#endif
 }
 
 
@@ -917,6 +1499,14 @@ void ShaderInterface::ResetContext()
         delete It->Second;
 
     BlurShaders.Clear();
+}
+
+void ShaderInterface::BeginScene()
+{
+    // Clear the current shader.
+    CurShader.pShaderObj = 0;
+    CurShader.pVDesc     = 0;
+    CurShader.pFDesc     = 0;
 }
 
 const BlurFilterShader* ShaderInterface::GetBlurShader(const BlurFilterShaderKey& params)

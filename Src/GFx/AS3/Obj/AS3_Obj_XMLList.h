@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,12 +33,16 @@ namespace fl
 {
     extern const TypeInfo XMLListTI;
     extern const ClassInfo XMLListCI;
+    extern const TypeInfo ObjectTI;
+    extern const ClassInfo ObjectCI;
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
     extern const TypeInfo QNameTI;
     extern const ClassInfo QNameCI;
     extern const TypeInfo XMLTI;
@@ -96,6 +101,8 @@ namespace Instances { namespace fl
         XMLList(InstanceTraits::Traits& t);
 
 //##protect##"instance$methods"
+#ifdef GFX_ENABLE_XML
+
     public:
         ~XMLList();
 
@@ -149,12 +156,11 @@ namespace Instances { namespace fl
         {
             TargetNamespace = &v;
         }
-        void GetDescendants(XMLList& list, const Multiname& prop_name);
 
         // 9.2.1.10 [[ResolveValue]] ( )
         CheckResult ResolveValue(XML*& result);
         // 9.2.1.5 [[HasProperty]] (P)
-        bool HasProperty(const Multiname& prop_name) const;
+        virtual bool HasProperty(const Multiname& prop_name, bool check_prototype);
         // This method won't handle numeric properties.
         CheckResult GetProperty(const Multiname& prop_name, XMLList& list);
 
@@ -164,6 +170,9 @@ namespace Instances { namespace fl
         // Inherited virtual methods.
 
         virtual void AS3Constructor(unsigned argc, const Value* argv);
+
+        // 9.1.1.8 [[Descendants]] (P)
+        virtual void GetDescendants(XMLList& list, const Multiname& prop_name);
 
         // 11.6.2 XMLList Assignment Operator
         // 9.2.1.2 [[Put]] (P, V)
@@ -178,6 +187,7 @@ namespace Instances { namespace fl
         virtual void GetNextPropertyValue(Value& value, GlobalSlotIndex ind);
 
         virtual void ForEachChild_GC(Collector* prcc, GcOp op) const;
+#endif
 
 //##protect##"instance$methods"
 
@@ -428,6 +438,7 @@ namespace Instances { namespace fl
         }
 
 //##protect##"instance$data"
+#ifdef GFX_ENABLE_XML
     private:
         // 9.2.1 Internal Properties and Methods
         // The XML or XMLList object associated with this object that will 
@@ -441,6 +452,7 @@ namespace Instances { namespace fl
 
     public:
         ArrayLH<SPtr<XML> > List;
+#endif
 //##protect##"instance$data"
 
     };
@@ -448,7 +460,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class XMLList : public CTraits
+    class XMLList : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -474,11 +486,15 @@ namespace InstanceTraits { namespace fl
 
         enum { ThunkInfoNum = 41 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[60];
 //##protect##"instance_traits$methods"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> MakeInstance(Traits& t, Instances::fl::Object& target_obj, const ASString& target_prop, Instances::fl::Namespace& target_ns);
 
         // Prototype related functions.
         static void toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
+#endif
 //##protect##"instance_traits$methods"
 
 //##protect##"instance_traits$data"
@@ -490,7 +506,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class XMLList : public Traits
+    class XMLList : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -498,9 +514,11 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::XMLList ClassType;
+        typedef InstanceTraits::fl::XMLList InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        XMLList(VM& vm);
+        XMLList(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -533,13 +551,18 @@ namespace Classes { namespace fl
         }
 
 //##protect##"class_$methods"
+#ifdef GFX_ENABLE_XML
         virtual void Construct(Value& _this, unsigned argc, const Value* argv, bool extCall = false);
         virtual void Call(const Value& _this, Value& result, unsigned argc, const Value* const argv);
         virtual void InitPrototype(AS3::Object& obj) const;       
+#endif
 //##protect##"class_$methods"
 
 //##protect##"class_$data"
+#ifdef GFX_ENABLE_XML
+        static const TypeInfo* tit[2];
         static const ThunkInfo f[2];
+#endif
 //##protect##"class_$data"
 
     };

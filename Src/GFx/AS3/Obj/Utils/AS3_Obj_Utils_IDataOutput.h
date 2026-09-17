@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,6 +31,8 @@ namespace fl_utils
 {
     extern const TypeInfo IDataOutputTI;
     extern const ClassInfo IDataOutputCI;
+    extern const TypeInfo ByteArrayTI;
+    extern const ClassInfo ByteArrayCI;
 } // namespace fl_utils
 namespace fl
 {
@@ -37,6 +40,14 @@ namespace fl
     extern const ClassInfo StringCI;
     extern const TypeInfo uintTI;
     extern const ClassInfo uintCI;
+    extern const TypeInfo BooleanTI;
+    extern const ClassInfo BooleanCI;
+    extern const TypeInfo int_TI;
+    extern const ClassInfo int_CI;
+    extern const TypeInfo NumberTI;
+    extern const ClassInfo NumberCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_utils
@@ -63,17 +74,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_utils
 {
-    class IDataOutput : public Traits
+    class IDataOutput : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::IDataOutput"; }
 #endif
     public:
-        typedef Classes::fl_utils::IDataOutput ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::Interface InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        IDataOutput(VM& vm);
+        IDataOutput(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

@@ -1,0 +1,83 @@
+
+# This file defines an app based on FxShippingPlayer. The files that normally need to be changed
+# will go in a directory named after this file in LocalApps. Each supported mobile platform will
+# have its own icons and manifest. The Flash content and other resources are shared.
+#
+# Run make for the desired platforms once to setup the app.
+#
+# On Android, build the app by running make after making your changes. 
+# On iOS, an Xcode project will be created. Use this project to build and deploy the app; make does not
+#         actually build these apps.
+
+
+# The display name of your app (visible to users)
+
+DISPLAY_NAME := Game Center Example (AS2)
+
+
+# The package prefix. Often a reverse URL.
+# If the package prefix is com.scaleform, then the 
+#  Android package will be:       com.scaleform.<APP_NAME>
+#  Android main activity will be: com.scaleform.<APP_NAME>.MainActivity
+
+PACKAGE := com.scaleform
+
+
+# The Flash file to load at startup. This will be copied to flash.swf in this App's development
+# directory (only during setup for iOS).
+
+STARTUP_FLASH := Bin/Data/AS2/Samples/GameCenterExample.swf
+
+
+# Other files needed by the app (extra swfs, image files, etc.)
+# If the file list is too long for one line, you can put a backslash, followed immediately by a return (newline)
+# List every individual file explicitly or include an entire directory by listing it with no trailing slash
+# (See StarforceTD.def for an example of multiple files with directories)
+
+RESOURCES := 
+
+
+# List the orientations that the app will use. If only one is specified then the user cannot
+# rotate the app. If none are specified then the behavior is arbitrary (normally based on sensor).
+# If more than one is specified some platforms may allow any supported orientation, not just those in the list.
+#ORIENTATIONS := portrait landscape reversePortrait reverseLandscape
+
+ORIENTATIONS := portrait landscape reversePortrait reverseLandscape
+
+
+# Use the Scaleform internal gesture recognizer. Otherwise, gesture events will only be triggered by the native platform.
+
+RECOGNIZE_GESTURES := 1
+
+
+
+# EdgeAA (0: off; 1: on)
+
+EDGEAA := 1
+
+
+# Enable to avoid clearing the screen each frame (0: clear, 1: don't clear). Useful in
+# cases where the SWF's backdrop is completely opaque and covers the entire screen, as
+# in such a case, clearing the screen at the beginning of each frame is redundant.
+
+NO_CLEAR := 0
+
+
+#
+# Online Game System (GameKit: Use Game Center; blank: Don't Use Game Center)
+
+ONLINE_GAME_SYSTEM := GameKit
+
+
+# FMOD Sound support
+USE_FMOD := 1
+
+
+#
+# Android Deployment
+
+# Uncomment to automatically install on all connected devices (only when something was just built)
+# AUTODEPLOY := 1
+
+# Uncomment to automatically launch the app after installing
+# AUTORUN := 1

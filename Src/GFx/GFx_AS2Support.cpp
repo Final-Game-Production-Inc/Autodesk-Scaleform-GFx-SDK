@@ -6,6 +6,7 @@ Created     :   Dec, 2009
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -38,12 +39,7 @@ MovieImpl* AS2Support::CreateMovie(MemoryContext* memContext)
     AS2::MemoryContextImpl* memContextImpl = static_cast<AS2::MemoryContextImpl*>(memContext);
     MemoryHeap* pheap = memContextImpl->Heap;
     MovieImpl* pmovie           = SF_HEAP_NEW(pheap) MovieImpl(pheap);
-#if defined(SF_SHOW_WATERMARK)
-    if(!pmovie->IsValidEval())
-    {
-        return NULL;
-    }
-#endif
+
     Ptr<ASMovieRootBase> pasmr = *SF_HEAP_NEW(pheap) AS2::MovieRoot(memContextImpl, pmovie, this);
     pmovie->SetAcceptAnimMovesWith3D(true);     // Set AS2-only default which allows timeline with 3D
     return pmovie;

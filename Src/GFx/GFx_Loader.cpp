@@ -6,6 +6,7 @@ Created     :   June 30, 2005
 Authors     :
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -26,13 +27,11 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_HeapNew.h"
 #include "GFx/AMP/Amp_Server.h"
 
-#ifdef SF_OS_WIIU
-#include <nn/middleware.h>
-
-#define SF_VERSION "Scaleform_" GFX_VERSION_STRING
-//Do not remove this line if you are a WiiU licensee
-NN_DEFINE_MIDDLEWARE(adsk, "Autodesk", SF_VERSION);
+#ifdef SF_ENABLE_HTTP_LOADING
+#include "curl/curl.h"
 #endif
+
+
 
 void    GFx_ValidateEvaluation();
 
@@ -50,7 +49,9 @@ void    URLBuilder::DefaultBuildURL(String *ppath, const LocationInfo& loc)
 {
     // Determine the file name we should use base on a relative path.
     if (IsPathAbsolute(loc.FileName))
+    {
         *ppath = loc.FileName;
+    }
     else
     {  
         // If not absolute, concatenate image path to the relative parent path.
@@ -150,6 +151,117 @@ bool    URLBuilder::ExtractFilePath(String *ppath)
     // but we keep it simple for now.
     return (i >= 0);
 }
+
+bool URLBuilder::IsProtocol(const String& path)
+{
+    String protocol = path.GetProtocol();
+
+    return (protocol == "http://" || protocol == "file://" || protocol == "https://");
+}
+
+#ifdef SF_ENABLE_HTTP_LOADING
+bool URLBuilder::SendURLRequest(Array<UByte>* bytes, const String& path, UrlMethod method, const char* data, int dataLength, const Array<String>* headers, const char* contentType)
+{
+    CURL* curlHandle = curl_easy_init();
+    if (curlHandle == NULL)
+    {
+        return false;
+    }
+    PutData putData;
+
+    curl_easy_setopt(curlHandle, CURLOPT_URL, path.ToCStr());
+    curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, HttpWriteData);
+    curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, bytes);
+    curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, "Scaleform-agent/1.0");
+
+//    SF_ASSERT(curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_SSL);
+    curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYHOST, 0L);
+
+    if (method == Url_Method_Post)
+    {
+        if (data != NULL && dataLength > 0)
+        {
+            curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, data);
+        }
+        else
+        {
+            curl_easy_setopt(curlHandle, CURLOPT_POST, 1L);
+        }
+    }
+    else if (method == Url_Method_Put)
+    {
+        curl_easy_setopt(curlHandle, CURLOPT_UPLOAD, 1L);
+        curl_easy_setopt(curlHandle, CURLOPT_PUT, 1L);
+        if (data != NULL && dataLength > 0)
+        {
+            putData.Data = data;
+            putData.DataLeft = static_cast<size_t>(dataLength);
+            curl_easy_setopt(curlHandle, CURLOPT_READDATA, &putData);
+            curl_easy_setopt(curlHandle, CURLOPT_READFUNCTION, HttpReadData);
+            curl_easy_setopt(curlHandle, CURLOPT_INFILESIZE_LARGE, (curl_off_t)dataLength);
+        }
+    }
+    curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, bytes);
+
+    struct curl_slist* curlHeaders = NULL;
+    if (contentType != NULL && !String(contentType).IsEmpty())
+    {
+        String contentFull("Content-Type: ");
+        contentFull += contentType;
+        curlHeaders = curl_slist_append(curlHeaders, contentFull.ToCStr()); 
+    }
+    if (headers != NULL)
+    {
+        for (UPInt i = 0; i < headers->GetSize(); ++i)
+        {
+            curlHeaders = curl_slist_append(curlHeaders, headers->At(i).ToCStr()); 
+        }
+    }
+    if (curlHeaders != NULL)
+    {
+        curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, curlHeaders);
+    }
+
+    CURLcode res = curl_easy_perform(curlHandle);
+    curl_easy_cleanup(curlHandle);
+    return (res == CURLE_OK);
+}
+
+size_t URLBuilder::HttpWriteData(char* buffer, size_t size, size_t nmemb, void* userp)
+{
+    Array<UByte>* bytes = (Array<UByte>*)userp;
+
+    UPInt sizeIncrease = size * nmemb;
+    if (sizeIncrease > 0)
+    {
+        bytes->Append((UByte*)buffer, sizeIncrease);
+    }
+    return sizeIncrease;
+}
+
+size_t URLBuilder::HttpReadData(void* ptr, size_t size, size_t nmemb, void* userp)
+{
+    size_t retcode = size * nmemb;
+    PutData* putData = static_cast<PutData*>(userp);
+
+    if (putData->DataLeft >= retcode)
+    {
+        memcpy(ptr, putData->Data, retcode);
+        putData->DataLeft -= retcode;
+    }
+    else
+    {
+        memcpy(ptr, putData->Data, putData->DataLeft);
+        retcode = putData->DataLeft;
+        putData->DataLeft = 0;
+    }
+    return retcode;
+}
+
+
+#endif
+
 
 // ***** GFxStateBag implementation
 
@@ -364,10 +476,7 @@ System::~System()
 void System::Init(const MemoryHeap::HeapDesc& rootHeapDesc, SysAllocBase* psysAlloc)
 {
     Scaleform::System::Init(rootHeapDesc, psysAlloc);
-#ifdef SF_OS_WIIU
-    //Do not remove this line if you are a WiiU licensee
-    NN_USING_MIDDLEWARE(adsk);
-#endif //SF_OS_WIIU
+
     SF_AMP_CODE(AMP::Server::Init();)
 
 }

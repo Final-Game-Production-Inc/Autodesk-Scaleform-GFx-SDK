@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -53,24 +54,27 @@ namespace ClassTraits { namespace fl_display
         {"TOP", NULL, OFFSETOF(Classes::fl_display::FocusDirection, TOP), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    FocusDirection::FocusDirection(VM& vm)
-    : Traits(vm, AS3::fl_display::FocusDirectionCI)
+
+    FocusDirection::FocusDirection(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::FocusDirection::FocusDirection()"
 //##protect##"ClassTraits::FocusDirection::FocusDirection()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_display::FocusDirectionCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_display::FocusDirection(*this));
 
     }
 
     Pickable<Traits> FocusDirection::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) FocusDirection(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) FocusDirection(vm, AS3::fl_display::FocusDirectionCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::FocusDirectionCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -81,6 +85,11 @@ namespace fl_display
 {
     const TypeInfo FocusDirectionTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_display::FocusDirection::InstanceType),
+        0,
+        ClassTraits::fl_display::FocusDirection::MemberInfoNum,
+        0,
+        0,
         "FocusDirection", "flash.display", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -88,10 +97,6 @@ namespace fl_display
     const ClassInfo FocusDirectionCI = {
         &FocusDirectionTI,
         ClassTraits::fl_display::FocusDirection::MakeClassTraits,
-        0,
-        ClassTraits::fl_display::FocusDirection::MemberInfoNum,
-        0,
-        0,
         NULL,
         ClassTraits::fl_display::FocusDirection::mi,
         NULL,

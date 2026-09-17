@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Ankur Mohan
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,12 +35,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_geom::Transform, Instances::fl_geom::Transform::mid_colorTransformGet, SPtr<Instances::fl_geom::ColorTransform> > TFunc_Instances_Transform_colorTransformGet;
 typedef ThunkFunc1<Instances::fl_geom::Transform, Instances::fl_geom::Transform::mid_colorTransformSet, const Value, Instances::fl_geom::ColorTransform*> TFunc_Instances_Transform_colorTransformSet;
 typedef ThunkFunc0<Instances::fl_geom::Transform, Instances::fl_geom::Transform::mid_concatenatedColorTransformGet, SPtr<Instances::fl_geom::ColorTransform> > TFunc_Instances_Transform_concatenatedColorTransformGet;
@@ -308,7 +303,7 @@ namespace Instances { namespace fl_geom
 
             PointF ctr = (pDispObj->GetParent()) ? pDispObj->GetParent()->GlobalToLocal(pDispObj->GetProjectionCenter()) :
                 pDispObj->GetProjectionCenter();
-            if (bIsRoot && ctr.x==0 && ctr.y==0)
+            if (bIsRoot || NumberUtil::IsNaN(ctr.x) || NumberUtil::IsNaN(ctr.y))
                 ctr = asvm.GetMovieImpl()->GetVisibleFrameRectInTwips().Center();
             argv[2].SetNumber(TwipsToPixels(ctr.x));
             argv[3].SetNumber(TwipsToPixels(ctr.y));
@@ -343,6 +338,16 @@ namespace Instances { namespace fl_geom
             PointF ctr = (pDispObj->GetParent()) ? pDispObj->GetParent()->LocalToGlobal(PixelsToTwips(value->GetProjectionCenter())) :
                 PixelsToTwips(value->GetProjectionCenter());
             pDispObj->SetProjectionCenter(ctr);
+        }
+        else
+        {
+            // If the perspectiveProjection is being set to NULL, remove the view/proj matrices from the display object.
+            // Also, set the focal length and FOV to zero, so that if the perspectiveProject is assigned to a non-NULL value,
+            // it will update the DisplayObject's matrices at that point.
+            pDispObj->SetFocalLength(0.0);
+            pDispObj->SetFOV(0.0);
+            pDispObj->ClearProjectionMatrix3D();
+            pDispObj->ClearViewMatrix3D();
         }
 //##protect##"instance::Transform::perspectiveProjectionSet()"
     }
@@ -474,27 +479,43 @@ namespace Instances { namespace fl_geom
 
 namespace InstanceTraits { namespace fl_geom
 {
+    // const UInt16 Transform::tito[Transform::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 6, 8, 9, 11, 12, 14, 15, 
+    // };
+    const TypeInfo* Transform::tit[17] = {
+        &AS3::fl_geom::ColorTransformTI, 
+        NULL, &AS3::fl_geom::ColorTransformTI, 
+        &AS3::fl_geom::ColorTransformTI, 
+        &AS3::fl_geom::MatrixTI, 
+        &AS3::fl_geom::MatrixTI, 
+        NULL, &AS3::fl_geom::MatrixTI, 
+        &AS3::fl_geom::Matrix3DTI, 
+        NULL, &AS3::fl_geom::Matrix3DTI, 
+        &AS3::fl_geom::PerspectiveProjectionTI, 
+        NULL, &AS3::fl_geom::PerspectiveProjectionTI, 
+        &AS3::fl_geom::RectangleTI, 
+        &AS3::fl_geom::Matrix3DTI, &AS3::fl_display::DisplayObjectTI, 
+    };
     const ThunkInfo Transform::ti[Transform::ThunkInfoNum] = {
-        {TFunc_Instances_Transform_colorTransformGet::Func, &AS3::fl_geom::ColorTransformTI, "colorTransform", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_colorTransformSet::Func, NULL, "colorTransform", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Transform_concatenatedColorTransformGet::Func, &AS3::fl_geom::ColorTransformTI, "concatenatedColorTransform", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_concatenatedMatrixGet::Func, &AS3::fl_geom::MatrixTI, "concatenatedMatrix", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_matrixGet::Func, &AS3::fl_geom::MatrixTI, "matrix", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_matrixSet::Func, NULL, "matrix", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Transform_matrix3DGet::Func, &AS3::fl_geom::Matrix3DTI, "matrix3D", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_matrix3DSet::Func, NULL, "matrix3D", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Transform_perspectiveProjectionGet::Func, &AS3::fl_geom::PerspectiveProjectionTI, "perspectiveProjection", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_perspectiveProjectionSet::Func, NULL, "perspectiveProjection", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Transform_pixelBoundsGet::Func, &AS3::fl_geom::RectangleTI, "pixelBounds", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Transform_getRelativeMatrix3D::Func, &AS3::fl_geom::Matrix3DTI, "getRelativeMatrix3D", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_Transform_colorTransformGet::Func, &Transform::tit[0], "colorTransform", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_colorTransformSet::Func, &Transform::tit[1], "colorTransform", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Transform_concatenatedColorTransformGet::Func, &Transform::tit[3], "concatenatedColorTransform", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_concatenatedMatrixGet::Func, &Transform::tit[4], "concatenatedMatrix", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_matrixGet::Func, &Transform::tit[5], "matrix", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_matrixSet::Func, &Transform::tit[6], "matrix", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Transform_matrix3DGet::Func, &Transform::tit[8], "matrix3D", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_matrix3DSet::Func, &Transform::tit[9], "matrix3D", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Transform_perspectiveProjectionGet::Func, &Transform::tit[11], "perspectiveProjection", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_perspectiveProjectionSet::Func, &Transform::tit[12], "perspectiveProjection", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Transform_pixelBoundsGet::Func, &Transform::tit[14], "pixelBounds", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Transform_getRelativeMatrix3D::Func, &Transform::tit[15], "getRelativeMatrix3D", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     Transform::Transform(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Transform::Transform()"
 //##protect##"InstanceTraits::Transform::Transform()"
-        SetMemSize(sizeof(Instances::fl_geom::Transform));
 
     }
 
@@ -511,24 +532,27 @@ namespace InstanceTraits { namespace fl_geom
 
 namespace ClassTraits { namespace fl_geom
 {
-    Transform::Transform(VM& vm)
-    : Traits(vm, AS3::fl_geom::TransformCI)
+
+    Transform::Transform(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Transform::Transform()"
 //##protect##"ClassTraits::Transform::Transform()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_geom::Transform(vm, AS3::fl_geom::TransformCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Transform::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Transform(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Transform(vm, AS3::fl_geom::TransformCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_geom::TransformCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -539,6 +563,11 @@ namespace fl_geom
 {
     const TypeInfo TransformTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_geom::Transform::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_geom::Transform::ThunkInfoNum,
+        0,
         "Transform", "flash.geom", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -546,10 +575,6 @@ namespace fl_geom
     const ClassInfo TransformCI = {
         &TransformTI,
         ClassTraits::fl_geom::Transform::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_geom::Transform::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_geom::Transform::ti,

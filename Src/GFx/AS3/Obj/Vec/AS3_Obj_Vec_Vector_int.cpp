@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,6 +29,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -82,6 +84,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_lengthGet, UInt32> TFunc_Instances_Vector_int_lengthGet;
 typedef ThunkFunc1<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_lengthSet, const Value, UInt32> TFunc_Instances_Vector_int_lengthSet;
 typedef ThunkFunc1<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_fixedSet, const Value, bool> TFunc_Instances_Vector_int_fixedSet;
@@ -101,7 +105,7 @@ typedef ThunkFunc0<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int:
 typedef ThunkFunc0<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3reverse, SPtr<Instances::fl_vec::Vector_int> > TFunc_Instances_Vector_int_AS3reverse;
 typedef ThunkFunc0<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3shift, SInt32> TFunc_Instances_Vector_int_AS3shift;
 typedef ThunkFunc2<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3slice, Value, unsigned, const Value*> TFunc_Instances_Vector_int_AS3slice;
-typedef ThunkFunc2<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3sort, Value, unsigned, const Value*> TFunc_Instances_Vector_int_AS3sort;
+typedef ThunkFunc1<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3sort, SPtr<Instances::fl_vec::Vector_int>, const Value&> TFunc_Instances_Vector_int_AS3sort;
 typedef ThunkFunc2<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3splice, Value, unsigned, const Value*> TFunc_Instances_Vector_int_AS3splice;
 typedef ThunkFunc2<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3indexOf, SInt32, SInt32, SInt32> TFunc_Instances_Vector_int_AS3indexOf;
 typedef ThunkFunc2<Instances::fl_vec::Vector_int, Instances::fl_vec::Vector_int::mid_AS3lastIndexOf, SInt32, SInt32, SInt32> TFunc_Instances_Vector_int_AS3lastIndexOf;
@@ -262,19 +266,10 @@ namespace Instances { namespace fl_vec
         V.Slice(result, argc, argv, *this);
 //##protect##"instance::Vector_int::AS3slice()"
     }
-    void Vector_int::AS3sort(Value& result, unsigned argc, const Value* const argv)
+    void Vector_int::AS3sort(SPtr<Instances::fl_vec::Vector_int>& result, const Value& comparefn)
     {
 //##protect##"instance::Vector_int::AS3sort()"
-        if (argc < 1 || argv[0].IsNullOrUndefined() || !argv[0].IsCallable())
-        {
-            VM& vm = GetVM();
-            return vm.ThrowTypeError(VM::Error(VM::eCheckTypeFailedError, vm 
-                SF_DEBUG_ARG((argc > 0) ? vm.GetValueTraits(argv[0]).GetName().ToCStr() : "undefined")
-                SF_DEBUG_ARG(this->GetEnclosedClassTraits().GetName().ToCStr())
-                ));
-        }
-
-        V.Sort(result, argc, argv, *this);
+        V.Sort(result, comparefn, *this);
 //##protect##"instance::Vector_int::AS3sort()"
     }
     void Vector_int::AS3splice(Value& result, unsigned argc, const Value* const argv)
@@ -297,6 +292,16 @@ namespace Instances { namespace fl_vec
     }
 
 //##protect##"instance$methods"
+    Vector_int::Vector_int(InstanceTraits::Traits& t, UInt32 length, bool fixed)
+    : Instances::fl::Object(t)
+    , V(t.GetVM().GetMemoryHeap(), t.GetVM())
+    {
+        if (!V.Resize(length))
+            return;
+
+        V.SetFixed(fixed);
+    }
+
     void Vector_int::AS3Constructor(unsigned argc, const Value* argv)
     {
         if (argc > 0)
@@ -382,45 +387,87 @@ namespace Instances { namespace fl_vec
         // Not an Array index. Let us treat it as a regular object.
         return Instances::fl::Object::DeleteProperty(prop_name);
     }
+
+    bool Vector_int::HasProperty(const Multiname& prop_name, bool check_prototype)
+    {
+        UInt32 ind;
+        if (GetVectorInd(prop_name, ind))
+            return ind < V.GetSize();
+
+        // Not an Array index. Let us treat it as a regular object.
+        return Instances::fl::Object::HasProperty(prop_name, check_prototype);
+    }
 //##protect##"instance$methods"
 
 }} // namespace Instances
 
 namespace InstanceTraits { namespace fl_vec
 {
+    // const UInt16 Vector_int::tito[Vector_int::ThunkInfoNum] = {
+    //    0, 1, 3, 5, 6, 7, 8, 10, 13, 16, 19, 20, 23, 24, 25, 28, 29, 30, 31, 32, 34, 37, 40, 
+    // };
+    const TypeInfo* Vector_int::tit[43] = {
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::FunctionTI, &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::FunctionTI, &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::FunctionTI, &AS3::fl::ObjectTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::uintTI, 
+        NULL, 
+        NULL, &AS3::fl::FunctionTI, &AS3::fl::ObjectTI, 
+        &AS3::fl::int_TI, 
+        NULL, 
+        &AS3::fl::int_TI, 
+        NULL, 
+        NULL, NULL, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+    };
+    const Abc::ConstValue Vector_int::dva[2] = {
+        {Abc::CONSTANT_Utf8, 1}, 
+        {Abc::CONSTANT_Int, 1}, 
+    };
     const ThunkInfo Vector_int::ti[Vector_int::ThunkInfoNum] = {
-        {TFunc_Instances_Vector_int_lengthGet::Func, &AS3::fl::uintTI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector_int_lengthSet::Func, NULL, "length", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Vector_int_fixedSet::Func, NULL, "fixed", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Vector_int_fixedGet::Func, &AS3::fl::BooleanTI, "fixed", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector_int_AS3toString::Func, &AS3::fl::StringTI, "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector_int_AS3toLocaleString::Func, &AS3::fl::StringTI, "toLocaleString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector_int_AS3join::Func, &AS3::fl::StringTI, "join", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Vector_int_AS3every::Func, &AS3::fl::BooleanTI, "every", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector_int_AS3forEach::Func, NULL, "forEach", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector_int_AS3map::Func, NULL, "map", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector_int_AS3push::Func, &AS3::fl::uintTI, "push", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Vector_int_AS3some::Func, &AS3::fl::BooleanTI, "some", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector_int_AS3unshift::Func, &AS3::fl::uintTI, "unshift", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Vector_int_AS3concat::Func, NULL, "concat", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Vector_int_AS3filter::Func, NULL, "filter", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector_int_AS3pop::Func, &AS3::fl::int_TI, "pop", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector_int_AS3reverse::Func, NULL, "reverse", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector_int_AS3shift::Func, &AS3::fl::int_TI, "shift", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector_int_AS3slice::Func, NULL, "slice", NS_AS3, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_Vector_int_AS3sort::Func, NULL, "sort", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Vector_int_AS3splice::Func, NULL, "splice", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Vector_int_AS3indexOf::Func, &AS3::fl::int_TI, "indexOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector_int_AS3lastIndexOf::Func, &AS3::fl::int_TI, "lastIndexOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 2},
+        {TFunc_Instances_Vector_int_lengthGet::Func, &Vector_int::tit[0], "length", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_lengthSet::Func, &Vector_int::tit[1], "length", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_fixedSet::Func, &Vector_int::tit[3], "fixed", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_fixedGet::Func, &Vector_int::tit[5], "fixed", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3toString::Func, &Vector_int::tit[6], "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3toLocaleString::Func, &Vector_int::tit[7], "toLocaleString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3join::Func, &Vector_int::tit[8], "join", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 0, 1, &Vector_int::dva[0]},
+        {TFunc_Instances_Vector_int_AS3every::Func, &Vector_int::tit[10], "every", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3forEach::Func, &Vector_int::tit[13], "forEach", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3map::Func, &Vector_int::tit[16], "map", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3push::Func, &Vector_int::tit[19], "push", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3some::Func, &Vector_int::tit[20], "some", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3unshift::Func, &Vector_int::tit[23], "unshift", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3concat::Func, &Vector_int::tit[24], "concat", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3filter::Func, &Vector_int::tit[25], "filter", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3pop::Func, &Vector_int::tit[28], "pop", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3reverse::Func, &Vector_int::tit[29], "reverse", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3shift::Func, &Vector_int::tit[30], "shift", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3slice::Func, &Vector_int::tit[31], "slice", NS_AS3, Abc::NS_Public, CT_Method, 0, 2, 1, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3sort::Func, &Vector_int::tit[32], "sort", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3splice::Func, &Vector_int::tit[34], "splice", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3indexOf::Func, &Vector_int::tit[37], "indexOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector_int_AS3lastIndexOf::Func, &Vector_int::tit[40], "lastIndexOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 2, 0, 1, &Vector_int::dva[1]},
     };
 
     Vector_int::Vector_int(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Vector_int::Vector_int()"
         SetArrayLike();
+        SetTraitsType(Traits_Vector_int);
 //##protect##"InstanceTraits::Vector_int::Vector_int()"
-        SetMemSize(sizeof(Instances::fl_vec::Vector_int));
 
     }
 
@@ -485,24 +532,28 @@ namespace Classes { namespace fl_vec
 
 namespace ClassTraits { namespace fl_vec
 {
-    Vector_int::Vector_int(VM& vm)
-    : Traits(vm, AS3::fl_vec::Vector_intCI)
+
+    Vector_int::Vector_int(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Vector_int::Vector_int()"
+        SetTraitsType(Traits_Vector_int);
 //##protect##"ClassTraits::Vector_int::Vector_int()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_vec::Vector_int(vm, AS3::fl_vec::Vector_intCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_vec::Vector_int(*this));
 
     }
 
     Pickable<Traits> Vector_int::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Vector_int(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Vector_int(vm, AS3::fl_vec::Vector_intCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_vec::Vector_intCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -513,6 +564,11 @@ namespace fl_vec
 {
     const TypeInfo Vector_intTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject | TypeInfo::Final,
+        sizeof(ClassTraits::fl_vec::Vector_int::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_vec::Vector_int::ThunkInfoNum,
+        0,
         "Vector$int", "__AS3__.vec", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -520,10 +576,6 @@ namespace fl_vec
     const ClassInfo Vector_intCI = {
         &Vector_intTI,
         ClassTraits::fl_vec::Vector_int::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_vec::Vector_int::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_vec::Vector_int::ti,

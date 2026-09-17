@@ -7,6 +7,7 @@ Created     :   May 20, 2008
 Authors     :   Michael Antonov, Boris Rayskiy, Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -861,7 +862,7 @@ public:
         StatBag_MemGranularity = 8,
         StatBag_PageShift      = 4,
         StatBag_PageSize       = 1 << StatBag_PageShift,
-        StatBag_PageTableSize  = Stat_MaxId / StatBag_PageSize,
+        StatBag_PageTableSize  = static_cast<unsigned>(Stat_MaxId) / static_cast<unsigned>(StatBag_PageSize),
         StatBag_EndId          = Stat_MaxId,
         
         // Page table entries are set to this value if no memory

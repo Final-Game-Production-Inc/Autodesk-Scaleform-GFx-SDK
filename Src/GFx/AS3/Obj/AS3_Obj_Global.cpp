@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -71,8 +72,12 @@ template <> const TFunc_Instances_GlobalObjectCPP_isXMLName::TMethod TFunc_Insta
 template <> const TFunc_Instances_GlobalObjectCPP_trace::TMethod TFunc_Instances_GlobalObjectCPP_trace::Method = &Instances::fl::GlobalObjectCPP::trace;
 template <> const TFunc_Instances_GlobalObjectCPP_print::TMethod TFunc_Instances_GlobalObjectCPP_print::Method = &Instances::fl::GlobalObjectCPP::print;
 typedef ThunkFunc2<Instances::fl::GlobalObjectCPP, __LINE__, const Value, Instances::fl_net::URLRequest*, const ASString&> TFunc_Instances_GlobalObjectCPP_navigateToURL;
+typedef ThunkFunc1<Instances::fl::GlobalObjectCPP, __LINE__, SPtr<Class>, const ASString&> TFunc_Instances_GlobalObjectCPP_getClassByAlias;
+typedef ThunkFunc2<Instances::fl::GlobalObjectCPP, __LINE__, const Value, const ASString&, Class*> TFunc_Instances_GlobalObjectCPP_registerClassAlias;
 
 template <> const TFunc_Instances_GlobalObjectCPP_navigateToURL::TMethod TFunc_Instances_GlobalObjectCPP_navigateToURL::Method = &Instances::fl::GlobalObjectCPP::navigateToURL;
+template <> const TFunc_Instances_GlobalObjectCPP_getClassByAlias::TMethod TFunc_Instances_GlobalObjectCPP_getClassByAlias::Method = &Instances::fl::GlobalObjectCPP::getClassByAlias;
+template <> const TFunc_Instances_GlobalObjectCPP_registerClassAlias::TMethod TFunc_Instances_GlobalObjectCPP_registerClassAlias::Method = &Instances::fl::GlobalObjectCPP::registerClassAlias;
 typedef ThunkFunc2<Instances::fl::GlobalObjectCPP, __LINE__, Value, unsigned, const Value*> TFunc_Instances_GlobalObjectCPP_fscommand;
 
 template <> const TFunc_Instances_GlobalObjectCPP_fscommand::TMethod TFunc_Instances_GlobalObjectCPP_fscommand::Method = &Instances::fl::GlobalObjectCPP::fscommand;
@@ -360,32 +365,54 @@ namespace Instances { namespace fl
 //##markup##"obj_global_cpp$package_methods_registration"
 //##begin##"obj_global_cpp$package_methods_registration"
         {
-            const TypeInfo TInfo = {TypeInfo::CompileTime, "", "", NULL};
+            const TypeInfo TInfo = {TypeInfo::CompileTime, 0, 0, 0, 0, 0, "", "", NULL};
             const ClassInfo CInfo = {&TInfo, NULL};
+            static const TypeInfo* tit[] = {
+                &AS3::fl::StringTI, &AS3::fl::StringTI, 
+                &AS3::fl::StringTI, &AS3::fl::StringTI, 
+                &AS3::fl::StringTI, &AS3::fl::StringTI, 
+                &AS3::fl::StringTI, &AS3::fl::StringTI, 
+                &AS3::fl::BooleanTI, &AS3::fl::NumberTI, 
+                &AS3::fl::BooleanTI, &AS3::fl::NumberTI, 
+                &AS3::fl::NumberTI, 
+                &AS3::fl::NumberTI, &AS3::fl::StringTI, 
+                &AS3::fl::StringTI, 
+                &AS3::fl::StringTI, 
+                &AS3::fl::BooleanTI, NULL, 
+                NULL, 
+                NULL, 
+            };
             static const ThunkInfo f[] = {
-                {TFunc_Instances_GlobalObjectCPP_decodeURI::Func, &AS3::fl::StringTI, "decodeURI", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_decodeURIComponent::Func, &AS3::fl::StringTI, "decodeURIComponent", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_encodeURI::Func, &AS3::fl::StringTI, "encodeURI", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_encodeURIComponent::Func, &AS3::fl::StringTI, "encodeURIComponent", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_isNaN::Func, &AS3::fl::BooleanTI, "isNaN", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_isFinite::Func, &AS3::fl::BooleanTI, "isFinite", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_parseInt::Func, &AS3::fl::NumberTI, "parseInt", NULL, Abc::NS_Public, CT_Method, 0, 2},
-                {TFunc_Instances_GlobalObjectCPP_parseFloat::Func, &AS3::fl::NumberTI, "parseFloat", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_escape::Func, &AS3::fl::StringTI, "escape", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_unescape::Func, &AS3::fl::StringTI, "unescape", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_isXMLName::Func, &AS3::fl::BooleanTI, "isXMLName", NULL, Abc::NS_Public, CT_Method, 0, 1},
-                {TFunc_Instances_GlobalObjectCPP_trace::Func, NULL, "trace", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-                {TFunc_Instances_GlobalObjectCPP_print::Func, NULL, "print", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+                {TFunc_Instances_GlobalObjectCPP_decodeURI::Func, &tit[0], "decodeURI", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_decodeURIComponent::Func, &tit[2], "decodeURIComponent", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_encodeURI::Func, &tit[4], "encodeURI", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_encodeURIComponent::Func, &tit[6], "encodeURIComponent", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_isNaN::Func, &tit[8], "isNaN", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_isFinite::Func, &tit[10], "isFinite", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_parseInt::Func, &tit[12], "parseInt", NULL, Abc::NS_Public, CT_Method, 0, 2, 1},
+                {TFunc_Instances_GlobalObjectCPP_parseFloat::Func, &tit[13], "parseFloat", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_escape::Func, &tit[15], "escape", NULL, Abc::NS_Public, CT_Method, 0, 1, 1},
+                {TFunc_Instances_GlobalObjectCPP_unescape::Func, &tit[16], "unescape", NULL, Abc::NS_Public, CT_Method, 0, 1, 1},
+                {TFunc_Instances_GlobalObjectCPP_isXMLName::Func, &tit[17], "isXMLName", NULL, Abc::NS_Public, CT_Method, 0, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_trace::Func, &tit[19], "trace", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
+                {TFunc_Instances_GlobalObjectCPP_print::Func, &tit[20], "print", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
             };
             for (unsigned i = 0; i < NUMBEROF(f); ++i)
                 Add2VT(CInfo, f[i]);
         }
 #ifndef SF_AS3_NO_FLASH
         {
-            const TypeInfo TInfo = {TypeInfo::CompileTime, "", "flash.net", NULL};
+            const TypeInfo TInfo = {TypeInfo::CompileTime, 0, 0, 0, 0, 0, "", "flash.net", NULL};
             const ClassInfo CInfo = {&TInfo, NULL};
+            static const TypeInfo* tit[] = {
+                NULL, &AS3::fl_net::URLRequestTI, &AS3::fl::StringTI, 
+                &AS3::fl::ClassTI, &AS3::fl::StringTI, 
+                NULL, &AS3::fl::StringTI, &AS3::fl::ClassTI, 
+            };
             static const ThunkInfo f[] = {
-                {TFunc_Instances_GlobalObjectCPP_navigateToURL::Func, NULL, "navigateToURL", NULL, Abc::NS_Public, CT_Method, 1, 2},
+                {TFunc_Instances_GlobalObjectCPP_navigateToURL::Func, &tit[0], "navigateToURL", NULL, Abc::NS_Public, CT_Method, 1, 2, 0},
+                {TFunc_Instances_GlobalObjectCPP_getClassByAlias::Func, &tit[3], "getClassByAlias", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_registerClassAlias::Func, &tit[5], "registerClassAlias", NULL, Abc::NS_Public, CT_Method, 2, 2, 0},
             };
             for (unsigned i = 0; i < NUMBEROF(f); ++i)
                 Add2VT(CInfo, f[i]);
@@ -393,10 +420,13 @@ namespace Instances { namespace fl
 #endif
 #ifndef SF_AS3_NO_FLASH
         {
-            const TypeInfo TInfo = {TypeInfo::CompileTime, "", "flash.system", NULL};
+            const TypeInfo TInfo = {TypeInfo::CompileTime, 0, 0, 0, 0, 0, "", "flash.system", NULL};
             const ClassInfo CInfo = {&TInfo, NULL};
+            static const TypeInfo* tit[] = {
+                NULL, &AS3::fl::StringTI, 
+            };
             static const ThunkInfo f[] = {
-                {TFunc_Instances_GlobalObjectCPP_fscommand::Func, NULL, "fscommand", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+                {TFunc_Instances_GlobalObjectCPP_fscommand::Func, &tit[0], "fscommand", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
             };
             for (unsigned i = 0; i < NUMBEROF(f); ++i)
                 Add2VT(CInfo, f[i]);
@@ -404,20 +434,33 @@ namespace Instances { namespace fl
 #endif
 #ifndef SF_AS3_NO_FLASH
         {
-            const TypeInfo TInfo = {TypeInfo::CompileTime, "", "flash.utils", NULL};
+            const TypeInfo TInfo = {TypeInfo::CompileTime, 0, 0, 0, 0, 0, "", "flash.utils", NULL};
             const ClassInfo CInfo = {&TInfo, NULL};
+            static const TypeInfo* tit[] = {
+                NULL, &AS3::fl::uintTI, 
+                NULL, &AS3::fl::uintTI, 
+                &AS3::fl::XMLTI, NULL, 
+                &AS3::fl::StringTI, &AS3::fl::StringTI, 
+                NULL, &AS3::fl::StringTI, 
+                &AS3::fl::StringTI, NULL, 
+                NULL, NULL, 
+                &AS3::fl::int_TI, 
+                &AS3::fl::uintTI, &AS3::fl::FunctionTI, &AS3::fl::NumberTI, 
+                &AS3::fl::uintTI, &AS3::fl::FunctionTI, &AS3::fl::NumberTI, 
+                &AS3::fl::StringTI, &AS3::fl::StringTI, 
+            };
             static const ThunkInfo f[] = {
-                {TFunc_Instances_GlobalObjectCPP_clearInterval::Func, NULL, "clearInterval", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_clearTimeout::Func, NULL, "clearTimeout", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_describeType::Func, &AS3::fl::XMLTI, "describeType", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_escapeMultiByte::Func, &AS3::fl::StringTI, "escapeMultiByte", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_getDefinitionByName::Func, NULL, "getDefinitionByName", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_getQualifiedClassName::Func, &AS3::fl::StringTI, "getQualifiedClassName", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_getQualifiedSuperclassName::Func, NULL, "getQualifiedSuperclassName", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_getTimer::Func, &AS3::fl::int_TI, "getTimer", NULL, Abc::NS_Public, CT_Method, 0, 0},
-                {TFunc_Instances_GlobalObjectCPP_setInterval::Func, &AS3::fl::uintTI, "setInterval", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-                {TFunc_Instances_GlobalObjectCPP_setTimeout::Func, &AS3::fl::uintTI, "setTimeout", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-                {TFunc_Instances_GlobalObjectCPP_unescapeMultiByte::Func, &AS3::fl::StringTI, "unescapeMultiByte", NULL, Abc::NS_Public, CT_Method, 1, 1},
+                {TFunc_Instances_GlobalObjectCPP_clearInterval::Func, &tit[0], "clearInterval", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_clearTimeout::Func, &tit[2], "clearTimeout", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_describeType::Func, &tit[4], "describeType", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_escapeMultiByte::Func, &tit[6], "escapeMultiByte", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_getDefinitionByName::Func, &tit[8], "getDefinitionByName", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_getQualifiedClassName::Func, &tit[10], "getQualifiedClassName", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_getQualifiedSuperclassName::Func, &tit[12], "getQualifiedSuperclassName", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
+                {TFunc_Instances_GlobalObjectCPP_getTimer::Func, &tit[14], "getTimer", NULL, Abc::NS_Public, CT_Method, 0, 0, 0},
+                {TFunc_Instances_GlobalObjectCPP_setInterval::Func, &tit[15], "setInterval", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
+                {TFunc_Instances_GlobalObjectCPP_setTimeout::Func, &tit[18], "setTimeout", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
+                {TFunc_Instances_GlobalObjectCPP_unescapeMultiByte::Func, &tit[21], "unescapeMultiByte", NULL, Abc::NS_Public, CT_Method, 1, 1, 0},
             };
             for (unsigned i = 0; i < NUMBEROF(f); ++i)
                 Add2VT(CInfo, f[i]);
@@ -431,12 +474,18 @@ namespace Instances { namespace fl
 
         // avmplus.
         {
-            const TypeInfo TInfo = {TypeInfo::CompileTime, "", "avmplus", NULL};
+            const TypeInfo TInfo = {TypeInfo::CompileTime, 0, 0, 0, 0, 0, "", "avmplus", NULL};
             const ClassInfo CInfo = {&TInfo, NULL};
+            static const TypeInfo* tit[5] = {
+                &AS3::fl::XMLTI,
+                &AS3::fl::StringTI, NULL,
+                NULL, NULL,
+            };
+            // "describeType" in "avmplus" has different signature comparing to "flash.utils".
             static const ThunkInfo f[] = {
-                {TFunc_Instances_GlobalObjectCPP_describeType::Func, &AS3::fl::XMLTI, "describeType", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-                {TFunc_Instances_GlobalObjectCPP_getQualifiedClassName::Func, &AS3::fl::StringTI, "getQualifiedClassName", NULL, Abc::NS_Public, CT_Method, 1, 1},
-                {TFunc_Instances_GlobalObjectCPP_getQualifiedSuperclassName::Func, &AS3::fl::StringTI, "getQualifiedSuperclassName", NULL, Abc::NS_Public, CT_Method, 1, 1},
+                {TFunc_Instances_GlobalObjectCPP_describeType::Func, &tit[0], "describeType", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
+                {TFunc_Instances_GlobalObjectCPP_getQualifiedClassName::Func, &tit[1], "getQualifiedClassName", NULL, Abc::NS_Public, CT_Method, 1, 1},
+                {TFunc_Instances_GlobalObjectCPP_getQualifiedSuperclassName::Func, &tit[3], "getQualifiedSuperclassName", NULL, Abc::NS_Public, CT_Method, 1, 1},
             };
             for (unsigned i = 0; i < NUMBEROF(f); ++i)
                 Add2VT(CInfo, f[i]);
@@ -470,6 +519,9 @@ namespace Instances { namespace fl
         const Namespace& ns
         )
     {
+        if (ns.GetKind() != Abc::NS_Public)
+            return NULL;
+
         const ClassInfo* inh = NULL;
         if (CIRegistrationHash.Get(name.ToCStr(), &inh) && inh && ns.GetUri() == inh->GetPkgName())
         {
@@ -522,8 +574,9 @@ namespace Instances { namespace fl
     void GlobalObjectCPP::decodeURI(ASString& result, const ASString& uri)
     {
 //##protect##"instance::::decodeURI()"
-        String unescapedStr;
-        if (!ASUtils::AS3::Unescape(uri.ToCStr(), uri.GetSize(), unescapedStr))
+        StringBuffer b;
+
+        if (!ASUtils::AS3::DecodeURI(uri.ToCStr(), uri.GetSize(), b))
         {
             VM& vm = GetVM();
             vm.ThrowURIError(VM::Error(VM::eInvalidURIError, vm
@@ -531,38 +584,55 @@ namespace Instances { namespace fl
                 ));
         }
         else
-            result = GetVM().GetStringManager().CreateString(unescapedStr.ToCStr(), unescapedStr.GetSize());
+            result = GetVM().GetStringManager().CreateString(b.ToCStr(), b.GetSize());
 //##protect##"instance::::decodeURI()"
     }
     void GlobalObjectCPP::decodeURIComponent(ASString& result, const ASString& uri)
     {
 //##protect##"instance::::decodeURIComponent()"
-        String unescapedStr;
-        if (!ASUtils::AS3::Unescape(uri.ToCStr(), uri.GetSize(), unescapedStr, true))
+        StringBuffer b;
+
+        if (!ASUtils::AS3::DecodeURI(uri.ToCStr(), uri.GetSize(), b, true))
         {
             VM& vm = GetVM();
             vm.ThrowURIError(VM::Error(VM::eInvalidURIError, vm
-                SF_DEBUG_ARG("decodeURI")
+                SF_DEBUG_ARG("decodeURIComponent")
                 ));
         }
         else
-            result = GetVM().GetStringManager().CreateString(unescapedStr.ToCStr(), unescapedStr.GetSize());
+            result = GetVM().GetStringManager().CreateString(b.ToCStr(), b.GetSize());
 //##protect##"instance::::decodeURIComponent()"
     }
     void GlobalObjectCPP::encodeURI(ASString& result, const ASString& uri)
     {
 //##protect##"instance::::encodeURI()"
-        String encodedStr;
-        ASUtils::AS3::EncodeURI(uri.ToCStr(), uri.GetSize(), encodedStr);
-        result = GetVM().GetStringManager().CreateString(encodedStr);
+        StringBuffer b;
+        
+        if (!ASUtils::AS3::EncodeURI(uri.ToCStr(), uri.GetSize(), b))
+        {
+            VM& vm = GetVM();
+            vm.ThrowURIError(VM::Error(VM::eInvalidURIError, vm
+                SF_DEBUG_ARG("encodeURI")
+                ));
+        }
+        else
+            result = GetVM().GetStringManager().CreateString(b.ToCStr(), b.GetSize());
 //##protect##"instance::::encodeURI()"
     }
     void GlobalObjectCPP::encodeURIComponent(ASString& result, const ASString& uri)
     {
 //##protect##"instance::::encodeURIComponent()"
-        String encodedStr;
-        ASUtils::AS3::EncodeURIComponent(uri.ToCStr(), uri.GetSize(), encodedStr, true);
-        result = GetVM().GetStringManager().CreateString(encodedStr);
+        StringBuffer b;
+
+        if (!ASUtils::AS3::EncodeURI(uri.ToCStr(), uri.GetSize(), b, true))
+        {
+            VM& vm = GetVM();
+            vm.ThrowURIError(VM::Error(VM::eInvalidURIError, vm
+                SF_DEBUG_ARG("encodeURIComponent")
+                ));
+        }
+        else
+            result = GetVM().GetStringManager().CreateString(b.ToCStr(), b.GetSize());
 //##protect##"instance::::encodeURIComponent()"
     }
     void GlobalObjectCPP::isNaN(bool& result, Value::Number n)
@@ -616,9 +686,9 @@ namespace Instances { namespace fl
 
         if (!strncmp(numstr, "0x", 2) || !strncmp(numstr, "0X", 2))
             // Ignore heximal.
-            result = 0;
+            result = 0.0;
         else
-            result = Value(NumberUtil::StringToDouble(numstr, len - offset, &offset));
+            result = NumberUtil::StringToDouble(numstr, len - offset, &offset);
 //##protect##"instance::::parseFloat()"
     }
     void GlobalObjectCPP::escape(Value& result, unsigned argc, const Value* const argv)
@@ -636,9 +706,9 @@ namespace Instances { namespace fl
 
                 if (v.Convert2String(s))
                 {
-                    String escapedStr;
-                    ASUtils::AS3::Escape(s.ToCStr(), s.GetSize(), escapedStr);
-                    result = GetVM().GetStringManager().CreateString(escapedStr.ToCStr(), escapedStr.GetSize());
+                    StringBuffer b;
+                    ASUtils::AS3::Escape(s.ToCStr(), s.GetSize(), b);
+                    result = GetVM().GetStringManager().CreateString(b.ToCStr(), b.GetSize());
                 }
             }
         }
@@ -663,9 +733,9 @@ namespace Instances { namespace fl
 
                 if (v.Convert2String(s))
                 {
-                    String unescapedStr;
-                    ASUtils::AS3::Unescape(s.ToCStr(), s.GetSize(), unescapedStr);
-                    result = GetVM().GetStringManager().CreateString(unescapedStr.ToCStr(), unescapedStr.GetSize());
+                    StringBuffer b;
+                    ASUtils::AS3::Unescape(s.ToCStr(), s.GetSize(), b);
+                    result = GetVM().GetStringManager().CreateString(b.ToCStr(), b.GetSize());
                 }
             }
         }
@@ -701,8 +771,8 @@ namespace Instances { namespace fl
 
         for (unsigned i = 1; i < name.GetLength(); i++)
         {
-            wchar_t ch = (wchar_t)name.GetCharAt(i);
-            if (SFiswdigit(ch) || SFiswalpha(ch) || (ch == '.') || (ch == '-') || (ch == '_'))
+            wchar_t wch = (wchar_t)name.GetCharAt(i);
+            if (SFiswdigit(wch) || SFiswalpha(wch) || (wch == '.') || (wch == '-') || (wch == '_'))
                 continue;
             else
             {
@@ -799,6 +869,34 @@ namespace Instances { namespace fl
 
 //##protect##"instance::::navigateToURL()"
     }
+    void GlobalObjectCPP::getClassByAlias(SPtr<Class>& result, const ASString& aliasName)
+    {
+//##protect##"instance::::getClassByAlias()"
+        VM& vm = GetVM();
+        Class* cl = vm.GetClassByAlias(aliasName);
+
+        if (cl)
+            result = cl;
+        else
+        {
+            vm.ThrowReferenceError(VM::Error(VM::eClassNotFoundError, vm
+                SF_DEBUG_ARG(aliasName)
+                ));
+        }
+//##protect##"instance::::getClassByAlias()"
+    }
+    void GlobalObjectCPP::registerClassAlias(const Value& result, const ASString& aliasName, Class* classObject)
+    {
+//##protect##"instance::::registerClassAlias()"
+        SF_UNUSED1(result);
+
+        if (classObject)
+        {
+            VM& vm = GetVM();
+            vm.SetClassAlias(aliasName, *classObject);
+        }
+//##protect##"instance::::registerClassAlias()"
+    }
     void GlobalObjectCPP::fscommand(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::::fscommand()"
@@ -834,7 +932,12 @@ namespace Instances { namespace fl
     {
 //##protect##"instance::::describeType()"
         VM& vm = GetVM();
+#ifdef GFX_ENABLE_XML
         vm.GetXMLSupport().DescribeType(vm, result, value);
+#else
+        SF_UNUSED2(result, value);
+        vm.ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("describeType")));
+#endif
 //##protect##"instance::::describeType()"
     }
     void GlobalObjectCPP::escapeMultiByte(ASString& result, const ASString& value)
@@ -940,6 +1043,61 @@ namespace Instances { namespace fl
 #endif
 //##end##"obj_global_cpp$package_methods"
     
+//##markup##"obj_global_cpp$ConstPool"
+//##begin##"obj_global_cpp$ConstPool"
+
+    SInt32 GlobalObjectCPP::Ints[5] = {
+        0,
+        0x7fffffff,
+        16777215,
+        2000,
+        -1,
+
+    };
+
+    UInt32 GlobalObjectCPP::UInts[8] = {
+        0,
+        10,
+        1,
+        255,
+        7,
+        0xFFFFFFFF,
+        0xFFFF00,
+        0xB,
+
+    };
+
+    Value::Number GlobalObjectCPP::Numbers[9] = {
+        0,
+        10,
+        0x7FFFFFFF,
+        1,
+        NumberUtil::NaN(),
+        NumberUtil::NEGATIVE_INFINITY(),
+        NumberUtil::POSITIVE_INFINITY(),
+        1.0,
+        3,
+
+    };
+
+    const char* GlobalObjectCPP::Strings[12] = {
+        "",
+        ",",
+        "originalPreferred",
+        "informational",
+        "null",
+        "pad",
+        "rgb",
+        "evenOdd",
+        "normal",
+        "eulerAngles",
+        "Filedata",
+        "default",
+
+    };
+
+//##end##"obj_global_cpp$ConstPool"
+
     ///////////////////////////////////////////////////////////////////////////
 #ifdef SF_AS3_CLASS_AS_SLOT
     void GlobalObjectCPP::AddFixedSlot(Class& cl)
@@ -1004,9 +1162,11 @@ namespace InstanceTraits { namespace fl
         return true;
     }
 
-    // Let's not set Abc flag.
+    // Let's not set Abc flag up.
     const TypeInfo GlobalObject::TInfo = {
-        TypeInfo::CompileTime | TypeInfo::DynamicObject, 
+        TypeInfo::CompileTime | TypeInfo::DynamicObject,
+        sizeof(GlobalObject::InstanceType),
+        0, 0, 0, 0,
         "global", "", NULL,
         TypeInfo::None
     };
@@ -1052,10 +1212,6 @@ namespace InstanceTraits { namespace fl
     VMAbcFile* GlobalObjectScript::GetFilePtr() const
     {
         return File;
-    }
-    VMAppDomain& GlobalObjectScript::GetAppDomain() const
-    {
-        return GetFile().GetAppDomain();
     }
 
 

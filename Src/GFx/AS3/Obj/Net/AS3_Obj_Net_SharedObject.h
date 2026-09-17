@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -31,6 +32,8 @@ namespace fl_net
 {
     extern const TypeInfo SharedObjectTI;
     extern const ClassInfo SharedObjectCI;
+    extern const TypeInfo NetConnectionTI;
+    extern const ClassInfo NetConnectionCI;
 } // namespace fl_net
 namespace fl
 {
@@ -38,8 +41,14 @@ namespace fl
     extern const ClassInfo ObjectCI;
     extern const TypeInfo uintTI;
     extern const ClassInfo uintCI;
+    extern const TypeInfo NumberTI;
+    extern const ClassInfo NumberCI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
+    extern const TypeInfo int_TI;
+    extern const ClassInfo int_CI;
+    extern const TypeInfo BooleanTI;
+    extern const ClassInfo BooleanCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_net
@@ -224,7 +233,7 @@ namespace Instances { namespace fl_net
 
 namespace InstanceTraits { namespace fl_net
 {
-    class SharedObject : public CTraits
+    class SharedObject : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -250,6 +259,9 @@ namespace InstanceTraits { namespace fl_net
 
         enum { ThunkInfoNum = 15 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[25];
+        static const Abc::ConstValue dva[1];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -262,7 +274,7 @@ namespace InstanceTraits { namespace fl_net
     
 namespace ClassTraits { namespace fl_net
 {
-    class SharedObject : public Traits
+    class SharedObject : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -270,12 +282,17 @@ namespace ClassTraits { namespace fl_net
 #endif
     public:
         typedef Classes::fl_net::SharedObject ClassType;
+        typedef InstanceTraits::fl_net::SharedObject InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        SharedObject(VM& vm);
+        SharedObject(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[9];
+        static const Abc::ConstValue dva[5];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

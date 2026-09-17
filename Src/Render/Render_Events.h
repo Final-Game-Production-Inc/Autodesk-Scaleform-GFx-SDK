@@ -40,6 +40,7 @@ enum EventType
     Event_RenderTarget,     // Brackets all within PushRenderTarget/PopRenderTarget
     Event_Filter,           // Brackets all within PushFilters/PopFilters
     Event_ApplyBlend,       // Brackets all within applyBlendMode
+    Event_ApplyDepthStencil,// Brackets all within applyDepthStencilMode
 
     // DrawableImage Commands
     Event_DrawableImage,    // Brackets all operations within a single DrawableImage
@@ -69,7 +70,7 @@ class RenderEvent
 public:
     virtual ~RenderEvent()                 { }
     virtual bool GetListenerStatus() const { return ELS_Unknown; };
-    virtual void Begin( String eventName ) { SF_UNUSED(eventName); };
+    virtual void Begin( const char* eventName ) { SF_UNUSED(eventName); };
     virtual void End()                     { };
 };
 
@@ -77,7 +78,7 @@ public:
 class ScopedRenderEvent
 {
 public:
-    ScopedRenderEvent(RenderEvent& evt, String eventName, bool trigger = true) : EventObj(evt)
+    ScopedRenderEvent(RenderEvent& evt, const char* eventName, bool trigger = true) : EventObj(evt)
     {
         // Trigger can be used to have an event end on a scope, even if it was being somewhere else.
         if ( trigger )

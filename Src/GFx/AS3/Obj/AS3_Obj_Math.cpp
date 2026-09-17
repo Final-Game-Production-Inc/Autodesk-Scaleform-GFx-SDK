@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -296,44 +297,74 @@ namespace ClassTraits { namespace fl
         {"SQRT2", NULL, OFFSETOF(Classes::fl::Math, SQRT2), Abc::NS_Public, SlotInfo::BT_Number, 1},
     };
 
-    const ThunkInfo Math::ti[Math::ThunkInfoNum] = {
-        {TFunc_Classes_Math_abs::Func, &AS3::fl::NumberTI, "abs", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_acos::Func, &AS3::fl::NumberTI, "acos", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_asin::Func, &AS3::fl::NumberTI, "asin", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_atan::Func, &AS3::fl::NumberTI, "atan", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_atan2::Func, &AS3::fl::NumberTI, "atan2", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_Math_ceil::Func, &AS3::fl::NumberTI, "ceil", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_cos::Func, &AS3::fl::NumberTI, "cos", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_exp::Func, &AS3::fl::NumberTI, "exp", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_floor::Func, &AS3::fl::NumberTI, "floor", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_log::Func, &AS3::fl::NumberTI, "log", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_round::Func, &AS3::fl::NumberTI, "round", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_sin::Func, &AS3::fl::NumberTI, "sin", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_sqrt::Func, &AS3::fl::NumberTI, "sqrt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_tan::Func, &AS3::fl::NumberTI, "tan", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Math_pow::Func, &AS3::fl::NumberTI, "pow", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_Math_max::Func, &AS3::fl::NumberTI, "max", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Classes_Math_min::Func, &AS3::fl::NumberTI, "min", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Classes_Math_random::Func, &AS3::fl::NumberTI, "random", NULL, Abc::NS_Public, CT_Method, 0, 0},
+    // const UInt16 Math::tito[Math::ThunkInfoNum] = {
+    //    0, 2, 4, 6, 8, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 32, 35, 38, 
+    // };
+    const TypeInfo* Math::tit[39] = {
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
     };
-    Math::Math(VM& vm)
-    : Traits(vm, AS3::fl::MathCI)
+    const Abc::ConstValue Math::dva[6] = {
+        {Abc::CONSTANT_Double, 5}, {Abc::CONSTANT_Double, 5}, {}, 
+        {Abc::CONSTANT_Double, 6}, {Abc::CONSTANT_Double, 6}, {}, 
+    };
+    const ThunkInfo Math::ti[Math::ThunkInfoNum] = {
+        {TFunc_Classes_Math_abs::Func, &Math::tit[0], "abs", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_acos::Func, &Math::tit[2], "acos", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_asin::Func, &Math::tit[4], "asin", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_atan::Func, &Math::tit[6], "atan", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_atan2::Func, &Math::tit[8], "atan2", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_Math_ceil::Func, &Math::tit[11], "ceil", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_cos::Func, &Math::tit[13], "cos", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_exp::Func, &Math::tit[15], "exp", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_floor::Func, &Math::tit[17], "floor", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_log::Func, &Math::tit[19], "log", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_round::Func, &Math::tit[21], "round", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_sin::Func, &Math::tit[23], "sin", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_sqrt::Func, &Math::tit[25], "sqrt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_tan::Func, &Math::tit[27], "tan", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Math_pow::Func, &Math::tit[29], "pow", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_Math_max::Func, &Math::tit[32], "max", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 3, &Math::dva[0]},
+        {TFunc_Classes_Math_min::Func, &Math::tit[35], "min", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 3, &Math::dva[3]},
+        {TFunc_Classes_Math_random::Func, &Math::tit[38], "random", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+    };
+
+    Math::Math(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Math::Math()"
 //##protect##"ClassTraits::Math::Math()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl::MathCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::Math(*this));
 
     }
 
     Pickable<Traits> Math::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Math(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Math(vm, AS3::fl::MathCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::MathCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -344,6 +375,11 @@ namespace fl
 {
     const TypeInfo MathTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl::Math::InstanceType),
+        ClassTraits::fl::Math::ThunkInfoNum,
+        ClassTraits::fl::Math::MemberInfoNum,
+        0,
+        0,
         "Math", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -351,10 +387,6 @@ namespace fl
     const ClassInfo MathCI = {
         &MathTI,
         ClassTraits::fl::Math::MakeClassTraits,
-        ClassTraits::fl::Math::ThunkInfoNum,
-        ClassTraits::fl::Math::MemberInfoNum,
-        0,
-        0,
         ClassTraits::fl::Math::ti,
         ClassTraits::fl::Math::mi,
         NULL,

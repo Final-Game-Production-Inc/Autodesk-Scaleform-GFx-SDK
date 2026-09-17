@@ -6,6 +6,7 @@ Created     :   December 13, 2009
 Authors     :   Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -111,12 +112,12 @@ public:
     void    Update();
 
 private:
-    List<FxHUDMessage>             Log;    
-    unsigned                            NumMessages;
+    List<FxHUDMessage>              Log;    
+    unsigned                        NumMessages;
 
-    Value                        LogMC;
-    Double                          LogOriginalY;
-    List<FxHUDMessage::Movieclip>  MessageMCs;
+    Value                           LogMC;
+    GFx::Double                     LogOriginalY;
+    List<FxHUDMessage::Movieclip>   MessageMCs;
 
     FxHUDMessage::Movieclip*        GetUnusedMessageMovieclip();
 };
@@ -131,7 +132,7 @@ public:
     struct Config
     {
         // HUD movieclip
-        Value                HUDMC;
+        Value           HUDMC;
 		Movie*			pMovie;
     };
 
@@ -153,10 +154,10 @@ public:
 		unsigned					AmmoClips;
 		unsigned					AmmoClipSize;
 		unsigned					Grenades;
-		FxHUDPlayer::Weapon		WeaponType;
+		FxHUDPlayer::Weapon		    WeaponType;
 
-		float					Health;
-		float					Exp;
+		float					    Health;
+		float					    Exp;
 		unsigned					Rank;
 		unsigned					Sec;
 	};

@@ -7,6 +7,7 @@ Created     :   January 2012
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -179,10 +180,10 @@ void DICommand_Compare::ExecuteSW(DICommandContext& context,
 			UByte s0Alpha = pSource->IsTransparent() ? s0Col.GetAlpha() : 255;
 			UByte s1Alpha = pImageCompare1->IsTransparent() ? s1Col.GetAlpha() : 255;
 
-			UByte delta[4] = { s0Col.GetRed()   - s1Col.GetRed(),
-							   s0Col.GetGreen() - s1Col.GetGreen(),
-							   s0Col.GetBlue()  - s1Col.GetBlue(),
-							   s0Alpha          - s1Alpha };
+			UByte delta[4] = { static_cast<UByte>(s0Col.GetRed() - s1Col.GetRed()),
+                               static_cast<UByte>(s0Col.GetGreen() - s1Col.GetGreen()),
+                               static_cast<UByte>(s0Col.GetBlue()  - s1Col.GetBlue()),
+                               static_cast<UByte>(s0Alpha - s1Alpha) };
 			// If no color channels are different, return white color with alpha difference only
 			// If any color channel is different, return the difference with opaque alpha
 			if(delta[0] == 0 && delta[1] == 0 && delta[2] == 0 && delta[3] != 0)
@@ -776,7 +777,7 @@ private:
     float CosInterpolate(float a, float b, float x)
     {
         float ft = x * 3.1415927f;
-        float f = (1 - cos(ft)) * .5f;
+        float f = (float)((1 - cos(ft)) * .5f);
         return a*(1-f) + b*f;
     }
 };

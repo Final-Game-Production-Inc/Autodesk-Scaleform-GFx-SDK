@@ -6,6 +6,7 @@ Created     :   2011
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -119,16 +120,16 @@ void    GameItemSlot::OnEntityEvent(const GameEntityEvent& e)
     {
         case GameEntityEvent::ENTITY_StackChange:
         {
-            GameEntitySlotEvent e(GameEntitySlotEvent::ESLOT_SlotItemChanged, this, EntityRef, EntityRef);
-            EventListenerGroup->NotifyEvent(e);
+            GameEntitySlotEvent ese(GameEntitySlotEvent::ESLOT_SlotItemChanged, this, EntityRef, EntityRef);
+            EventListenerGroup->NotifyEvent(ese);
             break;
         }
         case GameEntityEvent::ENTITY_Destroy:
         {
             Ptr<GameItem> ent = GetEntity();
             SetEntity(NULL, true);
-            GameEntitySlotEvent e(GameEntitySlotEvent::ESLOT_SlotItemChanged, this, EntityRef, ent);
-            EventListenerGroup->NotifyEvent(e);
+            GameEntitySlotEvent ese(GameEntitySlotEvent::ESLOT_SlotItemChanged, this, EntityRef, ent);
+            EventListenerGroup->NotifyEvent(ese);
             break;
         }
         default:

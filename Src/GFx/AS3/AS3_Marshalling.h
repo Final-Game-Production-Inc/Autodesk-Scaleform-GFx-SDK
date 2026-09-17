@@ -6,6 +6,7 @@ Created     :   Dec, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -1184,7 +1185,7 @@ namespace Impl
         }
     };
 
-    bool ConvertTO(VM& vm, Value& to, const Value& from, VMAppDomain& appDomain, const TypeInfo& ti);
+    bool ConvertTO(VM& vm, Value& to, const Value& from, const TypeInfo& ti);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1347,30 +1348,10 @@ void ConvertValue<ASString>(Value& to, StringManager& sm)
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
-// RT stands for Result Type. It can be of type Value, which can hold multiple
-// value types.
-// If argument is not available, result won't be changed.
-template <typename RT>
-SF_INLINE
-void ReadArg(unsigned n, RT& result, unsigned argc, const Value* argv)
-{
-    if (argc > n)
-        AS3::Convert(result, argv[n]);
-}
-
-template <typename RT>
-SF_INLINE
-void ReadArg(VM& vm, unsigned n, RT& result, unsigned argc, const Value* argv)
-{
-    if (argc > n)
-        AS3::Convert(vm, result, argv[n]);
-}
-
-///////////////////////////////////////////////////////////////////////////
 
 // ThunkFunk0-6 are thunk function generator classes.
 // The actual implementation of static Func() is provided in VM.h; its
-// implementation is resposible for reading the arguments from argv and
+// implementation is responsible for reading the arguments from argv and
 // calling the pointer-to-member.
 
 template <typename T, size_t N, typename R>
@@ -1662,7 +1643,9 @@ DefArgs6<A0, A1, A2, A3, A4, A5> MakeDefArgs(AS3::StringManager& sm)
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// Args does not depend on T and N template arguments.
+// Template class does not depend on T and N template arguments.
+
+#ifdef SF_AS3_EMIT_DEF_ARGS
 
 template <typename R>
 class UnboxArgV0
@@ -1786,16 +1769,510 @@ class UnboxArgV1 : public UnboxArgV0<R>
 {
 public:
     SF_INLINE
-    UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs1<A0>& da)
+    UnboxArgV1(VM& vm, Value& result, const Value* argv)
     : UnboxArgV0<R>(vm, result)
-    , a0(da._0)
+    , a0(DefaultValue<typename Clean<A0>::type>(vm.GetStringManager()))
+    {
+        AS3::Convert(vm, a0, argv[0]);
+    }
+
+private:
+    UnboxArgV1& operator =(const UnboxArgV1&);
+
+public:
+    typename Clean<A0>::type a0;
+};
+
+template <typename R>
+class UnboxArgV1<R, Value> : public UnboxArgV0<R>
+{
+public:
+    SF_INLINE
+    UnboxArgV1(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV0<R>(vm, result)
+    , a0(argv[0])
+    {
+    }
+
+private:
+    UnboxArgV1& operator =(const UnboxArgV1&);
+
+public:
+    const Value& a0;
+};
+
+template <typename R>
+class UnboxArgV1<R, const Value&> : public UnboxArgV0<R>
+{
+public:
+    SF_INLINE
+    UnboxArgV1(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV0<R>(vm, result)
+    , a0(argv[0])
+    {
+    }
+
+private:
+    UnboxArgV1& operator =(const UnboxArgV1&);
+
+public:
+    const Value& a0;
+};
+
+////
+template <typename R, typename A0, typename A1>
+class UnboxArgV2 : public UnboxArgV1<R, A0>
+{
+public:
+    UnboxArgV2(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV1<R, A0>(vm, result, argv)
+    , a1(DefaultValue<typename Clean<A1>::type>(vm.GetStringManager()))
+    {
+        AS3::Convert(vm, a1, argv[1]);
+    }
+
+private:
+    UnboxArgV2& operator =(const UnboxArgV2&);
+
+public:
+    typename Clean<A1>::type a1;
+};
+
+template <typename R, typename A0>
+class UnboxArgV2<R, A0, Value> : public UnboxArgV1<R, A0>
+{
+public:
+    UnboxArgV2(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV1<R, A0>(vm, result, argv)
+    , a1(argv[1])
+    {
+    }
+
+private:
+    UnboxArgV2& operator =(const UnboxArgV2&);
+
+public:
+    const Value& a1;
+};
+
+template <typename R, typename A0>
+class UnboxArgV2<R, A0, const Value&> : public UnboxArgV1<R, A0>
+{
+public:
+    UnboxArgV2(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV1<R, A0>(vm, result, argv)
+    , a1(argv[1])
+    {
+    }
+
+private:
+    UnboxArgV2& operator =(const UnboxArgV2&);
+
+public:
+    const Value& a1;
+};
+
+////
+template <typename R, typename A0, typename A1, typename A2>
+class UnboxArgV3 : public UnboxArgV2<R, A0, A1>
+{
+public:
+    UnboxArgV3(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV2<R, A0, A1>(vm, result, argv)
+    , a2(DefaultValue<typename Clean<A2>::type>(vm.GetStringManager()))
+    {
+        AS3::Convert(vm, a2, argv[2]);
+    }
+
+private:
+    UnboxArgV3& operator =(const UnboxArgV3&);
+
+public:
+    typename Clean<A2>::type a2;
+};
+
+template <typename R, typename A0, typename A1>
+class UnboxArgV3<R, A0, A1, Value> : public UnboxArgV2<R, A0, A1>
+{
+public:
+    UnboxArgV3(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV2<R, A0, A1>(vm, result, argv)
+    , a2(argv[2])
+    {
+    }
+
+private:
+    UnboxArgV3& operator =(const UnboxArgV3&);
+
+public:
+    const Value& a2;
+};
+
+template <typename R, typename A0, typename A1>
+class UnboxArgV3<R, A0, A1, const Value&> : public UnboxArgV2<R, A0, A1>
+{
+public:
+    UnboxArgV3(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV2<R, A0, A1>(vm, result, argv)
+    , a2(argv[2])
+    {
+    }
+
+private:
+    UnboxArgV3& operator =(const UnboxArgV3&);
+
+public:
+    const Value& a2;
+};
+
+////
+template <typename R, typename A0, typename A1, typename A2, typename A3>
+class UnboxArgV4 : public UnboxArgV3<R, A0, A1, A2>
+{
+public:
+    UnboxArgV4(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV3<R, A0, A1, A2>(vm, result, argv)
+    , a3(DefaultValue<typename Clean<A3>::type>(vm.GetStringManager()))
+    {
+        AS3::Convert(vm, a3, argv[3]);
+    }
+
+private:
+    UnboxArgV4& operator =(const UnboxArgV4&);
+
+public:
+    typename Clean<A3>::type a3;
+};
+
+////
+template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4>
+class UnboxArgV5 : public UnboxArgV4<R, A0, A1, A2, A3>
+{
+public:
+    UnboxArgV5(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV4<R, A0, A1, A2, A3>(vm, result, argv)
+    , a4(DefaultValue<typename Clean<A4>::type>(vm.GetStringManager()))
+    {
+        AS3::Convert(vm, a4, argv[4]);
+    }
+
+private:
+    UnboxArgV5& operator =(const UnboxArgV5&);
+
+public:
+    typename Clean<A4>::type a4;
+};
+
+////
+template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
+class UnboxArgV6 : public UnboxArgV5<R, A0, A1, A2, A3, A4>
+{
+public:
+    UnboxArgV6(VM& vm, Value& result, const Value* argv)
+    : UnboxArgV5<R, A0, A1, A2, A3, A4>(vm, result, argv)
+    , a5(DefaultValue<typename Clean<A5>::type>(vm.GetStringManager()))
+    {
+        AS3::Convert(vm, a5, argv[5]);
+    }
+
+private:
+    UnboxArgV6& operator =(const UnboxArgV6&);
+
+public:
+    typename Clean<A5>::type a5;
+};
+
+///////////////////////////////////////////////////////////////////////////
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R>
+void ThunkFunc0<T, N, R>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned /*argc*/, const Value* /*argv*/)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    UnboxArgV0<R> args(vm, result);
+
+    (_this.*Method)(args.r);
+}
+
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R, typename A0>
+void ThunkFunc1<T, N, R, A0>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 0);
+    UnboxArgV1<R, A0> args(vm, result, argv);
+
+    if (vm.IsException())
+        return;
+
+    (_this.*Method)(args.r, args.a0);
+}
+
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R, typename A0, typename A1>
+void ThunkFunc2<T, N, R, A0, A1>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 1);
+    UnboxArgV2<R, A0, A1> args(vm, result, argv);
+
+    if (vm.IsException())
+        return;
+
+    (_this.*Method)(args.r, args.a0, args.a1);
+}
+
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R, typename A0, typename A1, typename A2>
+void ThunkFunc3<T, N, R, A0, A1, A2>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 2);
+    UnboxArgV3<R, A0, A1, A2> args(vm, result, argv);
+
+    if (vm.IsException())
+        return;
+
+    (_this.*Method)(args.r, args.a0, args.a1, args.a2);
+}
+
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R, typename A0, typename A1, typename A2, typename A3>
+void ThunkFunc4<T, N, R, A0, A1, A2, A3>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 3);
+    UnboxArgV4<R, A0, A1, A2, A3> args(vm, result, argv);
+
+    if (vm.IsException())
+        return;
+
+    (_this.*Method)(args.r, args.a0, args.a1, args.a2, args.a3);
+}
+
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R, typename A0, typename A1, typename A2, typename A3, typename A4>
+void ThunkFunc5<T, N, R, A0, A1, A2, A3, A4>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 4);
+    UnboxArgV5<R, A0, A1, A2, A3, A4> args(vm, result, argv);
+
+    if (vm.IsException())
+        return;
+
+    (_this.*Method)(args.r, args.a0, args.a1, args.a2, args.a3, args.a4);
+}
+
+// This method definition is intentionally not declared as *inline* ...
+template <typename T, size_t N, typename R, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
+void ThunkFunc6<T, N, R, A0, A1, A2, A3, A4, A5>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
+{
+    T& _this = static_cast<T&>(*obj.GetObject());
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 5);
+    UnboxArgV6<R, A0, A1, A2, A3, A4, A5> args(vm, result, argv);
+
+    if (vm.IsException())
+        return;
+
+    (_this.*Method)(args.r, args.a0, args.a1, args.a2, args.a3, args.a4, args.a5);
+}
+
+///////////////////////////////////////////////////////////////////////////
+template <typename A0, typename T>
+void CallConstructor(T& obj, unsigned argc, const Value* argv)
+{
+    Value result;
+    SF_UNUSED1(argc);
+    SF_ASSERT(argc > 0);
+    UnboxArgV1<Value, A0> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0>(obj.GetStringManager()));
+    obj.Constructor(args.a0);
+}
+
+template <typename A0, typename A1, typename T>
+void CallConstructor(T& obj, unsigned argc, const Value* argv)
+{
+    Value result;
+    SF_ASSERT(argc > 1);
+    UnboxArgV2<Value, A0, A1> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0, A1>(obj.GetStringManager()));
+    obj.Constructor(args.a0, args.a1);
+}
+
+template <typename A0, typename A1, typename A2, typename T>
+void CallConstructor(T& obj, unsigned argc, const Value* argv)
+{
+    Value result;
+    SF_ASSERT(argc > 2);
+    UnboxArgV3<Value, A0, A1, A2> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0, A1, A2>(obj.GetStringManager()));
+    obj.Constructor(args.a0, args.a1, args.a2);
+}
+
+template <typename A0, typename A1, typename A2, typename A3, typename T>
+void CallConstructor(T& obj, unsigned argc, const Value* argv)
+{
+    Value result;
+    SF_ASSERT(argc > 3);
+    UnboxArgV4<Value, A0, A1, A2, A3> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0, A1, A2, A3>(obj.GetStringManager()));
+    obj.Constructor(args.a0, args.a1, args.a2, args.a3);
+}
+
+template <typename A0, typename A1, typename A2, typename A3, typename A4, typename T>
+void CallConstructor(T& obj, unsigned argc, const Value* argv)
+{
+    Value result;
+    SF_ASSERT(argc > 4);
+    UnboxArgV5<Value, A0, A1, A2, A3, A4> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0, A1, A2, A3, A4>(obj.GetStringManager()));
+    obj.Constructor(args.a0, args.a1, args.a2, args.a3, args.a4);
+}
+
+template <typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename T>
+void CallConstructor(T& obj, unsigned argc, const Value* argv)
+{
+    Value result;
+    SF_ASSERT(argc > 5);
+    UnboxArgV6<Value, A0, A1, A2, A3, A4, A5> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0, A1, A2, A3, A4, A5>(obj.GetStringManager()));
+    obj.Constructor(args.a0, args.a1, args.a2, args.a3, args.a4, args.a5);
+}
+
+#else // SF_AS3_EMIT_DEF_ARGS
+
+template <typename R>
+class UnboxArgV0
+{
+public:
+    SF_INLINE
+        UnboxArgV0(VM& vm, Value& result)
+        : Vm(vm)
+        , Result(result)
+        , r(DefaultValue<R>(GetStringManager()))
+    {
+    }
+    SF_INLINE
+        ~UnboxArgV0()
+    {
+        if (GetVM().IsException())
+            return;
+
+        AS3::ConvertUnsafe(Result, r);
+    }
+
+public:
+    VM& GetVM() const
+    {
+        return Vm;
+    }
+    SF_INLINE
+        StringManager& GetStringManager() const
+    {
+        return GetVM().GetStringManager();
+    }
+
+private:
+    UnboxArgV0& operator =(const UnboxArgV0&);
+
+private:
+    VM& Vm;
+
+public:
+    Value& Result;
+    R r;
+};
+
+template <>
+class UnboxArgV0<Value>
+{
+public:
+    SF_INLINE
+        UnboxArgV0(VM& vm, Value& result)
+        : Vm(vm)
+        , r(result)
+    {
+    }
+    SF_INLINE
+        ~UnboxArgV0()
+    {
+        // No conversion is necessary.
+    }
+
+public:
+    VM& GetVM() const
+    {
+        return Vm;
+    }
+    SF_INLINE
+        StringManager& GetStringManager() const
+    {
+        return GetVM().GetStringManager();
+    }
+
+private:
+    UnboxArgV0& operator =(const UnboxArgV0&);
+
+private:
+    VM& Vm;
+
+public:
+    Value& r;
+};
+
+template <>
+class UnboxArgV0<const Value>
+{
+public:
+    SF_INLINE
+        UnboxArgV0(VM& vm, Value& result)
+        : Vm(vm)
+        , r(result)
+    {
+    }
+    SF_INLINE
+        ~UnboxArgV0()
+    {
+        // No conversion is necessary.
+    }
+
+public:
+    VM& GetVM() const
+    {
+        return Vm;
+    }
+    SF_INLINE
+        StringManager& GetStringManager() const
+    {
+        return GetVM().GetStringManager();
+    }
+
+private:
+    UnboxArgV0& operator =(const UnboxArgV0&);
+
+private:
+    VM& Vm;
+
+public:
+    const Value& r;
+};
+
+////
+template <typename R, typename A0>
+class UnboxArgV1 : public UnboxArgV0<R>
+{
+public:
+    SF_INLINE
+        UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs1<A0>& da)
+        : UnboxArgV0<R>(vm, result)
+        , a0(da._0)
     {
         ReadArg(vm, 0, a0, argc, argv);
     }
     SF_INLINE
-    UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV0<R>(vm, result)
-    , a0(DefaultValue<typename Clean<A0>::type>(vm.GetStringManager()))
+        UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv)
+        : UnboxArgV0<R>(vm, result)
+        , a0(DefaultValue<typename Clean<A0>::type>(vm.GetStringManager()))
     {
         ReadArg(vm, 0, a0, argc, argv);
     }
@@ -1812,15 +2289,15 @@ class UnboxArgV1<R, Value> : public UnboxArgV0<R>
 {
 public:
     SF_INLINE
-    UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs1<Value>& da)
-    : UnboxArgV0<R>(vm, result)
-    , a0(argc > 0 ? argv[0] : da._0)
+        UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs1<Value>& da)
+        : UnboxArgV0<R>(vm, result)
+        , a0(argc > 0 ? argv[0] : da._0)
     {
     }
     SF_INLINE
-    UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV0<R>(vm, result)
-    , a0(argc > 0 ? argv[0] : Value::GetUndefined())
+        UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv)
+        : UnboxArgV0<R>(vm, result)
+        , a0(argc > 0 ? argv[0] : Value::GetUndefined())
     {
     }
 
@@ -1836,15 +2313,15 @@ class UnboxArgV1<R, const Value&> : public UnboxArgV0<R>
 {
 public:
     SF_INLINE
-    UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs1<const Value&>& da)
-    : UnboxArgV0<R>(vm, result)
-    , a0(argc > 0 ? argv[0] : da._0)
+        UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs1<const Value&>& da)
+        : UnboxArgV0<R>(vm, result)
+        , a0(argc > 0 ? argv[0] : da._0)
     {
     }
     SF_INLINE
-    UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV0<R>(vm, result)
-    , a0(argc > 0 ? argv[0] : Value::GetUndefined())
+        UnboxArgV1(VM& vm, Value& result, unsigned argc, const Value* argv)
+        : UnboxArgV0<R>(vm, result)
+        , a0(argc > 0 ? argv[0] : Value::GetUndefined())
     {
     }
 
@@ -1861,8 +2338,8 @@ class UnboxArgV2 : public UnboxArgV1<R, A0>
 {
 public:
     UnboxArgV2(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs2<A0, A1>& da)
-    : UnboxArgV1<R, A0>(vm, result, argc, argv, da)
-    , a1(da._1)
+        : UnboxArgV1<R, A0>(vm, result, argc, argv, da)
+        , a1(da._1)
     {
         if (vm.IsException())
             return;
@@ -1870,8 +2347,8 @@ public:
         ReadArg(vm, 1, a1, argc, argv);
     }
     UnboxArgV2(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV1<R, A0>(vm, result, argc, argv)
-    , a1(DefaultValue<typename Clean<A1>::type>(vm.GetStringManager()))
+        : UnboxArgV1<R, A0>(vm, result, argv)
+        , a1(DefaultValue<typename Clean<A1>::type>(vm.GetStringManager()))
     {
         if (vm.IsException())
             return;
@@ -1916,13 +2393,13 @@ class UnboxArgV2<R, A0, Value> : public UnboxArgV1<R, A0>
 {
 public:
     UnboxArgV2(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs2<A0, Value>& da)
-    : UnboxArgV1<R, A0>(vm, result, argc, argv, da)
-    , a1(argc > 1 ? argv[1] : da._1)
+        : UnboxArgV1<R, A0>(vm, result, argc, argv, da)
+        , a1(argc > 1 ? argv[1] : da._1)
     {
     }
     UnboxArgV2(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV1<R, A0>(vm, result, argc, argv)
-    , a1(argc > 1 ? argv[1] : Value::GetUndefined())
+        : UnboxArgV1<R, A0>(vm, result, argv)
+        , a1(argc > 1 ? argv[1] : Value::GetUndefined())
     {
     }
 
@@ -1938,13 +2415,13 @@ class UnboxArgV2<R, A0, const Value&> : public UnboxArgV1<R, A0>
 {
 public:
     UnboxArgV2(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs2<A0, const Value&>& da)
-    : UnboxArgV1<R, A0>(vm, result, argc, argv, da)
-    , a1(argc > 1 ? argv[1] : da._1)
+        : UnboxArgV1<R, A0>(vm, result, argc, argv, da)
+        , a1(argc > 1 ? argv[1] : da._1)
     {
     }
     UnboxArgV2(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV1<R, A0>(vm, result, argc, argv)
-    , a1(argc > 1 ? argv[1] : Value::GetUndefined())
+        : UnboxArgV1<R, A0>(vm, result, argv)
+        , a1(argc > 1 ? argv[1] : Value::GetUndefined())
     {
     }
 
@@ -1961,8 +2438,8 @@ class UnboxArgV3 : public UnboxArgV2<R, A0, A1>
 {
 public:
     UnboxArgV3(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs3<A0, A1, A2>& da)
-    : UnboxArgV2<R, A0, A1>(vm, result, argc, argv, da)
-    , a2(da._2)
+        : UnboxArgV2<R, A0, A1>(vm, result, argc, argv, da)
+        , a2(da._2)
     {
         if (vm.IsException())
             return;
@@ -1970,8 +2447,8 @@ public:
         ReadArg(vm, 2, a2, argc, argv);
     }
     UnboxArgV3(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV2<R, A0, A1>(vm, result, argc, argv)
-    , a2(DefaultValue<typename Clean<A2>::type>(vm.GetStringManager()))
+        : UnboxArgV2<R, A0, A1>(vm, result, argv)
+        , a2(DefaultValue<typename Clean<A2>::type>(vm.GetStringManager()))
     {
         if (vm.IsException())
             return;
@@ -1991,13 +2468,13 @@ class UnboxArgV3<R, A0, A1, Value> : public UnboxArgV2<R, A0, A1>
 {
 public:
     UnboxArgV3(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs3<A0, A1, Value>& da)
-    : UnboxArgV2<R, A0, A1>(vm, result, argc, argv, da)
-    , a2(argc > 2 ? argv[2] : da._2)
+        : UnboxArgV2<R, A0, A1>(vm, result, argc, argv, da)
+        , a2(argc > 2 ? argv[2] : da._2)
     {
     }
     UnboxArgV3(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV2<R, A0, A1>(vm, result, argc, argv)
-    , a2(argc > 2 ? argv[2] : Value::GetUndefined())
+        : UnboxArgV2<R, A0, A1>(vm, result, argv)
+        , a2(argc > 2 ? argv[2] : Value::GetUndefined())
     {
     }
 
@@ -2013,13 +2490,13 @@ class UnboxArgV3<R, A0, A1, const Value&> : public UnboxArgV2<R, A0, A1>
 {
 public:
     UnboxArgV3(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs3<A0, A1, const Value&>& da)
-    : UnboxArgV2<R, A0, A1>(vm, result, argc, argv, da)
-    , a2(argc > 2 ? argv[2] : da._2)
+        : UnboxArgV2<R, A0, A1>(vm, result, argc, argv, da)
+        , a2(argc > 2 ? argv[2] : da._2)
     {
     }
     UnboxArgV3(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV2<R, A0, A1>(vm, result, argc, argv)
-    , a2(argc > 2 ? argv[2] : Value::GetUndefined())
+        : UnboxArgV2<R, A0, A1>(vm, result, argv)
+        , a2(argc > 2 ? argv[2] : Value::GetUndefined())
     {
     }
 
@@ -2036,8 +2513,8 @@ class UnboxArgV4 : public UnboxArgV3<R, A0, A1, A2>
 {
 public:
     UnboxArgV4(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs4<A0, A1, A2, A3>& da)
-    : UnboxArgV3<R, A0, A1, A2>(vm, result, argc, argv, da)
-    , a3(da._3)
+        : UnboxArgV3<R, A0, A1, A2>(vm, result, argc, argv, da)
+        , a3(da._3)
     {
         if (vm.IsException())
             return;
@@ -2045,8 +2522,8 @@ public:
         ReadArg(vm, 3, a3, argc, argv);
     }
     UnboxArgV4(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV3<R, A0, A1, A2>(vm, result, argc, argv)
-    , a3(DefaultValue<typename Clean<A3>::type>(vm.GetStringManager()))
+        : UnboxArgV3<R, A0, A1, A2>(vm, result, argv)
+        , a3(DefaultValue<typename Clean<A3>::type>(vm.GetStringManager()))
     {
         if (vm.IsException())
             return;
@@ -2067,8 +2544,8 @@ class UnboxArgV5 : public UnboxArgV4<R, A0, A1, A2, A3>
 {
 public:
     UnboxArgV5(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs5<A0, A1, A2, A3, A4>& da)
-    : UnboxArgV4<R, A0, A1, A2, A3>(vm, result, argc, argv, da)
-    , a4(da._4)
+        : UnboxArgV4<R, A0, A1, A2, A3>(vm, result, argc, argv, da)
+        , a4(da._4)
     {
         if (vm.IsException())
             return;
@@ -2076,8 +2553,8 @@ public:
         ReadArg(vm, 4, a4, argc, argv);
     }
     UnboxArgV5(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV4<R, A0, A1, A2, A3>(vm, result, argc, argv)
-    , a4(DefaultValue<typename Clean<A4>::type>(vm.GetStringManager()))
+        : UnboxArgV4<R, A0, A1, A2, A3>(vm, result, argv)
+        , a4(DefaultValue<typename Clean<A4>::type>(vm.GetStringManager()))
     {
         if (vm.IsException())
             return;
@@ -2098,8 +2575,8 @@ class UnboxArgV6 : public UnboxArgV5<R, A0, A1, A2, A3, A4>
 {
 public:
     UnboxArgV6(VM& vm, Value& result, unsigned argc, const Value* argv, const DefArgs6<A0, A1, A2, A3, A4, A5>& da)
-    : UnboxArgV5<R, A0, A1, A2, A3, A4>(vm, result, argc, argv, da)
-    , a5(da._5)
+        : UnboxArgV5<R, A0, A1, A2, A3, A4>(vm, result, argc, argv, da)
+        , a5(da._5)
     {
         if (vm.IsException())
             return;
@@ -2107,8 +2584,8 @@ public:
         ReadArg(vm, 5, a5, argc, argv);
     }
     UnboxArgV6(VM& vm, Value& result, unsigned argc, const Value* argv)
-    : UnboxArgV5<R, A0, A1, A2, A3, A4>(vm, result, argc, argv)
-    , a5(DefaultValue<typename Clean<A5>::type>(vm.GetStringManager()))
+        : UnboxArgV5<R, A0, A1, A2, A3, A4>(vm, result, argv)
+        , a5(DefaultValue<typename Clean<A5>::type>(vm.GetStringManager()))
     {
         if (vm.IsException())
             return;
@@ -2122,6 +2599,26 @@ private:
 public:
     typename Clean<A5>::type a5;
 };
+
+///////////////////////////////////////////////////////////////////////////
+// RT stands for Result Type. It can be of type Value, which can hold multiple
+// value types.
+// If argument is not available, result won't be changed.
+template <typename RT>
+SF_INLINE
+void ReadArg(unsigned n, RT& result, unsigned argc, const Value* argv)
+{
+    if (argc > n)
+        AS3::Convert(result, argv[n]);
+}
+
+template <typename RT>
+SF_INLINE
+void ReadArg(VM& vm, unsigned n, RT& result, unsigned argc, const Value* argv)
+{
+    if (argc > n)
+        AS3::Convert(vm, result, argv[n]);
+}
 
 ///////////////////////////////////////////////////////////////////////////
 // This method definition is intentionally not declared as *inline* ...
@@ -2139,15 +2636,11 @@ template <typename T, size_t N, typename R, typename A0>
 void ThunkFunc1<T, N, R, A0>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
 {
     T& _this = static_cast<T&>(*obj.GetObject());
-#if 1
     StringManager& sm = vm.GetStringManager();
     DefArgs1<A0> def_ags(
         Impl::GetMethodDefArg<T, N, 0, A0>(sm)
         );
     UnboxArgV1<R, A0> args(vm, result, argc, argv, def_ags);
-#else
-    UnboxArgV1<R, A0> args(vm, result, argc, argv, MakeDefArgs<T, N, A0>(vm.GetStringManager()));
-#endif
 
     if (vm.IsException())
         return;
@@ -2160,16 +2653,12 @@ template <typename T, size_t N, typename R, typename A0, typename A1>
 void ThunkFunc2<T, N, R, A0, A1>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
 {
     T& _this = static_cast<T&>(*obj.GetObject());
-#if 1
     StringManager& sm = vm.GetStringManager();
     DefArgs2<A0, A1> def_ags(
         Impl::GetMethodDefArg<T, N, 0, A0>(sm),
         Impl::GetMethodDefArg<T, N, 1, A1>(sm)
         );
     UnboxArgV2<R, A0, A1> args(vm, result, argc, argv, def_ags);
-#else
-    UnboxArgV2<R, A0, A1> args(vm, result, argc, argv, MakeDefArgs<T, N, A0, A1>(vm.GetStringManager()));
-#endif
 
     if (vm.IsException())
         return;
@@ -2182,7 +2671,6 @@ template <typename T, size_t N, typename R, typename A0, typename A1, typename A
 void ThunkFunc3<T, N, R, A0, A1, A2>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
 {
     T& _this = static_cast<T&>(*obj.GetObject());
-#if 1
     StringManager& sm = vm.GetStringManager();
     DefArgs3<A0, A1, A2> def_ags(
         Impl::GetMethodDefArg<T, N, 0, A0>(sm),
@@ -2190,9 +2678,6 @@ void ThunkFunc3<T, N, R, A0, A1, A2>::Func(const ThunkInfo& /*ti*/, VM& vm, cons
         Impl::GetMethodDefArg<T, N, 2, A2>(sm)
         );
     UnboxArgV3<R, A0, A1, A2> args(vm, result, argc, argv, def_ags);
-#else
-    UnboxArgV3<R, A0, A1, A2> args(vm, result, argc, argv, MakeDefArgs<T, N, A0, A1, A2>(vm.GetStringManager()));
-#endif
 
     if (vm.IsException())
         return;
@@ -2205,7 +2690,6 @@ template <typename T, size_t N, typename R, typename A0, typename A1, typename A
 void ThunkFunc4<T, N, R, A0, A1, A2, A3>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
 {
     T& _this = static_cast<T&>(*obj.GetObject());
-#if 1
     StringManager& sm = vm.GetStringManager();
     DefArgs4<A0, A1, A2, A3> def_ags(
         Impl::GetMethodDefArg<T, N, 0, A0>(sm),
@@ -2214,9 +2698,6 @@ void ThunkFunc4<T, N, R, A0, A1, A2, A3>::Func(const ThunkInfo& /*ti*/, VM& vm, 
         Impl::GetMethodDefArg<T, N, 3, A3>(sm)
         );
     UnboxArgV4<R, A0, A1, A2, A3> args(vm, result, argc, argv, def_ags);
-#else
-    UnboxArgV4<R, A0, A1, A2, A3> args(vm, result, argc, argv, MakeDefArgs<T, N, A0, A1, A2, A3>(vm.GetStringManager()));
-#endif
 
     if (vm.IsException())
         return;
@@ -2229,7 +2710,6 @@ template <typename T, size_t N, typename R, typename A0, typename A1, typename A
 void ThunkFunc5<T, N, R, A0, A1, A2, A3, A4>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
 {
     T& _this = static_cast<T&>(*obj.GetObject());
-#if 1
     StringManager& sm = vm.GetStringManager();
     DefArgs5<A0, A1, A2, A3, A4> def_ags(
         Impl::GetMethodDefArg<T, N, 0, A0>(sm),
@@ -2239,9 +2719,6 @@ void ThunkFunc5<T, N, R, A0, A1, A2, A3, A4>::Func(const ThunkInfo& /*ti*/, VM& 
         Impl::GetMethodDefArg<T, N, 4, A4>(sm)
         );
     UnboxArgV5<R, A0, A1, A2, A3, A4> args(vm, result, argc, argv, def_ags);
-#else
-    UnboxArgV5<R, A0, A1, A2, A3, A4> args(vm, result, argc, argv, MakeDefArgs<T, N, A0, A1, A2, A3, A4>(vm.GetStringManager()));
-#endif
 
     if (vm.IsException())
         return;
@@ -2254,7 +2731,6 @@ template <typename T, size_t N, typename R, typename A0, typename A1, typename A
 void ThunkFunc6<T, N, R, A0, A1, A2, A3, A4, A5>::Func(const ThunkInfo& /*ti*/, VM& vm, const Value& obj, Value& result, unsigned argc, const Value* argv)
 {
     T& _this = static_cast<T&>(*obj.GetObject());
-#if 1
     StringManager& sm = vm.GetStringManager();
     DefArgs6<A0, A1, A2, A3, A4, A5> def_ags(
         Impl::GetMethodDefArg<T, N, 0, A0>(sm),
@@ -2265,9 +2741,6 @@ void ThunkFunc6<T, N, R, A0, A1, A2, A3, A4, A5>::Func(const ThunkInfo& /*ti*/, 
         Impl::GetMethodDefArg<T, N, 5, A5>(sm)
         );
     UnboxArgV6<R, A0, A1, A2, A3, A4, A5> args(vm, result, argc, argv, def_ags);
-#else
-    UnboxArgV6<R, A0, A1, A2, A3, A4, A5> args(vm, result, argc, argv, MakeDefArgs<T, N, A0, A1, A2, A3, A4, A5>(vm.GetStringManager()));
-#endif
 
     if (vm.IsException())
         return;
@@ -2323,6 +2796,8 @@ void CallConstructor(T& obj, unsigned argc, const Value* argv)
     UnboxArgV6<Value, A0, A1, A2, A3, A4, A5> args(obj.GetVM(), result, argc, argv, MakeDefArgs<T, 0, A0, A1, A2, A3, A4, A5>(obj.GetStringManager()));
     obj.Constructor(args.a0, args.a1, args.a2, args.a3, args.a4, args.a5);
 }
+
+#endif // SF_AS3_EMIT_DEF_ARGS
 
 ///////////////////////////////////////////////////////////////////////////
 namespace Impl
@@ -2408,7 +2883,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n)
 {
     Value result;
     const ASString name = vm.GetStringManager().CreateString(n);
-    CallPropertyUnsafe(vm, name, _this, result, 0, NULL).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, 0, NULL).DoNotCheck();
     return result;
 }
 
@@ -2419,7 +2894,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n, const T1
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
     BoxArgV1<T1> argv(a1, sm);
-    CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, argv.AN, &argv.V).DoNotCheck();
     return result;
 }
 
@@ -2430,7 +2905,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n, const T1
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
     BoxArgV2<T1, T2> argv(a1, a2, sm);
-    CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, argv.AN, &argv.V).DoNotCheck();
     return result;
 }
 
@@ -2441,7 +2916,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n, const T1
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
     BoxArgV3<T1, T2, T3> argv(a1, a2, a3, sm);
-    CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, argv.AN, &argv.V).DoNotCheck();
     return result;
 }
 
@@ -2452,7 +2927,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n, const T1
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
     BoxArgV4<T1, T2, T3, T4> argv(a1, a2, a3, a4, sm);
-    CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, argv.AN, &argv.V).DoNotCheck();
     return result;
 }
 
@@ -2463,7 +2938,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n, const T1
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
     BoxArgV5<T1, T2, T3, T4, T5> argv(a1, a2, a3, a4, a5, sm);
-    CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, argv.AN, &argv.V).DoNotCheck();
     return result;
 }
 
@@ -2474,7 +2949,7 @@ inline Value CallPropertyNEC(VM& vm, const Value& _this, const char* n, const T1
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
     BoxArgV6<T1, T2, T3, T4, T5, T6> argv(a1, a2, a3, a4, a5, a6, sm);
-    CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V).DoNotCheck();
+    ExecutePropertyUnsafe(vm, Multiname(vm.GetPublicNamespace(), name), _this, result, argv.AN, &argv.V).DoNotCheck();
     return result;
 }
 
@@ -2484,7 +2959,8 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r)
 {
     Value result;
     const ASString name = vm.GetStringManager().CreateString(n);
-    return CallPropertyUnsafe(vm, name, _this, result, 0, NULL) && (Convert(r, result), !vm.IsException());
+    const Multiname mn(vm.GetPublicNamespace(), name);
+    return ExecutePropertyUnsafe(vm, mn, _this, result, 0, NULL) && (Convert(r, result), !vm.IsException());
 }
 
 template <typename R, typename T1>
@@ -2493,8 +2969,9 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r,
     Value result;
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
+    const Multiname mn(vm.GetPublicNamespace(), name);
     BoxArgV1<T1> argv(a1, sm);
-    return CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
+    return ExecutePropertyUnsafe(vm, mn, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
 }
 
 template <typename R, typename T1, typename T2>
@@ -2503,8 +2980,9 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r,
     Value result;
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
+    const Multiname mn(vm.GetPublicNamespace(), name);
     BoxArgV2<T1, T2> argv(a1, a2, sm);
-    return CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
+    return ExecutePropertyUnsafe(vm, mn, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
 }
 
 template <typename R, typename T1, typename T2, typename T3>
@@ -2513,8 +2991,9 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r,
     Value result;
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
+    const Multiname mn(vm.GetPublicNamespace(), name);
     BoxArgV3<T1, T2, T3> argv(a1, a2, a3, sm);
-    return CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
+    return ExecutePropertyUnsafe(vm, mn, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
 }
 
 template <typename R, typename T1, typename T2, typename T3, typename T4>
@@ -2523,8 +3002,9 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r,
     Value result;
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
+    const Multiname mn(vm.GetPublicNamespace(), name);
     BoxArgV4<T1, T2, T3, T4> argv(a1, a2, a3, a4, sm);
-    return CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
+    return ExecutePropertyUnsafe(vm, mn, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
 }
 
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -2533,8 +3013,9 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r,
     Value result;
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
+    const Multiname mn(vm.GetPublicNamespace(), name);
     BoxArgV5<T1, T2, T3, T4, T5> argv(a1, a2, a3, a4, a5, sm);
-    return CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
+    return ExecutePropertyUnsafe(vm, mn, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
 }
 
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
@@ -2543,8 +3024,9 @@ inline CheckResult CallProperty(VM& vm, const Value& _this, const char* n, R& r,
     Value result;
     StringManager& sm = vm.GetStringManager();
     const ASString name = sm.CreateString(n);
+    const Multiname mn(vm.GetPublicNamespace(), name);
     BoxArgV6<T1, T2, T3, T4, T5, T6> argv(a1, a2, a3, a4, a5, a6, sm);
-    return CallPropertyUnsafe(vm, name, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
+    return ExecutePropertyUnsafe(vm, mn, _this, result, argv.AN, &argv.V) && (Convert(r, result), !vm.IsException());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2595,6 +3077,136 @@ Value Value::operator()(VM& vm, const T1& a1, const T2& a2, const T3& a3) const
 }
 
 ///////////////////////////////////////////////////////////////////////////
+#ifdef SF_AS3_EMIT_DEF_ARGS
+
+template <typename T, typename R>
+struct UnboxCall0
+{
+    UnboxCall0(T* _this, void (T::*Method)(R&), Value& result, unsigned argc, const Value* argv)
+    {
+        SF_UNUSED2(argc, argv);
+        VM& vm = _this->GetVM();
+        UnboxArgV0<R> args(vm, result);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r);
+    }
+};
+
+template <typename T, typename R, typename A0>
+struct UnboxCall1
+{
+    UnboxCall1(T* _this, void (T::*Method)(R&, A0), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        SF_ASSERT(argc > 0);
+        UnboxArgV1<R, A0> args(vm, result, argc, argv);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r, args.a0);
+    }
+};
+
+template <typename T, typename R, typename A0, typename A1>
+struct UnboxCall2
+{
+    UnboxCall2(T* _this, void (T::*Method)(R&, A0, A1), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        SF_ASSERT(argc > 1);
+        UnboxArgV2<R, A0, A1> args(vm, result, argc, argv);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r, args.a0, args.a1);
+    }
+};
+
+template <typename T, typename R>
+struct UnboxCall2<T, R, unsigned, const Value*>
+{
+    UnboxCall2(T* _this, void (T::*Method)(R&, unsigned, const Value*), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        UnboxArgV0<R> args(vm, result);
+
+        // No exceptions at this point.
+
+        (_this->*Method)(args.r, argc, argv);
+    }
+};
+
+template <typename T, typename R, typename A0, typename A1, typename A2>
+struct UnboxCall3
+{
+    UnboxCall3(T* _this, void (T::*Method)(R&, A0, A1, A2), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        SF_ASSERT(argc > 2);
+        UnboxArgV3<R, A0, A1, A2> args(vm, result, argc, argv);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r, args.a0, args.a1, args.a2);
+    }
+};
+
+template <typename T, typename R, typename A0, typename A1, typename A2, typename A3>
+struct UnboxCall4
+{
+    UnboxCall4(T* _this, void (T::*Method)(R&, A0, A1, A2, A3), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        SF_ASSERT(argc > 3);
+        UnboxArgV4<R, A0, A1, A2, A3> args(vm, result, argc, argv);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r, args.a0, args.a1, args.a2, args.a3);
+    }
+};
+
+template <typename T, typename R, typename A0, typename A1, typename A2, typename A3, typename A4>
+struct UnboxCall5
+{
+    UnboxCall5(T* _this, void (T::*Method)(R&, A0, A1, A2, A3, A4), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        SF_ASSERT(argc > 4);
+        UnboxArgV5<R, A0, A1, A2, A3, A4> args(vm, result, argc, argv);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r, args.a0, args.a1, args.a2, args.a3, args.a4);
+    }
+};
+
+template <typename T, typename R, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
+struct UnboxCall6
+{
+    UnboxCall6(T* _this, void (T::*Method)(R&, A0, A1, A2, A3, A4, A5), Value& result, unsigned argc, const Value* argv)
+    {
+        VM& vm = _this->GetVM();
+        SF_ASSERT(argc > 5);
+        UnboxArgV6<R, A0, A1, A2, A3, A4, A5> args(vm, result, argc, argv);
+
+        if (vm.IsException())
+            return;
+
+        (_this->*Method)(args.r, args.a0, args.a1, args.a2, args.a3, args.a4, args.a5);
+    }
+};
+
+#else // SF_AS3_EMIT_DEF_ARGS
+
 template <typename T, typename R>
 struct UnboxCall0
 {
@@ -2714,6 +3326,8 @@ struct UnboxCall6
         (_this->*Method)(args.r, args.a0, args.a1, args.a2, args.a3, args.a4, args.a5);
     }
 };
+
+#endif // SF_AS3_EMIT_DEF_ARGS
 
 ///////////////////////////////////////////////////////////////////////////
 template <typename T, typename R>

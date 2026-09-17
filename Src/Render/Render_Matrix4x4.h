@@ -2,11 +2,12 @@
 
 PublicHeader:   Render
 Filename    :   Render_Matrix4x4.h
-Content     :   3D Matrix class 
+Content     :   3D Matrix class
 Created     :   November 15, 2010
 Authors     :   Mustafa Thamer
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -37,13 +38,13 @@ namespace Scaleform { namespace Render {
     //    Note: this matrix is TRANSPOSED from the Flash Geom Matrix3D class.
     //
     //    Column vectors are used when applying matrix multiplications.
-    //    A vector is represented as a single column, 4-row matrix. 
+    //    A vector is represented as a single column, 4-row matrix.
     //
-    //    TRANSFORMATIONS HAPPEN RIGHT TO LEFT, so M3 * M2 * M1 * V    
+    //    TRANSFORMATIONS HAPPEN RIGHT TO LEFT, so M3 * M2 * M1 * V
     //    means that Vector V is transformed by M1 then M2 then M3.
     //    This is the same as OpenGL but opposite of Direct3D
     //
-    //    This Matrix represents the matrix of type: 
+    //    This Matrix represents the matrix of type:
     //
     //    | sx      01      02      tx |    // this is row #1 which has 4 values
     //    | 10      sy      12      ty |    // this is row #2 which has 4 values
@@ -56,7 +57,7 @@ namespace Scaleform { namespace Render {
     //    | 30      31     32       33 |
     //
     //    in memory it looks like this {00, 01, 02, 03,  10, 11, 12, 13,  20, 21, 22, 23,  30, 31, 32, 33},
-    //    ((float *)M)[4] = 10, and ((float *)M)[7] = 13, in general M[row][col] = M[row * 4 + col] 
+    //    ((float *)M)[4] = 10, and ((float *)M)[7] = 13, in general M[row][col] = M[row * 4 + col]
     //          (since 4 is the number of columns)
     //
     //    Basis vectors are the 1st 3 columns
@@ -73,7 +74,7 @@ public:
     static const unsigned Rows = 4;
     T   M[Rows][4];
 };
-    
+
 #ifdef SF_ENABLE_SIMD
     // Alignment specialization
     template<>
@@ -103,9 +104,9 @@ public:
     Matrix4x4(const T *pVals, int count=16)  { Set(pVals, count);  }
     Matrix4x4(const T pVals[4][4])           { Set(&pVals[0][0], 16);  }
     inline Matrix4x4(
-        T v1, T v2, T v3, T v4, 
+        T v1, T v2, T v3, T v4,
         T v5, T v6, T v7, T v8,
-        T v9, T v10, T v11, T v12, 
+        T v9, T v10, T v11, T v12,
         T v13, T v14, T v15, T v16);
     // copy constructor
     Matrix4x4(const Matrix4x4 &mat)          { *this = mat;  }
@@ -115,11 +116,11 @@ public:
     Matrix4x4(const Matrix3x4<T> &m);
 
     // constructors for multiplication
-    Matrix4x4(const Matrix4x4 &m1, const Matrix4x4 &m2)     { MultiplyMatrix(m1, m2); }  
-    Matrix4x4(const Matrix4x4 &m1, const Matrix3x4<T> &m2)  { MultiplyMatrix(m1, m2); }  
-    Matrix4x4(const Matrix4x4 &m1, const Matrix2x4<T> &m2)  { MultiplyMatrix(m1, m2); }  
-    Matrix4x4(const Matrix3x4<T> &m1, const Matrix4x4 &m2)  { MultiplyMatrix(m1, m2); }  
-    Matrix4x4(const Matrix2x4<T> &m1, const Matrix4x4 &m2)  { MultiplyMatrix(m1, m2); }  
+    Matrix4x4(const Matrix4x4 &m1, const Matrix4x4 &m2)     { MultiplyMatrix(m1, m2); }
+    Matrix4x4(const Matrix4x4 &m1, const Matrix3x4<T> &m2)  { MultiplyMatrix(m1, m2); }
+    Matrix4x4(const Matrix4x4 &m1, const Matrix2x4<T> &m2)  { MultiplyMatrix(m1, m2); }
+    Matrix4x4(const Matrix3x4<T> &m1, const Matrix4x4 &m2)  { MultiplyMatrix(m1, m2); }
+    Matrix4x4(const Matrix2x4<T> &m1, const Matrix4x4 &m2)  { MultiplyMatrix(m1, m2); }
 
     // Checks if all matrix values are within the -MAX..MAX value range
     SF_EXPORT bool IsValid() const;
@@ -127,7 +128,7 @@ public:
     // array accessors, [i][j] is equivalent to [i*4+j]
     operator T * ()                     { return Data(); }      // conversion operator
     operator const T * () const         { return Data(); }      // conversion operator
-    operator Matrix3F ()                                        // convert to Matrix3F   
+    operator Matrix3F ()                                        // convert to Matrix3F
     {
         Matrix3F m(Matrix3F::NoInit);
         m.M[0][0] = (float)M[0][0];   // SX
@@ -143,7 +144,7 @@ public:
         m.M[2][0] = (float)M[2][0];
         m.M[2][1] = (float)M[2][1];
         m.M[2][2] = (float)M[2][2];   // SZ
-        m.M[2][3] = (float)M[2][3];   // TZ 
+        m.M[2][3] = (float)M[2][3];   // TZ
         return m;
     }
 
@@ -163,7 +164,7 @@ public:
     SF_EXPORT void SetIdentity();
     void Clear()                        {  memset(M, 0, sizeof(M)); }
 
-    // Scaling 
+    // Scaling
     // use basis vectors
     T GetXScale() const                 { return sqrtf(M[0][0]*M[0][0]+M[1][0]*M[1][0]+M[2][0]*M[2][0]); }
     T GetYScale() const                 { return sqrtf(M[0][1]*M[0][1]+M[1][1]*M[1][1]+M[2][1]*M[2][1]); }
@@ -174,13 +175,13 @@ public:
     void SetZScale(T s)                 { s /= GetZScale(); M[0][2] *= s; M[1][2] *= s; M[2][2] *= s; }
 
     SF_EXPORT void GetScale(T *tX, T *tY, T *tZ) const;
-    
+
     // static, create scale matrix
     static inline Matrix4x4<T> Scaling(T sX, T sY, T sZ);
 
     // Translation
     SF_EXPORT void GetTranslation(T *tX, T *tY, T *tZ) const;
-    
+
     T &Tx()                             { return M[0][3]; }
     T &Ty()                             { return M[1][3]; }
     T &Tz()                             { return M[2][3]; }
@@ -211,6 +212,10 @@ public:
     // Multiplication 4x4 * 2x4
     SF_EXPORT void MultiplyMatrix(const Matrix4x4 &m1, const Matrix2x4<T> &m2);
     SF_EXPORT void MultiplyMatrix_NonOpt(const Matrix4x4 &m1, const Matrix2x4<T> &m2);
+
+#if (defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG)
+    SF_EXPORT void MultiplyMatrix_Opt(const Matrix4x4 &m1, const Matrix3x4<T> &m2, float* mask);
+#endif
 
     void Prepend(const Matrix4x4 &matrixA)
     {
@@ -384,14 +389,14 @@ public:
     // returns euler angles in radians
     void GetRotation(T *eX, T *eY, T *eZ) const { return GetEulerAngles(eX, eY, eZ); }
 
-    // static initializers, create Rotation matrices 
-    static inline Matrix4x4<T> RotationX(T angleRad);      
-    static inline Matrix4x4<T> RotationY(T angleRad);      
-    static inline Matrix4x4<T> RotationZ(T angleRad);      
+    // static initializers, create Rotation matrices
+    static inline Matrix4x4<T> RotationX(T angleRad);
+    static inline Matrix4x4<T> RotationY(T angleRad);
+    static inline Matrix4x4<T> RotationZ(T angleRad);
     static inline Matrix4x4<T> Rotation(T angleRad, const Point3<T>& axis);
     static inline Matrix4x4<T> Rotation(T angleRad, const Point3<T>& axis, const Point3<T>& pivot);
 
-    // create camera view matrix, world to view transform. Right or Left-handed. 
+    // create camera view matrix, world to view transform. Right or Left-handed.
     SF_EXPORT void ViewRH(const Point3<T>& eyePt, const Point3<T>& lookAtPt, const Point3<T>& upVec);
     SF_EXPORT void ViewLH(const Point3<T>& eyePt, const Point3<T>& lookAtPt, const Point3<T>& upVec);
     SF_EXPORT void View  (const Point3<T>& eyePt, const Point3<T>& viewVector, const Point3<T>& upVec);
@@ -415,7 +420,7 @@ public:
 private:
 
     void GetEulerAngles(T *eX, T *eY, T *eZ) const;
-    T GetMinor(const Matrix4x4<T>& m, const size_t r0, const size_t r1, const size_t r2, 
+    T GetMinor(const Matrix4x4<T>& m, const size_t r0, const size_t r1, const size_t r2,
         const size_t c0, const size_t c1, const size_t c2) const;
     Matrix4x4<T> Adjoint() const;
 };
@@ -458,20 +463,20 @@ inline Matrix4x4<T>::Matrix4x4(const Matrix2x4<T> &m)
 template<typename T>
 inline Matrix4x4<T>::Matrix4x4(const Matrix3x4<T> &m)
 {
-    M[0][0] = m.M[0][0];  
+    M[0][0] = m.M[0][0];
     M[0][1] = m.M[0][1];
     M[0][2] = m.M[0][2];
-    M[0][3] = m.M[0][3];  
+    M[0][3] = m.M[0][3];
 
     M[1][0] = m.M[1][0];
-    M[1][1] = m.M[1][1];  
+    M[1][1] = m.M[1][1];
     M[1][2] = m.M[1][2];
-    M[1][3] = m.M[1][3];  
+    M[1][3] = m.M[1][3];
 
     M[2][0] = m.M[2][0];
-    M[2][1] = m.M[2][1]; 
+    M[2][1] = m.M[2][1];
     M[2][2] = m.M[2][2];
-    M[2][3] = m.M[2][3]; 
+    M[2][3] = m.M[2][3];
 
     M[3][0] = 0;
     M[3][1] = 0;
@@ -482,9 +487,9 @@ inline Matrix4x4<T>::Matrix4x4(const Matrix3x4<T> &m)
 // construct from data elements
 template<typename T>
 inline Matrix4x4<T>::Matrix4x4(
-                               T v1, T v2, T v3, T v4, 
+                               T v1, T v2, T v3, T v4,
                                T v5, T v6, T v7, T v8,
-                               T v9, T v10, T v11, T v12, 
+                               T v9, T v10, T v11, T v12,
                                T v13, T v14, T v15, T v16)
 {
     M[0][0] = v1;
@@ -535,7 +540,7 @@ inline bool    Matrix4x4<T>::IsValid() const
 
 template<typename T>
 inline void Matrix4x4<T>::GetAsFloat2x4(float (*rows)[4]) const
-{        
+{
     rows[0][0] = (float)M[0][0];
     rows[0][1] = (float)M[0][1];
     rows[0][2] = (float)M[0][2];
@@ -549,7 +554,7 @@ inline void Matrix4x4<T>::GetAsFloat2x4(float (*rows)[4]) const
 
 template<typename T>
 inline void Matrix4x4<T>::GetAsFloat4x4(float (*rows)[4]) const
-{        
+{
     rows[0][0] = (float)M[0][0];
     rows[0][1] = (float)M[0][1];
     rows[0][2] = (float)M[0][2];
@@ -613,14 +618,14 @@ inline void Matrix4x4<T>::MultiplyMatrix(const Matrix3x4<T> &m1, const Matrix4x4
 // call the non-optimized version in the general case.
 template<typename T>
 inline void Matrix4x4<T>::MultiplyMatrix(const Matrix4x4<T> &m1, const Matrix3x4<T> &m2)
-{    
+{
     MultiplyMatrix_NonOpt(m1, m2);
 }
 
 // call the non-optimized version in the general case.
 template<typename T>
 inline void Matrix4x4<T>::MultiplyMatrix(const Matrix2x4<T> &m1, const Matrix4x4<T> &m2)
-{    
+{
     MultiplyMatrix_NonOpt(m1, m2);
 }
 
@@ -636,7 +641,7 @@ template<typename T>
 inline const Matrix4x4<T>      operator * (const Matrix4x4<T> &m1, const Matrix4x4<T> &m2)
 {
     Matrix4x4<T> outMat(Matrix4x4<T>::NoInit);
-    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
     return outMat;
 }
 
@@ -644,7 +649,7 @@ template<typename T>
 inline const Matrix4x4<T>      operator * (const Matrix3x4<T> &m1, const Matrix4x4<T> &m2)
 {
     Matrix4x4<T> outMat(Matrix4x4<T>::NoInit);
-    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
     return outMat;
 }
 
@@ -652,7 +657,7 @@ template<typename T>
 inline const Matrix4x4<T>      operator * (const Matrix4x4<T> &m1, const Matrix3x4<T> &m2)
 {
     Matrix4x4<T> outMat(Matrix4x4<T>::NoInit);
-    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
     return outMat;
 }
 
@@ -660,7 +665,7 @@ template<typename T>
 inline const Matrix4x4<T>      operator * (const Matrix2x4<T> &m1, const Matrix4x4<T> &m2)
 {
     Matrix4x4<T> outMat(Matrix4x4<T>::NoInit);
-    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
     return outMat;
 }
 
@@ -668,7 +673,7 @@ template<typename T>
 inline const Matrix4x4<T>      operator * (const Matrix4x4<T> &m1, const Matrix2x4<T> &m2)
 {
     Matrix4x4<T> outMat(Matrix4x4<T>::NoInit);
-    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1 
+    outMat.MultiplyMatrix(m1, m2);          // m1.Prepend(m2) or m2.append(m1), apply m2 then m1
     return outMat;
 }
 
@@ -811,34 +816,34 @@ inline void Matrix4x4<T>::GetEulerAngles(T *eX, T *eY, T *eZ) const
     // Assuming the angles are in radians.
     if (copy.M[1][0] > 0.998f) {                        // singularity at north pole
         if (eY)
-            *eY = atan2f(copy.M[0][2],copy.M[2][2]);    
+            *eY = atan2f(copy.M[0][2],copy.M[2][2]);
         if (eZ)
-            *eZ = (T)SF_MATH_PI/2.f;                    
+            *eZ = (T)SF_MATH_PI/2.f;
         if (eX)
-            *eX = 0;                                    
+            *eX = 0;
         return;
     }
     if (copy.M[1][0] < -0.998f) {                       // singularity at south pole
         if (eY)
-            *eY = atan2f(copy.M[0][2],copy.M[2][2]);    
+            *eY = atan2f(copy.M[0][2],copy.M[2][2]);
         if (eZ)
-            *eZ = (T)-SF_MATH_PI/2.f;                   
+            *eZ = (T)-SF_MATH_PI/2.f;
         if (eX)
-            *eX = 0;                                    
+            *eX = 0;
         return;
     }
 
     if (eY)
-        *eY = atan2f(-copy.M[2][0],copy.M[0][0]);       
+        *eY = atan2f(-copy.M[2][0],copy.M[0][0]);
     if (eX)
-        *eX = atan2f(-copy.M[1][2],copy.M[1][1]);       
+        *eX = atan2f(-copy.M[1][2],copy.M[1][1]);
     if (eZ)
-        *eZ = asinf(copy.M[1][0]);                      
+        *eZ = asinf(copy.M[1][0]);
 }
 
 // Return X rotation matrix
 template<typename T>
-inline Matrix4x4<T> Matrix4x4<T>::RotationX(T angle) 
+inline Matrix4x4<T> Matrix4x4<T>::RotationX(T angle)
 {
     Matrix3x4<T> mat;
 
@@ -859,7 +864,7 @@ inline Matrix4x4<T> Matrix4x4<T>::RotationX(T angle)
 
 // Return Y rotation matrix
 template<typename T>
-inline Matrix4x4<T> Matrix4x4<T>::RotationY(T angle) 
+inline Matrix4x4<T> Matrix4x4<T>::RotationY(T angle)
 {
     Matrix3x4<T> mat;
 
@@ -880,7 +885,7 @@ inline Matrix4x4<T> Matrix4x4<T>::RotationY(T angle)
 
 // Return Z rotation matrix
 template<typename T>
-inline Matrix4x4<T> Matrix4x4<T>::RotationZ(T angle) 
+inline Matrix4x4<T> Matrix4x4<T>::RotationZ(T angle)
 {
     Matrix4x4<T> mat;
 
@@ -932,15 +937,15 @@ inline Matrix4x4<T> Matrix4x4<T>::Rotation(T angle, const Point3<T>& axis)
 }
 
 // Return rotation matrix around arbitrary axis using pivot point
-template<typename T> 
+template<typename T>
 inline Matrix4x4<T> Matrix4x4<T>::Rotation(T angle, const Point3<T>& axis, const Point3<T>& pivot)
 {
     // TODO - compute pre-multiplied version
     return
         Matrix4x4<T>(
-        Matrix4x4<T>::Translation(-pivot.x, -pivot.y, -pivot.z), 
+        Matrix4x4<T>::Translation(-pivot.x, -pivot.y, -pivot.z),
         Matrix4x4<T>(
-        Matrix4x4<T>::Rotation(angle, axis), 
+        Matrix4x4<T>::Rotation(angle, axis),
         Matrix4x4<T>::Translation(pivot.x, pivot.y, pivot.z)
         )
         );
@@ -951,8 +956,8 @@ inline Matrix4x4<T> Matrix4x4<T>::Translation(T tX, T tY, T tZ)
 {
     Matrix4x4<T> mat;
 
-    mat.M[0][3] = tX; 
-    mat.M[1][3] = tY; 
+    mat.M[0][3] = tX;
+    mat.M[1][3] = tY;
     mat.M[2][3] = tZ;
 
     return mat;
@@ -972,12 +977,12 @@ inline void Matrix4x4<T>::GetTranslation(T *tX, T *tY, T *tZ) const
 
 // create scale matrix
 template<typename T>
-inline Matrix4x4<T> Matrix4x4<T>::Scaling(T sX, T sY, T sZ)      
-{ 
+inline Matrix4x4<T> Matrix4x4<T>::Scaling(T sX, T sY, T sZ)
+{
     Matrix4x4<T> mat;
-    mat.M[0][0] = sX; 
-    mat.M[1][1] = sY; 
-    mat.M[2][2] = sZ; 
+    mat.M[0][0] = sX;
+    mat.M[1][1] = sY;
+    mat.M[2][2] = sZ;
     return mat;
 }
 
@@ -1255,7 +1260,7 @@ inline void      Matrix4x4<T>::EncloseTransformHomogeneous_NonOpt(Rect<T> *pr, c
 
 // The minor of a matrix is the determinant of the smaller square matrix
 template<typename T>
-T Matrix4x4<T>::GetMinor(const Matrix4x4<T>& m, const size_t r0, const size_t r1, const size_t r2, 
+T Matrix4x4<T>::GetMinor(const Matrix4x4<T>& m, const size_t r0, const size_t r1, const size_t r2,
            const size_t c0, const size_t c1, const size_t c2) const
 {
     return m.M[r0][c0] * (m.M[r1][c1] * m.M[r2][c2] - m.M[r2][c1] * m.M[r1][c2]) -
@@ -1267,7 +1272,7 @@ T Matrix4x4<T>::GetMinor(const Matrix4x4<T>& m, const size_t r0, const size_t r1
 template<typename T>
 inline Matrix4x4<T> Matrix4x4<T>::Adjoint() const
 {
-    return Matrix4x4<T>( 
+    return Matrix4x4<T>(
         GetMinor(*this, 1, 2, 3, 1, 2, 3),
         -GetMinor(*this, 0, 2, 3, 1, 2, 3),
         GetMinor(*this, 0, 1, 3, 1, 2, 3),
@@ -1294,7 +1299,7 @@ inline Matrix4x4<T> Matrix4x4<T>::Adjoint() const
 template<typename T>
 inline T Matrix4x4<T>::GetDeterminant() const
 {
-    return 
+    return
         M[0][0] * GetMinor(*this, 1, 2, 3, 1, 2, 3) -
         M[0][1] * GetMinor(*this, 1, 2, 3, 0, 2, 3) +
         M[0][2] * GetMinor(*this, 1, 2, 3, 0, 1, 3) -
@@ -1394,7 +1399,7 @@ inline void Matrix4x4<T>::TransformHomogeneousAndScaleCorners_NonOpt(const Rect<
     dest[2] = (sx * ( p2.x+1)/2.f);
     dest[3] = (sy * (-p2.y+1)/2.f);
     dest[4] = (sx * ( p3.x+1)/2.f);
-    dest[5] = (sy * (-p3.y+1)/2.f);   
+    dest[5] = (sy * (-p3.y+1)/2.f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1415,24 +1420,23 @@ public:
     }
 };
 
-typedef Matrix4x4<float>    Matrix4F;      
-typedef Matrix4x4Ref<float> Matrix4FRef;      
+typedef Matrix4x4<float>    Matrix4F;
+typedef Matrix4x4Ref<float> Matrix4FRef;
 
 
-#ifdef SF_ENABLE_SIMD
-
-// Now pre-declare any explicit specializations found in source files. 
+#if defined(SF_ENABLE_SIMD) || ((defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG))
+// Now pre-declare any explicit specializations found in source files.
 template<> void Matrix4F::MultiplyMatrix(const Matrix4F &m1, const Matrix4F &m2);
 template<> void Matrix4F::MultiplyMatrix(const Matrix3F &m1, const Matrix4F &m2);
 template<> void Matrix4F::MultiplyMatrix(const Matrix4F &m1, const Matrix3F &m2);
 template<> void Matrix4F::MultiplyMatrix(const Matrix2F &m1, const Matrix4F &m2);
 template<> void Matrix4F::MultiplyMatrix(const Matrix4F &m1, const Matrix2F &m2);
+#endif
+
+#if defined(SF_ENABLE_SIMD)
 template<> void Matrix4F::EncloseTransformHomogeneous(RectF *pr, const RectF& r) const;
 template<> void Matrix4F::TransformHomogeneousAndScaleCorners(const RectF& bounds, float sx, float sy, float* dest) const;
-
-
-
-#endif  // SF_ENABLE_SIMD
+#endif
 
 }} // Scaleform<T>::Render
 

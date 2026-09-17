@@ -6,6 +6,7 @@ Created     :   May, 2010
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,6 +19,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define INC_GAS_AMP_MARKER_H
 
 #include "GFxConfig.h"
+#ifdef SF_AMP_SERVER
 #include "GFx/AS2/AS2_Object.h"
 #include "GFx/AS2/AS2_ObjectProto.h"
 
@@ -72,5 +74,7 @@ public:
 };
 
 }}} // SF::GFx::AS2
+
+#endif
 
 #endif // INC_GAS_AMP_MARKER_H

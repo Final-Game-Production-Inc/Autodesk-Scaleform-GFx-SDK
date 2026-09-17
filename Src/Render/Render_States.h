@@ -8,6 +8,7 @@ Created     :   June 24, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,9 +23,12 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render_Scale9Grid.h"
 #include "Render_Matrix3x4.h"
 #include "Render_Matrix4x4.h"
-#include "Render_Filters.h"
+#include "Kernel/SF_Debug.h"
 
 namespace Scaleform { namespace Render {
+
+class FilterSet;
+class Filter;
 
 //--------------------------------------------------------------------
 // ***** BlendState
@@ -52,8 +56,11 @@ enum BlendMode
     Blend_Overwrite,          // No blending occurs; a straight blit (RGB).
     Blend_OverwriteAll,       // No blending occurs; a straight blit (RGBA - must use sourceAc=true).
     Blend_FullAdditive,       // Adds both colors (non-multiplied) and alphas.
+    Blend_FilterBlend,        // Used when blending filter passes together.
+    Blend_Ignore,             // Used to completely ignore the incoming fragment (alpha/erase layer errors)
 
-    Blend_Count
+    Blend_Count,
+    Blend_Invalid,          // Used as a special value to end BlendPrimitives, not an actual blend mode (not counted in Blend_Count).
 };
 
 class BlendState : public State
@@ -66,8 +73,9 @@ public:
     BlendState(BlendMode mode) : State(&InterfaceImpl, (void*)mode, NoAddRef) { }
 
     BlendMode GetBlendMode() const    { return (BlendMode)DataValue; }
-    // TBD: Should this be read-only?
-    //void      SetBlendMode(BlendMode mode)  { DataValue = mode; }
+
+    // Returns whether the allocation of a render target is needed when the given blend mode is pushed on the blend stack.
+    static bool IsTargetAllocationNeededForBlendMode(BlendMode mode);
 };
 
 
@@ -158,11 +166,13 @@ public:
         {
             Data_String     = 0x01,
             Data_Float      = 0x02,
-            Data_Batching   = 0x04
+            Data_Batching   = 0x04,
+            Data_InvertedMask = 0x08
         };
         StringLH RendererString;
         float    RendererFloat;
         bool     BatchingDisabled;
+        bool    InvertedMask;
         unsigned Flags;
 
         Data() : RendererFloat(0), BatchingDisabled(false), Flags(0) {}
@@ -222,16 +232,29 @@ public:
     static Interface InterfaceImpl;
     static StateType GetType_Static() { return State_Filter; }
 
-    FilterState(FilterSet* filters) : State(&InterfaceImpl, (void*)filters)
-    { 
-        filters->Freeze();
-    }
+    FilterState(FilterSet* filters);
 
-    const FilterSet* GetFilters() const
-    { return (const FilterSet*)GetData(); }
+    const FilterSet* GetFilters() const;
 
-    UPInt         GetFilterCount() const { return GetFilters()->GetFilterCount(); }
-    const Filter* GetFilter(UPInt index) const { return GetFilters()->GetFilter(index); }
+    UPInt         GetFilterCount() const;
+    const Filter* GetFilter(UPInt index) const;
+};
+
+//--------------------------------------------------------------------
+// ***** OrigNodeBoundsState
+// OrigNodeBoundsState holds the original bounds of a node, before it is modified by filters, etc.
+class OrigNodeBoundsState : public State
+{
+public:
+    typedef State::Interface_RefCountImpl Interface;
+    static Interface InterfaceImpl;
+    static StateType GetType_Static() { return State_OrigNodeBounds; }
+
+    OrigNodeBoundsState(const RectFRef* bounds) : State(&InterfaceImpl, (void*)bounds)
+    { SF_DEBUG_ASSERT(bounds, "Cannot use NULL bounds in OrigNodeBoundsState"); }
+
+    const RectFRef* GetBounds() const
+    { return (const RectFRef*)GetData(); }
 };
 
 }} // Scaleform::Render

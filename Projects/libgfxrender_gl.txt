@@ -23,6 +23,3 @@ Src/Render/GL/GL_ShaderSource.cpp
 Src/Render/GL/GLES_ExtensionMacros.h
 Src/Render/GL/GLES_Extensions.cpp
 Src/Render/GL/GLES_Extensions.h
-Src/Render/GL/GLES_ShaderDescs.cpp
-Src/Render/GL/GLES_ShaderDescs.h
-Src/Render/GL/GLES_ShaderSource.cpp

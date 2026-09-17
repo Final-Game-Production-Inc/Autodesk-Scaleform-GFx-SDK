@@ -6,6 +6,7 @@ Created     :   October, 2006
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -90,6 +91,8 @@ AsBroadcasterProto::AsBroadcasterProto(ASStringContext* psc, Object* pprototype,
 const NameFunction AsBroadcasterCtorFunction::StaticFunctionTable[] = 
 {
     { "initialize", &AsBroadcasterCtorFunction::Initialize },
+    // Lazy Lazy Scaleform Is Lazy... Why Not Add This....
+    { "broadcastMessage", &AsBroadcasterCtorFunction::BroadcastMessageStatic }, // 新增
     { 0, 0 }
 };
 
@@ -191,6 +194,16 @@ bool AsBroadcaster::RemoveListener(Environment* penv, ObjectInterface* pthis, Ob
         }
     }
     return false;
+}
+
+void AsBroadcasterCtorFunction::BroadcastMessageStatic(const FnCall& fn)
+{
+    if (fn.NArgs < 1)
+        return;
+    ASString eventName(fn.Arg(0).ToString(fn.Env));
+    // 直接调用底层静态广播
+    AsBroadcaster::BroadcastMessage(fn.Env, fn.ThisPtr, eventName, fn.NArgs - 1, fn.Env->GetTopIndex() - 4);
+    fn.Result->SetUndefined();
 }
 
 bool AsBroadcaster::BroadcastMessage

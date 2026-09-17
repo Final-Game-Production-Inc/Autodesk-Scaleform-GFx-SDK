@@ -6,6 +6,7 @@ Created     :   June 30, 2005
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -1636,7 +1637,7 @@ void    SF_STDCALL GFx_FontTextureInfoLoader(LoadProcess* p, const TagInfo& tagI
             ptextureGlyphData->AddTexture(ResourceId(textureId), rh);
         
         unsigned numGlyphsInFont = pin->ReadU16();
-        for (unsigned i = 0; i < numGlyphsInFont; ++i)
+        for (unsigned i_GF = 0; i_GF < numGlyphsInFont; ++i_GF)
         {
             // load GLYPHIDX
             unsigned indexInFont    = pin->ReadU16();

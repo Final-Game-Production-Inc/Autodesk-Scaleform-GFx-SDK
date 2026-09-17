@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -269,9 +270,9 @@ DisplayObjectBase*   AvmSprite::AddDisplayObject(
                         AS3::Object* as3existObjParent = avmEexistObj->GetAS3Parent();
                         if (!existObj->IsInstanceBasedNameFlagSet() && as3existObjParent)
                         {
-                            const ASString& name = existObj->GetName();
+                            const ASString& nameString = existObj->GetName();
                             // !!! SetProperty() can throw exceptions. Exception checking is disabled by the DoNotCheck() call.
-                            as3existObjParent->SetProperty(Multiname(GetAS3Root()->GetAVM()->GetPublicNamespace(), name), 
+                            as3existObjParent->SetProperty(Multiname(GetAS3Root()->GetAVM()->GetPublicNamespace(), nameString),
                                 Value(avmEexistObj->GetAS3Obj())).DoNotCheck();
                         }
                     }
@@ -451,14 +452,6 @@ void    AvmSprite::AdvanceFrame(bool nextFrame, float framePos)
         return;
 
     SF_ASSERT(GetDef() && GetMovieImpl() != NULL);
-
-    // Adjust x,y of this character if it is being dragged.
-    if (GetMovieImpl()->IsMouseSupportEnabled())
-    {
-        unsigned mouseIdx;
-        if (GetMovieImpl()->IsDraggingCharacter(spr, &mouseIdx))
-            spr->DisplayObjContainer::DoMouseDrag(mouseIdx);
-    }
 
     // If flag "need-execute-frame" is already set then do not advance the sprite:
     // this means that current frame is already set correctly and ActionScript

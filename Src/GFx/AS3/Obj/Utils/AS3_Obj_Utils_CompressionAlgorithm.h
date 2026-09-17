@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -52,7 +53,7 @@ namespace Classes { namespace fl_utils
     
 namespace ClassTraits { namespace fl_utils
 {
-    class CompressionAlgorithm : public Traits
+    class CompressionAlgorithm : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -60,9 +61,11 @@ namespace ClassTraits { namespace fl_utils
 #endif
     public:
         typedef Classes::fl_utils::CompressionAlgorithm ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        CompressionAlgorithm(VM& vm);
+        CompressionAlgorithm(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 2 };
         static const MemberInfo mi[MemberInfoNum];

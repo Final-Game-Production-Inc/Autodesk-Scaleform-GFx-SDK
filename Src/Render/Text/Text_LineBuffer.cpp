@@ -6,6 +6,7 @@ Created     :   May, 2007
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -624,7 +625,10 @@ void LineBuffer::CreateVisibleTextLayout(TextLayout::Builder& bld,
 
                 if (!IsStaticText()) // no mask or partial visibility test for static text
                 {
-                    approxSymW = pfont->GetGlyphBounds(index, &glyphBounds).x2 * scale;
+                    if (index == ~0u)
+                        approxSymW = float(advance) * scale;
+                    else
+                        approxSymW = pfont->GetGlyphBounds(index, &glyphBounds).x2 * scale;
                 }
                 else
                 {
@@ -640,22 +644,14 @@ void LineBuffer::CreateVisibleTextLayout(TextLayout::Builder& bld,
             if (!IsStaticText()) // no mask or partial visibility test for static text
             {
                 // test for complete invisibility, left side
-                if (index != ~0u && adjox + approxSymW <= Geom.VisibleRect.x1)
+                if (/*index != ~0u &&*/ adjox + approxSymW <= Geom.VisibleRect.x1)
                     continue;
 
                 // test for complete invisibility, right side
                 if (int(adjox) >= int(Geom.VisibleRect.x2))
                     break; // we can finish here
             }
-            if (glyphIt.IsUnderline())
-            {
-                if (!glyph.IsNewLineChar())
-                    hasUnderline = true;
-                //if (glyph.IsCharInvisible())
-                //    continue;
-            }
-            else
-                hasUnderline = false;
+            hasUnderline = glyphIt.IsUnderline();
 
             if (firstVisible)
             {
@@ -664,11 +660,16 @@ void LineBuffer::CreateVisibleTextLayout(TextLayout::Builder& bld,
             }
 
             // test for partial visibility
-            if (!maskApplied && !IsStaticText() && !Geom.IsNoClipping() &&
+            if (!glyph.IsCharInvisible() && ( // do not check if cur char is invisible
+                !maskApplied && !IsStaticText() && !Geom.IsNoClipping() &&
                 ((adjox < Geom.VisibleRect.x1 && adjox + approxSymW > Geom.VisibleRect.x1) || 
-                (adjox < Geom.VisibleRect.x2 && adjox + approxSymW > Geom.VisibleRect.x2)))
+                (adjox < Geom.VisibleRect.x2 && adjox + approxSymW > Geom.VisibleRect.x2))))
             {
-                bld.SetClipBox(Geom.VisibleRect);
+                RectF r(Geom.VisibleRect);
+                // seems like we can expand the clipbox vertically to avoid clipping of
+                // tall characters (common in Aisan languages). !AB
+                r.Expand(0, GFX_TEXT_GUTTER);
+                bld.SetClipBox(r);
                 maskApplied = true;
             }
 
@@ -703,7 +704,27 @@ void LineBuffer::CreateVisibleTextLayout(TextLayout::Builder& bld,
             }
 
             // handle underline
-            if (prevUnderlineColor != glyphIt.GetUnderlineColor() || prevUnderlineStyle != glyphIt.GetUnderlineStyle())
+            if (!glyph.IsNewLineChar())
+            {
+                if (prevUnderlineColor != glyphIt.GetUnderlineColor() || prevUnderlineStyle != glyphIt.GetUnderlineStyle())
+                {
+                    if (prevUnderlineColor != 0)
+                    {
+                        bld.AddUnderline(underlineBeginPt.x - float(Geom.HScrollOffset), 
+                            underlineBeginPt.y + descent/2, float(underlineLen), 
+                            ConvertUnderlineStyle(prevUnderlineStyle), prevUnderlineColor.ToColor32());
+                    }
+                    // new underline, no underline before
+                    underlineBeginPt = offset;
+                    underlineLen     = advance;
+                }
+                else if (glyphIt.GetUnderlineColor() != 0)
+                {
+                    // extend
+                    underlineLen += advance;
+                }
+            }
+            else
             {
                 if (prevUnderlineColor != 0)
                 {
@@ -711,16 +732,9 @@ void LineBuffer::CreateVisibleTextLayout(TextLayout::Builder& bld,
                         underlineBeginPt.y + descent/2, float(underlineLen), 
                         ConvertUnderlineStyle(prevUnderlineStyle), prevUnderlineColor.ToColor32());
                 }
-                // new underline, no underline before
-                underlineBeginPt = offset;
-                underlineLen     = advance;
+                underlineLen = 0;
+                hasUnderline = false;
             }
-            else if (glyphIt.GetUnderlineColor() != 0)
-            {
-                // extend
-                underlineLen += advance;
-            }
-
 
             // handle selection: accumulate or insert selection rect
             if (glyphIt.IsSelected() || prevSelectionColor != 0)
@@ -776,6 +790,24 @@ void LineBuffer::CreateVisibleTextLayout(TextLayout::Builder& bld,
         }
     }
     bld.SetParam(textFieldParam);
+}
+
+FontHandle* LineBuffer::FindFirstFontInfo() const
+{
+    for (UPInt l = 0, nl = Lines.GetSize(); l < nl; ++l)
+    {
+        const Line* line = Lines[l];
+        LineBuffer::GlyphIterator git = line->Begin();
+        for (;!git.IsFinished(); ++git)
+        {
+            const LineBuffer::GlyphEntry& ge = git.GetGlyph();
+            if (ge.HasFmtFont())
+            {
+                return git.GetFontHandle();
+            }
+        }
+    }
+    return NULL;
 }
 
 void LoadTextFieldParamFromTextFilter(TextFieldParam& params, const TextFilter& filter)

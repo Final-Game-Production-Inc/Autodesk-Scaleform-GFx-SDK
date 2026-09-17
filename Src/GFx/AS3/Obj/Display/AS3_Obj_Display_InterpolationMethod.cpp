@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -51,24 +52,27 @@ namespace ClassTraits { namespace fl_display
         {"RGB", NULL, OFFSETOF(Classes::fl_display::InterpolationMethod, RGB), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    InterpolationMethod::InterpolationMethod(VM& vm)
-    : Traits(vm, AS3::fl_display::InterpolationMethodCI)
+
+    InterpolationMethod::InterpolationMethod(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::InterpolationMethod::InterpolationMethod()"
 //##protect##"ClassTraits::InterpolationMethod::InterpolationMethod()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_display::InterpolationMethodCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_display::InterpolationMethod(*this));
 
     }
 
     Pickable<Traits> InterpolationMethod::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) InterpolationMethod(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) InterpolationMethod(vm, AS3::fl_display::InterpolationMethodCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::InterpolationMethodCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -79,6 +83,11 @@ namespace fl_display
 {
     const TypeInfo InterpolationMethodTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_display::InterpolationMethod::InstanceType),
+        0,
+        ClassTraits::fl_display::InterpolationMethod::MemberInfoNum,
+        0,
+        0,
         "InterpolationMethod", "flash.display", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -86,10 +95,6 @@ namespace fl_display
     const ClassInfo InterpolationMethodCI = {
         &InterpolationMethodTI,
         ClassTraits::fl_display::InterpolationMethod::MakeClassTraits,
-        0,
-        ClassTraits::fl_display::InterpolationMethod::MemberInfoNum,
-        0,
-        0,
         NULL,
         ClassTraits::fl_display::InterpolationMethod::mi,
         NULL,

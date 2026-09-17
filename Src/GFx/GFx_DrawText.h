@@ -7,6 +7,7 @@ Created     :   May 23, 2008
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -106,6 +107,10 @@ public:
     // Sets font size to whole text or to the part of text in interval [startPos..endPos].
     // Both "startPos" and "endPos" parameters are optional.
     virtual void SetFontSize(float fontSize, UPInt startPos = 0, UPInt endPos = UPInt(-1)) = 0;
+
+    // Sets letter spacing to whole text or to the part of text in interval [startPos..endPos].
+    // Both "startPos" and "endPos" parameters are optional.
+    virtual void SetLetterSpacing(float letterSpacing, UPInt startPos = 0, UPInt endPos = UPInt(-1)) = 0;
 
     enum FontStyle
     {

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -55,7 +56,9 @@ namespace Scaleform { namespace GFx { namespace AS3
         else
         {
             // If System.useCodePage is false, the escaped string is encoded in UTF-8
-            ASUtils::AS3::Escape(value.ToCStr(), value.GetSize(), escapedStr);
+            StringBuffer b;
+            ASUtils::AS3::Escape(value.ToCStr(), value.GetSize(), b);
+            escapedStr = b;
         }
         result = vm.GetStringManager().CreateString(escapedStr.ToCStr(), escapedStr.GetSize());
     }
@@ -82,7 +85,9 @@ namespace Scaleform { namespace GFx { namespace AS3
         else
         {
             // If System.useCodePage is false, the escaped string is decoded from UTF-8.
-            ok = ASUtils::AS3::Unescape(value.ToCStr(), value.GetSize(), unescapedStr);
+            StringBuffer b;
+            ok = ASUtils::AS3::Unescape(value.ToCStr(), value.GetSize(), b);
+            unescapedStr = b;
         }
 
         if (ok)
@@ -174,33 +179,48 @@ namespace ClassTraits { namespace fl_system
         {"useCodePage", NULL, OFFSETOF(Classes::fl_system::System, useCodePage), Abc::NS_Public, SlotInfo::BT_Boolean, 0},
     };
 
-    const ThunkInfo System::ti[System::ThunkInfoNum] = {
-        {TFunc_Classes_System_imeGet::Func, NULL, "ime", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_System_totalMemoryGet::Func, &AS3::fl::uintTI, "totalMemory", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_System_exit::Func, NULL, "exit", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_System_gc::Func, NULL, "gc", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_System_pause::Func, NULL, "pause", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_System_resume::Func, NULL, "resume", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_System_setClipboard::Func, NULL, "setClipboard", NULL, Abc::NS_Public, CT_Method, 1, 1},
+    // const UInt16 System::tito[System::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 5, 6, 7, 
+    // };
+    const TypeInfo* System::tit[9] = {
+        NULL, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, 
+        NULL, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, 
     };
-    System::System(VM& vm)
-    : Traits(vm, AS3::fl_system::SystemCI)
+    const ThunkInfo System::ti[System::ThunkInfoNum] = {
+        {TFunc_Classes_System_imeGet::Func, &System::tit[0], "ime", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_System_totalMemoryGet::Func, &System::tit[1], "totalMemory", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_System_exit::Func, &System::tit[2], "exit", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_System_gc::Func, &System::tit[4], "gc", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_System_pause::Func, &System::tit[5], "pause", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_System_resume::Func, &System::tit[6], "resume", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_System_setClipboard::Func, &System::tit[7], "setClipboard", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+    };
+
+    System::System(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::System::System()"
 //##protect##"ClassTraits::System::System()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_system::SystemCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_system::System(*this));
 
     }
 
     Pickable<Traits> System::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) System(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) System(vm, AS3::fl_system::SystemCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_system::SystemCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -211,6 +231,11 @@ namespace fl_system
 {
     const TypeInfo SystemTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_system::System::InstanceType),
+        ClassTraits::fl_system::System::ThunkInfoNum,
+        ClassTraits::fl_system::System::MemberInfoNum,
+        0,
+        0,
         "System", "flash.system", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -218,10 +243,6 @@ namespace fl_system
     const ClassInfo SystemCI = {
         &SystemTI,
         ClassTraits::fl_system::System::MakeClassTraits,
-        ClassTraits::fl_system::System::ThunkInfoNum,
-        ClassTraits::fl_system::System::MemberInfoNum,
-        0,
-        0,
         ClassTraits::fl_system::System::ti,
         ClassTraits::fl_system::System::mi,
         NULL,

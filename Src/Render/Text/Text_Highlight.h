@@ -7,6 +7,7 @@ Created     :   August 6, 2007
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -98,7 +99,7 @@ struct HighlightInfo : public NewOverrideBase<StatRender_Text_Mem>
     UnderlineStyle GetUnderlineStyle() const { return UnderlineStyle(Flags & Flag_UnderlineStyle); }
     bool  HasUnderlineStyle() const { return GetUnderlineStyle() != 0; }
     void  ClearUnderlineStyle() { Flags &= ~Flag_UnderlineStyle; }
-    void  SetUnderlineStyle(UnderlineStyle us) { ClearUnderlineStyle(); Flags |= (us & Flag_UnderlineStyle); }
+    void  SetUnderlineStyle(UnderlineStyle us) { ClearUnderlineStyle(); Flags |= static_cast<UByte>(static_cast<unsigned int>(us) & Flag_UnderlineStyle); }
 
     void SetBackgroundColor(const Color& backgr) { Flags |= Flag_Background; BackgroundColor = backgr; }
     Color GetBackgroundColor() const             { return (HasBackgroundColor()) ? BackgroundColor : Color(0, 0, 0, 0); }

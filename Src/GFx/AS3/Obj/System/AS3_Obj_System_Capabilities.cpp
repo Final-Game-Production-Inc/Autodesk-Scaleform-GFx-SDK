@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -48,8 +49,7 @@ namespace Classes { namespace fl_system
     void Capabilities::hasAccessibilityGet(bool& result)
     {
 //##protect##"class_::Capabilities::hasAccessibilityGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("class_::Capabilities::hasAccessibilityGet()");
+        result = false;
 //##protect##"class_::Capabilities::hasAccessibilityGet()"
     }
     void Capabilities::hasAudioGet(bool& result)
@@ -77,21 +77,14 @@ namespace Classes { namespace fl_system
     {
 //##protect##"class_::Capabilities::hasIMEGet()"
 #ifndef SF_NO_IME_SUPPORT
-
 		ASVM& asvm = static_cast<ASVM&>(GetVM());
 		MovieImpl* pmovieImpl = asvm.GetMovieImpl();   
 
 		IMEManagerBase* pimeManager = pmovieImpl->GetIMEManager();
-		if(pimeManager != NULL)
-		{
-			result = true;
-			return;
-		}
-		result = false;
+        result = (pimeManager != NULL);
 #else
 		result = false;
 #endif
-
 //##protect##"class_::Capabilities::hasIMEGet()"
     }
     void Capabilities::hasMP3Get(bool& result)
@@ -104,22 +97,19 @@ namespace Classes { namespace fl_system
     void Capabilities::hasPrintingGet(bool& result)
     {
 //##protect##"class_::Capabilities::hasPrintingGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("class_::Capabilities::hasPrintingGet()");
+        result = false;
 //##protect##"class_::Capabilities::hasPrintingGet()"
     }
     void Capabilities::hasScreenBroadcastGet(bool& result)
     {
 //##protect##"class_::Capabilities::hasScreenBroadcastGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("class_::Capabilities::hasScreenBroadcastGet()");
+        result = false;
 //##protect##"class_::Capabilities::hasScreenBroadcastGet()"
     }
     void Capabilities::hasScreenPlaybackGet(bool& result)
     {
 //##protect##"class_::Capabilities::hasScreenPlaybackGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("class_::Capabilities::hasScreenPlaybackGet()");
+        result = false;
 //##protect##"class_::Capabilities::hasScreenPlaybackGet()"
     }
     void Capabilities::hasStreamingAudioGet(bool& result)
@@ -166,27 +156,22 @@ namespace Classes { namespace fl_system
     void Capabilities::localFileReadDisableGet(bool& result)
     {
 //##protect##"class_::Capabilities::localFileReadDisableGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("class_::Capabilities::localFileReadDisableGet()");
+        result = false;
 //##protect##"class_::Capabilities::localFileReadDisableGet()"
     }
     void Capabilities::manufacturerGet(ASString& result)
     {
 //##protect##"class_::Capabilities::manufacturerGet()"
-        
         result = "Scaleform ";
         ASString osName = GetStringManager().CreateEmptyString();
         getOSName(osName);
         result += osName;
-
 //##protect##"class_::Capabilities::manufacturerGet()"
     }
     void Capabilities::osGet(ASString& result)
     {
 //##protect##"class_::Capabilities::osGet()"
-    
         getOSName(result);
-
 //##protect##"class_::Capabilities::osGet()"
     }
     void Capabilities::pixelAspectRatioGet(Value::Number& result)
@@ -248,7 +233,7 @@ namespace Classes { namespace fl_system
     {
 //##protect##"class_::Capabilities::versionGet()"
         
-        // Specifies the Flash Player or Adobe® AIR® platform and version information. The format of the 
+        // Specifies the Flash Player or AdobeÂ® AIRÂ® platform and version information. The format of the 
         // version number is: platform majorVersion,minorVersion,buildNumber,internalBuildNumber. Possible 
         // values for platform are "WIN", ` "MAC", "LNX", and "AND". Here are some examples of version 
         // information:
@@ -276,18 +261,22 @@ namespace Classes { namespace fl_system
 
     void Capabilities::getOSName(ASString& result)
     {
-#if defined(SF_OS_WIN32)
+#if defined(SF_OS_WINMETRO)
+    #if defined(_DURANGO)
+        result = "Durango";
+    #else
+        result = "Windows 8";
+    #endif
+#elif defined(SF_OS_WIN32)
         result = "Windows";
+#elif defined(SF_OS_ANDROID)
+        result = "Android";
 #elif defined(SF_OS_LINUX)
         result = "Linux";
 #elif defined(SF_OS_DARWIN)
         result = "Mac OS";
-
-#elif defined(SF_OS_ANDROID)
-        result = "Android";
 #elif defined(SF_OS_IPHONE)
         result = "iPhone";
-
 #elif defined(SF_OS_XBOX360)
         result = "XBox 360";
 #elif defined(SF_OS_3DS)
@@ -296,8 +285,12 @@ namespace Classes { namespace fl_system
         result = "PSVITA";
 #elif defined(SF_OS_PS3)
         result = "Playstation 3";
+#elif defined(SF_OS_ORBIS)
+        result = "Orbis";
 #elif defined(SF_OS_WII)
         result = "Wii";
+#elif defined(SF_OS_WIIU)
+        result = "Wii U";
 #else
         result = "Other";
 #endif
@@ -365,53 +358,88 @@ template <> const TFunc_Classes_Capabilities_versionGet::TMethod TFunc_Classes_C
 
 namespace ClassTraits { namespace fl_system
 {
-    const ThunkInfo Capabilities::ti[Capabilities::ThunkInfoNum] = {
-        {TFunc_Classes_Capabilities_avHardwareDisableGet::Func, &AS3::fl::BooleanTI, "avHardwareDisable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasAccessibilityGet::Func, &AS3::fl::BooleanTI, "hasAccessibility", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasAudioGet::Func, &AS3::fl::BooleanTI, "hasAudio", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasAudioEncoderGet::Func, &AS3::fl::BooleanTI, "hasAudioEncoder", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasEmbeddedVideoGet::Func, &AS3::fl::BooleanTI, "hasEmbeddedVideo", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasIMEGet::Func, &AS3::fl::BooleanTI, "hasIME", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasMP3Get::Func, &AS3::fl::BooleanTI, "hasMP3", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasPrintingGet::Func, &AS3::fl::BooleanTI, "hasPrinting", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasScreenBroadcastGet::Func, &AS3::fl::BooleanTI, "hasScreenBroadcast", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasScreenPlaybackGet::Func, &AS3::fl::BooleanTI, "hasScreenPlayback", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasStreamingAudioGet::Func, &AS3::fl::BooleanTI, "hasStreamingAudio", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasStreamingVideoGet::Func, &AS3::fl::BooleanTI, "hasStreamingVideo", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasTLSGet::Func, &AS3::fl::BooleanTI, "hasTLS", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_hasVideoEncoderGet::Func, &AS3::fl::BooleanTI, "hasVideoEncoder", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_isDebuggerGet::Func, &AS3::fl::BooleanTI, "isDebugger", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_languageGet::Func, &AS3::fl::StringTI, "language", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_localFileReadDisableGet::Func, &AS3::fl::BooleanTI, "localFileReadDisable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_manufacturerGet::Func, &AS3::fl::StringTI, "manufacturer", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_osGet::Func, &AS3::fl::StringTI, "os", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_pixelAspectRatioGet::Func, &AS3::fl::NumberTI, "pixelAspectRatio", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_playerTypeGet::Func, &AS3::fl::StringTI, "playerType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_screenColorGet::Func, &AS3::fl::StringTI, "screenColor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_screenDPIGet::Func, &AS3::fl::NumberTI, "screenDPI", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_screenResolutionXGet::Func, &AS3::fl::NumberTI, "screenResolutionX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_screenResolutionYGet::Func, &AS3::fl::NumberTI, "screenResolutionY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_serverStringGet::Func, &AS3::fl::StringTI, "serverString", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Capabilities_versionGet::Func, &AS3::fl::StringTI, "version", NULL, Abc::NS_Public, CT_Get, 0, 0},
+    // const UInt16 Capabilities::tito[Capabilities::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 
+    // };
+    const TypeInfo* Capabilities::tit[27] = {
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
     };
-    Capabilities::Capabilities(VM& vm)
-    : Traits(vm, AS3::fl_system::CapabilitiesCI)
+    const ThunkInfo Capabilities::ti[Capabilities::ThunkInfoNum] = {
+        {TFunc_Classes_Capabilities_avHardwareDisableGet::Func, &Capabilities::tit[0], "avHardwareDisable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasAccessibilityGet::Func, &Capabilities::tit[1], "hasAccessibility", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasAudioGet::Func, &Capabilities::tit[2], "hasAudio", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasAudioEncoderGet::Func, &Capabilities::tit[3], "hasAudioEncoder", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasEmbeddedVideoGet::Func, &Capabilities::tit[4], "hasEmbeddedVideo", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasIMEGet::Func, &Capabilities::tit[5], "hasIME", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasMP3Get::Func, &Capabilities::tit[6], "hasMP3", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasPrintingGet::Func, &Capabilities::tit[7], "hasPrinting", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasScreenBroadcastGet::Func, &Capabilities::tit[8], "hasScreenBroadcast", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasScreenPlaybackGet::Func, &Capabilities::tit[9], "hasScreenPlayback", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasStreamingAudioGet::Func, &Capabilities::tit[10], "hasStreamingAudio", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasStreamingVideoGet::Func, &Capabilities::tit[11], "hasStreamingVideo", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasTLSGet::Func, &Capabilities::tit[12], "hasTLS", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_hasVideoEncoderGet::Func, &Capabilities::tit[13], "hasVideoEncoder", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_isDebuggerGet::Func, &Capabilities::tit[14], "isDebugger", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_languageGet::Func, &Capabilities::tit[15], "language", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_localFileReadDisableGet::Func, &Capabilities::tit[16], "localFileReadDisable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_manufacturerGet::Func, &Capabilities::tit[17], "manufacturer", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_osGet::Func, &Capabilities::tit[18], "os", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_pixelAspectRatioGet::Func, &Capabilities::tit[19], "pixelAspectRatio", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_playerTypeGet::Func, &Capabilities::tit[20], "playerType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_screenColorGet::Func, &Capabilities::tit[21], "screenColor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_screenDPIGet::Func, &Capabilities::tit[22], "screenDPI", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_screenResolutionXGet::Func, &Capabilities::tit[23], "screenResolutionX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_screenResolutionYGet::Func, &Capabilities::tit[24], "screenResolutionY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_serverStringGet::Func, &Capabilities::tit[25], "serverString", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Capabilities_versionGet::Func, &Capabilities::tit[26], "version", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+    };
+
+    Capabilities::Capabilities(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Capabilities::Capabilities()"
 //##protect##"ClassTraits::Capabilities::Capabilities()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_system::CapabilitiesCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_system::Capabilities(*this));
 
     }
 
     Pickable<Traits> Capabilities::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Capabilities(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Capabilities(vm, AS3::fl_system::CapabilitiesCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_system::CapabilitiesCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -422,6 +450,11 @@ namespace fl_system
 {
     const TypeInfo CapabilitiesTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_system::Capabilities::InstanceType),
+        ClassTraits::fl_system::Capabilities::ThunkInfoNum,
+        0,
+        0,
+        0,
         "Capabilities", "flash.system", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -429,10 +462,6 @@ namespace fl_system
     const ClassInfo CapabilitiesCI = {
         &CapabilitiesTI,
         ClassTraits::fl_system::Capabilities::MakeClassTraits,
-        ClassTraits::fl_system::Capabilities::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_system::Capabilities::ti,
         NULL,
         NULL,

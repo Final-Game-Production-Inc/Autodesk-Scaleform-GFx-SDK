@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_filters::GlowFilter, Instances::fl_filters::GlowFilter::mid_alphaGet, Value::Number> TFunc_Instances_GlowFilter_alphaGet;
 typedef ThunkFunc1<Instances::fl_filters::GlowFilter, Instances::fl_filters::GlowFilter::mid_alphaSet, const Value, Value::Number> TFunc_Instances_GlowFilter_alphaSet;
 typedef ThunkFunc0<Instances::fl_filters::GlowFilter, Instances::fl_filters::GlowFilter::mid_blurXGet, Value::Number> TFunc_Instances_GlowFilter_blurXGet;
@@ -104,6 +99,7 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::GlowFilter::blurXSet()"
         SF_UNUSED(result);
+        value = Alg::Max(0.0, value);
         GetGlowFilterData()->GetParams().BlurX = PixelsToTwips((float)value);
 //##protect##"instance::GlowFilter::blurXSet()"
     }
@@ -117,6 +113,7 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::GlowFilter::blurYSet()"
         SF_UNUSED(result);
+        value = Alg::Max(0.0, value);
         GetGlowFilterData()->GetParams().BlurY = PixelsToTwips((float)value);
 //##protect##"instance::GlowFilter::blurYSet()"
     }
@@ -145,7 +142,9 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::GlowFilter::innerSet()"
         SF_UNUSED(result);
-        GetGlowFilterData()->GetParams().Mode |= (value ? Render::BlurFilterParams::Mode_Inner : 0);
+        unsigned& mode = GetGlowFilterData()->GetParams().Mode;
+        mode &= ~Render::BlurFilterParams::Mode_Inner;
+        mode |= (value ? Render::BlurFilterParams::Mode_Inner : 0);
 //##protect##"instance::GlowFilter::innerSet()"
     }
     void GlowFilter::knockoutGet(bool& result)
@@ -158,7 +157,9 @@ namespace Instances { namespace fl_filters
     {
 //##protect##"instance::GlowFilter::knockoutSet()"
         SF_UNUSED(result);
-        GetGlowFilterData()->GetParams().Mode |= (value ? Render::BlurFilterParams::Mode_Knockout : 0);
+        unsigned& mode = GetGlowFilterData()->GetParams().Mode;
+        mode &= ~Render::BlurFilterParams::Mode_Knockout;
+        mode |= (value ? Render::BlurFilterParams::Mode_Knockout : 0);
 //##protect##"instance::GlowFilter::knockoutSet()"
     }
     void GlowFilter::qualityGet(SInt32& result)
@@ -233,6 +234,9 @@ namespace Instances { namespace fl_filters
         SInt32 qual(1);
         bool inner(false), knock(false);
 
+        if ( argc >= 9 )
+            return GetVM().ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, GetVM() SF_DEBUG_ARG("flash.filters::GlowFilter()") SF_DEBUG_ARG(0) SF_DEBUG_ARG(8) SF_DEBUG_ARG(argc)));
+
         if ( argc >= 1 && !argv[0].Convert2UInt32(color)) return;
         if ( argc >= 2 && !argv[1].Convert2Number(alpha)) return;
         if ( argc >= 3 && !argv[2].Convert2Number(blurX)) return;
@@ -258,32 +262,53 @@ namespace Instances { namespace fl_filters
 
 namespace InstanceTraits { namespace fl_filters
 {
+    // const UInt16 GlowFilter::tito[GlowFilter::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 
+    // };
+    const TypeInfo* GlowFilter::tit[25] = {
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_filters::BitmapFilterTI, 
+    };
     const ThunkInfo GlowFilter::ti[GlowFilter::ThunkInfoNum] = {
-        {TFunc_Instances_GlowFilter_alphaGet::Func, &AS3::fl::NumberTI, "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_alphaSet::Func, NULL, "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_blurXGet::Func, &AS3::fl::NumberTI, "blurX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_blurXSet::Func, NULL, "blurX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_blurYGet::Func, &AS3::fl::NumberTI, "blurY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_blurYSet::Func, NULL, "blurY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_colorGet::Func, &AS3::fl::uintTI, "color", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_colorSet::Func, NULL, "color", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_innerGet::Func, &AS3::fl::BooleanTI, "inner", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_innerSet::Func, NULL, "inner", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_knockoutGet::Func, &AS3::fl::BooleanTI, "knockout", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_knockoutSet::Func, NULL, "knockout", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_qualityGet::Func, &AS3::fl::int_TI, "quality", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_qualitySet::Func, NULL, "quality", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_strengthGet::Func, &AS3::fl::NumberTI, "strength", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GlowFilter_strengthSet::Func, NULL, "strength", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GlowFilter_clone::Func, &AS3::fl_filters::BitmapFilterTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_GlowFilter_alphaGet::Func, &GlowFilter::tit[0], "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_alphaSet::Func, &GlowFilter::tit[1], "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_blurXGet::Func, &GlowFilter::tit[3], "blurX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_blurXSet::Func, &GlowFilter::tit[4], "blurX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_blurYGet::Func, &GlowFilter::tit[6], "blurY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_blurYSet::Func, &GlowFilter::tit[7], "blurY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_colorGet::Func, &GlowFilter::tit[9], "color", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_colorSet::Func, &GlowFilter::tit[10], "color", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_innerGet::Func, &GlowFilter::tit[12], "inner", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_innerSet::Func, &GlowFilter::tit[13], "inner", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_knockoutGet::Func, &GlowFilter::tit[15], "knockout", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_knockoutSet::Func, &GlowFilter::tit[16], "knockout", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_qualityGet::Func, &GlowFilter::tit[18], "quality", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_qualitySet::Func, &GlowFilter::tit[19], "quality", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_strengthGet::Func, &GlowFilter::tit[21], "strength", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_strengthSet::Func, &GlowFilter::tit[22], "strength", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GlowFilter_clone::Func, &GlowFilter::tit[24], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     GlowFilter::GlowFilter(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"InstanceTraits::GlowFilter::GlowFilter()"
 //##protect##"InstanceTraits::GlowFilter::GlowFilter()"
-        SetMemSize(sizeof(Instances::fl_filters::GlowFilter));
 
     }
 
@@ -300,24 +325,27 @@ namespace InstanceTraits { namespace fl_filters
 
 namespace ClassTraits { namespace fl_filters
 {
-    GlowFilter::GlowFilter(VM& vm)
-    : Traits(vm, AS3::fl_filters::GlowFilterCI)
+
+    GlowFilter::GlowFilter(VM& vm, const ClassInfo& ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"ClassTraits::GlowFilter::GlowFilter()"
 //##protect##"ClassTraits::GlowFilter::GlowFilter()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_filters::GlowFilter(vm, AS3::fl_filters::GlowFilterCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> GlowFilter::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) GlowFilter(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) GlowFilter(vm, AS3::fl_filters::GlowFilterCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_filters::GlowFilterCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -328,6 +356,11 @@ namespace fl_filters
 {
     const TypeInfo GlowFilterTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_filters::GlowFilter::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_filters::GlowFilter::ThunkInfoNum,
+        0,
         "GlowFilter", "flash.filters", &fl_filters::BitmapFilterTI,
         TypeInfo::None
     };
@@ -335,10 +368,6 @@ namespace fl_filters
     const ClassInfo GlowFilterCI = {
         &GlowFilterTI,
         ClassTraits::fl_filters::GlowFilter::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_filters::GlowFilter::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_filters::GlowFilter::ti,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,6 +31,10 @@ namespace fl_utils
 {
     extern const TypeInfo IExternalizableTI;
     extern const ClassInfo IExternalizableCI;
+    extern const TypeInfo IDataInputTI;
+    extern const ClassInfo IDataInputCI;
+    extern const TypeInfo IDataOutputTI;
+    extern const ClassInfo IDataOutputCI;
 } // namespace fl_utils
 
 namespace ClassTraits { namespace fl_utils
@@ -57,17 +62,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_utils
 {
-    class IExternalizable : public Traits
+    class IExternalizable : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::IExternalizable"; }
 #endif
     public:
-        typedef Classes::fl_utils::IExternalizable ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::Interface InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        IExternalizable(VM& vm);
+        IExternalizable(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

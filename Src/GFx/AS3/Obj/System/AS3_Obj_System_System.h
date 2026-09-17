@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,6 +36,8 @@ namespace fl
 {
     extern const TypeInfo uintTI;
     extern const ClassInfo uintCI;
+    extern const TypeInfo StringTI;
+    extern const ClassInfo StringCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_system
@@ -61,7 +64,7 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_system
 {
-    class System : public Traits
+    class System : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -69,14 +72,18 @@ namespace ClassTraits { namespace fl_system
 #endif
     public:
         typedef Classes::fl_system::System ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        System(VM& vm);
+        System(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 1 };
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 7 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[9];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

@@ -6,6 +6,7 @@ Created     :   December 19, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -86,13 +87,14 @@ public:
 
 bool TreeMesh::NodeData::PropagateUp(Context::Entry* entry) const
 {
-    RectF bounds, parentBounds;
+    RectF bounds, parentBounds, orgBounds;
 
     if (pShape)
         bounds = pShape->GetIdentityBounds();
     if (!bounds.IsEmpty())
     {
         // Must apply any filters to the bounds before it is transformed into parent space.
+        orgBounds = bounds;
         expandByFilterBounds(&bounds, false );
         if ( Is3D() )
         {
@@ -111,6 +113,7 @@ bool TreeMesh::NodeData::PropagateUp(Context::Entry* entry) const
         NodeData* d = pm->GetWritableData(Change_AproxBounds);
         d->AproxLocalBounds = bounds;
         d->AproxParentBounds= parentBounds;
+        d->updateOriginalBoundState(orgBounds);
         return IsVisible(); // Only update parent for visible children.
     }
     return false;   

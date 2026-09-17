@@ -9,6 +9,7 @@ Notes       :   Implements optimized GASString class, which acts as a
                 hash key for strings allocated from GASStringManager.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -137,7 +138,7 @@ ASStringNode* ASConstString::AppendCharNode(UInt32 ch) const
 {
     char    buff[8];
     SPInt   index = 0;
-    UTF8Util::EncodeChar(buff, &index, ch);
+    UTF8Util::EncodeCharSafe(buff, 8, &index, ch);
     // Assign us a concatenated node.
     ASStringNode* node = GetManager()->CreateStringNode(pNode->pData, pNode->Size, buff, index);
 
@@ -299,8 +300,8 @@ int ASConstString::LocaleCompare_CaseCheck(const char* pstr, UPInt len, bool cas
     else
         pwstrb = buf2;
 
-    UTF8Util::DecodeString(pwstra, ToCStr(), GetSize());
-    UTF8Util::DecodeString(pwstrb, pstr, len);
+    UTF8Util::DecodeStringSafe(pwstra, la + 1, ToCStr(), GetSize());
+    UTF8Util::DecodeStringSafe(pwstrb, len + 1, pstr, len);
 
     int res;
     if (caseSensitive)

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -55,24 +56,27 @@ namespace ClassTraits { namespace fl_events
         {"UPDATE", NULL, OFFSETOF(Classes::fl_events::GesturePhase, UPDATE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    GesturePhase::GesturePhase(VM& vm)
-    : Traits(vm, AS3::fl_events::GesturePhaseCI)
+
+    GesturePhase::GesturePhase(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::GesturePhase::GesturePhase()"
 //##protect##"ClassTraits::GesturePhase::GesturePhase()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_events::GesturePhaseCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::GesturePhase(*this));
 
     }
 
     Pickable<Traits> GesturePhase::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) GesturePhase(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) GesturePhase(vm, AS3::fl_events::GesturePhaseCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::GesturePhaseCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -83,6 +87,11 @@ namespace fl_events
 {
     const TypeInfo GesturePhaseTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_events::GesturePhase::InstanceType),
+        0,
+        ClassTraits::fl_events::GesturePhase::MemberInfoNum,
+        0,
+        0,
         "GesturePhase", "flash.events", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -90,10 +99,6 @@ namespace fl_events
     const ClassInfo GesturePhaseCI = {
         &GesturePhaseTI,
         ClassTraits::fl_events::GesturePhase::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::GesturePhase::MemberInfoNum,
-        0,
-        0,
         NULL,
         ClassTraits::fl_events::GesturePhase::mi,
         NULL,

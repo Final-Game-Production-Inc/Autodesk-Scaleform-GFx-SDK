@@ -9,6 +9,8 @@
 
 
 #include "Amp_MessageRegistry.h"
+
+#ifdef SF_AMP_SERVER
 #include "Amp_Message.h"
 
 namespace Scaleform {
@@ -49,3 +51,5 @@ void MessageTypeRegistry::AddMessageTypeRegistry(const MessageTypeRegistry& othe
 }
 }
 }
+
+#endif

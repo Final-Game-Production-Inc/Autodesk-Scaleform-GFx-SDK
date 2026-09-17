@@ -108,6 +108,8 @@ class ObjectCollector
     typedef HashSetUncached<ObjDesc,
         HashF,
         HashF>              ObjHash;
+    typedef HashUncached<const ObjDesc*, AmpMovieObjectDesc*,
+        HashF>              ConstObjMap;
 
     struct ObjDescArray : public ArrayCC<ObjDesc>
     {
@@ -139,6 +141,7 @@ public:
 
     //const ObjDesc* Find() const;
     void Dump(UInt32 flags, Log* log, const char* swfName) const;
+    void GetTree(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap);
     void Clear();
     void Process(ASRefCountCollector&);
 
@@ -150,6 +153,7 @@ protected:
     void TraceBack(Log* log, const ObjDesc& od, const char* prefix, UInt32 flags, const VMAbcFile* abcFile) const;
     void TraceBack(Log* log, const ObjDesc& od, const char* prefix, UInt32 flags, const GFx::MovieDef* movieDef) const;
     void CollectImports(const ObjDesc& od);
+    AmpMovieObjectDesc* CreateAmpDesc(const ObjDesc* currentObj, ConstObjMap& objectsDone, AmpMovieObjectDesc* childDesc, Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap);
 public:
     class ASCollector* pASCollector;
 

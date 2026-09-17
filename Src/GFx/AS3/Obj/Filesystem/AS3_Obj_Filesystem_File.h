@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -45,6 +46,11 @@ namespace fl_desktop
     extern const TypeInfo IconTI;
     extern const ClassInfo IconCI;
 } // namespace fl_desktop
+namespace fl_net
+{
+    extern const TypeInfo FileReferenceTI;
+    extern const ClassInfo FileReferenceCI;
+} // namespace fl_net
 
 namespace ClassTraits { namespace fl_filesystem
 {
@@ -66,7 +72,7 @@ namespace Classes { namespace fl_filesystem
     
 namespace ClassTraits { namespace fl_filesystem
 {
-    class File : public Traits
+    class File : public fl_net::FileReference
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -74,9 +80,11 @@ namespace ClassTraits { namespace fl_filesystem
 #endif
     public:
         typedef Classes::fl_filesystem::File ClassType;
+        typedef InstanceTraits::fl_events::EventDispatcher InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        File(VM& vm);
+        File(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

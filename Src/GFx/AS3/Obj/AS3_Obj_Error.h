@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,6 +35,10 @@ namespace fl
     extern const ClassInfo int_CI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
+    extern const TypeInfo ClassTI;
+    extern const ClassInfo ClassCI;
+    extern const TypeInfo uintTI;
+    extern const ClassInfo uintCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl
@@ -167,7 +172,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class Error : public CTraits
+    class Error : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -195,6 +200,8 @@ namespace InstanceTraits { namespace fl
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[2];
 //##protect##"instance_traits$methods"
         Pickable<Instances::fl::Error> MakeInstance(Traits& t, int id SF_DEBUG_ARG(const ASString& msg))
         {
@@ -211,7 +218,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class Error : public Traits
+    class Error : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -219,12 +226,16 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::Error ClassType;
+        typedef InstanceTraits::fl::Error InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Error(VM& vm);
+        Error(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[5];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 
@@ -252,6 +263,8 @@ namespace Classes { namespace fl
         virtual void InitPrototype(AS3::Object& obj) const;
         enum { ThunkInfoNum = 1 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[1];
        
     private:
         SelfType& GetSelf()

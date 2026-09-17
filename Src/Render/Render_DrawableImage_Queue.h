@@ -7,6 +7,7 @@ Created     :   January 2012
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,6 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render_DrawableImage.h"
 #include "Render_Context.h"
+#include "Render_Filters.h"
 #include "Kernel/SF_HeapNew.h"
 
 namespace Scaleform { namespace Render {
@@ -139,11 +141,19 @@ struct DICommand
     // to either ExecuteHW or ExecuteSW. 
     void             ExecuteRT(DICommandContext& context) const;
 
+    // Attempts to execute the command immediately on the Advance thread, if it is
+    // required to return a value to the VM. Returns true if it is executed, false if
+    // it is deferred to the render thread.
+    bool             ExecuteSWOnAddCommand(DrawableImage* i) const;
 
     virtual void     ExecuteHW(DICommandContext&) const { }
     virtual void     ExecuteSW(DICommandContext& context,
                                ImageData& dest, ImageData** psrc = 0) const
     { SF_UNUSED3(context, dest, psrc); }
+
+    // ExecuteDiscard happens when the command is not executed, but discarded. This can
+    // happen if the context is being shutdown, with no waiting for completion request.
+    virtual void     ExecuteDiscard() { }
 
 protected:
 
@@ -272,9 +282,6 @@ public:
     DICommandQueue(DrawableImageContext* dicontext);
     ~DICommandQueue();
 
-	// Autodesk patch for shutdown lock
-	void DiscardCommands();
-
     // We keep a separate queue for each snapshot state
     enum DIQueueType 
     {
@@ -284,7 +291,8 @@ public:
         DIQueue_Free, // Small free list
         DIQueue_Item_Count
     };
-    
+
+
     template<class C>
     bool AddCommand_NTS(const C& src)
     {
@@ -312,16 +320,8 @@ public:
 
 
     void ExecuteNextCapture(ContextImpl::RenderNotify* notify);
-    void ExecuteCommandsAndWait()
-    {
-        // ExecuteCmd/Queue may not be reference counted by the ThreadCommandQueue, so protect them
-        // against its deletion until after it executes here by adding extra refs.
-        AddRef();
-        ExecuteCmd->AddRef();
-
-        pRTCommandQueue->PushThreadCommand(ExecuteCmd);
-        ExecuteCmd->WaitDoneAndReset();
-    }   
+    void ExecuteCommandsAndWait();   
+    void DiscardCommands();
 
     class ExecuteCommand : public ThreadCommand
     {
@@ -354,31 +354,13 @@ protected:
     void            updateCPUModifiedImagesRT();
     void            updateGPUModifiedImagesRT();
 
-    void lockCommandSetAndWait(DICommandSet** pcommands)
-    {
-        CommandSetMutex.DoLock();
-        while(*pcommands)
-            CommandSetWC.Wait(&CommandSetMutex);
-    }
-    void unlockCommandSet()
-    {
-        CommandSetMutex.Unlock();
-    }
-    void notifyCommandSetFinished(DICommandSet** pcommands)
-    {
-        Mutex::Locker mlock(&CommandSetMutex);
-        *pcommands = 0;
-        CommandSetWC.NotifyAll();
-    }
+    void            lockCommandSetAndWait(DICommandSet** pcommands);
+    void            unlockCommandSet();
+    void            notifyCommandSetFinished(DICommandSet** pcommands);
 
     Mutex               CommandSetMutex;
     WaitCondition       CommandSetWC;
     DICommandSet*       pRTCommands;        // Render thread command in progress.
-
-    // Keep a list of images relying on this queue.
-    List<DrawableImage> ImageList;
-
-    Ptr<DrawableImageContext>   pDIContext;
 
     // Drawable image update lists. One tracks images that were modified by the CPU, and thus
     // will require the GPU data to be updated, the other is the reverse, GPU modified data that
@@ -450,7 +432,7 @@ struct DICommand_SourceRect : public DICommand
                          const Rect<SInt32>& sr, const Point<SInt32>& dp)
         : DICommand(image), pSource(source), SourceRect(sr), DestPoint(dp)
     {
-	}
+    }
 
     virtual unsigned GetSourceImages(DISourceImages* ps) const
     {
@@ -547,6 +529,9 @@ struct DICommand_Draw : public DICommandImpl<DICommand_Draw>
     virtual unsigned GetCPUCaps() const { return 0; }
 
     virtual void ExecuteHW(DICommandContext&) const;
+
+    // DICommand_Draw needs to override ExecuteDiscard, so it can properly handle the destruction of pRoot.
+    virtual void ExecuteDiscard();
 };
 
 
@@ -635,7 +620,7 @@ struct DICommand_ColorTransform : public DICommand_SourceRectImpl<DICommand_Colo
     virtual unsigned GetCPUCaps() const { return RC_CPU; }
     virtual void ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const;
     virtual bool GetRequireSourceRead() const { return true; };
-	virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
+    virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
 };
 
 struct DICommand_Compare : public DICommand_SourceRectImpl<DICommand_Compare>
@@ -657,7 +642,7 @@ struct DICommand_Compare : public DICommand_SourceRectImpl<DICommand_Compare>
     virtual unsigned GetCPUCaps() const { return RC_CPU; }
     virtual void ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const;
     virtual bool GetRequireSourceRead() const { return pSource == pImage || pImageCompare1 == pImage; };
-	virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
+    virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
 };
 
 
@@ -842,7 +827,7 @@ struct DICommand_Merge : public DICommand_SourceRectImpl<DICommand_Merge>
     virtual unsigned GetCPUCaps() const { return RC_CPU; }
     virtual void ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const;
     virtual bool GetRequireSourceRead() const { return true; };
-	virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
+    virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
 };
 
 struct DICommand_Noise : public DICommandImpl<DICommand_Noise>
@@ -912,7 +897,7 @@ struct DICommand_PaletteMap : public DICommand_SourceRectImpl<DICommand_PaletteM
     virtual unsigned GetCPUCaps() const { return RC_CPU; }
     virtual void ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const;
     virtual bool GetRequireSourceRead() const { return pImage == pSource; };
-	virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
+    virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
 };
 
 struct DICommand_PerlinNoise : public DICommandImpl<DICommand_PerlinNoise>
@@ -1056,7 +1041,7 @@ struct DICommand_Scroll : public DICommand_SourceRectImpl<DICommand_Scroll>
     // Note: does nothing, the copyback will handle the actual implementation
     virtual void ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const;
     virtual bool GetRequireSourceRead() const { return true; };
-	virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
+    virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
 };
 
 struct DICommand_Threshold : public DICommand_SourceRectImpl<DICommand_Threshold>
@@ -1078,7 +1063,7 @@ struct DICommand_Threshold : public DICommand_SourceRectImpl<DICommand_Threshold
     virtual unsigned GetCPUCaps() const { return RC_CPU; }
     virtual void ExecuteHWCopyAction( DICommandContext& context, Render::Texture** tex, const Matrix2F* texgen ) const;
     virtual bool GetRequireSourceRead() const { return CopySource; };
-	virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
+    virtual void ExecuteSW(DICommandContext& context, ImageData& dest, ImageData** src = 0) const;
 };
 
 }}; // namespace Scaleform::Render

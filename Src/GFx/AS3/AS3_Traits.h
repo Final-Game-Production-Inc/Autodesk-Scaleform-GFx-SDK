@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,14 +20,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "AS3_Object.h"
 #include "Kernel/SF_AutoPtr.h"
 
-#define SF_AS3_ENABLE_SLOTS2
-
 namespace Scaleform { namespace GFx { namespace AS3
 {
     
 ///////////////////////////////////////////////////////////////////////////
-#ifdef SF_AS3_ENABLE_SLOTS2
-
 class ASStringNodePtrHashFunc
 {
 public:
@@ -134,6 +131,17 @@ public:
     {
         return CIterator(*this, AbsoluteIndex(-1));
     }
+
+    class SlotFunct
+    {
+    public:
+        virtual ~SlotFunct() {}
+
+    public:
+        virtual void operator()(const SlotInfo& si) = 0;
+    };
+
+    void ForEachSlot(SlotFunct& f) const;
 
 public:
     Slots()
@@ -264,168 +272,6 @@ private:
     SetType         Set;
 };
 
-#else
-
-// This implementation is based on "copy-all" semantic.
-class Slots
-{
-public:
-    typedef SlotContainerType::SetType SetType;
-
-    class CIterator
-    {
-        friend class Slots;
-        friend class Traits;
-
-    public:
-        CIterator(const CIterator& other) : Ind(other.Ind), Parent(other.Parent) {}
-
-    private:
-        CIterator(const Slots& p, AbsoluteIndex ind) : Ind(ind), Parent(&p) {}
-
-    public:
-        bool operator==(const CIterator& it) const { return Parent == it.Parent && Ind.Get() == it.Ind.Get(); }
-        bool operator!=(const CIterator& it) const { return Parent != it.Parent || Ind.Get() != it.Ind.Get(); }
-
-        CIterator& operator++()
-        {
-            if (Ind < Parent->GetSlotInfoNum())
-                ++Ind;
-
-            return *this;
-        }
-        CIterator operator++(int)
-        {
-            CIterator it(*this);
-            operator++();
-            return it;
-        }
-        CIterator& operator--()
-        {
-            if (Ind.IsValid())
-                --Ind;
-
-            return *this;
-        }
-        CIterator operator--(int)
-        {
-            CIterator it(*this);
-            operator--();
-            return it;
-        }
-
-        bool IsEnd() const
-        {
-            return Ind.Get() >= Parent->GetSlotInfoNum();
-        }
-
-        const SlotInfo& GetSlotInfo() const
-        {
-            return Parent->GetSlotInfo(Ind);
-        }
-        ASStringNode* GetSlotName() const
-        {
-            return Parent->GetSlotNameNode(Ind);
-        }
-
-    private:
-        AbsoluteIndex   Ind;
-        const Slots*    Parent;
-    };
-
-    CIterator Begin() const
-    {
-        return CIterator(*this, AbsoluteIndex(0));
-    }
-
-public:
-    void Inherit(const Slots& parent)
-    {
-        SlotContainer = parent.SlotContainer;
-    }
-	UPInt GetSlotInfoNum() const
-    {
-        return SlotContainer.GetSize();
-    }
-    const SlotInfo& GetSlotInfo(AbsoluteIndex ind) const
-    {
-        SF_ASSERT(ind.IsValid() && ind.Get() < SlotContainer.GetSize());
-        
-        return SlotContainer[ind];
-    }
-    ASStringNode* GetSlotNameNode(AbsoluteIndex ind) const
-    {
-        return SlotContainer.GetKey(ind);
-    }
-    ASString GetSlotName(AbsoluteIndex ind) const
-    {
-        return ASString(GetSlotNameNode(ind));
-    }
-
-    AbsoluteIndex AddSlotInfo(const ASString& name, const SlotInfo& v)
-    {
-        return SlotContainer.Add(name, v);
-    }
-
-public:
-    // Obtains a slot by index name + ns, returning null if not found.
-    const SlotInfo* FindSlotInfo(const ASString& name, const Instances::fl::Namespace& ns) const
-    {
-        AbsoluteIndex ind = FindSlotInfoIndex(name, ns);
-
-        return (ind.IsValid() ? &SlotContainer[ind] : NULL);
-    }
-    // Skip namespace check.
-    const SetType::ValueType* FindSlotValues(const ASString& name) const
-    {
-        return SlotContainer.FindValues(name);
-    }
-
-    SPInt GetPrevSlotIndex(SPInt ind) const
-    {
-        return SlotContainer.GetPrevInd(ind);
-    }
-
-public:
-    void ForEachChild_GC(RefCountCollector<Mem_Stat>* prcc, RefCountBaseGC<Mem_Stat>::GcOp op 
-        SF_DEBUG_ARG(const RefCountBaseGC<Mem_Stat>& owner)) const
-    {
-        SlotContainer.ForEachChild_GC(prcc, op SF_DEBUG_ARG(owner));
-    }
-
-protected:
-    AbsoluteIndex FindSlotInfoIndex(const ASString& name, const Instances::fl::Namespace& ns) const;
-
-    SlotContainerType& GetSlots()
-    {
-        return SlotContainer;
-    }
-    SlotInfo& GetOwnSlotInfo(AbsoluteIndex ind)
-    {
-        SF_ASSERT(ind.IsValid());
-        
-        return SlotContainer[ind];
-    }
-    void SetSlotInfo(AbsoluteIndex ind, const ASString& name, const SlotInfo& v);
-
-    // FindAdd finds a name, also considering namespace of the slot.
-    SlotInfo& FindAddOwnSlotInfo(const ASString& name, const SlotInfo& v, AbsoluteIndex& ind);
-
-protected:
-    void SetKey(AbsoluteIndex ind, const ASString& k)
-    {
-        SlotContainer.SetKey(ind, k);
-    }
-    // Return index of a newly added value.
-    AbsoluteIndex Add(const ASString& k, const SlotInfo& v)
-    {
-        return SlotContainer.Add(k, v);
-    }
-
-private:
-    SlotContainerType SlotContainer;
-}; // class Slots
-#endif
 
 /////////////////////////////////////////////////////////////////cls/////////
 struct MemberInfo
@@ -599,7 +445,7 @@ public:
     }
     VTable& GetVT() const;
     virtual VMAbcFile* GetFilePtr() const;
-    virtual VMAppDomain& GetAppDomain() const;
+    VMAppDomain& GetAppDomain() const;
     StringManager& GetStringManager() const;
     GC& GetGC() const;
     Traits& GetSelf()
@@ -686,8 +532,8 @@ protected:
                 ns,
                 file,
                 ti,
-                (_const ? (SlotInfo::aDontEnum | SlotInfo::aReadOnly) : SlotInfo::aDontEnum)
-                SF_DEBUG_ARG(name.GetNode())
+                (_const ? (SlotInfo::aDontEnum | SlotInfo::aReadOnly) : SlotInfo::aDontEnum),
+                name.GetNode()
                 )
             );
     }
@@ -889,6 +735,8 @@ private:
 
 protected:
     // Index of the very first not inherited slot.
+    // This member is a proxy between GetParent().GetSlotInfoNum() in case of InstanceTraits
+    // and ClassTraits, which do not inherit parent's traits.
     AbsoluteIndex       FirstOwnSlotInd;
     // Number of fixed slots, which are stored in an array of Values.
     // This member is currently used only by GlobalObjectCPP.
@@ -935,6 +783,8 @@ private:
 
 namespace ClassTraits
 {
+    // ClassTraits are different from InstanceTraits in a way that they do not
+    // combine Slots from parent classes to speed up search.
     class Traits : public AS3::Traits
     {
         friend class AS3::VM; // Because of SetInstanceTraits().
@@ -947,6 +797,9 @@ namespace ClassTraits
 #endif
     public:
         Traits(VM& vm, const ClassInfo& ci);
+        // pt must always be NULL. We need it just to make a signature 
+        // different from Traits(VM& vm), which is supposed to be used only
+        // with ClassClass.
         Traits(VM& vm, const ClassTraits::Traits* pt);
 
     public:
@@ -986,8 +839,10 @@ namespace ClassTraits
         virtual ASString GetName() const;
         virtual ASString GetQualifiedName(QNameFormat f = qnfWithColons) const;
 
-    protected:
+        // temporarily public.
         void SetInstanceTraits(Pickable<InstanceTraits::Traits> itr);
+
+    protected:
         // Can throw exceptions.
         virtual void InitOnDemand() const;
 
@@ -1043,6 +898,12 @@ InstanceTraits::Traits& Class::GetInstanceTraits()
 ///////////////////////////////////////////////////////////////////////////
 inline
 VTable& Object::GetVT()
+{
+    return GetTraits().GetVT();
+}
+
+inline
+const VTable& Object::GetVT() const
 {
     return GetTraits().GetVT();
 }

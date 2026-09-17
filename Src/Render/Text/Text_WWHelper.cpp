@@ -6,6 +6,7 @@ Created     :   7/22/2009
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -49,6 +50,7 @@ WordWrapHelper::CharBreakInfo WordWrapHelper::CharBreakInfoArray[] =
 //     {0x00B0, CBI_NonStartingChar},                          // Degree Sign,     PO (XB)
 //     {0x00B1, CBI_NonTerminatingChar},                       // Plus-Minus,      PR (XA)                           
 //     {0x00B7, CBI_NonStartingChar},                          // Middle Dot
+    {0x00A0, CBI_NonStartingChar},                          // NBSP
     {0x058A, CBI_NonStartingChar},                          // Armenian Hyphen, BA (A)
     {0x2010, CBI_NonStartingChar},                          // Hyphen           BA (A)
     {0x2012, CBI_NonStartingChar},                          // Figure Dash      BA (A)

@@ -7,6 +7,7 @@ Created     :   December 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,6 +31,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_File.h"
 #include "Kernel/SF_Threads.h"
 
+#define COMBINE_IMAGE_FLAGS(a,b,c) (static_cast<UInt32>(a) | static_cast<UInt32>(b) | static_cast<UInt32>(c))
+#define COMBINE_IMAGE_FLAGS_2(a,b)  (static_cast<UInt32>(a) | static_cast<UInt32>(b))
+
 namespace Scaleform { namespace Render {
 
 class TextureManagerLocks;
@@ -44,22 +48,24 @@ struct ImageFillMode;
 // it is stored as part of the format. ImageTarget_Any means that image format is compatible
 // with any platform.
 
-enum ImageTarget
+enum ImageTarget : UInt32
 {
     ImageTarget_Any       = 0,
     ImageTarget_X360      = 0x2000,
     ImageTarget_PS3       = 0x3000,
     ImageTarget_Wii       = 0x4000,
-	ImageTarget_3DS       = 0x5000,
+    ImageTarget_3DS       = 0x5000,
     ImageTarget_PSVita    = 0x6000,
     ImageTarget_WiiU      = 0x7000,  
     ImageTarget_Adreno    = 0x8000,
+    ImageTarget_DX11      = 0x9000,
+    ImageTarget_Orbis     = 0xA000,
 
     // Mask returning the 
     ImageTarget_Mask      = 0xF000
 };
 
-enum ImageStorage
+enum ImageStorage : UInt32
 {
     ImageStorage_Linear   = 0,
     ImageStorage_Swizzle  = 0x10000,
@@ -97,7 +103,7 @@ enum ImageStorage
 // will expect a value in that format.
 
 
-enum ImageFormat
+enum ImageFormat : UInt32
 {
     Image_None          = 0,
     // Generic formats; supported on all platforms.
@@ -117,6 +123,11 @@ enum ImageFormat
     Image_DXT3          = 51, // DXT3 compatible (D3D10 -> BC2).
     Image_DXT5          = 52, // DXT5 compatible (D3D10 -> BC3).
 
+    Image_BC1           = Image_DXT1,   // Aliases
+    Image_BC2           = Image_DXT3,   
+    Image_BC3           = Image_DXT5,
+    Image_BC7,                // Compressed, D3D11 (+Durango)/GL/Orbis only.
+
     Image_PVRTC_RGB_4BPP,     // Compressed.
     Image_PVRTC_RGBA_4BPP,    // Compressed.
     Image_PVRTC_RGB_2BPP,     // Compressed.
@@ -124,6 +135,9 @@ enum ImageFormat
 
     Image_ETC1_RGB_4BPP,      // Compressed, compatible only with Android.
     Image_ETC1_RGBA_8BPP,     // Compressed.
+    Image_ETC2_RGB,
+    Image_ETC2_RGBA,
+    Image_ETC2_RGBA1,         // Punchthrough alpha
 
     Image_ATCIC,              // Compressed, compatible only with Android (RGB)
     Image_ATCICA,             // Compressed, compatible only with Android (RGB w/explicit A).
@@ -137,10 +151,16 @@ enum ImageFormat
     Image_P8            = 100,
     
     // Formats for video textures. Not usable for any other purpose.
+    Image_VideoFormat_Start = 200,
+
     // Image_Y8_U2_V2 is encoded with three separate data planes.
-    Image_Y8_U2_V2      = 200,
+    Image_Y8_U2_V2      = Image_VideoFormat_Start,
     // Image_Y8_U2_V2 is encoded with four separate data planes.
-    Image_Y8_U2_V2_A8   = 201,
+    Image_Y8_U2_V2_A8,
+    // Image_Y4_U2_V2 is encoded into one 32bit data plane.
+    Image_Y4_U2_V2,
+
+    Image_VideoFormat_End = Image_Y4_U2_V2,
 
     ImageFormat_Mask    = 0xFFF,
     
@@ -148,38 +168,43 @@ enum ImageFormat
 
     Image_Begin_HWSpecific     = 0x1000,
                               
-    Image_X360_R8G8B8A8        = ImageTarget_X360 | Image_R8G8B8A8 | ImageStorage_Tile,
-    Image_X360_A8              = ImageTarget_X360 | Image_A8       | ImageStorage_Tile,
-    Image_X360_DXT1            = ImageTarget_X360 | Image_DXT1     | ImageStorage_Tile,
-    Image_X360_DXT3            = ImageTarget_X360 | Image_DXT3     | ImageStorage_Tile,
-    Image_X360_DXT5            = ImageTarget_X360 | Image_DXT5     | ImageStorage_Tile,
+    Image_X360_R8G8B8A8        = COMBINE_IMAGE_FLAGS(ImageTarget_X360, Image_R8G8B8A8, ImageStorage_Tile),
+    Image_X360_A8              = COMBINE_IMAGE_FLAGS(ImageTarget_X360, Image_A8, ImageStorage_Tile),
+    Image_X360_DXT1            = COMBINE_IMAGE_FLAGS(ImageTarget_X360,Image_DXT1, ImageStorage_Tile),
+    Image_X360_DXT3            = COMBINE_IMAGE_FLAGS(ImageTarget_X360, Image_DXT3, ImageStorage_Tile),
+    Image_X360_DXT5            = COMBINE_IMAGE_FLAGS(ImageTarget_X360, Image_DXT5, ImageStorage_Tile),
                               
-    Image_PS3_R8G8B8A8_SZ      = ImageTarget_PS3 | Image_R8G8B8A8 | ImageStorage_Swizzle,
-    Image_PS3_A8_SZ            = ImageTarget_PS3 | Image_A8       | ImageStorage_Swizzle,
-    Image_PS3_A8R8G8B8         = ImageTarget_PS3 | Image_R8G8B8A8, //different byte order
-    Image_PS3_R8G8B8           = ImageTarget_PS3 | Image_R8G8B8, 
-    Image_PS3_A8               = ImageTarget_PS3 | Image_A8,       
-    Image_PS3_DXT1             = ImageTarget_PS3 | Image_DXT1,
-    Image_PS3_DXT3             = ImageTarget_PS3 | Image_DXT3,
-    Image_PS3_DXT5             = ImageTarget_PS3 | Image_DXT5,
+    Image_PS3_R8G8B8A8_SZ      = COMBINE_IMAGE_FLAGS(ImageTarget_PS3, Image_R8G8B8A8, ImageStorage_Swizzle),
+    Image_PS3_A8_SZ            = COMBINE_IMAGE_FLAGS(ImageTarget_PS3, Image_A8, ImageStorage_Swizzle),
+    Image_PS3_A8R8G8B8         = COMBINE_IMAGE_FLAGS_2(ImageTarget_PS3, Image_R8G8B8A8), //different byte order
+    Image_PS3_R8G8B8           = COMBINE_IMAGE_FLAGS_2(ImageTarget_PS3, Image_R8G8B8),
+    Image_PS3_A8               = COMBINE_IMAGE_FLAGS_2(ImageTarget_PS3, Image_A8),
+    Image_PS3_DXT1             = COMBINE_IMAGE_FLAGS_2(ImageTarget_PS3, Image_DXT1),
+    Image_PS3_DXT3             = COMBINE_IMAGE_FLAGS_2(ImageTarget_PS3, Image_DXT3),
+    Image_PS3_DXT5             = COMBINE_IMAGE_FLAGS_2(ImageTarget_PS3, Image_DXT5),
                                
-    Image_Wii_R8G8B8A8         = ImageTarget_Wii | Image_R8G8B8A8 | ImageStorage_Tile,
-    Image_Wii_A8               = ImageTarget_Wii | Image_A8       | ImageStorage_Tile,
-    Image_Wii_DXT1             = ImageTarget_Wii | Image_DXT1,
+    Image_Wii_R8G8B8A8         = COMBINE_IMAGE_FLAGS(ImageTarget_Wii, Image_R8G8B8A8, ImageStorage_Tile),
+    Image_Wii_A8               = COMBINE_IMAGE_FLAGS(ImageTarget_Wii, Image_A8, ImageStorage_Tile),
+    Image_Wii_DXT1             = COMBINE_IMAGE_FLAGS_2(ImageTarget_Wii, Image_DXT1),
                               
-    Image_3DS_R8G8B8A8         = ImageTarget_3DS | Image_R8G8B8A8       | ImageStorage_Swizzle,
-    Image_3DS_R8G8B8           = ImageTarget_3DS | Image_B8G8R8         | ImageStorage_Swizzle,
-    Image_3DS_A8               = ImageTarget_3DS | Image_A8             | ImageStorage_Swizzle,
-    Image_3DS_ETC1             = ImageTarget_3DS | Image_ETC1_RGB_4BPP  | ImageStorage_Tile,
-    Image_3DS_ETC1_RGBA        = ImageTarget_3DS | Image_ETC1_RGBA_8BPP | ImageStorage_Tile,
+    Image_3DS_R8G8B8A8         = COMBINE_IMAGE_FLAGS(ImageTarget_3DS, Image_R8G8B8A8, ImageStorage_Swizzle),
+    Image_3DS_R8G8B8           = COMBINE_IMAGE_FLAGS(ImageTarget_3DS, Image_B8G8R8, ImageStorage_Swizzle),
+    Image_3DS_A8               = COMBINE_IMAGE_FLAGS(ImageTarget_3DS, Image_A8, ImageStorage_Swizzle),
+    Image_3DS_ETC1             = COMBINE_IMAGE_FLAGS(ImageTarget_3DS, Image_ETC1_RGB_4BPP, ImageStorage_Tile),
+    Image_3DS_ETC1_RGBA        = COMBINE_IMAGE_FLAGS(ImageTarget_3DS, Image_ETC1_RGBA_8BPP, ImageStorage_Tile),
                               
-    Image_PSVita_DXT1             = ImageTarget_PSVita | Image_DXT1            | ImageStorage_Swizzle,
-    Image_PSVita_DXT3             = ImageTarget_PSVita | Image_DXT3            | ImageStorage_Swizzle,
-    Image_PSVita_DXT5             = ImageTarget_PSVita | Image_DXT5            | ImageStorage_Swizzle,
+    Image_PSVita_DXT1             = COMBINE_IMAGE_FLAGS(ImageTarget_PSVita, Image_DXT1, ImageStorage_Swizzle),
+    Image_PSVita_DXT3             = COMBINE_IMAGE_FLAGS(ImageTarget_PSVita, Image_DXT3, ImageStorage_Swizzle),
+    Image_PSVita_DXT5             = COMBINE_IMAGE_FLAGS(ImageTarget_PSVita, Image_DXT5, ImageStorage_Swizzle),
 
-	Image_WiiU_DXT1				  = ImageTarget_WiiU   | Image_DXT1			   | ImageStorage_Swizzle,
-	Image_WiiU_DXT3				  = ImageTarget_WiiU   | Image_DXT3			   | ImageStorage_Swizzle,
-	Image_WiiU_DXT5				  = ImageTarget_WiiU   | Image_DXT5			   | ImageStorage_Swizzle,
+    Image_WiiU_DXT1               = COMBINE_IMAGE_FLAGS(ImageTarget_WiiU, Image_DXT1, ImageStorage_Swizzle),
+    Image_WiiU_DXT3               = COMBINE_IMAGE_FLAGS(ImageTarget_WiiU, Image_DXT3, ImageStorage_Swizzle),
+    Image_WiiU_DXT5               = COMBINE_IMAGE_FLAGS(ImageTarget_WiiU, Image_DXT5, ImageStorage_Swizzle),
+
+    Image_Orbis_BC1             = COMBINE_IMAGE_FLAGS(ImageTarget_Orbis, Image_BC1, ImageStorage_Tile),
+    Image_Orbis_BC2             = COMBINE_IMAGE_FLAGS(ImageTarget_Orbis, Image_BC2, ImageStorage_Tile),
+    Image_Orbis_BC3             = COMBINE_IMAGE_FLAGS(ImageTarget_Orbis, Image_BC3, ImageStorage_Tile),
+    Image_Orbis_BC7             = COMBINE_IMAGE_FLAGS(ImageTarget_Orbis, Image_BC7, ImageStorage_Tile),
 
     // The desired format can only be obtained through the Decode function;
     // it is not stored directly.
@@ -434,9 +459,9 @@ public:
 // future this may change, which would requre extra Image::Create functions.
 //
 // Image planes are numbered first by the order of data channels in ImageFormat, then
-// by mip-map level index. Image_ARBG_888, for example has only one channel thus the
+// by mip-map level index. Image_R8G8B8A8, for example, has only one channel, thus the
 // index of a plane and mipmap is the same. Image_Y8_U2_V2, however, has three data planes,
-// indexed as {Y = 0, U = 1, V = 2}. If such image also has mip-map levels, the U plane
+// indexed as {Y = 0, U = 1, V = 2}. If such an image also has mip-map levels, the U plane
 // of a second mipmap (first down from the top level), would have an index of 5.
 //
 // For efficiency, ImageData stores one ImagePlane directly as a data member, allocating
@@ -877,9 +902,9 @@ public:
     //    it is mapped.    
     virtual bool            Map(ImageData* pdata, unsigned mipLevel = 0, unsigned levelCount = 0);
     virtual bool            Unmap();
-	SF_AMP_CODE(
-    	virtual bool        Copy(ImageData* pdata);
-	)
+    SF_AMP_CODE(
+        virtual bool        Copy(ImageData* pdata);
+    )
 
     // Synchronizes RenderTarget and Staging content.
     //  - allows mapped changes to be transferred to HW without explicit Unmap call
@@ -1106,11 +1131,11 @@ public:
     virtual ImageFormat      GetDrawableImageFormat() const { return Image_R8G8B8A8; }
 
     // Determines whether the input format is an acceptable DrawableImage format for this texture manager.
-	virtual bool			 IsDrawableImageFormat(ImageFormat format) const { return (format == Image_R8G8B8A8); }
+    virtual bool             IsDrawableImageFormat(ImageFormat format) const { return (format == Image_R8G8B8A8); }
 
     // Returns the ImageSwizzler object compatible with this texture manager. This is used when the CPU accesses
     // GPU textures, which may be tiled and/or swizzled in a platform specific manner.
-	virtual ImageSwizzler&	 GetImageSwizzler() const;
+    virtual ImageSwizzler&   GetImageSwizzler() const;
 
     // Returns the TextureCache for this texture manager (may be NULL).
     TextureCache* GetTextureCache() const { return pTextureCache; }
@@ -1313,7 +1338,7 @@ public:
     virtual void            SetMatrix(const Matrix2F& mat, MemoryHeap* heap = 0);
     virtual void            GetMatrix(Matrix2F* mat) const;
     virtual void            SetMatrixInverse(const Matrix2F& mat, MemoryHeap* heap = 0);
-    virtual void            GetMatrixInverse(Matrix2F* mat) const;
+    virtual bool            GetMatrixInverse(Matrix2F* mat) const;
 
     // Map and Unmap are only available if image has ImageUse_MapSimThread flag.
     // If Map is used user is still responsible for calling Update to notify render thread
@@ -1416,6 +1441,10 @@ public:
     }
 
     virtual MemoryBufferImage* GetAsMemoryImage() { return NULL; }
+
+    SF_AMP_CODE(
+        virtual UPInt   GetBytes(int* memRegion) const;
+    )
 };
 
 // A wrapper around an Image to enable image substitution.
@@ -1442,7 +1471,7 @@ public:
     virtual void        GetMatrix(Matrix2F* mat) const { pImage->GetMatrix(mat); }
     virtual void    SetMatrixInverse(const Matrix2F& mat, MemoryHeap* heap = 0) 
     { pImage->SetMatrixInverse(mat, heap); }
-    virtual void    GetMatrixInverse(Matrix2F* mat) const { pImage->GetMatrixInverse(mat); }
+    virtual bool    GetMatrixInverse(Matrix2F* mat) const { return pImage->GetMatrixInverse(mat); }
     virtual void    GetUVGenMatrix(Matrix2F* mat, TextureManager* manager) 
     { pImage->GetUVGenMatrix(mat, manager); }
     virtual void    GetUVNormMatrix(Matrix2F* mat, TextureManager* manager)
@@ -1586,6 +1615,7 @@ public:
     ~RawImage();
 
     void freeData();
+    bool hasData() const;
 
     // Override original Create (?)
     // Or no TextureManager? Base Create is hidden
@@ -1665,12 +1695,12 @@ public:
     { releaseTexture(); }
 
     virtual Image* GetAsImage() { return this; }
-	SF_AMP_CODE(
-	    virtual bool    Decode(ImageData* pdest, CopyScanlineFunc copyScanline = CopyScanlineDefault, void* arg = 0) const;
+    SF_AMP_CODE(
+        virtual bool    Decode(ImageData* pdest, CopyScanlineFunc copyScanline = CopyScanlineDefault, void* arg = 0) const;
         virtual UPInt   GetBytes(int* memRegion) const { if (memRegion) *memRegion = 0; return pTexture ?  pTexture->GetBytes(memRegion) : Image::GetBytes(memRegion); }
         virtual UInt32  GetImageId() const { return ImageId; }
         virtual UInt32  GetBaseImageId() const { return 0; }
-	)
+    )
 };
 
 
@@ -1698,6 +1728,9 @@ public:
     virtual ImageSize       GetSize() const                 { return pImage->GetSize(); }
     virtual unsigned        GetMipmapCount() const          { return pImage->GetMipmapCount(); }
     virtual ImageRect       GetRect() const                 { return SubRect; }
+
+    virtual bool            GetMatrixInverse(Matrix2F* mat) const;
+
     // Map and Unmap are not allowed for SubImage.
     virtual bool            Map(ImageData*, unsigned, unsigned)     { return false; }
     virtual bool            Unmap()                         { return false; }
@@ -1706,7 +1739,7 @@ public:
     { return pImage->Decode(pdest, csf, arg); }
     virtual Texture*        GetTexture(TextureManager* pm)  { return pImage->GetTexture(pm); }
     virtual void            TextureLost(TextureLossReason reason) { pImage->TextureLost(reason); }
-	Image*					GetBaseImage() { return pImage; }
+    Image*                  GetBaseImage() { return pImage; }
 
     virtual Image* GetAsImage() { return this; }
     SF_AMP_CODE(
@@ -1749,18 +1782,22 @@ enum SamplerStateCountType
 struct ImageFillMode
 {
     UByte Fill;
-    ImageFillMode() : Fill(Wrap_Repeat|Sample_Point) { }
-    ImageFillMode(WrapMode wrap, SampleMode sample) : Fill ((UByte)(wrap|sample)) { }
-    ImageFillMode(const ImageFillMode& s) : Fill(s.Fill) { }
+
+    ImageFillMode() : Fill((UByte)(UByte(Wrap_Repeat) | UByte(Sample_Point))) {}
+    ImageFillMode(WrapMode wrap, SampleMode sample) : Fill((UByte)(UByte(wrap) | UByte(sample))) {}
+    ImageFillMode(const ImageFillMode& s) : Fill(s.Fill) {}
+
     void operator = (const ImageFillMode& s) { Fill = s.Fill; }
     bool operator == (const ImageFillMode& s) const { return Fill == s.Fill; }
     bool operator != (const ImageFillMode& s) const { return Fill != s.Fill; }
 
-    void       Set(WrapMode wrap, SampleMode sample) { Fill = (UByte)(wrap|sample); }
-    WrapMode   GetWrapMode() const          { return (WrapMode) (Fill & Wrap_Mask); }
-    void       SetWrapMode(WrapMode wm)     { Fill = (UByte) ((Fill &~Wrap_Mask) | wm); }
-    SampleMode GetSampleMode() const        { return (SampleMode) (Fill & Sample_Mask); }
-    void       SetSampleMode(SampleMode sm) { Fill = (UByte)((Fill &~Sample_Mask) | sm); }
+    void Set(WrapMode wrap, SampleMode sample) {
+        Fill = (UByte)(UByte(wrap) | UByte(sample));
+    }
+    WrapMode GetWrapMode() const { return (WrapMode)(Fill & UByte(Wrap_Mask)); }
+    void SetWrapMode(WrapMode wm) { Fill = (UByte)((Fill & ~UByte(Wrap_Mask)) | UByte(wm)); }
+    SampleMode GetSampleMode() const { return (SampleMode)(Fill & UByte(Sample_Mask)); }
+    void SetSampleMode(SampleMode sm) { Fill = (UByte)((Fill & ~UByte(Sample_Mask)) | UByte(sm)); }
 };
 
 // *** TextureFormat describes format of the texture and its caps.

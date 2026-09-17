@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -96,7 +97,7 @@ namespace Instances { namespace fl_accessibility
 
 namespace InstanceTraits { namespace fl_accessibility
 {
-    class AccessibilityProperties : public CTraits
+    class AccessibilityProperties : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -134,17 +135,19 @@ namespace InstanceTraits { namespace fl_accessibility
     
 namespace ClassTraits { namespace fl_accessibility
 {
-    class AccessibilityProperties : public Traits
+    class AccessibilityProperties : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::AccessibilityProperties"; }
 #endif
     public:
-        typedef Classes::fl_accessibility::AccessibilityProperties ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_accessibility::AccessibilityProperties InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        AccessibilityProperties(VM& vm);
+        AccessibilityProperties(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

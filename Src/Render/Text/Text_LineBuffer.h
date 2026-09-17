@@ -7,6 +7,7 @@ Created     :   May 31, 2007
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -140,7 +141,7 @@ public:
     public:
         GlyphEntry() { Init(); }
 
-        void Init() { LenAndFontSize = 0; Flags = 0; }
+        void Init() { Index = 0; Advance = 0; LenAndFontSize = 0; Flags = 0; }
         void SetIndex(unsigned index)
         {
             SF_ASSERT(index < 65536 || index == ~0u);
@@ -221,6 +222,13 @@ public:
         void SetFmtHasImage()       { Flags |= Flags_FmtHasImage; }
         void ClearFmtHasImage()     { Flags &= ~Flags_FmtHasImage; }
         bool HasFmtImage() const    { return (Flags & Flags_FmtHasImage) != 0; }
+
+        void ClearFmtData() { Flags &= ~(Flags_NextFormat|Flags_FmtHasFont|Flags_FmtHasColor|Flags_FmtHasImage); }
+
+        unsigned GetFormatDataElementsCount() const 
+        { 
+            return (HasFmtFont() ? 1 : 0) + (HasFmtColor() ? 1 : 0) + (HasFmtImage() ? 1 : 0); 
+        }
 
         void SetUnderline()      { Flags |= Flags_Underline; }
         void ClearUnderline()    { Flags &= ~Flags_Underline; }
@@ -609,12 +617,13 @@ public:
         {
             Flags_Data8         = 0x80000000u, // if set, Data8 is in use.
             Flags_Initialized   = 0x40000000u,
+            Flags_RightToLeft   = 0x20000000u, // right-to-left line
 
-            Mask_MemSize        = 0x0FFFFFFFu,
+            Mask_MemSize        = 0x07FFFFFFu,
             Shift_MemSize       = 0,
 
             Mask_Alignment      = 0x3,
-            Shift_Alignment     = 28
+            Shift_Alignment     = 27
         };
         union 
         {
@@ -654,11 +663,14 @@ public:
         }
         unsigned GetMemSize() const { return (MemSize >> Shift_MemSize) & Mask_MemSize; }
 
+        void SetRightToLeft() { MemSize |= Flags_RightToLeft; }
+        bool IsRightToLeft() const { return (MemSize & Flags_RightToLeft) != 0; }
+
         void SetAlignment(Alignment a)
         {
-            MemSize = 
-                (MemSize & (~(Mask_Alignment << Shift_Alignment))) | 
-                ((a & Mask_Alignment) << Shift_Alignment);
+            MemSize =
+                (MemSize & (~(static_cast<UInt32>(Mask_Alignment) << Shift_Alignment))) |
+                ((static_cast<UInt32>(a) & static_cast<UInt32>(Mask_Alignment)) << Shift_Alignment);
 
         }
         Alignment GetAlignment() const { return (Alignment)((MemSize >> Shift_Alignment) & Mask_Alignment);}
@@ -748,7 +760,7 @@ private:
             return Compare(p1, yoffset) < 0;
         }
     };
-
+public:
     static void ReleasePartOfLine(GlyphEntry* pglyphs, unsigned n, FormatDataEntry* pnextFormatData);
 
 public:
@@ -1069,6 +1081,8 @@ public:
     void Scale(float scaleFactor);
     // returns the minimal height of all lines in the buffer (in twips)
     int  GetMinLineHeight() const;
+
+    FontHandle* FindFirstFontInfo() const;
 #ifdef SF_BUILD_DEBUG
     void Dump() const;
     void CheckIntegrity() const;

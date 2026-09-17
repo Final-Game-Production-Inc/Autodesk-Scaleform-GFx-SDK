@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -21,6 +22,87 @@ namespace Scaleform { namespace GFx { namespace AS3 { namespace Abc
 
 ///////////////////////////////////////////////////////////////////////////
 const Multiname Multiname::AnyType = {0, -1, 0, MN_QName};
+
+
+bool Multiname::IsBoolean(const ConstPool& cp) const
+{
+    bool result = false;
+
+    if (IsQName())
+    {
+        const StringDataPtr name = GetName(cp);
+        const Abc::NamespaceInfo& ns = GetNamespace(cp);
+
+        if (ns.IsPublic() && ns.GetNameURI().IsEmpty())
+            result = (name == StringDataPtr("Boolean", 7));
+    }
+
+    return result;
+}
+
+bool Multiname::IsInt(const ConstPool& cp) const
+{
+    bool result = false;
+
+    if (IsQName())
+    {
+        const StringDataPtr name = GetName(cp);
+        const Abc::NamespaceInfo& ns = GetNamespace(cp);
+
+        if (ns.IsPublic() && ns.GetNameURI().IsEmpty())
+            result = (name == StringDataPtr("int", 3));
+    }
+
+    return result;
+}
+
+bool Multiname::IsUInt(const ConstPool& cp) const
+{
+    bool result = false;
+
+    if (IsQName())
+    {
+        const StringDataPtr name = GetName(cp);
+        const Abc::NamespaceInfo& ns = GetNamespace(cp);
+
+        if (ns.IsPublic() && ns.GetNameURI().IsEmpty())
+            result = (name == StringDataPtr("uint", 4));
+    }
+
+    return result;
+}
+
+bool Multiname::IsNumber(const ConstPool& cp) const
+{
+    bool result = false;
+
+    if (IsQName())
+    {
+        const StringDataPtr name = GetName(cp);
+        const Abc::NamespaceInfo& ns = GetNamespace(cp);
+
+        if (ns.IsPublic() && ns.GetNameURI().IsEmpty())
+            result = (name == StringDataPtr("Number", 6));
+    }
+
+    return result;
+}
+
+bool Multiname::IsString(const ConstPool& cp) const
+{
+    bool result = false;
+
+    if (IsQName())
+    {
+        const StringDataPtr name = GetName(cp);
+        const Abc::NamespaceInfo& ns = GetNamespace(cp);
+
+        if (ns.IsPublic() && ns.GetNameURI().IsEmpty())
+            result = (name == StringDataPtr("String", 6));
+    }
+
+    return result;
+}
 
 
 bool Multiname::IsFixedNumType(const ConstPool& cp) const

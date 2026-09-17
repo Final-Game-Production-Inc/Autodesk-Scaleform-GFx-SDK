@@ -6,6 +6,7 @@ Created     :   December 2009
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -14,6 +15,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 
 #include "Amp_Message.h"
+
+#ifdef SF_ENABLE_STATS
 #include "Kernel/SF_HeapNew.h"
 #include "Amp_Stream.h"
 #include "Amp_Interfaces.h"
@@ -22,7 +25,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_MsgFormat.h"
 
 #ifdef SF_ENABLE_ZLIB
-#include "../../../3rdParty/zlib-1.2.7/zlib.h"
+#include "../../../3rdParty/zlib-1.3.2/zlib.h"
 #endif
 
 namespace Scaleform {
@@ -112,6 +115,35 @@ String Message::MsgTypeToMsgName(UInt32 msgType)
         break;
     }
     return msgTypeName;
+}
+
+Message::PlatformType Message::GetLocalPlatform()
+{
+#if defined(SF_OS_WIN32)
+    return PlatformWindows;
+#elif defined(SF_OS_LINUX)
+    return PlatformLinux;
+#elif defined(SF_OS_MAC)
+    return PlatformMac;
+#elif defined(SF_OS_PS3)
+    return PlatformPs3;
+#elif defined(SF_OS_XBOX360)
+    return PlatformXbox360;
+#elif defined(SF_OS_WII)
+    return PlatformWii;
+#elif defined(SF_OS_3DS)
+    return Platform3DS;
+#elif defined(SF_OS_ANDROID)
+    return PlatformAndroid;
+#elif defined(SF_OS_IPHONE)
+    return PlatformIphone;
+#elif defined(SF_OS_WIIU)
+    return PlatformWiiU;
+#elif defined(SF_OS_PSVITA)
+    return PlatformNgp;
+#else
+    return PlatformOther;
+#endif
 }
 
 
@@ -509,8 +541,11 @@ const char* MessageSourceFile::GetFilename() const
 ////////////////////////////////////////////////////////////////////
 
 // Constructor
-MessageObjectsReport::MessageObjectsReport(const char* objectsReport) : 
-    ObjectsReport(objectsReport != NULL ? objectsReport : "")
+MessageObjectsReport::MessageObjectsReport(const char* objectsReport,
+    Ptr<AmpMovieObjectDesc> root, UInt32 movieHandle) : 
+    ObjectsReport(objectsReport != NULL ? objectsReport : ""),
+    ObjectsRoot(root),
+    MovieHandle(movieHandle)
 {
 }
 
@@ -519,6 +554,19 @@ void MessageObjectsReport::Read(File& str)
 {
     Message::Read(str);
     ReadString(str, &ObjectsReport);
+    if (Version >= 36)
+    {
+        UInt32 numRoots = str.ReadUInt32();
+        for (UInt32 i = 0; i < numRoots; ++i)
+        {
+            ObjectsRoot = *SF_HEAP_AUTO_NEW(this) AmpMovieObjectDesc();
+            ObjectsRoot->Read(str);
+        }
+    }
+    if (Version >= 39)
+    {
+        MovieHandle = str.ReadUInt32();
+    }
 }
 
 // Serialization
@@ -526,12 +574,39 @@ void MessageObjectsReport::Write(File& str) const
 {
     Message::Write(str);
     WriteString(str, ObjectsReport);
+    if (Version >= 36)
+    {
+        if (ObjectsRoot)
+        {
+            str.WriteUInt32(1);
+            ObjectsRoot->Write(str);
+        }
+        else
+        {
+            str.WriteUInt32(0);
+        }
+    }
+    if (Version >= 39)
+    {
+        str.WriteUInt32(MovieHandle);
+    }
 }
 
 // Accessor
 const char* MessageObjectsReport::GetObjectsReport() const
 {
     return ObjectsReport;
+}
+
+// Accessor
+const Ptr<AmpMovieObjectDesc> MessageObjectsReport::GetObjectsRoot() const
+{
+    return ObjectsRoot;
+}
+
+UInt32 MessageObjectsReport::GetMovieHandle() const
+{
+    return MovieHandle;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -712,7 +787,7 @@ bool MessageObjectsReportRequest::IsNoEllipsis() const
 
 // Constructor
 MessageAppControl::MessageAppControl(UInt32 flags) : 
-    OptionBits(flags), ProfileLevel(Amp_Profile_Level_Null)
+    OptionBits(flags), ProfileLevel(Amp_Profile_Level_Null), BatchChange(0)
 {
 }
 
@@ -726,6 +801,10 @@ void MessageAppControl::Read(File& str)
     {
         ProfileLevel = str.ReadSInt32();
     }
+    if (Version >= 41)
+    {
+        BatchChange = str.ReadSInt32();
+    }
 }
 
 // Serialization
@@ -737,6 +816,10 @@ void MessageAppControl::Write(File& str) const
     if (Version >= 20)
     {
         str.WriteSInt32(ProfileLevel);
+    }
+    if (Version >= 41)
+    {
+        str.WriteSInt32(BatchChange);
     }
 }
 
@@ -1077,6 +1160,40 @@ void MessageAppControl::SetToggleBatch(bool batchToggle)
     }
 }
 
+bool MessageAppControl::IsToggleBlending() const
+{
+    return (OptionBits & OF_ToggleBlending) != 0;
+}
+
+void MessageAppControl::SetToggleBlending(bool blendingToggle)
+{
+    if (blendingToggle)
+    {
+        OptionBits |= OF_ToggleBlending;
+    }
+    else
+    {
+        OptionBits &= (~OF_ToggleBlending);
+    }
+}
+
+bool MessageAppControl::IsToggleTextureDensity() const
+{
+    return (OptionBits & OF_ToggleTextureDensity) != 0;
+}
+
+void MessageAppControl::SetToggleTextureDensity(bool texDensityToggle)
+{
+    if (texDensityToggle)
+    {
+        OptionBits |= OF_ToggleTextureDensity;
+    }
+    else
+    {
+        OptionBits &= (~OF_ToggleTextureDensity);
+    }
+}
+
 // Setting this flag toggles instruction profiling for per-line timings
 bool MessageAppControl::IsToggleInstructionProfile() const
 {
@@ -1120,6 +1237,17 @@ void MessageAppControl::SetProfileLevel(SInt32 profileLevel)
     ProfileLevel = profileLevel;
 }
 
+SInt32 MessageAppControl::GetBatchChange() const
+{
+    return BatchChange;
+}
+
+void MessageAppControl::SetBatchChange(SInt32 change)
+{
+    BatchChange = change;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////
 
 MessagePort::MessagePort(UInt32 port, const char* appName, const char* fileName) :
@@ -1133,33 +1261,7 @@ MessagePort::MessagePort(UInt32 port, const char* appName, const char* fileName)
     {
         FileName = fileName;
     }
-#if defined(SF_OS_WIN32)
-    Platform = PlatformWindows;
-#elif defined(SF_OS_LINUX)
-    Platform = PlatformLinux;
-#elif defined(SF_OS_MAC)
-    Platform = PlatformMac;
-
-#elif defined(SF_OS_PS3)
-    Platform = PlatformPs3;
-#elif defined(SF_OS_XBOX360)
-    Platform = PlatformXbox360;
-#elif defined(SF_OS_WII)
-    Platform = PlatformWii;
-#elif defined(SF_OS_3DS)
-    Platform = Platform3DS;
-
-#elif defined(SF_OS_ANDROID)
-    Platform = PlatformAndroid;
-#elif defined(SF_OS_IPHONE)
-    Platform = PlatformIphone;
-#elif defined(SF_OS_WIIU)
-    Platform = PlatformWiiU;
-#elif defined(SF_OS_PSVITA)
-    Platform = PlatformNgp;
-#else
-    Platform = PlatformOther;
-#endif
+    Platform = GetLocalPlatform();
 }
 
 // Serialization
@@ -1217,7 +1319,7 @@ const StringLH& MessagePort::GetFileName() const
 }
 
 // Accessor
-MessagePort::PlatformType MessagePort::GetPlatform() const
+Message::PlatformType MessagePort::GetPlatform() const
 {
     return Platform;
 }
@@ -1373,7 +1475,8 @@ UInt32 MessageFontRequest::GetFontId() const
 
 // Constructor
 MessageFontData::MessageFontData(UInt32 fontId) : 
-    FontId(fontId)
+    FontId(fontId),
+    NumTextures(1)
 {
     FontDataStream = SF_HEAP_AUTO_NEW(this) AmpStream();
 }
@@ -1389,6 +1492,10 @@ void MessageFontData::Read(File& str)
 {
     Message::Read(str);
     FontId = str.ReadUInt32();
+    if (Version >= 38)
+    {
+        NumTextures = str.ReadUInt32();
+    }
     FontDataStream->Read(str);
 }
 
@@ -1397,6 +1504,10 @@ void MessageFontData::Write(File& str) const
 {
     Message::Write(str);
     str.WriteUInt32(FontId);
+    if (Version >= 38)
+    {
+        str.WriteUInt32(NumTextures);
+    }
     FontDataStream->Write(str);
 }
 
@@ -1407,11 +1518,24 @@ UInt32 MessageFontData::GetFontId() const
 }
 
 // Accessor
+UInt32 MessageFontData::GetNumTextures() const
+{
+    return NumTextures;
+}
+
+// Accessor
+void MessageFontData::SetNumTextures(UInt32 numTextures)
+{
+    NumTextures = numTextures;
+}
+
+// Accessor
 AmpStream* MessageFontData::GetImageData() const
 {
     return FontDataStream;
 }
 
+// Accessor
 void MessageFontData::SetImageData(AmpStream* imageData)
 {
     FontDataStream->Release();
@@ -1503,3 +1627,4 @@ const ArrayLH<UByte>& MessageCompressed::GetCompressedData() const
 } // namespace GFx
 } // namespace Scaleform
 
+#endif

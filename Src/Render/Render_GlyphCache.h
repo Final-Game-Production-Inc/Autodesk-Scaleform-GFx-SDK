@@ -7,6 +7,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -94,15 +95,18 @@ public:
     bool        Unmap();
     bool        Update(const Texture::UpdateDesc* updates, unsigned count);
 
-    Texture*    GetTexture();
-
     void        Invalidate()    { Valid = false; NumGlyphsToUpdate = 0; }
     bool        IsValid() const { return Valid; }
 
     const PrimitiveFill* GetFill() const { return pFill; }
           PrimitiveFill* GetFill()       { return pFill; }
 
-    Image* GetImage() { return pRawImg.GetPtr() ? (Image*)pRawImg : (Image*)pTexImg; }
+    Image* GetImage();
+
+#ifdef SF_AMP_SERVER
+    void LockImage() { ImageLock.DoLock(); }
+    void UnlockImage() { ImageLock.Unlock(); }
+#endif
 
 private:
     bool                    Valid;
@@ -117,6 +121,7 @@ private:
     bool                    Mapped;
 public:
     unsigned                NumGlyphsToUpdate;
+    SF_AMP_CODE(LockSafe ImageLock;)
 };
 
 

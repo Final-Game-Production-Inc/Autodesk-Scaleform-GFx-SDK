@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -265,7 +266,8 @@ void Stage::ExecuteFrame0Events()
         }
         // @TODO: error handling
     }
-    pas3Root->IncASFramesCnt(ToAvmDisplayObj(prootMovie)->CallCtor(false));
+    //pas3Root->IncASFramesCnt(ToAvmDisplayObj(prootMovie)->CallCtor(false));
+    ToAvmDisplayObj(prootMovie)->CallCtor(true);
 
 #ifndef SF_NO_IME_SUPPORT
 	// we need because the ASEnvironment for the root movie is created during the first 
@@ -284,6 +286,8 @@ void Stage::ExecuteFrame0Events()
 
     ToAS3Root(GetMovieImpl())->ExecuteActionQueue(MovieRoot::AL_Highest);
     ToAS3Root(GetMovieImpl())->ExecuteActionQueue(MovieRoot::AL_High);
+    ToAvmSprite(prootMovie)->SetChildrenCreatedFlag();
+
     while (pas3Root->ASFramesToExecute > 0)
     {
         unsigned cnt = pas3Root->ASFramesToExecute;
@@ -360,11 +364,14 @@ void Stage::OnAppLifecycleEvent(const char* event)
 {
     ASString eventStr = GetStringManager()->CreateString(event);
     Instances::fl_display::DisplayObject* as3obj = ToAvmDisplayObj(this)->GetAS3Obj();
-    SF_ASSERT(as3obj);
-    SPtr<Instances::fl_events::AppLifecycleEvent> evt = 
-        as3obj->CreateAppLifecycleEventObject(eventStr, true, false, eventStr);
+    SF_ASSERT(as3obj != NULL);
+    if (as3obj)
+    {
+        SPtr<Instances::fl_events::AppLifecycleEvent> evt = 
+            as3obj->CreateAppLifecycleEventObject(eventStr, true, false, eventStr);
 
-    as3obj->Dispatch(evt.GetPtr(), this);
+        as3obj->Dispatch(evt.GetPtr(), this);
+    }
 }
 
 // newOrientation is "default", "rotatedLeft", "rotatedRight", "unknown" or "upsideDown"
@@ -374,21 +381,24 @@ void Stage::OnDeviceOrientationChange(const char* neworientation)
     ASString oldOr = CurrentStageOrientation;
     Instances::fl_display::DisplayObject* as3obj = ToAvmDisplayObj(this)->GetAS3Obj();
     SF_ASSERT(as3obj);
-    SPtr<Instances::fl_events::StageOrientationEvent> evt = 
-        as3obj->CreateStageOrientationEventObject(GetStringManager()->CreateConstString("orientationChanging"), 
-                                                   true, true, CurrentStageOrientation, newOr);
-
-    as3obj->Dispatch(evt.GetPtr(), this);
-    if (!evt->IsDefaultPrevented())
+    if (as3obj)
     {
-        // update orientation
-        SetOrientation(newOr);
-
         SPtr<Instances::fl_events::StageOrientationEvent> evt = 
-            as3obj->CreateStageOrientationEventObject(GetStringManager()->CreateConstString("orientationChanged"), 
-                                                       true, false, oldOr, newOr);
+            as3obj->CreateStageOrientationEventObject(GetStringManager()->CreateConstString("orientationChanging"), 
+                                                       true, true, CurrentStageOrientation, newOr);
 
         as3obj->Dispatch(evt.GetPtr(), this);
+        if (!evt->IsDefaultPrevented())
+        {
+            // update orientation
+            SetOrientation(newOr);
+
+            SPtr<Instances::fl_events::StageOrientationEvent> evt = 
+                as3obj->CreateStageOrientationEventObject(GetStringManager()->CreateConstString("orientationChanged"), 
+                                                           true, false, oldOr, newOr);
+
+            as3obj->Dispatch(evt.GetPtr(), this);
+        }
     }
 }
 #endif

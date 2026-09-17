@@ -7,6 +7,7 @@ Created     :   2005-2008
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -435,11 +436,11 @@ unsigned Hairliner::nextScanbeam(CoordType yb, CoordType yt,
     CoordType height = yt - yb;
     for(i = 1; i < ValidChains.GetSize(); ++i)
     {
-        int j;
-        for(j = (int)i - 1; j >= 0; --j)
+        int jc;
+        for(jc = (int)i - 1; jc >= 0; --jc)
         {
-            in.mc1 = ActiveChains[ValidChains[j  ]];
-            in.mc2 = ActiveChains[ValidChains[j+1]];
+            in.mc1 = ActiveChains[ValidChains[jc]];
+            in.mc2 = ActiveChains[ValidChains[jc+1]];
 
             if(in.mc1->xt <= in.mc2->xt) break;
 
@@ -465,8 +466,8 @@ unsigned Hairliner::nextScanbeam(CoordType yb, CoordType yt,
                 in.y = yt;
             }
             Intersections.PushBack(in);
-            Alg::Swap(ActiveChains[ValidChains[j  ]], 
-                      ActiveChains[ValidChains[j+1]]);
+            Alg::Swap(ActiveChains[ValidChains[jc  ]], 
+                      ActiveChains[ValidChains[jc+1]]);
         }
     }
 
@@ -676,8 +677,8 @@ void Hairliner::sweepScanbeam(const ChainPtrArray& aet, CoordType yb)
             const OutVertexType& v = OutVertices[he->lv];
             if(v.x != he->x1)
             {
-                SrcVertexType v = { he->x1, yb };
-                emitEdge(he->lv, addEventVertex(v));
+                SrcVertexType sv = { he->x1, yb };
+                emitEdge(he->lv, addEventVertex(sv));
             }
         }
         if(he->rv != ~0U)
@@ -685,8 +686,8 @@ void Hairliner::sweepScanbeam(const ChainPtrArray& aet, CoordType yb)
             const OutVertexType& v = OutVertices[he->rv];
             if(v.x != he->x2)
             {
-                SrcVertexType v = { he->x2, yb };
-                emitEdge(he->rv, addEventVertex(v));
+                SrcVertexType sv = { he->x2, yb };
+                emitEdge(he->rv, addEventVertex(sv));
             }
         }
         if(he->lv == ~0U && he->rv == ~0U)
@@ -808,13 +809,13 @@ void Hairliner::buildGraph()
 
         if(flags & RemoveEdgesFlag)
         {
-            unsigned i, pos;
-            for(i = pos = 0; i < ActiveChains.GetSize(); ++i)
+            unsigned pi, pos;
+            for(pi = pos = 0; pi < ActiveChains.GetSize(); ++pi)
             {
-                MonoChainType* mc = ActiveChains[i];
-                if((mc->flags & EndChainFlag) == 0)
+                MonoChainType* mct = ActiveChains[pi];
+                if((mct->flags & EndChainFlag) == 0)
                 {
-                    ActiveChains[pos++] = mc;
+                    ActiveChains[pos++] = mct;
                 }
             }
             ActiveChains.CutAt(pos);

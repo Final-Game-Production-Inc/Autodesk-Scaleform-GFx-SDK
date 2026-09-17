@@ -7,6 +7,7 @@ Created     :   January 26, 2009
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -638,8 +639,8 @@ public:
     enum PresentationType { FmtDecimal, FmtScientific, FmtSignificant };
     
 public:
-    DoubleFormatter(Double v);
-    DoubleFormatter(MsgFormat& f, Double v);
+    DoubleFormatter(double v);
+    DoubleFormatter(MsgFormat& f, double v);
 
 public:
     virtual void        Parse(const StringDataPtr& str);
@@ -708,7 +709,7 @@ private:
 
 private:
     PresentationType    Type;
-    const Double        Value;
+    const double        Value;
     UPInt               Len;
 
     char                Buff[347 + 1]; 
@@ -725,7 +726,6 @@ struct FmtInfo<double>
 {
     typedef DoubleFormatter formatter;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 class ResouceProvider;
@@ -746,10 +746,10 @@ public:
         ValueType(UPInt rc, const ResouceProvider& provider);
         // int version of RC is supposed to be used with NULL argument only.
         // It is interpreted as a string pointer.
-        explicit ValueType(int rc);
+        explicit ValueType(intptr_t rc);
         // int version of RC is supposed to be used with NULL argument only.
         // It is interpreted as a string pointer.
-        explicit ValueType(int rc, const ResouceProvider& provider);
+        explicit ValueType(intptr_t rc, const ResouceProvider& provider);
         ValueType(const char* rc);
         ValueType(const char* rc, const ResouceProvider& provider);
 

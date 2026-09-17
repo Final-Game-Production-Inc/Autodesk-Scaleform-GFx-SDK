@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -52,7 +53,7 @@ namespace Classes { namespace fl_desktop
     
 namespace ClassTraits { namespace fl_desktop
 {
-    class ClipboardFormats : public Traits
+    class ClipboardFormats : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -60,11 +61,13 @@ namespace ClassTraits { namespace fl_desktop
 #endif
     public:
         typedef Classes::fl_desktop::ClipboardFormats ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        ClipboardFormats(VM& vm);
+        ClipboardFormats(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
-        enum { MemberInfoNum = 2 };
+        enum { MemberInfoNum = 6 };
         static const MemberInfo mi[MemberInfoNum];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -101,8 +104,12 @@ namespace Classes { namespace fl_desktop
 
     public:
         // AS3 API members.
+        const char* BITMAP_FORMAT;
+        const char* FILE_LIST_FORMAT;
+        const char* FILE_PROMISE_LIST_FORMAT;
         const char* HTML_FORMAT;
         const char* TEXT_FORMAT;
+        const char* URL_FORMAT;
 
 //##protect##"class_$data"
 //##protect##"class_$data"

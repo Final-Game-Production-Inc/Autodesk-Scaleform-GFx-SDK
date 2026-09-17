@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov, Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,7 +20,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 //#include "Render/Render_Renderer.h"
 #include "Kernel/SF_UTF8Util.h"
-
+#include "GFxConfig.h"
 #include "GFx/GFx_PlayerImpl.h"
 #include "GFx/GFx_LoaderImpl.h"
 #include "GFx/GFx_LoadProcess.h"
@@ -68,28 +69,21 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 //#define SF_ADVANCE_EXECUTION_TRACE
 
-#if defined(SF_SHOW_WATERMARK)
-
-#if defined(SF_OS_WIN32) || defined(SF_OS_XBOX) || defined(SF_OS_XBOX360)
-#include <sys/timeb.h>
-#if defined(SF_OS_WIN32)
-#include <windows.h>
-#endif
-#elif defined(SF_OS_PS3)
-#include <cell/rtc.h>
-#elif defined(SF_OS_WII)
-#include <revolution/os.h>
-#elif defined(SF_OS_PSVITA)
-#include <rtc.h>
-#elif defined(SF_OS_3DS)
-#include <nn/fnd.h>
-#elif defined(SF_OS_WIIU)
-#else
-#include <sys/time.h>
-#endif
+#if defined(SF_BUILD_CONSUMER)
 
 #include "GFx_Watermark.h"
-#endif // SF_SHOW_WATERMARK
+
+struct sf_consumer 
+{
+    bool isWMRK;
+    int days_left;
+    char* licenseMessage;
+};
+
+sf_consumer GetWmrkResult();
+
+sf_consumer sLastWmrkResult;
+#endif //SF_BUILD_CONSUMER
 
 namespace Scaleform { namespace GFx {
 
@@ -171,9 +165,10 @@ SF_DECLARE_TIMER_STAT(              StatMV_SetVariable_Tks,"SetVariable",    Sta
 SF_DECLARE_TIMER_STAT(              StatMV_Invoke_Tks,     "Invoke",         StatMV_ScriptCommunication_Tks)
 SF_DECLARE_TIMER_STAT(              StatMV_InvokeAction_Tks, "InvokeAction", StatMV_Invoke_Tks)
 
-SF_DECLARE_TIMER_STAT_SUM_GROUP(    StatMV_Display_Tks,    "Display",        StatMV_Tks)
-SF_DECLARE_TIMER_STAT(              StatMV_Tessellate_Tks,    "Tessellate",  StatMV_Display_Tks)
-SF_DECLARE_TIMER_STAT(              StatMV_GradientGen_Tks,    "GradientGen",StatMV_Display_Tks)
+SF_DECLARE_TIMER_STAT_SUM_GROUP(    StatMV_Display_Tks,     "Display",       StatMV_Tks)
+SF_DECLARE_TIMER_STAT(              StatMV_FontThrash_Tks,  "FontThrash",    StatMV_Display_Tks)
+SF_DECLARE_TIMER_STAT(              StatMV_GradientGen_Tks, "GradientGen",   StatMV_Display_Tks)
+SF_DECLARE_TIMER_STAT(              StatMV_FontMiss_Tks,    "FontMiss",      StatMV_Display_Tks)
 
 // MovieView Counters.
 SF_DECLARE_COUNTER_STAT_SUM_GROUP(StatMV_Counters, "Counters",     StatGroup_Default)
@@ -324,59 +319,68 @@ void Movie::Release()
     }
 }
 
-#if defined(SF_SHOW_WATERMARK)
-static SInt64 GetEvalTicksLeft()
+#if defined (SF_BUILD_CONSUMER)
+static bool HandleExpiredEval(MovieImpl* pImpl)
 {
-#if defined(SF_OS_WIN32) || defined(SF_OS_XBOX) || defined(SF_OS_XBOX360)
-    struct timeb t;
-    ftime(&t);
-    TIME_ZONE_INFORMATION tz;
-    DWORD r = GetTimeZoneInformation(&tz);
-    long bias = tz.Bias;
-    if( r == TIME_ZONE_ID_STANDARD )
-    { 
-        bias += tz.StandardBias; 
-    } 
-    else if( r == TIME_ZONE_ID_DAYLIGHT)
-    { 
-        bias += tz.DaylightBias; 
-    } 
-    // else leave the bias alone
-    return SInt64(t.time) * 1000 + t.millitm;
-#elif defined(SF_OS_PS3)
-    CellRtcTick t, localt;
-    cellRtcGetCurrentTick(&t);
-    cellRtcConvertUtcToLocalTime(&t, &localt);
-    return SInt64(t.tick/1000 - 62135596800000ull);
+    sLastWmrkResult = GetWmrkResult();
+    if (sLastWmrkResult.days_left >= 0)
+    {
+        return false;
+    }
 
-#elif defined(SF_OS_WII) || defined(SF_OS_WIIU)
-    SInt64 t = OSTicksToMilliseconds(OSGetTime());
-    return t + 946684800000LL;
+    Render::Context& RenderContext = pImpl->GetRenderContext();
+    RectF VisibleFrameRect = pImpl->GetVisibleFrameRect();
 
-#elif defined(SF_OS_3DS)
-    SInt64 t = Timer::GetTicks();
-    return t + 946684800000LL;
+    // Clear the existing render tree
+    Render::TreeRoot* pRenderRoot = pImpl->GetRenderRoot();
 
-#elif defined(SF_OS_PSVITA)
-    SceRtcTick t, localt;
-    sceRtcGetCurrentTick(&t);
-    sceRtcConvertUtcToLocalTime(&t, &localt);
-    return SInt64(t.tick/1000 - 62135596800000ull);
+    pRenderRoot->Remove(0, pRenderRoot->GetSize());
 
+    if (pImpl->pWMLicenseText == NULL)
+    {
+        MemoryHeap* pHeap = pImpl->GetMovieHeap();
+
+        pImpl->pWMFontProvider = *SF_HEAP_NEW(pHeap) Render::FontProviderHUD();
+        if (pImpl->pWMFontProvider)
+        {
+            pImpl->pWMFont = *pImpl->pWMFontProvider->CreateFont("Lucida Console", 0);
+        }
+
+        pImpl->pWMLicenseText = *RenderContext.CreateEntry<TreeText>();
+
+        TextLayout::Builder dateBuilder(pHeap);
+        dateBuilder.SetBounds(RectF(0.0f, 0.0f, 1280.0f, 720.0f));
+        dateBuilder.SetBackground(0, 0);
+        dateBuilder.ChangeFont(pImpl->pWMFont, 13*20);
+        dateBuilder.ChangeColor(0xffffffff);
+        dateBuilder.AddText(sLastWmrkResult.licenseMessage);
+        pImpl->pWMLicenseText->SetLayout(dateBuilder);
+    }
+
+    float width = SFstrlen(sLastWmrkResult.licenseMessage) * 6.0f; // We're using a 6x13 fixed-width font
+    float x = (pImpl->mViewport.Width - width) * 10.0f;
+    float y = (pImpl->mViewport.Height + 15.0f) * 10.0f;
+
+    pImpl->pWMLicenseText->SetBounds(VisibleFrameRect);
+    pImpl->pWMLicenseText->SetMatrix(Matrix2F::Translation(x, y).AppendScaling(pImpl->ViewScaleX, pImpl->ViewScaleY));
+
+    pRenderRoot->Insert(0, pImpl->pWMLicenseText);
+
+    RenderContext.Capture();
+
+    return true;
+}
+
+bool MovieImpl::IsValid()
+{
+    return (sLastWmrkResult.days_left >= 0);
+}
 #else
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv, &tz);
-    long bias = tz.tz_minuteswest - (tz.tz_dsttime ? 60 : 0);
-    return SInt64(tv.tv_sec) * 1000 + SInt64(tv.tv_usec/1000);
-#endif
-}
-
-static SInt32 GetEvalDaysLeft()
+bool MovieImpl::IsValid()
 {
-    return (SInt32)((SF_WATERMARK_END_DATE - GetEvalTicksLeft()) / (1000*60*60*24));
+    return true;
 }
-#endif
+#endif //SF_BUILD_CONSUMER
 
 //--------------------------------------------------------------------
 //
@@ -409,56 +413,39 @@ MovieImpl::MovieImpl(MemoryHeap* pheap)
     pTopMostRoot = *RenderContext.CreateEntry<Render::TreeContainer>();
     pRenderRoot->Add(pTopMostRoot);
 
-#if defined(SF_SHOW_WATERMARK)
-    pWMFontProvider = *SF_HEAP_NEW(pheap) Render::FontProviderHUD();
-    if (pWMFontProvider)
+#if defined (SF_BUILD_CONSUMER)
+    pWMLicenseText = NULL;
+    pWMDateText = NULL;
+    pWMFont = NULL;
+    pWMFontProvider = NULL;
+
+    if (GetWmrkResult().isWMRK)
     {
-        pWMFont = *pWMFontProvider->CreateFont("Lucida Console", 0);
+        // Expiration handled by static function so customers can't be "clever" and nuke an obviously-named member function
+        if (!HandleExpiredEval(this))
+        {
+            pWMFontProvider = *SF_HEAP_NEW(pheap) Render::FontProviderHUD();
+            if (pWMFontProvider)
+            {
+                pWMFont = *pWMFontProvider->CreateFont("Lucida Console", 0);
+            }
+
+            pWMDateText = *RenderContext.CreateEntry<TreeText>();
+
+            char tempBuf[256];
+            SFsprintf(tempBuf, 256, SF_WATERMARK_TEXT_LINE3, GetWmrkResult().days_left);
+
+            TextLayout::Builder dateBuilder(pheap);
+            dateBuilder.SetBounds(RectF(0.0f, 0.0f, 1280.0f, 720.0f));
+            dateBuilder.SetBackground(0, 0);
+            dateBuilder.ChangeFont(pWMFont, 13*20);
+            dateBuilder.ChangeColor(0xffffffff);
+            dateBuilder.AddText(tempBuf);
+            pWMDateText->SetLayout(dateBuilder);
+
+            pRenderRoot->Insert(0, pWMDateText);
+        }
     }
-
-    /*
-    pWMCopyrightText = *RenderContext.CreateEntry<TreeText>();
-    pWMWarningText = *RenderContext.CreateEntry<TreeText>();
-    */
-    pWMDateText = *RenderContext.CreateEntry<TreeText>();
-
-    /*
-    // *20 because TreeText expects params in Twips, not pixels
-    TextLayout::Builder copyrightBuilder(pheap);
-    copyrightBuilder.SetBounds(RectF(0.0f, 0.0f, 1280.0f, 720.0f));
-    copyrightBuilder.SetBackground(0, 0);
-    copyrightBuilder.ChangeFont(pWMFont, 13*20);
-    copyrightBuilder.ChangeColor(0xffffffff);
-    copyrightBuilder.AddText(SF_WATERMARK_TEXT_LINE1);
-    pWMCopyrightText->SetLayout(copyrightBuilder);
-
-    TextLayout::Builder warningBuilder(pheap);
-    warningBuilder.SetBounds(RectF(0.0f, 0.0f, 1280.0f, 720.0f));
-    warningBuilder.SetBackground(0, 0);
-    warningBuilder.ChangeFont(pWMFont, 13*20);
-    warningBuilder.ChangeColor(0xffffffff);
-    warningBuilder.AddText(SF_WATERMARK_TEXT_LINE2);
-    pWMWarningText->SetLayout(warningBuilder);
-    */
-    
-    char tempBuf[256];
-    SFsprintf(tempBuf, 256, SF_WATERMARK_TEXT_LINE3, GetEvalDaysLeft());
-
-    TextLayout::Builder dateBuilder(pheap);
-    dateBuilder.SetBounds(RectF(0.0f, 0.0f, 1280.0f, 720.0f));
-    dateBuilder.SetBackground(0, 0);
-    dateBuilder.ChangeFont(pWMFont, 13*20);
-    dateBuilder.ChangeColor(0xffffffff);
-    dateBuilder.AddText(tempBuf);
-    pWMDateText->SetLayout(dateBuilder);
-
-    /*
-    pRenderRoot->Insert(0, pWMCopyrightText);
-    pRenderRoot->Insert(1, pWMWarningText);
-    */
-
-    pRenderRoot->Insert(0, pWMDateText);
-
 #endif
 
     // Capture to ensure that hDisplayHandle is immediately safe to pass to 
@@ -571,8 +558,7 @@ MovieImpl::~MovieImpl()
 
     ProcessUnloadQueue();
 
-	RenderContext.Shutdown(true);
-	pRenderRoot = NULL;
+    pRenderRoot = NULL;
 
 #ifndef SF_NO_IME_SUPPORT
     // clean up IME manager
@@ -703,7 +689,7 @@ MovieImpl::~MovieImpl()
         while (!pObjectInterface->ExternalObjRefs.IsNull(data))
         {
             data->SetUndefined();
-            data->Type = Value::ValueType(data->Type | Value::VTC_OrphanedBit);
+            data->Type = Value::ValueType(static_cast<uint32_t>(data->Type) | static_cast<uint32_t>(Value::VTC_OrphanedBit));
             data = pObjectInterface->ExternalObjRefs.GetNext(data);
         }        
     }
@@ -715,33 +701,24 @@ MovieImpl::~MovieImpl()
     pASMovieRoot->Shutdown();
     pASMovieRoot = NULL;
     pTopMostRoot = NULL;
-    pRenderRoot = NULL;
 
-#if defined(SF_SHOW_WATERMARK)
-    pWMDateText = NULL;
-    pWMWarningText = NULL;
-    pWMCopyrightText = NULL;
-    pWMFont = NULL;
-    pWMFontProvider = NULL;
-#endif
-    hDisplayRoot.Clear();
-}
+    // Note: render context shutdown must come after all movie shutdown, as BitmapData objects may be
+    // destroyed at any point. These may push more commands on the ThreadCommandQueue, which will need 
+    // to be processed before shutdown on the render thread occurs.
+    RenderContext.Shutdown(true);
 
-#if defined(SF_SHOW_WATERMARK)
-bool MovieImpl::IsValidEval() const
-{
-    SInt32 daysLeft = GetEvalDaysLeft() + 1;
-    if (daysLeft < 1 || daysLeft > 61)
+#if defined (SF_BUILD_CONSUMER)
+    if (GetWmrkResult().isWMRK)
     {
-        return false;
+        pWMDateText = NULL;
+        pWMLicenseText = NULL;
+        pWMFont = NULL;
+        pWMFontProvider = NULL;
     }
-    if (GetEvalTicksLeft() < 0)
-    {
-        return false;
-    }
-    return true;
-}
 #endif
+
+     hDisplayRoot.Clear();
+}
 
 void MovieImpl::ClearPlayList()
 {
@@ -886,7 +863,11 @@ MovieDefImpl*  MovieImpl::CreateImageMovieDef(
 void    MovieImpl::ProcessLoadQueue()
 {
     SF_AMP_SCOPE_TIMER(AdvanceStats, "MovieImpl::ProcessLoadQueue", Amp_Profile_Level_Medium);
-    while(pLoadQueueHead)
+
+    // Only currently existing entries are processed
+    // This allows the opportunity for events to fire when a load adds another load to the queue
+    UInt32 lastLoadQueueEntryCnt = LastLoadQueueEntryCnt;
+    while (pLoadQueueHead != NULL && pLoadQueueHead->EntryTime <= lastLoadQueueEntryCnt)
     {
         // Remove from queue.
         LoadQueueEntry *pentry = pLoadQueueHead;
@@ -909,7 +890,7 @@ void    MovieImpl::ProcessLoadQueue()
     // First we need to make sure that our queue does not have any tasks with 
     // unfinished preloading task (which usually is just searching and opening a file). 
     // We need this check to avoid a race condition like this: let say we load 
-    // A.swf into _level0 and B.swf into _level1 and proloading for A.swf takes more 
+    // A.swf into _level0 and B.swf into _level1 and preloading for A.swf takes more 
     // time then for B.swf . In this case B.swf will be loaded first and then unloaded 
     // by loading A.swf into _level0. This happens because we unload a level just after preloading
     // has finished and unloading of _level0 unloads all everything in the swf movie
@@ -1020,27 +1001,16 @@ void    MovieImpl::SetViewport(const Viewport& viewDesc)
     // MOOSE TODO, 3D doesn't use this, it would be better if this was part of renderHal Viewport matrix
     pRenderRoot->SetMatrix(ViewportMatrix);
 
-#if defined(SF_SHOW_WATERMARK)
-    // The * 10.0f is a bit odd, but it's to avoid doing a / 2.0f followed by a * 20.0f.
-    if(pWMCopyrightText)
+#if defined (SF_BUILD_CONSUMER)
+    if (GetWmrkResult().isWMRK)
     {
-        float width = SFstrlen(SF_WATERMARK_TEXT_LINE1) * 6.0f; // We're using a 6x13 fixed-width font
-        pWMCopyrightText->SetBounds(VisibleFrameRect);
-        pWMCopyrightText->SetMatrix(Matrix2F::Translation((mViewport.Width - width) * 10.0f, (mViewport.Height - 45.0f) * 10.0f).AppendScaling(ViewScaleX, ViewScaleY));
-    }
-
-    if(pWMWarningText)
-    {
-        float width = SFstrlen(SF_WATERMARK_TEXT_LINE2) * 6.0f; // We're using a 6x13 fixed-width font
-        pWMWarningText->SetBounds(VisibleFrameRect);
-        pWMWarningText->SetMatrix(Matrix2F::Translation((mViewport.Width - width) * 10.0f, (mViewport.Height - 15.0f) * 10.0f).AppendScaling(ViewScaleX, ViewScaleY));
-    }
-
-    if(pWMDateText)
-    {
-        float width = SFstrlen(SF_WATERMARK_TEXT_LINE3) * 6.0f; // We're using a 6x13 fixed-width font
-        pWMDateText->SetBounds(VisibleFrameRect);
-        pWMDateText->SetMatrix(Matrix2F::Translation((10) * 10.0f, ((mViewport.Height*2)-15) * 10.0f).AppendScaling(ViewScaleX, ViewScaleY));
+        // The * 10.0f is a bit odd, but it's to avoid doing a / 2.0f followed by a * 20.0f.
+        if(pWMDateText)
+        {
+            float width = SFstrlen(SF_WATERMARK_TEXT_LINE3) * 6.0f; // We're using a 6x13 fixed-width font
+            pWMDateText->SetBounds(VisibleFrameRect);
+            pWMDateText->SetMatrix(Matrix2F::Translation((mViewport.Width - width) * 10.0f, (mViewport.Height + 15.0f) * 10.0f).AppendScaling(ViewScaleX, ViewScaleY));
+        }
     }
 #endif
 }
@@ -1231,11 +1201,9 @@ void MovieImpl::MakeViewAndPersp3D(Matrix3F *matView, Matrix4F *matPersp,
                                    float focalLength,                       // this is normally computed automatically, but the computed value can be overridden here 
                                    bool bInvertY)                           // if the Y axis should be inverted
 {
+    float displayWidth = (float)(fabs(frameRect.Width()));
     const float nearZ = focalLength ? focalLength / 100.0f : 1.0f;
-    const float farZ  = focalLength ? focalLength * 100.0f : 100000.0f;
-
-    float displayWidth = fabs(frameRect.Width());
-//    float displayHeight= fabs(frameRect.Height());
+    const float farZ  = focalLength ? focalLength * 100.0f : Alg::Max(displayWidth, 100000.0f);
 
     float r = frameRect.x2 - projCenter.x;
     float l = -(projCenter.x - frameRect.x1);
@@ -1433,6 +1401,13 @@ float MovieImpl::Advance(float deltaT, unsigned frameCatchUpCount, bool capture)
     SF_AMP_SCOPE_TIMER_ID(AdvanceStats, "MovieImpl::Advance", Amp_Native_Function_Id_Advance);
 #endif
 
+#if defined (SF_BUILD_CONSUMER)    
+    if (HandleExpiredEval(this))
+    {
+        return 1.0f / 60.0f;
+    }
+#endif //SF_BUILD_CONSUMER
+
     if (G_IsFlagSet<Flag_Paused>(Flags))
     {   // Call capture anyway, since Invoke could've changed things.
         if (capture)
@@ -1560,6 +1535,12 @@ float MovieImpl::Advance(float deltaT, unsigned frameCatchUpCount, bool capture)
         pdefNode = pdefNode->pNext;
     }
 
+	if (pMainMovieDef->GetLoadingFrame() == 0)
+	{
+		// Main movie first frame not loaded yet. We are not ready to advance
+		return 0;
+	}
+
     // Notify TextField that states changed
     if (stateChangeFlag || AreRegisteredFontsChanged())
     {
@@ -1608,6 +1589,7 @@ float MovieImpl::Advance(float deltaT, unsigned frameCatchUpCount, bool capture)
 
     if (IntervalTimers.GetSize() > 0)
     {
+        UInt64 minDeltaMicroSecs = static_cast<UInt64>(minDelta * 1000000.f);
         UPInt i, n;
         unsigned needCompress = 0;
         for (i = 0, n = IntervalTimers.GetSize(); i < n; ++i)
@@ -1616,12 +1598,16 @@ float MovieImpl::Advance(float deltaT, unsigned frameCatchUpCount, bool capture)
             {
                 IntervalTimers[i]->Invoke(this, FrameTime);
 
-                float delta = float((IntervalTimers[i]->GetNextInvokeTime() - TimeElapsed))/1000000.f;
-                if (delta < minDelta)
-                    minDelta = delta;
+                UInt64 delta = IntervalTimers[i]->GetNextInvokeTime() - TimeElapsed;
+                if (delta < minDeltaMicroSecs)
+                {
+                    minDeltaMicroSecs = delta;
+                }
             }
             else
+            {
                 ++needCompress;
+            }
         }
         if (needCompress)
         {
@@ -1639,6 +1625,7 @@ float MovieImpl::Advance(float deltaT, unsigned frameCatchUpCount, bool capture)
                     ++j;
             }
         }
+        minDelta = minDeltaMicroSecs * 1000000.f;
     }
 #ifdef GFX_ENABLE_VIDEO
     if (VideoProviders.GetSize() > 0)
@@ -1962,6 +1949,18 @@ void MovieImpl::ProcessInput()
                 ProcessGesture(qe);
             }
 #endif
+			else if (qe->IsStatusEntry())
+			{
+				ProcessStatus(qe);
+			}
+			else if (qe->IsAccelerometerEntry())
+			{
+				ProcessAccelerometer(qe);
+			}
+			else if (qe->IsGeolocationEntry())
+			{
+				ProcessGeolocation(qe);
+			}
         }
 
         if (G_IsFlagSet<Flag_NeedMouseUpdate>(Flags) && (miceProceededMask & miceSupportedMask) != miceSupportedMask)
@@ -2003,6 +2002,45 @@ void    MovieImpl::ProcessGamePadAnalog(const InputEventsQueue::QueueEntry* qe)
     pASMovieRoot->NotifyGamePadAnalogEvent(&eventId);
 }
 #endif  // GFX_ENABLE_ANALOG_GAMEPAD
+
+void MovieImpl::ProcessStatus(const InputEventsQueue::QueueEntry* qe)
+{
+    SF_AMP_SCOPE_TIMER(AdvanceStats, "MovieImpl::ProcessStatus", Amp_Profile_Level_Medium);
+
+    const InputEventsQueue::QueueEntry::StatusEntry& sEntry = qe->GetStatusEntry();
+    
+	StatusEventId eventId(sEntry.Code, sEntry.Level, sEntry.ExtensionId, sEntry.ContextId);
+
+    pASMovieRoot->NotifyStatusEvent(&eventId);
+}
+
+
+void MovieImpl::ProcessAccelerometer(const InputEventsQueue::QueueEntry* qe)
+{
+    SF_AMP_SCOPE_TIMER(AdvanceStats, "MovieImpl::ProcessAccelerometer", Amp_Profile_Level_Medium);
+
+    const InputEventsQueue::QueueEntry::AccelerometerEntry& aEntry = qe->GetAccelerometerEntry();
+    
+	AccelerometerEventId eventId(aEntry.IdAcc, aEntry.Timestamp, aEntry.AccelerationX, aEntry.AccelerationY, aEntry.AccelerationZ);
+
+    pASMovieRoot->NotifyAccelerometerEvent(&eventId, aEntry.IdAcc);
+}
+
+
+void MovieImpl::ProcessGeolocation(const InputEventsQueue::QueueEntry* qe)
+{
+    SF_AMP_SCOPE_TIMER(AdvanceStats, "MovieImpl::ProcessGeolocation", Amp_Profile_Level_Medium);
+
+    const InputEventsQueue::QueueEntry::GeolocationEntry& gEntry = qe->GetGeolocationEntry();
+
+	/* Global Geolocation Status Event */
+	//if (gEntry.IdGeo < 0)
+		//pASMovieRoot->NotifyGeolocationStatusEvent(gEntry.IdGeo);
+
+	GeolocationEventId eventId(gEntry.IdGeo, gEntry.Latitude, gEntry.Longitude, gEntry.Altitude, gEntry.HAccuracy, gEntry.VAccuracy, gEntry.Speed, gEntry.Heading, gEntry.Timestamp);
+
+    pASMovieRoot->NotifyGeolocationEvent(&eventId, gEntry.IdGeo);
+}
 
 void MovieImpl::ProcessKeyboard(const InputEventsQueue::QueueEntry* qe, 
                                 ProcessFocusKeyInfo* focusKeyInfo)
@@ -2081,9 +2119,15 @@ void MovieImpl::ProcessMouse(const InputEventsQueue::QueueEntry* qe, UInt32* mic
         GetTopMostEntity(qe->GetMouseEntry().GetPosition(), mi, avm2);
     mMouseState[mi].SetTopmostEntity(ptopMouseCharacter);    
 
-    /*//Debug code
+    if (GetDraggingCharacter(mi))
+    {
+        GetDraggingCharacter(mi)->DoMouseDrag(mi);
+    }
+
+    /*
+    //Debug code
     static unsigned lastState = 0;
-    printf("Mouse Position: %5.2f, %5.2f\n", qe->GetMouseEntry().GetPosition().x, qe->GetMouseEntry().GetPosition().y );
+    //printf("Mouse Position: %5.2f, %5.2f\n", qe->GetMouseEntry().GetPosition().x, qe->GetMouseEntry().GetPosition().y );
     if (mMouseState[mi].GetButtonsState() != (lastState & 1)) 
     {
         if (ptopMouseCharacter)  //?
@@ -2093,10 +2137,10 @@ void MovieImpl::ProcessMouse(const InputEventsQueue::QueueEntry* qe, UInt32* mic
     } 
     if (ptopMouseCharacter)  //?
     {
-        printf("? %s\n", ptopMouseCharacter->GetCharacterHandle()->GetNamePath().ToCStr());
+        printf("? %p %s\n", ptopMouseCharacter, ptopMouseCharacter->GetCharacterHandle()->GetNamePath().ToCStr());
     }
     lastState = mMouseState[mi].GetButtonsState();
-	*/
+    */
 
 #ifndef SF_NO_IME_SUPPORT
     unsigned buttonsState = mMouseState[mi].GetButtonsState();
@@ -2182,10 +2226,17 @@ void MovieImpl::GetDragState(unsigned mouseIndex, DragState* st)
     *st = CurrentDragStates[mouseIndex]; 
 }
 
+void MovieImpl::SetDragStateTopmostEntity(unsigned mouseIndex, InteractiveObject* topmostEntity)
+{
+    SF_ASSERT(mouseIndex < GFX_MAX_MICE_SUPPORTED);
+    CurrentDragStates[mouseIndex].pTopmostEntity = topmostEntity;
+}
+
 void MovieImpl::StopDrag(unsigned mouseIndex)                    
 { 
     SF_ASSERT(mouseIndex < GFX_MAX_MICE_SUPPORTED);
     CurrentDragStates[mouseIndex].pCharacter = NULL; 
+    CurrentDragStates[mouseIndex].pTopmostEntity = NULL;
     CurrentDragStates[mouseIndex].MouseIndex = ~0u; 
 }
 
@@ -2196,6 +2247,7 @@ void MovieImpl::StopDragCharacter(const InteractiveObject* ch)
         if (CurrentDragStates[i].pCharacter == ch)
         {
             CurrentDragStates[i].pCharacter = NULL; 
+            CurrentDragStates[i].pTopmostEntity = NULL;
             CurrentDragStates[i].MouseIndex = ~0u; 
         }
     }
@@ -2206,6 +2258,7 @@ void MovieImpl::StopAllDrags()
     for (unsigned i = 0; i < GFX_MAX_MICE_SUPPORTED; ++i)
     {
         CurrentDragStates[i].pCharacter = NULL; 
+        CurrentDragStates[i].pTopmostEntity = NULL;
         CurrentDragStates[i].MouseIndex = ~0u; 
     }
 }
@@ -2220,20 +2273,6 @@ bool MovieImpl::IsDraggingMouseIndex(unsigned mouseIndex) const
 {
     SF_ASSERT(mouseIndex < GFX_MAX_MICE_SUPPORTED);
     return CurrentDragStates[mouseIndex].MouseIndex == mouseIndex;
-}
-
-bool MovieImpl::IsDraggingCharacter(const InteractiveObject* ch, unsigned* pmouseIndex) const 
-{ 
-    for (unsigned i = 0; i < GFX_MAX_MICE_SUPPORTED; ++i)
-    {
-        if (CurrentDragStates[i].pCharacter == ch)
-        {
-            if (pmouseIndex)
-                *pmouseIndex = i;
-            return true;
-        }
-    }
-    return false;
 }
 
 #ifdef GFX_MULTITOUCH_SUPPORT_ENABLE
@@ -2310,6 +2349,11 @@ void MovieImpl::ProcessTouch(const InputEventsQueue::QueueEntry* qe,
     Ptr<InteractiveObject> ptopMouseCharacter = GetTopMostEntity(te.GetPosition(), mi, true);
     mMouseState[mi].SetTopmostEntity(ptopMouseCharacter);    
 
+    if (GetDraggingCharacter(mi))
+    {
+        GetDraggingCharacter(mi)->DoMouseDrag(mi);
+    }
+
     /*//Debug code
     static unsigned lastState = 0;
     printf("Mouse Position: %5.2f, %5.2f\n", qe->GetMouseEntry().GetPosition().x, qe->GetMouseEntry().GetPosition().y );
@@ -2326,59 +2370,8 @@ void MovieImpl::ProcessTouch(const InputEventsQueue::QueueEntry* qe,
     }
     lastState = mMouseState[mi].GetButtonsState();
     */
-/*
-    // Send mouse events.
-    EventId::IdCode buttonEvent = EventId::Event_Invalid;
-    if (qe->GetMouseEntry().IsButtonsStateChanged() && qe->GetMouseEntry().IsLeftButton())
-    {
-        buttonEvent = (qe->GetMouseEntry().IsAnyButtonPressed()) ?
-            EventId::Event_MouseDown : EventId::Event_MouseUp;
-    }
 
-    for (unsigned movieIndex = (unsigned)MovieLevels.GetSize(); movieIndex > 0; movieIndex--)
-    {
-        InteractiveObject* pmovie = MovieLevels[movieIndex-1].pSprite;
-        ButtonEventId evt(buttonEvent, mi);
-        evt.MouseWheelDelta = qe->GetMouseEntry().WheelScrollDelta;
-
-        // Send mouse up/down events.
-        if (buttonEvent != EventId::Event_Invalid)
-            pmovie->PropagateMouseEvent(ButtonEventId(buttonEvent, mi));
-        // Send move.
-        if (mMouseState[mi].IsMouseMoved())
-        {
-            pmovie->PropagateMouseEvent(ButtonEventId(EventId::Event_MouseMove, mi));
-        }
-    }
-    if ((!IsDisableFocusAutoReleaseByMouseClick() && qe->GetMouseEntry().IsButtonsStateChanged()) ||
-        (!IsDisableFocusAutoRelease() && mMouseState[mi].IsMouseMoved()))
-    {
-        HideFocusRect(mi);
-    }
-
-    if (qe->GetMouseEntry().IsMouseWheel())
-    {
-        // no need to propagate the mouse wheel, just sent 
-        if (ptopMouseCharacter)
-            ptopMouseCharacter->OnMouseWheelEvent(qe->GetMouseEntry().WheelScrollDelta);
-    }
-
-    pASMovieRoot->NotifyMouseEvent(qe, mMouseState[mi], mi);
-
-    // check for necessity of changing cursor
-    CheckMouseCursorType(mi, ptopMouseCharacter);
-*/
-    // Send onKillFocus, if necessary
-    if (qe->GetMouseEntry().IsAnyButtonPressed() && qe->GetMouseEntry().IsLeftButton())
-    {
-        Ptr<InteractiveObject> curFocused = GetFocusGroup(mi).LastFocused;
-        if (ptopMouseCharacter != curFocused)
-        {
-            QueueSetFocusTo(ptopMouseCharacter, ptopMouseCharacter, mi, GFx::GFx_FocusMovedByMouse);
-        }
-    }
-
-    pASMovieRoot->GenerateTouchEvents(mi);
+	pASMovieRoot->GenerateTouchEvents(mi);
 
     if (te.Type == InputEventsQueueEntry::Touch_End)
         mMouseState[mi].ResetTouchID();
@@ -2394,16 +2387,16 @@ void MovieImpl::ProcessGesture(const InputEventsQueue::QueueEntry* qe)
 
     const InputEventsQueueEntry::GestureEntry& ge = qe->GetGestureEntry();
 
-    if (ge.Phase == InputEventsQueueEntry::Phase_Begin)
+    if (ge.Phase == InputEventsQueueEntry::Phase_Begin || ge.Phase == InputEventsQueueEntry::Phase_All)
     {
         GestureTopMostChar = GetTopMostEntity(ge.GetPosition(), 0, true);
     }
-
+	
     pASMovieRoot->GenerateGestureEvents(GestureTopMostChar, ge.Phase, 
         PointF(ge.PosX, ge.PosY), PointF(ge.OffsetX, ge.OffsetY), 
         PointF(ge.ScaleX, ge.ScaleY), ge.Rotation, ge.GestureMask);
 
-    if (ge.Phase == InputEventsQueueEntry::Phase_End)
+    if (ge.Phase == InputEventsQueueEntry::Phase_End || ge.Phase == InputEventsQueueEntry::Phase_All)
     {
         GestureTopMostChar = NULL;
     }
@@ -2441,10 +2434,15 @@ void MovieImpl::AdvanceFrame(bool nextFrame, float framePos)
         // uncomment if necessary @DBG
         //CheckPlaylistConsistency();
 
-        InteractiveObject* pnextCh;
-        for (InteractiveObject* pcurCh = pPlayListHead; pcurCh; pcurCh = pnextCh)
+        Array<Ptr<InteractiveObject> > playList;
+        for (InteractiveObject* pcurCh = pPlayListHead; pcurCh != NULL; pcurCh = pcurCh->pPlayNext)
         {
-            pnextCh = pcurCh->pPlayNext;
+            playList.PushBack(pcurCh);
+        }
+        for (UPInt i = 0; i < playList.GetSize(); ++i)
+        {
+            InteractiveObject* pcurCh = playList[i];
+            InteractiveObject* pnextCh = pcurCh->pPlayNext;
             SIMD::IS::PrefetchObj(pnextCh);
 
             // A previous calls to AdvanceFrame may make some character 'valid' optlist members.
@@ -2483,13 +2481,19 @@ void MovieImpl::AdvanceFrame(bool nextFrame, float framePos)
     else
     {
         SIMD::IS::PrefetchObj(pPlayListOptHead);
-        InteractiveObject* pnextCh;// = NULL;
-        for (InteractiveObject* pcurCh = pPlayListOptHead; pcurCh; pcurCh = pnextCh)
+        Array<Ptr<InteractiveObject> > playList;
+        for (InteractiveObject* pcurCh = pPlayListOptHead; pcurCh != NULL; pcurCh = pcurCh->pPlayNextOpt)
         {
+            playList.PushBack(pcurCh);
+        }
+        for (UPInt i = 0; i < playList.GetSize(); ++i)
+        {
+            InteractiveObject* pcurCh = playList[i];
+
             SF_ASSERT(!pcurCh->IsUnloaded());
             SF_ASSERT(pcurCh->IsOptAdvListFlagSet());
 
-            pnextCh = pcurCh->pPlayNextOpt;
+            InteractiveObject* pnextCh = pcurCh->pPlayNextOpt;
             SIMD::IS::PrefetchObj(pnextCh);
 
             if (pcurCh->IsMarkedToRemoveFromOptimizedPlayList())
@@ -2622,6 +2626,8 @@ void MovieImpl::CheckOptPlaylistConsistency(InteractiveObject* mustBeInList,
 }
 void MovieImpl::CheckPlaylistConsistency(bool enforce)
 {
+    //SF_UNUSED(enforce);
+    //return ;
     if (!enforce && _PLCheckCnt++ >= PLCheckCnt_Limit_Per_Frame)
         return;
     if (pPlayListHead)
@@ -2766,6 +2772,9 @@ unsigned  MovieImpl::HandleEvent(const Event &event)
         const IMEEvent *     pimeEvent;
 #endif
         const SetFocusEvent* pfocusEvent;
+		const AccelerometerEvent* paccelerometerEvent;
+		const GeolocationEvent* pgeolocationEvent;
+		const StatusEvent* pstatusEvent;
     };
     pevent = &event;
 
@@ -2909,7 +2918,7 @@ unsigned  MovieImpl::HandleEvent(const Event &event)
                 default:;
                 }
             }
-            InputEventsQueue.AddKeyDown((short)pkeyEvent->KeyCode, pkeyEvent->AsciiCode, 
+            InputEventsQueue.AddKeyDown(pkeyEvent->KeyCode, pkeyEvent->AsciiCode, 
                                         pkeyEvent->Modifiers, pkeyEvent->KeyboardIndex);
             if (pkeyEvent->WcharCode == 13 || (pkeyEvent->WcharCode >= 32 && pkeyEvent->WcharCode != 127))
             {
@@ -2951,7 +2960,7 @@ unsigned  MovieImpl::HandleEvent(const Event &event)
                 default:;
                 }
             }
-            InputEventsQueue.AddKeyUp((short)pkeyEvent->KeyCode, pkeyEvent->AsciiCode, 
+            InputEventsQueue.AddKeyUp(pkeyEvent->KeyCode, pkeyEvent->AsciiCode, 
                 pkeyEvent->Modifiers, pkeyEvent->KeyboardIndex);
             return HE_Completed;
         }
@@ -3033,34 +3042,35 @@ unsigned  MovieImpl::HandleEvent(const Event &event)
                 {
 				case Event::TouchBegin: 
 					tt = InputEventsQueueEntry::Touch_Begin; 
-
-					#ifdef GFX_GESTURE_RECOGNIZE
-						GestureRecognizer.parent = this;
-						GestureRecognizer.AddTouchBegin(ptouchEvent->TouchPointID, pt, sz, ptouchEvent->Pressure, ptouchEvent->PrimaryPoint);
-					#endif
-
-					break;
-				case Event::TouchEnd:  
-					tt = InputEventsQueueEntry::Touch_End; 
-					
-					#ifdef GFX_GESTURE_RECOGNIZE
-						GestureRecognizer.parent = this;
-						GestureRecognizer.AddTouchEnd(ptouchEvent->TouchPointID, pt, sz, ptouchEvent->Pressure, ptouchEvent->PrimaryPoint);
-					#endif
-
-					break;
+                    break;
+                case Event::TouchEnd:  
+                    tt = InputEventsQueueEntry::Touch_End; 
+                    break;
                 case Event::TouchMove:  
-					tt = InputEventsQueueEntry::Touch_Move; 
-
-					#ifdef GFX_GESTURE_RECOGNIZE
-						GestureRecognizer.parent = this;
-						GestureRecognizer.AddTouchMove(ptouchEvent->TouchPointID, pt, sz, ptouchEvent->Pressure, ptouchEvent->PrimaryPoint);
-					#endif
-
-					break;
+                    tt = InputEventsQueueEntry::Touch_Move; 
+                    break;
                 default: SF_ASSERT(0);  tt = InputEventsQueueEntry::Touch_End;
-                }
+                    }
                 InputEventsQueue.AddTouchEvent(tt, ptouchEvent->TouchPointID, pt, sz, ptouchEvent->Pressure, ptouchEvent->PrimaryPoint);
+                /*
+                // If we are using the Scaleform Gesture Recognizer, report with these touch points
+                #ifdef GFX_GESTURE_RECOGNIZE
+                    GestureRecognizer.parent = this;
+                    switch(event.Type)
+                    {
+                    case Event::TouchBegin: 
+                        GestureRecognizer.AddTouchBegin(ptouchEvent->TouchPointID, pt);
+                        break;
+                    case Event::TouchMove:  
+                        GestureRecognizer.AddTouchMove(ptouchEvent->TouchPointID, pt);
+                        break;
+                    case Event::TouchEnd:  
+                    default: 
+                        GestureRecognizer.AddTouchEnd(ptouchEvent->TouchPointID, pt);
+                        break;
+                    }
+                #endif // GFX_GESTURE_RECOGNIZE
+                */
                 return HE_Completed;
             }
             break;
@@ -3100,6 +3110,42 @@ unsigned  MovieImpl::HandleEvent(const Event &event)
             break;
         }
 #endif
+
+	case Event::Accelerometer:
+        {
+            SF_DEBUG_WARNING(event.EventClassSize != sizeof(AccelerometerEvent),
+                "AccelerometerEvent class required for accelerometer events");
+            //pASMovieRoot->OnAccelerometerEvent(*paccelerometerEvent);
+
+			  InputEventsQueue.AddAccelerometerEvent(paccelerometerEvent->idAcc, paccelerometerEvent->timestamp,
+				  paccelerometerEvent->accelerationX, paccelerometerEvent->accelerationY,
+				  paccelerometerEvent->accelerationZ);
+
+            return HE_Completed;
+		}
+
+		case Event::Geolocation:
+        {
+            SF_DEBUG_WARNING(event.EventClassSize != sizeof(GeolocationEvent),
+                "GeolocationEvent class required for geolocation events");
+
+			InputEventsQueue.AddGeolocationEvent(pgeolocationEvent->idGeo, pgeolocationEvent->latitude, 
+				pgeolocationEvent->longitude, pgeolocationEvent->altitude, pgeolocationEvent->hAccuracy, 
+				pgeolocationEvent->vAccuracy, pgeolocationEvent->speed, pgeolocationEvent->heading, 
+				pgeolocationEvent->timestamp);
+
+            return HE_Completed;
+		}
+
+		case Event::Status:
+        {
+            SF_DEBUG_WARNING(event.EventClassSize != sizeof(StatusEvent),
+                "StatusEvent class required for status events");
+
+			InputEventsQueue.AddStatusEvent(pstatusEvent->code, pstatusEvent->level, pstatusEvent->extensionId, pstatusEvent->contextId);
+
+            return HE_Completed;
+		}
 
 #ifdef GFX_ENABLE_MOBILE_APP_SUPPORT
     case Event::AppLifecycle:
@@ -3321,6 +3367,10 @@ bool    MovieImpl::ReleaseLevelMovie(int level)
 
         ShutdownTimers();
 
+        Ptr<InteractiveObject> level0 = (MovieLevels.GetSize()) ? 
+            static_cast<InteractiveObject*>(MovieLevels[0].pSprite.GetPtr()) : 
+            static_cast<InteractiveObject*>(NULL);
+
         // Not sure if this unload order is OK
         while (MovieLevels.GetSize())
         {
@@ -3331,6 +3381,18 @@ bool    MovieImpl::ReleaseLevelMovie(int level)
             MovieLevels.RemoveAt(MovieLevels.GetSize() - 1);
         }
 
+        // delete all rendernodes
+        TreeNode* treeNode = level0->GetRenderNode();
+        if (treeNode)
+        {
+            TreeContainer* parentNode = static_cast<TreeContainer*>(treeNode->GetParent());
+            if (parentNode)
+            {
+                parentNode->Remove(0, parentNode->GetSize());
+            }
+        }
+        level0 = NULL;
+
         // Clear vars.
         pMainMovie = NULL;   
         FrameTime    = 1.0f / 12.0f;        
@@ -3339,6 +3401,7 @@ bool    MovieImpl::ReleaseLevelMovie(int level)
         //  pStateBag->SetDelegate(0);
 
         G_SetFlag<Flag_LevelClipsChanged>(Flags, true);
+
         return 1;
     }
 
@@ -3360,6 +3423,18 @@ bool    MovieImpl::ReleaseLevelMovie(int level)
             MovieLevels.RemoveAt(i);
 
             G_SetFlag<Flag_LevelClipsChanged>(Flags, true);
+
+            // delete the rendernode
+            TreeNode* treeNode = plevel->GetRenderNode();
+            if (treeNode)
+            {
+                TreeContainer* parentNode = static_cast<TreeContainer*>(treeNode->GetParent());
+                if (parentNode)
+                {
+                    SF_ASSERT(parentNode->GetAt(i) == treeNode);
+                    parentNode->Remove(i, 1);
+                }
+            }
             return 1;
         }
     }   
@@ -3494,10 +3569,11 @@ void    MovieImpl::Restart(bool advance0)
         // reset mouse state and cursor
         if (pUserEventHandler)
         {
-            for (unsigned i = 0; i < MouseCursorCount; ++i)
+            // i change to i_inner: Fix Warning 4456
+            for (unsigned i_inner = 0; i_inner < MouseCursorCount; ++i_inner)
             {
-                pUserEventHandler->HandleEvent(this, MouseCursorEvent(Event::DoShowMouse, i));
-                pUserEventHandler->HandleEvent(this, MouseCursorEvent(MouseCursorEvent::ARROW, i));
+                pUserEventHandler->HandleEvent(this, MouseCursorEvent(Event::DoShowMouse, i_inner));
+                pUserEventHandler->HandleEvent(this, MouseCursorEvent(MouseCursorEvent::ARROW, i_inner));
             }
         }
 
@@ -3629,7 +3705,7 @@ void MovieImpl::AddStickyVariableNode(const ASString& path, StickyVarNode* p)
     if (StickyVariables.Get(path, &pnode) && pnode)
     {
         MovieImpl::StickyVarNode* pcur  = pnode;
-        MovieImpl::StickyVarNode* pprev = NULL;
+        //MovieImpl::StickyVarNode* pprev = NULL;
 
         while (pcur)
         {
@@ -3640,7 +3716,7 @@ void MovieImpl::AddStickyVariableNode(const ASString& path, StickyVarNode* p)
                 delete p;
                 return;
             }
-            pprev = pcur;
+            //pprev = pcur;
             pcur = pcur->pNext;
         };
 
@@ -3697,7 +3773,7 @@ void        MovieImpl::OnMovieFocus(bool set)
     Ptr<IMEManagerBase> pIMEManager = GetIMEManager();
     if (pIMEManager)
     {
-        pIMEManager->SetActiveMovie(this);
+        pIMEManager->SetActiveMovie(set?this:NULL);
     }
 #endif //#ifdef SF_NO_IME_SUPPORT
     pASMovieRoot->OnMovieFocus(set);
@@ -4852,9 +4928,15 @@ void   MovieImpl::ScheduleGC(unsigned gcFlags)
 
 void   MovieImpl::PrintObjectsReport(UInt32 flags, 
                                      Log* log,  
-                                     const char* swfName)
+                                     const char* swfName,
+                                     Ptr<AmpMovieObjectDesc>* root,
+                                     MemoryHeap* heap)
 {
     pASMovieRoot->PrintObjectsReport(flags, log, swfName);
+    if (root != NULL)
+    {
+        *root = *pASMovieRoot->GetDisplayObjectsTree(heap);
+    }
 }
 
 // Sets a movie at level; used for initialization.
@@ -5160,7 +5242,7 @@ FontManager* MovieImpl::FindFontManager(MovieDefImpl* pdefImpl)
     MovieDefRootNode *pdefNode = RootMovieDefNodes.GetFirst();
     while(!RootMovieDefNodes.IsNull(pdefNode))
     {   
-        if (pdefNode->pDefImpl == pdefImpl && pdefNode->pFontManager)
+        if ((pdefNode->pDefImpl == pdefImpl || !pdefImpl) && pdefNode->pFontManager)
             return pdefNode->pFontManager;
 
         pdefNode = pdefNode->pNext;
@@ -5240,6 +5322,9 @@ String GFx::Value::ToString() const
     case VT_Object:
     case VT_Array:
     case VT_DisplayObject:
+#ifdef GFX_AS3_SUPPORT
+    case VT_Closure:
+#endif
         {               
             pObjectInterface->ToString(&retVal, *this);
         }
@@ -5253,19 +5338,19 @@ String GFx::Value::ToString() const
     return retVal;
 }
 
-const wchar_t* GFx::Value::ToStringW(wchar_t* pwstr, UPInt len) const
+const wchar_t* GFx::Value::ToStringW(wchar_t* pwstr, UPInt buffSz) const
 {
     switch(GetType())
     {
     case VT_StringW:
         {
-            SFwcscpy(pwstr, len, GetStringW());
+            SFwcscpy(pwstr, buffSz, GetStringW());
             return pwstr;
         }
         break;
     default:
         {
-            UTF8Util::DecodeString(pwstr, ToString().ToCStr());   
+            UTF8Util::DecodeStringSafe(pwstr, buffSz, ToString().ToCStr());   
         }
         break;
     }
@@ -5375,16 +5460,81 @@ void MovieImpl::ProcessMovieDefToKillList()
     if (MovieDefKillList.GetSize() > 0)
     {
         UInt64 finFrId = RenderContext.GetFinalizedFrameId();
-        for (UPInt i = 0; i < MovieDefKillList.GetSize(); ++i)
+        for (UPInt i = 0; i < MovieDefKillList.GetSize(); )
         {
             if (finFrId > MovieDefKillList[i].KillFrameId)
             {
                 MovieDefKillList.RemoveAt(i);
-                return;
+                continue;
             }
+            ++i;
         }
     }
 }
+
+#ifdef SF_ENABLE_ANE			
+// Extension context
+bool MovieImpl::Call(const char* extensionID, const char* contextID, const char* methodName, unsigned argc, const Value* const argv, Value* const result)
+{
+    Ptr<ExtensionContextInterface> ec = GetExtensionContextInterface();
+    if (ec)
+    {
+		return ec->Call(extensionID, contextID, methodName, argc, argv, result);
+    }
+
+	return false;
+}
+
+const char* MovieImpl::GetExtensionDirectory(const char* extensionID)
+{
+    Ptr<ExtensionContextInterface> ec = GetExtensionContextInterface();
+    if (ec)
+    {
+		return ec->GetExtensionDirectory(extensionID);
+    }
+
+	return NULL;
+}
+
+void MovieImpl::InitializeExtensionContext(const char* extensionID, const char* contextID)
+{
+    Ptr<ExtensionContextInterface> ec = GetExtensionContextInterface();
+    if (ec)
+    {
+		ec->InitializeExtensionContext(extensionID, contextID);
+    }
+}
+
+void MovieImpl::FinalizeExtensionContext(const char* extensionID, const char* contextID)
+{
+    Ptr<ExtensionContextInterface> ec = GetExtensionContextInterface();
+    if (ec)
+    {
+		ec->FinalizeExtensionContext(extensionID, contextID);
+    }
+}
+
+
+GFx::Value*	MovieImpl::GetActionScriptData(const char* extensionID, const char* contextID)
+{
+	Ptr<ExtensionContextInterface> ec = GetExtensionContextInterface();
+    if (ec)
+    {
+		return ec->GetActionScriptData(extensionID, contextID);
+    }
+
+	return NULL;
+}
+
+void MovieImpl::SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data)
+{
+	Ptr<ExtensionContextInterface> ec = GetExtensionContextInterface();
+    if (ec)
+    {
+		ec->SetActionScriptData(extensionID, contextID, data);
+    }
+}
+#endif
 
 MovieImpl::MultitouchInputMode MovieImpl::GetMultitouchInputMode() const
 {
@@ -5420,6 +5570,104 @@ UInt32 MovieImpl::GetSupportedGesturesMask() const
         return mi->GetSupportedGesturesMask();
     }    
     return 0;
+}
+
+bool MovieImpl::RegisterAccelerometer(int accelerometerId)
+{
+	Ptr<AccelerometerInterface> ai = GetAccelerometerInterface();
+    if (ai)
+    {
+        return ai->RegisterAccelerometer(accelerometerId);
+    }    
+    return false;
+}
+
+bool MovieImpl::UnregisterAccelerometer(int accelerometerId)
+{
+	Ptr<AccelerometerInterface> ai = GetAccelerometerInterface();
+    if (ai)
+    {
+        return ai->UnregisterAccelerometer(accelerometerId);
+    }    
+    return false;
+}
+
+bool MovieImpl::IsAccelerometerMuted() const
+{
+	Ptr<AccelerometerInterface> ai = GetAccelerometerInterface();
+    if (ai)
+    {
+        return ai->IsAccelerometerMuted();
+    }    
+    return false;
+}
+
+bool MovieImpl::IsAccelerometerSupported() const
+{
+	Ptr<AccelerometerInterface> ai = GetAccelerometerInterface();
+    if (ai)
+    {
+        return ai->IsAccelerometerSupported();
+    }    
+    return false;
+}
+
+void MovieImpl::SetAccelerometerInterval(int accelerometerId, int interval)
+{
+	Ptr<AccelerometerInterface> ai = GetAccelerometerInterface();
+    if (ai)
+    {
+        ai->SetAccelerometerInterval(accelerometerId, interval);
+    }
+}
+
+bool MovieImpl::RegisterGeolocation(int geolocationId)
+{
+	Ptr<GeolocationInterface> ai = GetGeolocationInterface();
+    if (ai)
+    {
+        return ai->RegisterGeolocation(geolocationId);
+    }    
+    return false;
+}
+
+bool MovieImpl::UnregisterGeolocation(int geolocationId)
+{
+	Ptr<GeolocationInterface> ai = GetGeolocationInterface();
+    if (ai)
+    {
+        return ai->UnregisterGeolocation(geolocationId);
+    }    
+    return false;
+}
+
+bool MovieImpl::IsGeolocationMuted() const
+{
+	Ptr<GeolocationInterface> ai = GetGeolocationInterface();
+    if (ai)
+    {
+        return ai->IsGeolocationMuted();
+    }    
+    return false;
+}
+
+bool MovieImpl::IsGeolocationSupported() const
+{
+	Ptr<GeolocationInterface> ai = GetGeolocationInterface();
+    if (ai)
+    {
+        return ai->IsGeolocationSupported();
+    }    
+    return false;
+}
+
+void MovieImpl::SetGeolocationInterval(int geolocationId, int interval)
+{
+	Ptr<GeolocationInterface> ai = GetGeolocationInterface();
+    if (ai)
+    {
+        ai->SetGeolocationInterval(geolocationId, interval);
+    }
 }
 
 MovieImpl::ReturnValueHolder* MovieImpl::GetRetValHolder()

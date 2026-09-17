@@ -11,6 +11,7 @@ visible by other player files should be placed
 in GFxCharacter.h.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -268,6 +269,45 @@ void InputEventsQueue::AddGestureEvent(GesturePhase phase, unsigned gestureMask,
 }
 
 #endif
+
+void InputEventsQueue::AddAccelerometerEvent(int idAcc, double timestamp, double accelerationX, double accelerationY, double accelerationZ)
+{
+    QueueEntry* pqe         = AddEmptyQueueEntry();
+    pqe->t                  = QueueEntry::QE_Accelerometer;
+    QueueEntry::AccelerometerEntry& accelerometerEntry = pqe->GetAccelerometerEntry();
+    accelerometerEntry.IdAcc = idAcc;
+	accelerometerEntry.Timestamp = timestamp;
+    accelerometerEntry.AccelerationX = accelerationX;
+    accelerometerEntry.AccelerationY = accelerationY;
+    accelerometerEntry.AccelerationZ = accelerationZ;
+}
+
+void InputEventsQueue::AddGeolocationEvent(int idGeo, double latitude, double longitude, double altitude, double hAccuracy, double vAccuracy, double speed, double heading, double timestamp)
+{
+    QueueEntry* pqe         = AddEmptyQueueEntry();
+    pqe->t                  = QueueEntry::QE_Geolocation;
+    QueueEntry::GeolocationEntry& geolocationEntry = pqe->GetGeolocationEntry();
+    geolocationEntry.IdGeo = idGeo;
+	geolocationEntry.Latitude = latitude;
+	geolocationEntry.Longitude = longitude;
+	geolocationEntry.Altitude = altitude;
+	geolocationEntry.HAccuracy = hAccuracy;
+	geolocationEntry.VAccuracy = vAccuracy;
+	geolocationEntry.Speed = speed;
+	geolocationEntry.Heading = heading;
+	geolocationEntry.Timestamp = timestamp;
+}
+
+void InputEventsQueue::AddStatusEvent(String* code, String* level, String* extensionId, String* contextId)
+{
+    QueueEntry* pqe         = AddEmptyQueueEntry();
+    pqe->t                  = QueueEntry::QE_Status;
+    QueueEntry::StatusEntry& statusEntry = pqe->GetStatusEntry();
+	statusEntry.Code = code;
+	statusEntry.Level = level;
+	statusEntry.ExtensionId = extensionId;
+	statusEntry.ContextId = contextId;
+}
 
 const InputEventsQueue::QueueEntry* InputEventsQueue::GetEntry() 
 { 

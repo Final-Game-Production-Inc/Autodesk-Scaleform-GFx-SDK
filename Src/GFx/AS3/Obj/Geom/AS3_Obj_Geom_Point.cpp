@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_geom::Point, Instances::fl_geom::Point::mid_lengthGet, Value::Number> TFunc_Instances_Point_lengthGet;
 typedef ThunkFunc1<Instances::fl_geom::Point, Instances::fl_geom::Point::mid_add, SPtr<Instances::fl_geom::Point>, Instances::fl_geom::Point*> TFunc_Instances_Point_add;
 typedef ThunkFunc0<Instances::fl_geom::Point, Instances::fl_geom::Point::mid_clone, SPtr<Instances::fl_geom::Point> > TFunc_Instances_Point_clone;
@@ -177,15 +172,28 @@ namespace Instances { namespace fl_geom
 
 namespace InstanceTraits { namespace fl_geom
 {
+    // const UInt16 Point::tito[Point::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 8, 11, 13, 
+    // };
+    const TypeInfo* Point::tit[14] = {
+        &AS3::fl::NumberTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl_geom::PointTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Point::ti[Point::ThunkInfoNum] = {
-        {TFunc_Instances_Point_lengthGet::Func, &AS3::fl::NumberTI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Point_add::Func, &AS3::fl_geom::PointTI, "add", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Point_clone::Func, &AS3::fl_geom::PointTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Point_equals::Func, &AS3::fl::BooleanTI, "equals", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Point_normalize::Func, NULL, "normalize", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Point_offset::Func, NULL, "offset", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Point_subtract::Func, &AS3::fl_geom::PointTI, "subtract", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Point_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_Point_lengthGet::Func, &Point::tit[0], "length", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Point_add::Func, &Point::tit[1], "add", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Point_clone::Func, &Point::tit[3], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Point_equals::Func, &Point::tit[4], "equals", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Point_normalize::Func, &Point::tit[6], "normalize", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Point_offset::Func, &Point::tit[8], "offset", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Point_subtract::Func, &Point::tit[11], "subtract", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Point_toString::Func, &Point::tit[13], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
     const MemberInfo Point::mi[Point::MemberInfoNum] = {
         {"x", NULL, OFFSETOF(Instances::fl_geom::Point, x), Abc::NS_Public, SlotInfo::BT_Number, 0},
@@ -194,11 +202,10 @@ namespace InstanceTraits { namespace fl_geom
 
 
     Point::Point(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Point::Point()"
 //##protect##"InstanceTraits::Point::Point()"
-        SetMemSize(sizeof(Instances::fl_geom::Point));
 
     }
 
@@ -256,29 +263,40 @@ template <> const TFunc_Classes_Point_polar::TMethod TFunc_Classes_Point_polar::
 
 namespace ClassTraits { namespace fl_geom
 {
-    const ThunkInfo Point::ti[Point::ThunkInfoNum] = {
-        {TFunc_Classes_Point_distance::Func, &AS3::fl::NumberTI, "distance", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_Point_interpolate::Func, &AS3::fl_geom::PointTI, "interpolate", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Classes_Point_polar::Func, &AS3::fl_geom::PointTI, "polar", NULL, Abc::NS_Public, CT_Method, 2, 2},
+    // const UInt16 Point::tito[Point::ThunkInfoNum] = {
+    //    0, 3, 7, 
+    // };
+    const TypeInfo* Point::tit[10] = {
+        &AS3::fl::NumberTI, &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
     };
-    Point::Point(VM& vm)
-    : Traits(vm, AS3::fl_geom::PointCI)
+    const ThunkInfo Point::ti[Point::ThunkInfoNum] = {
+        {TFunc_Classes_Point_distance::Func, &Point::tit[0], "distance", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_Point_interpolate::Func, &Point::tit[3], "interpolate", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Classes_Point_polar::Func, &Point::tit[7], "polar", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+    };
+
+    Point::Point(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Point::Point()"
 //##protect##"ClassTraits::Point::Point()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_geom::Point(vm, AS3::fl_geom::PointCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_geom::Point(*this));
 
     }
 
     Pickable<Traits> Point::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Point(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Point(vm, AS3::fl_geom::PointCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_geom::PointCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -289,6 +307,11 @@ namespace fl_geom
 {
     const TypeInfo PointTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_geom::Point::InstanceType),
+        ClassTraits::fl_geom::Point::ThunkInfoNum,
+        0,
+        InstanceTraits::fl_geom::Point::ThunkInfoNum,
+        InstanceTraits::fl_geom::Point::MemberInfoNum,
         "Point", "flash.geom", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -296,10 +319,6 @@ namespace fl_geom
     const ClassInfo PointCI = {
         &PointTI,
         ClassTraits::fl_geom::Point::MakeClassTraits,
-        ClassTraits::fl_geom::Point::ThunkInfoNum,
-        0,
-        InstanceTraits::fl_geom::Point::ThunkInfoNum,
-        InstanceTraits::fl_geom::Point::MemberInfoNum,
         ClassTraits::fl_geom::Point::ti,
         NULL,
         InstanceTraits::fl_geom::Point::ti,

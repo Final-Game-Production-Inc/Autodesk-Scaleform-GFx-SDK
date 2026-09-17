@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -319,7 +320,7 @@ void    FontData::Read(LoadProcess* p, const TagInfo& tagInfo)
         UByte   langCode = pin->ReadU8(); // Language code
 
         // Inhibit warning.
-        langCode = langCode;
+        SF_UNUSED(langCode);
 
         Name = pin->ReadStringWithLength(p->GetLoadHeap());
 
@@ -598,7 +599,7 @@ void    FontData::ReadFontInfo(Stream* in, TagType tagType)
     if (tagType == Tag_DefineFontInfo2)
     {
         langCode = in->ReadU8(); // Language code
-        langCode = langCode; // suppress warning
+        SF_UNUSED(langCode); // suppress warning
     }
 
     bool pixelAlignedChars  =  ((flags & 0x20) != 0);
@@ -924,14 +925,20 @@ String FontData::GetCharRanges() const
 //
 struct Normalizer
 {
-    enum { FontHeight = 1024  };
+    enum { FontHeight = 1024 };
 
     Normalizer(unsigned nominalSize) : NominalSize(nominalSize) {}
 
     template<typename T>
-    inline T norm(T v) const { return v * FontHeight / T(NominalSize); }
+    inline T norm(T v) const {
+        // 显式将枚举/整型转为浮点类型（T通常是float）
+        return v * static_cast<T>(FontHeight) / static_cast<T>(NominalSize);
+    }
     template<typename T>
-    inline T denorm(T v) const { return v * T(NominalSize) / FontHeight; }
+    inline T denorm(T v) const {
+        // 同理，显式转换为T类型（float）后运算
+        return v * static_cast<T>(NominalSize) / static_cast<T>(FontHeight);
+    }
 
     unsigned    NominalSize;
 };
@@ -942,7 +949,7 @@ struct Normalizer
 template<class FontType>
 static bool GetGlyphShape(const FontType& font, unsigned glyphIndex, GlyphShape* shape)
 {
-    typedef typename FontType::ContainerType ContainerType;
+    // typedef typename FontType::ContainerType ContainerType;
     typedef typename FontType::CompactedFontType CompactedFontType;
 
     if (glyphIndex >= font.GetCompactedFont().GetNumGlyphs())
@@ -1119,7 +1126,7 @@ void FontDataCompactedSwf::Read(LoadProcess* p, const TagInfo& tagInfo)
         UByte   langCode = pin->ReadU8(); // Language code
 
         // Inhibit warning.
-        langCode = langCode;
+        SF_UNUSED(langCode);
 
         String name;
         pin->ReadStringWithLength(&name);        
@@ -1283,13 +1290,13 @@ void FontDataCompactedSwf::Read(LoadProcess* p, const TagInfo& tagInfo)
         if (AreWideCodes())
         {
             // Code table is made of UInt16's.
-            for (UPInt i = 0, n = NumGlyphs; i < n; i++)
+            for (UPInt i = 0, dn = NumGlyphs; i < dn; i++)
                 compactor.AssignGlyphCode((unsigned)i, pin->ReadU16());
         }
         else
         {
             // Code table is made of bytes.
-            for (UPInt i = 0, n = NumGlyphs; i < n; i++)
+            for (UPInt i = 0, dn = NumGlyphs; i < dn; i++)
                 compactor.AssignGlyphCode((unsigned)i, pin->ReadU8());
         }
 
@@ -1731,7 +1738,7 @@ public:
         pFontProvider   = pfontProvider;
     }
 
-    bool operator == (GFxSystemFontResourceKey& other) const
+    bool operator == (const GFxSystemFontResourceKey& other) const
     {
         return (FontName == other.FontName &&
                 pFontProvider == other.pFontProvider &&

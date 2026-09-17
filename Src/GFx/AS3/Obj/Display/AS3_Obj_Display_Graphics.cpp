@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Artem Bolgar, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -25,6 +26,16 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include <math.h>
 #include "../../../../Kernel/SF_Math.h"
 #include "../../../../Render/Render_ShapeDataDefs.h"
+
+#include "AS3_Obj_Display_IGraphicsData.h"
+#include "AS3_Obj_Display_IGraphicsFill.h"
+#include "AS3_Obj_Display_IGraphicsPath.h"
+#include "AS3_Obj_Display_GraphicsBitmapFill.h"
+#include "AS3_Obj_Display_GraphicsEndFill.h"
+#include "AS3_Obj_Display_GraphicsGradientFill.h"
+#include "AS3_Obj_Display_GraphicsPath.h"
+#include "AS3_Obj_Display_GraphicsSolidFill.h"
+#include "AS3_Obj_Display_GraphicsStroke.h"
 //##protect##"includes"
 
 
@@ -34,6 +45,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -52,7 +64,16 @@ namespace Impl
         return 1.0;
     }
 
+    template <>
+    SF_INLINE
+    ASString GetMethodDefArg<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawPath, 2, const ASString&>(AS3::StringManager& sm)
+    {
+        return sm.CreateConstString("evenOdd");
+    }
+
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc4<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_beginBitmapFill, const Value, Instances::fl_display::BitmapData*, Instances::fl_geom::Matrix*, bool, bool> TFunc_Instances_Graphics_beginBitmapFill;
 typedef ThunkFunc2<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_beginFill, const Value, UInt32, Value::Number> TFunc_Instances_Graphics_beginFill;
 typedef ThunkFunc2<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_beginGradientFill, Value, unsigned, const Value*> TFunc_Instances_Graphics_beginGradientFill;
@@ -60,6 +81,8 @@ typedef ThunkFunc0<Instances::fl_display::Graphics, Instances::fl_display::Graph
 typedef ThunkFunc4<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_curveTo, const Value, Value::Number, Value::Number, Value::Number, Value::Number> TFunc_Instances_Graphics_curveTo;
 typedef ThunkFunc3<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawCircle, const Value, Value::Number, Value::Number, Value::Number> TFunc_Instances_Graphics_drawCircle;
 typedef ThunkFunc4<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawEllipse, const Value, Value::Number, Value::Number, Value::Number, Value::Number> TFunc_Instances_Graphics_drawEllipse;
+typedef ThunkFunc1<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawGraphicsData, const Value, Instances::fl_vec::Vector_object*> TFunc_Instances_Graphics_drawGraphicsData;
+typedef ThunkFunc3<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawPath, const Value, Instances::fl_vec::Vector_int*, Instances::fl_vec::Vector_double*, const ASString&> TFunc_Instances_Graphics_drawPath;
 typedef ThunkFunc4<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawRect, const Value, Value::Number, Value::Number, Value::Number, Value::Number> TFunc_Instances_Graphics_drawRect;
 typedef ThunkFunc6<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawRoundRect, const Value, Value::Number, Value::Number, Value::Number, Value::Number, Value::Number, Value::Number> TFunc_Instances_Graphics_drawRoundRect;
 typedef ThunkFunc2<Instances::fl_display::Graphics, Instances::fl_display::Graphics::mid_drawRoundRectComplex, Value, unsigned, const Value*> TFunc_Instances_Graphics_drawRoundRectComplex;
@@ -76,6 +99,8 @@ template <> const TFunc_Instances_Graphics_clear::TMethod TFunc_Instances_Graphi
 template <> const TFunc_Instances_Graphics_curveTo::TMethod TFunc_Instances_Graphics_curveTo::Method = &Instances::fl_display::Graphics::curveTo;
 template <> const TFunc_Instances_Graphics_drawCircle::TMethod TFunc_Instances_Graphics_drawCircle::Method = &Instances::fl_display::Graphics::drawCircle;
 template <> const TFunc_Instances_Graphics_drawEllipse::TMethod TFunc_Instances_Graphics_drawEllipse::Method = &Instances::fl_display::Graphics::drawEllipse;
+template <> const TFunc_Instances_Graphics_drawGraphicsData::TMethod TFunc_Instances_Graphics_drawGraphicsData::Method = &Instances::fl_display::Graphics::drawGraphicsData;
+template <> const TFunc_Instances_Graphics_drawPath::TMethod TFunc_Instances_Graphics_drawPath::Method = &Instances::fl_display::Graphics::drawPath;
 template <> const TFunc_Instances_Graphics_drawRect::TMethod TFunc_Instances_Graphics_drawRect::Method = &Instances::fl_display::Graphics::drawRect;
 template <> const TFunc_Instances_Graphics_drawRoundRect::TMethod TFunc_Instances_Graphics_drawRoundRect::Method = &Instances::fl_display::Graphics::drawRoundRect;
 template <> const TFunc_Instances_Graphics_drawRoundRectComplex::TMethod TFunc_Instances_Graphics_drawRoundRectComplex::Method = &Instances::fl_display::Graphics::drawRoundRectComplex;
@@ -273,6 +298,191 @@ namespace Instances { namespace fl_display
 
         pDispObj->InvalidateHitResult();
 //##protect##"instance::Graphics::drawEllipse()"
+    }
+    void Graphics::drawGraphicsData(const Value& result, Instances::fl_vec::Vector_object* graphicsData)
+    {
+//##protect##"instance::Graphics::drawGraphicsData()"
+        SF_UNUSED(result);
+
+        // We must record whether we are currently within a fill, because an implicit endFill command is added
+        // at the end, if none is explicitly present in the command list.
+        bool insideFill = false;
+
+        UInt32 ncommands = graphicsData->lengthGet();
+        for (UInt32 i = 0; i < ncommands; ++i)
+        {
+            Value v;
+            graphicsData->Get(i, v);
+            VMAppDomain& appDomain = GetVM().GetCurrentAppDomain();
+            if (GetVM().IsOfType(v, "flash.display.GraphicsBitmapFill", appDomain))
+            {
+                Instances::fl_display::GraphicsBitmapFill* cmd = reinterpret_cast<Instances::fl_display::GraphicsBitmapFill*>(v.GetObject());               
+                beginBitmapFill(cmd->bitmapData, cmd->matrix, cmd->repeat, cmd->smooth);
+                insideFill = true;
+            }
+            if (GetVM().IsOfType(v, "flash.display.GraphicsEndFill", appDomain))
+            {
+                // No point, it doesn't have any data.
+                //Instances::fl_display::GraphicsEndFill* cmd = reinterpret_cast<Instances::fl_display::GraphicsEndFill*>(graphicsDataObj.GetPtr());
+                endFill();
+                insideFill = false;
+            }
+            if (GetVM().IsOfType(v, "flash.display.GraphicsGradientFill", appDomain))
+            {
+                Instances::fl_display::GraphicsGradientFill* cmd = reinterpret_cast<Instances::fl_display::GraphicsGradientFill*>(v.GetObject());
+                Value ignoredResult;
+                Value params[8];
+                params[0] = cmd->type;
+                params[1] = cmd->colors;
+                params[2] = cmd->alphas;
+                params[3] = cmd->ratios;
+                params[4] = cmd->matrix;
+                params[5] = cmd->spreadMethod;
+                params[6] = cmd->interpolationMethod;
+                params[7] = cmd->focalPointRatio;
+                beginGradientFill(ignoredResult, 8, params);
+                insideFill = true;
+            }
+            if (GetVM().IsOfType(v, "flash.display.GraphicsPath", appDomain))
+            {
+                Instances::fl_display::GraphicsPath* cmd = reinterpret_cast<Instances::fl_display::GraphicsPath*>(v.GetObject());
+                drawPath(cmd->commands, cmd->data, cmd->Winding);
+                insideFill = true;
+            }
+            if (GetVM().IsOfType(v, "flash.display.GraphicsSolidFill", appDomain))
+            {
+                Instances::fl_display::GraphicsSolidFill* cmd = reinterpret_cast<Instances::fl_display::GraphicsSolidFill*>(v.GetObject());
+                beginFill(cmd->color, cmd->alpha);
+                insideFill = true;
+            }
+            if (GetVM().IsOfType(v, "flash.display.GraphicsStroke", appDomain))
+            {
+                Instances::fl_display::GraphicsStroke* cmd = reinterpret_cast<Instances::fl_display::GraphicsStroke*>(v.GetObject());
+                if (cmd->fill)
+                {
+                    Value fillValue(cmd->fill);
+                    if (GetVM().IsOfType(fillValue, "flash.display.GraphicsBitmapFill", appDomain))
+                    {
+                        // unsupported - lineBitmapStyle doesn't exist?
+                        Instances::fl_display::GraphicsBitmapFill* fill = reinterpret_cast<Instances::fl_display::GraphicsBitmapFill*>(cmd->fill.GetPtr());
+                        WARN_NOT_IMPLEMENTED("GraphicsStroke w/GraphicsBitmapFill");
+                        SF_UNUSED(fill);
+                    }
+                    if (GetVM().IsOfType(fillValue, "flash.display.GraphicsEndFill", appDomain))
+                    {
+                        // not sure why you would do this...
+                    }
+                    if (GetVM().IsOfType(fillValue, "flash.display.GraphicsGradient", appDomain))
+                    {
+                        Instances::fl_display::GraphicsGradientFill* fill = reinterpret_cast<Instances::fl_display::GraphicsGradientFill*>(cmd->fill.GetPtr());
+                        Value params[8];
+                        Value ignoredResult;
+                        params[0] = fill->type;
+                        params[1] = fill->colors;
+                        params[2] = fill->alphas;
+                        params[3] = fill->ratios;
+                        params[4] = fill->matrix;
+                        params[5] = fill->spreadMethod;
+                        params[6] = fill->interpolationMethod;
+                        params[7] = fill->focalPointRatio;
+                        lineGradientStyle(ignoredResult, 8, params);
+                    }
+                    if (GetVM().IsOfType(fillValue, "flash.display.GraphicsSolidFill", appDomain))
+                    {
+                        Instances::fl_display::GraphicsSolidFill* fill = reinterpret_cast<Instances::fl_display::GraphicsSolidFill*>(cmd->fill.GetPtr());
+                        Value params[8];
+                        Value ignoredResult;
+                        params[0] = cmd->thickness;
+                        params[1] = fill->color;
+                        params[2] = fill->alpha;
+                        params[3] = cmd->pixelHinting;
+                        params[4] = cmd->scaleMode;
+                        params[5] = cmd->caps;
+                        params[6] = cmd->joints;
+                        params[7] = cmd->miterLimit;
+                        lineStyle(ignoredResult, 8, params);
+                    }
+                }
+            }
+        }
+
+        // If this call has ended, but no explicit call to endFill has been made, call it now.
+        if (insideFill)
+            endFill();
+
+//##protect##"instance::Graphics::drawGraphicsData()"
+    }
+    void Graphics::drawPath(const Value& result, Instances::fl_vec::Vector_int* commands, Instances::fl_vec::Vector_double* data, const ASString& winding)
+    {
+//##protect##"instance::Graphics::drawPath()"
+        SF_UNUSED4(result, commands, data, winding);
+        UInt32 ncommands = commands->lengthGet();
+        UInt32 ndata = data->lengthGet();
+        UInt32 di = 0; //data index
+        for (UInt32 i = 0; i < ncommands; ++i)
+        {
+            Value v;
+            SInt32 c;
+            commands->Get(i,v);
+            v.Convert2Int32(c).DoNotCheck();
+            switch(c)
+            {
+            case 0:
+                break;
+            case 4://WideMoveTo, remove two dummy coordinates and fall through to MoveTo
+                {
+                    if (di + 2 > ndata)
+                        goto invalid_arg;
+                    di+=2;
+                }  
+            case 1: //MoveTo
+                {
+                  if (di + 2 > ndata)
+                      goto invalid_arg;
+                  Value x, y; 
+                  data->Get(di++, x);
+                  data->Get(di++, y);
+                  moveTo(x, y);
+                }
+                break;
+            case 5://WideLineTo, remove two dummy coordinates and fall through to LineTo
+                {
+                    if (di + 2 > ndata)
+                        goto invalid_arg;
+                    di+=2;
+                }   
+            case 2: //LineTo
+                {
+                    if (di + 2 > ndata)
+                        goto invalid_arg;
+                    Value x, y; 
+                    data->Get(di++, x);
+                    data->Get(di++, y);
+                    lineTo(x, y);
+                }
+                break;
+            case 3: //CurveTo
+                {
+                    if (di + 4 > ndata)
+                        goto invalid_arg;
+                    Value controlX, controlY, anchorX, anchorY; 
+                    data->Get(di++, controlX);
+                    data->Get(di++, controlY);
+                    data->Get(di++, anchorX);
+                    data->Get(di++, anchorY);
+                    curveTo(controlX, controlY, anchorX, anchorY); 
+                }
+                break; 
+            default:
+                return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Command is not supported")));
+                break;
+            }
+        }
+        return;
+invalid_arg:
+        return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Data size does not match commands")));
+
+//##protect##"instance::Graphics::drawPath()"
     }
     void Graphics::drawRect(const Value& result, Value::Number x, Value::Number y, Value::Number width, Value::Number height)
     {
@@ -644,6 +854,14 @@ namespace Instances { namespace fl_display
     }
 
 //##protect##"instance$methods"
+    void Graphics::AS3Constructor(unsigned argc, const Value* argv)
+    {
+        SF_UNUSED2(argc, argv);
+        // Apparently at least one 'Graphics' is created internally, but you're not supposed to be able to create one via script.
+        //GetVM().ThrowArgumentError(VM::Error(VM::eCannotInstantiateError, GetVM() SF_DEBUG_ARG("Graphics$")));
+        return;
+    }
+
     void Graphics::AcquirePath(bool newShapeFlag)
     {
         SF_ASSERT(pDrawing && pDispObj);
@@ -662,22 +880,31 @@ namespace Instances { namespace fl_display
             GetVM().ThrowArgumentError(VM::Error(VM::eInvalidEnumError, GetVM() SF_DEBUG_ARG("type")));
             return;
         }
+
+        // Cannot have a NULL colors array.
+        if (argv[1].IsNull())
+        {
+            GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("colors")));
+            return;
+        }
+
         // colors:Array
         if (!argv[1].IsObject() || 
             argv[1].GetObject()->GetTraitsType() != Traits_Array || 
             argv[1].GetObject()->GetTraits().IsClassTraits()) 
             return;
         Instances::fl::Array* colors = static_cast<Instances::fl::Array*>(argv[1].GetObject());
-        // alphas:Array
-        if (!argv[2].IsObject() || 
-            argv[2].GetObject()->GetTraitsType() != Traits_Array || 
-            argv[2].GetObject()->GetTraits().IsClassTraits()) 
+
+        // alphas:Array. NOTE: NULL object is allowed.
+        if (!argv[2].IsObject() || (!argv[2].IsNull() &&
+            (argv[2].GetObject()->GetTraitsType() != Traits_Array || 
+            argv[2].GetObject()->GetTraits().IsClassTraits())))
             return;
         Instances::fl::Array* alphas = static_cast<Instances::fl::Array*>(argv[2].GetObject());
         // ratios:Array
-        if (!argv[3].IsObject() || 
-            argv[3].GetObject()->GetTraitsType() != Traits_Array || 
-            argv[3].GetObject()->GetTraits().IsClassTraits()) 
+        if (!argv[3].IsObject() || (!argv[3].IsNull() &&
+            (argv[3].GetObject()->GetTraitsType() != Traits_Array || 
+            argv[3].GetObject()->GetTraits().IsClassTraits())))
             return;
         Instances::fl::Array* ratios = static_cast<Instances::fl::Array*>(argv[3].GetObject());
         // matrix:Matrix = null
@@ -686,16 +913,21 @@ namespace Instances { namespace fl_display
         {
             matrix = static_cast<Instances::fl_geom::Matrix*>(argv[4].GetObject())->GetMatrix();
         }
+        else
+        {
+            // Default matrix is inexplicably scaled by 1/8?
+            matrix.AppendScaling(1.0f/8.0f, 1.0f/8.0f);
+        }
 
-        int spreadMethod = 0; // pad
+        // int spreadMethod = 0; // pad
         bool linearRGB = false;
         float focalPointRatio = 0;
         if (argc > 5)
         {
             // spreadMethod:String
             ASString str(argv[5].AsString());
-            if (str == "reflect") spreadMethod = 1;
-            if (str == "repeat") spreadMethod = 2;
+            // if (str == "reflect") spreadMethod = 1;
+            // if (str == "repeat") spreadMethod = 2;
             if (argc > 6)
             {
                 // interpolationMethod:String
@@ -727,27 +959,8 @@ namespace Instances { namespace fl_display
         {
             complexFill->pGradient->SetFocalRatio(focalPointRatio);
 
-            for (UPInt i = 0; i < colors->GetSize(); i++)
-            {
-                UInt32 color;
-                colors->At(i).Convert2UInt32(color).DoNotCheck();
-                unsigned rgba = unsigned(color | 0xFF000000);
-
-                Value::Number a;
-                alphas->At(i).Convert2Number(a).DoNotCheck();
-                unsigned alpha = Alg::Clamp<unsigned>((unsigned)(a * 255.0), 0, 255); 
-                rgba &= 0xFFFFFF;            
-                rgba |= alpha << 24;
-
-                Value::Number r;
-                ratios->At(i).Convert2Number(r).DoNotCheck();
-                float ratio = (float)r;
-                ratio = Alg::Clamp(ratio, 0.0f, 255.0f);
-
-                GradientRecord& record = complexFill->pGradient->At(static_cast<unsigned>(i));
-                record.Ratio = (UByte)ratio;
-                record.ColorV = rgba;
-            }
+            GradientData* gradientData = complexFill->pGradient;
+            FillGradientData(colors, alphas, ratios, gradientData);
 
             AcquirePath(true);
             Render::Matrix2F matF;
@@ -773,36 +986,98 @@ namespace Instances { namespace fl_display
             complexFill->ImageMatrix.Prepend(matF.GetInverse());
         }
     }
-//##protect##"instance$methods"
+
+    void Graphics::FillGradientData( Instances::fl::Array* colors, Instances::fl::Array* alphas, Instances::fl::Array* ratios, GradientData* gradientData )
+    {
+        SF_DEBUG_ASSERT(colors && colors->GetSize() > 1, "Cannot have NULL colors array, and it must have at least two elements.");
+        for (UPInt i = 0; i < colors->GetSize(); i++)
+        {
+            UInt32 color;
+            colors->At(i).Convert2UInt32(color).DoNotCheck();
+            unsigned rgba = unsigned(color | 0xFF000000);
+
+            // alphas may be NULL.
+            Value::Number a(1.0);
+            if (alphas)
+                alphas->At(i).Convert2Number(a).DoNotCheck();
+            unsigned alpha = Alg::Clamp<unsigned>((unsigned)(a * 255.0), 0, 255); 
+            rgba &= 0xFFFFFF;            
+            rgba |= alpha << 24;
+
+            // ratios may be NULL.
+            Value::Number r(i * (255.0 / (colors->GetSize()-1)));
+            if (ratios)
+                ratios->At(i).Convert2Number(r).DoNotCheck();
+            float ratio = (float)r;
+            ratio = Alg::Clamp(ratio, 0.0f, 255.0f);
+
+            GradientRecord& record = gradientData->At(static_cast<unsigned>(i));
+            record.Ratio = (UByte)ratio;
+            record.ColorV = rgba;
+        }
+    }
+
+    //##protect##"instance$methods"
 
 }} // namespace Instances
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 Graphics::tito[Graphics::ThunkInfoNum] = {
+    //    0, 5, 8, 17, 18, 23, 27, 32, 34, 38, 43, 50, 59, 60, 69, 78, 81, 
+    // };
+    const TypeInfo* Graphics::tit[84] = {
+        NULL, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::MatrixTI, &AS3::fl::BooleanTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::uintTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, &AS3::fl_geom::MatrixTI, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::NumberTI, 
+        NULL, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, NULL, 
+        NULL, NULL, NULL, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, &AS3::fl_geom::MatrixTI, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::uintTI, &AS3::fl::NumberTI, &AS3::fl::BooleanTI, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+    };
+    const Abc::ConstValue Graphics::dva[19] = {
+        {Abc::CONSTANT_True, 0}, {Abc::CONSTANT_False, 0}, 
+        {Abc::CONSTANT_Double, 7}, 
+        {Abc::CONSTANT_Utf8, 5}, {Abc::CONSTANT_Utf8, 6}, {Abc::CONSTANT_Double, 0}, {}, 
+        {Abc::CONSTANT_Utf8, 7}, 
+        {Abc::CONSTANT_Utf8, 5}, {Abc::CONSTANT_Utf8, 6}, {Abc::CONSTANT_Double, 0}, {}, 
+        {Abc::CONSTANT_Double, 7}, {Abc::CONSTANT_False, 0}, {Abc::CONSTANT_Utf8, 8}, {Abc::CONSTANT_Null, 0}, {Abc::CONSTANT_Null, 0}, {Abc::CONSTANT_Double, 8}, {}, 
+    };
     const ThunkInfo Graphics::ti[Graphics::ThunkInfoNum] = {
-        {TFunc_Instances_Graphics_beginBitmapFill::Func, NULL, "beginBitmapFill", NULL, Abc::NS_Public, CT_Method, 1, 4},
-        {TFunc_Instances_Graphics_beginFill::Func, NULL, "beginFill", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Graphics_beginGradientFill::Func, NULL, "beginGradientFill", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Graphics_clear::Func, NULL, "clear", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Graphics_curveTo::Func, NULL, "curveTo", NULL, Abc::NS_Public, CT_Method, 4, 4},
-        {TFunc_Instances_Graphics_drawCircle::Func, NULL, "drawCircle", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_Graphics_drawEllipse::Func, NULL, "drawEllipse", NULL, Abc::NS_Public, CT_Method, 4, 4},
-        {TFunc_Instances_Graphics_drawRect::Func, NULL, "drawRect", NULL, Abc::NS_Public, CT_Method, 4, 4},
-        {TFunc_Instances_Graphics_drawRoundRect::Func, NULL, "drawRoundRect", NULL, Abc::NS_Public, CT_Method, 5, 6},
-        {TFunc_Instances_Graphics_drawRoundRectComplex::Func, NULL, "drawRoundRectComplex", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Graphics_endFill::Func, NULL, "endFill", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Graphics_lineGradientStyle::Func, NULL, "lineGradientStyle", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Graphics_lineStyle::Func, NULL, "lineStyle", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Graphics_lineTo::Func, NULL, "lineTo", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Graphics_moveTo::Func, NULL, "moveTo", NULL, Abc::NS_Public, CT_Method, 2, 2},
+        {TFunc_Instances_Graphics_beginBitmapFill::Func, &Graphics::tit[0], "beginBitmapFill", NULL, Abc::NS_Public, CT_Method, 1, 4, 0, 2, &Graphics::dva[0]},
+        {TFunc_Instances_Graphics_beginFill::Func, &Graphics::tit[5], "beginFill", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 1, &Graphics::dva[2]},
+        {TFunc_Instances_Graphics_beginGradientFill::Func, &Graphics::tit[8], "beginGradientFill", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 4, &Graphics::dva[3]},
+        {TFunc_Instances_Graphics_clear::Func, &Graphics::tit[17], "clear", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Graphics_curveTo::Func, &Graphics::tit[18], "curveTo", NULL, Abc::NS_Public, CT_Method, 4, 4, 0, 0, NULL},
+        {TFunc_Instances_Graphics_drawCircle::Func, &Graphics::tit[23], "drawCircle", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_Graphics_drawEllipse::Func, &Graphics::tit[27], "drawEllipse", NULL, Abc::NS_Public, CT_Method, 4, 4, 0, 0, NULL},
+        {TFunc_Instances_Graphics_drawGraphicsData::Func, &Graphics::tit[32], "drawGraphicsData", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Graphics_drawPath::Func, &Graphics::tit[34], "drawPath", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 1, &Graphics::dva[7]},
+        {TFunc_Instances_Graphics_drawRect::Func, &Graphics::tit[38], "drawRect", NULL, Abc::NS_Public, CT_Method, 4, 4, 0, 0, NULL},
+        {TFunc_Instances_Graphics_drawRoundRect::Func, &Graphics::tit[43], "drawRoundRect", NULL, Abc::NS_Public, CT_Method, 5, 6, 0, 0, NULL},
+        {TFunc_Instances_Graphics_drawRoundRectComplex::Func, &Graphics::tit[50], "drawRoundRectComplex", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_Graphics_endFill::Func, &Graphics::tit[59], "endFill", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Graphics_lineGradientStyle::Func, &Graphics::tit[60], "lineGradientStyle", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 4, &Graphics::dva[8]},
+        {TFunc_Instances_Graphics_lineStyle::Func, &Graphics::tit[69], "lineStyle", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 7, &Graphics::dva[12]},
+        {TFunc_Instances_Graphics_lineTo::Func, &Graphics::tit[78], "lineTo", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Graphics_moveTo::Func, &Graphics::tit[81], "moveTo", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
     };
 
     Graphics::Graphics(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Graphics::Graphics()"
 //##protect##"InstanceTraits::Graphics::Graphics()"
-        SetMemSize(sizeof(Instances::fl_display::Graphics));
 
     }
 
@@ -819,24 +1094,27 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    Graphics::Graphics(VM& vm)
-    : Traits(vm, AS3::fl_display::GraphicsCI)
+
+    Graphics::Graphics(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Graphics::Graphics()"
 //##protect##"ClassTraits::Graphics::Graphics()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::Graphics(vm, AS3::fl_display::GraphicsCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Graphics::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Graphics(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Graphics(vm, AS3::fl_display::GraphicsCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::GraphicsCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -847,6 +1125,11 @@ namespace fl_display
 {
     const TypeInfo GraphicsTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_display::Graphics::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::Graphics::ThunkInfoNum,
+        0,
         "Graphics", "flash.display", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -854,10 +1137,6 @@ namespace fl_display
     const ClassInfo GraphicsCI = {
         &GraphicsTI,
         ClassTraits::fl_display::Graphics::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::Graphics::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::Graphics::ti,

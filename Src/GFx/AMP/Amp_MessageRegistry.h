@@ -7,6 +7,9 @@
 #ifndef INCLUDE_GFX_AMP_MESSAGEREGISTRY_H
 #define INCLUDE_GFX_AMP_MESSAGEREGISTRY_H
 
+#include "GFxConfig.h"
+#if defined(SF_AMP_SERVER) || defined(SF_AMP_CLIENT)
+
 #include "Amp_Interfaces.h"
 #include "Kernel/SF_Debug.h"
 #include "Kernel/SF_HeapNew.h"
@@ -21,6 +24,7 @@ namespace AMP
 {
 
 class ThreadMgr;
+class Message;
 
 // Only a base class, it is used directly by the registry.
 class BaseMessageTypeDescriptor : public RefCountBase<BaseMessageTypeDescriptor, Stat_Default_Mem>
@@ -134,3 +138,4 @@ protected:
 }
 #endif
 
+#endif

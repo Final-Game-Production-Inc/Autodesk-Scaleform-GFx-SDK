@@ -7,6 +7,7 @@ Created     :   June 23, 2005
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -58,22 +59,26 @@ class LogBase;
 
 //Note: IsLogNotNull guarantees that plog is not NULL here!
 
+// 工具函数：将 LogChannel 转为 int
+constexpr int ToInt(LogChannel ch) { return static_cast<int>(ch); }
+// 工具函数：将 LogMessageType 转为 int
+constexpr int ToInt(LogMessageType type) { return static_cast<int>(type); }
 
 // ***** New Log Constants introduced by GFx
 
 enum LogConstants_GFx
 {
     // Script errors and warnings
-    Log_ScriptError     = LogChannel_Script | LogMessage_Error,
-    Log_ScriptWarning   = LogChannel_Script | LogMessage_Warning,
-    Log_ScriptMessage   = LogChannel_Script | LogMessage_Text,
+    Log_ScriptError     = ToInt(LogChannel_Script) | ToInt(LogMessage_Error),
+    Log_ScriptWarning   = ToInt(LogChannel_Script) | ToInt(LogMessage_Warning),
+    Log_ScriptMessage   = ToInt(LogChannel_Script) | ToInt(LogMessage_Text),
     // Parse log messages (generated based on verbosity settings during loading)
-    Log_Parse           = LogChannel_Parse | 0,
-    Log_ParseShape      = LogChannel_Parse | 1,
-    Log_ParseMorphShape = LogChannel_Parse | 2,
-    Log_ParseAction     = LogChannel_Parse | 3,
+    Log_Parse           = ToInt(LogChannel_Parse) | 0,
+    Log_ParseShape      = ToInt(LogChannel_Parse) | 1,
+    Log_ParseMorphShape = ToInt(LogChannel_Parse) | 2,
+    Log_ParseAction     = ToInt(LogChannel_Parse) | 3,
     // Action
-    Log_Action          = LogChannel_Action | 0
+    Log_Action          = ToInt(LogChannel_Action) | 0
 };
 
 

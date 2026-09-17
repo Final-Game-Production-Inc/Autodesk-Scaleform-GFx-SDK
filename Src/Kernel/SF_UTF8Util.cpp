@@ -10,6 +10,7 @@ Notes       :   Much useful info at "UTF-8 and Unicode FAQ"
 History     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,6 +19,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 
 #include "SF_UTF8Util.h"
+#include "SF_Debug.h"
 
 namespace Scaleform {
 namespace UTF8Util {
@@ -227,7 +229,6 @@ UInt32  SF_STDCALL DecodeNextChar_Advance0(const char** putf8Buffer)
     }
 }
 
-
 void    SF_STDCALL EncodeChar(char* pbuffer, SPInt* pindex, UInt32 ucs_character)
 {
     if (ucs_character <= 0x7F)
@@ -281,24 +282,6 @@ void    SF_STDCALL EncodeChar(char* pbuffer, SPInt* pindex, UInt32 ucs_character
     }
 }
 
-SPInt   SF_STDCALL GetEncodeStringSize(const wchar_t* pchar, SPInt length)
-{
-    SPInt len = 0;
-    if (length != -1)
-        for (int i = 0; i < length; i++)
-        {
-            len += GetEncodeCharSize(pchar[i]);
-        }
-    else
-        for (int i = 0;; i++)
-        {
-            if (pchar[i] == 0)
-                return len;
-            len += GetEncodeCharSize(pchar[i]);
-        }
-    return len;
-}
-
 void    SF_STDCALL EncodeString(char *pbuff, const wchar_t* pchar, SPInt length)
 {
     SPInt ofs = 0;
@@ -349,6 +332,172 @@ UPInt   SF_STDCALL DecodeString(wchar_t *pbuff, const char* putf8str, SPInt byte
     }
 
     *pbuff = 0;
+    return pbuff - pbegin;
+}
+
+void    SF_STDCALL EncodeCharSafe(char* pbuffer, UPInt buffLen, SPInt* pindex, UInt32 ucs_character)
+{
+    if (ucs_character <= 0x7F)
+    {
+        // Plain single-byte ASCII.
+        if (buffLen < 1) 
+        {
+            SF_DEBUG_ASSERT(1, "EncodeCharSafe: Buffer size is too small for encoding (1 byte needed)\n");
+            return;
+        }
+        pbuffer[(*pindex)++] = (char) ucs_character;
+    }
+    else if (ucs_character <= 0x7FF)
+    {
+        // Two bytes.
+        if (buffLen < 2) 
+        {
+            SF_DEBUG_ASSERT(1, "EncodeCharSafe: Buffer size is too small for encoding (2 bytes needed)\n");
+            return;
+        }
+        pbuffer[(*pindex)++] = 0xC0 | (char)(ucs_character >> 6);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 0) & 0x3F);
+    }
+    else if (ucs_character <= 0xFFFF)
+    {
+        // Three bytes.
+        if (buffLen < 3) 
+        {
+            SF_DEBUG_ASSERT(1, "EncodeCharSafe: Buffer size is too small for encoding (3 bytes needed)\n");
+            return;
+        }
+        pbuffer[(*pindex)++] = 0xE0 | (char)(ucs_character >> 12);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 6) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 0) & 0x3F);
+    }
+    else if (ucs_character <= 0x1FFFFF)
+    {
+        // Four bytes.
+        if (buffLen < 4) 
+        {
+            SF_DEBUG_ASSERT(1, "EncodeCharSafe: Buffer size is too small for encoding (4 bytes needed)\n");
+            return;
+        }
+        pbuffer[(*pindex)++] = 0xF0 | (char)(ucs_character >> 18);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 12) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 6) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 0) & 0x3F);
+    }
+    else if (ucs_character <= 0x3FFFFFF)
+    {
+        // Five bytes.
+        if (buffLen < 5) 
+        {
+            SF_DEBUG_ASSERT(1, "EncodeCharSafe: Buffer size is too small for encoding (5 bytes needed)\n");
+            return;
+        }
+        pbuffer[(*pindex)++] = 0xF8 | (char)(ucs_character >> 24);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 18) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 12) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 6) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 0) & 0x3F);
+    }
+    else if (ucs_character <= 0x7FFFFFFF)
+    {
+        // Six bytes.
+        if (buffLen < 6) 
+        {
+            SF_DEBUG_ASSERT(1, "EncodeCharSafe: Buffer size is too small for encoding (6 bytes needed)\n");
+            return;
+        }
+        pbuffer[(*pindex)++] = 0xFC | (char)(ucs_character >> 30);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 24) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 18) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 12) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 6) & 0x3F);
+        pbuffer[(*pindex)++] = 0x80 | (char)((ucs_character >> 0) & 0x3F);
+    }
+    else
+    {
+        // Invalid char; don't encode anything.
+    }
+}
+
+SPInt   SF_STDCALL GetEncodeStringSize(const wchar_t* pchar, SPInt length)
+{
+    SPInt len = 0;
+    if (length != -1)
+        for (int i = 0; i < length; i++)
+        {
+            len += GetEncodeCharSize(pchar[i]);
+        }
+    else
+        for (int i = 0;; i++)
+        {
+            if (pchar[i] == 0)
+                return len;
+            len += GetEncodeCharSize(pchar[i]);
+        }
+    return len;
+}
+
+void    SF_STDCALL EncodeStringSafe(char *pbuff, UPInt buffLen, const wchar_t* pchar, SPInt length)
+{
+    SF_DEBUG_ASSERT(buffLen > 0, "EncodeStringSafe: Buffer size cannot be 0\n");
+    if (buffLen == 0) return;
+
+    SPInt ofs = 0, buffMax = (SPInt)buffLen;
+    if (length != -1)
+    {
+        for (int i = 0; (i < length) && (ofs < buffMax); i++)
+        {            
+            EncodeCharSafe(pbuff, buffMax - ofs, &ofs, pchar[i]);
+        }
+    }
+    else
+    {
+        for (int i = 0; (ofs < buffMax); i++)
+        {
+            if (pchar[i] == 0)
+                break;
+            EncodeCharSafe(pbuff, buffMax - ofs, &ofs, pchar[i]);
+        }
+    }
+
+    SF_DEBUG_ASSERT((buffMax - ofs) > 0, "EncodeStringSafe: No space for NULL terminator\n");
+    pbuff[ofs] = 0;
+}
+
+UPInt   SF_STDCALL DecodeStringSafe(wchar_t *pbuff, UPInt buffLen, const char* putf8str, SPInt bytesLen)
+{
+    SF_DEBUG_ASSERT(buffLen > 0, "DecodeStringSafe: Buffer size cannot be 0\n");
+    if (buffLen == 0) return 0;
+
+    wchar_t *pbegin = pbuff, *pend = (pbuff + buffLen);
+    if (bytesLen == -1)
+    {
+        while (pbuff < pend)
+        {
+            UInt32 ch = DecodeNextChar_Advance0(&putf8str);
+            if (ch == 0)
+                break;
+            else if (ch >= 0xFFFF)
+                ch = 0xFFFD;
+
+            *pbuff++ = wchar_t(ch);
+        }
+    }
+    else
+    {
+        const char* p = putf8str;
+        while ( ((p - putf8str) < bytesLen) && (pbuff < pend) )
+        {
+            UInt32 ch = DecodeNextChar_Advance0(&p);
+            if (ch >= 0xFFFF)
+                ch = 0xFFFD;
+
+            *pbuff++ = wchar_t(ch);
+        }
+    }
+
+    SF_DEBUG_ASSERT((pbuff < pend), "EncodeStringSafe: No space for NULL terminator\n");
+    *pbuff = 0;
+
     return pbuff - pbegin;
 }
 

@@ -7,6 +7,7 @@ Created     :   December 2009
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -165,6 +166,8 @@ void Server::Init()
 void Server::Uninit()
 {
     static_cast<Server*>(AmpServerSingleton)->Release();
+    AmpServerSingleton = NULL;
+    SF_DEBUG_MESSAGE(true, "AMP Server uninitialized\n");
 }
 
 ////////////////////////////////////////////////
@@ -495,7 +498,7 @@ void Server::SetInitSocketLib(bool initSocketLib)
 // Must be called before a connection has been opened
 void Server::SetSocketImplFactory(SocketImplFactory* socketFactory)
 {
-    SocketFactory = socketFactory;
+    SocketThreadMgr->SetSocketImplFactory(socketFactory);
 }
 
 // Sets the AMP heap limit in bytes
@@ -569,11 +572,12 @@ void Server::AdvanceFrame()
 void Server::MovieAdvance(MovieImpl* movie)
 {
     Lock::Locker lock(&ObjectsReportLock);
-    if (ObjectsReportRequested == movie->AdvanceStats->GetViewHandle())
+    if (ObjectsReportRequested == movie->GetAdvanceStats().GetViewHandle())
     {
         ObjectsLog objectsReportLog;
-        movie->PrintObjectsReport(ObjectsReportFlags, &objectsReportLog);
-        SendMessage(SF_HEAP_AUTO_NEW(this) MessageObjectsReport(objectsReportLog.ToCStr()));
+        Ptr<AmpMovieObjectDesc> root;
+        movie->PrintObjectsReport(ObjectsReportFlags, &objectsReportLog, NULL, &root, Memory::GetHeapByAddress(this));
+        SendMessage(SF_HEAP_AUTO_NEW(this) MessageObjectsReport(objectsReportLog.ToCStr(), root, ObjectsReportRequested));
         ObjectsReportRequested = 0;
     }
 }
@@ -622,6 +626,7 @@ void Server::SendCurrentState()
         CurrentState.CurrentFileId = currentMovie->GetActiveFile();
         CurrentState.CurrentLineNumber = currentMovie->GetActiveLine();
     }
+    CurrentState.Platform = Message::GetLocalPlatform();
     SendMessage(SF_HEAP_AUTO_NEW(this) MessageCurrentState(&CurrentState));
 }
 
@@ -974,6 +979,7 @@ bool Server::HandleFontRequest(const MessageFontRequest* msg)
     Render::GlyphCache* glyphCache = CurrentRenderer->GetImpl()->GetGlyphCache();
 
     int numTextures = glyphCache->GetTextureData(imageFile, SocketThreadMgr->GetMsgVersion());
+    dataMsg->SetNumTextures(static_cast<UInt32>(numTextures));
     if (numTextures > 0)
     {
         dataMsg->SetImageData(imageFile);
@@ -1145,14 +1151,20 @@ void Server::RemoveStrokes(UInt32 numStrokes)
     NumStrokes -= numStrokes;
 }
 
-void Server::IncrementFontThrashing()
-{
-    ++FontThrashing;
-}
-
 void Server::IncrementFontFailures()
 {
     ++FontFailures;
+}
+
+void Server::IncrementFontOptRead()
+{
+    ++FontOptRead;
+}
+
+void Server::DecrementFontOptRead()
+{
+    SF_ASSERT(FontOptRead > 0);
+    --FontOptRead;
 }
 
 // Set the renderer to be profiled (only one supported)
@@ -1258,12 +1270,11 @@ Server::Server() :
     CurrentRenderer(NULL),
     ConnectionWaitDelay(0),
     InitSocketLib(true),
-    SocketFactory(NULL),
     Profiling(0),
     SoundMemory(0),
     NumStrokes(0),
-    FontThrashing(0),
     FontFailures(0),
+    FontOptRead(0),
     MemReportLocked(0),
     ProfileLevelLocked(0),
     ObjectsReportRequested(0),
@@ -1290,7 +1301,7 @@ Server::Server() :
     msgRegistry->AddMessageType<MessageFontRequest>(*SF_HEAP_AUTO_NEW(this) FontRequestMsgHandler(this));
 
     SocketThreadMgr = *SF_HEAP_AUTO_NEW(this) ThreadMgr(true, SendCallback, 
-                        StatusCallback, &SendingEvent, NULL, SocketFactory, msgRegistry);
+                        StatusCallback, &SendingEvent, NULL, Socket::GetAmpDefaultFactory(), msgRegistry);
 
     GpaDomain = SF_GPA_ITT_DOMAIN_CREATEA("Scaleform.GFX4");
     GpaStringHandle = SF_GPA_ITT_STRING_HANDLE_CREATEA("GFX4");
@@ -1440,6 +1451,9 @@ void Server::CollectMemoryData(ProfileFrame* frameProfile)
                 case Render::Image_DXT5:
                     imgFormat = "DXT5";
                     break;
+                case Render::Image_BC7:
+                    imgFormat = "BC7";
+                    break;
                 default:
                     break;
                 }
@@ -1458,10 +1472,13 @@ void Server::CollectMemoryData(ProfileFrame* frameProfile)
     if (IsMemReports())
     {
         Memory::pGlobalHeap->MemReport(frameProfile->MemoryByStatId, MemoryHeap::MemReportHeapDetailed);
-        frameProfile->TotalMemory = frameProfile->MemoryByStatId->GetValue("Total Footprint") - frameProfile->MemoryByStatId->GetValue("Debug Data");
+        frameProfile->TotalMemory = frameProfile->MemoryByStatId->GetValue("Scaleform Footprint") - frameProfile->MemoryByStatId->GetValue("Debug Data");
         frameProfile->VideoMemory = frameProfile->MemoryByStatId->SumValues("Video Heaps");
         frameProfile->MovieDataMemory = frameProfile->MemoryByStatId->GetValue("Movie Data Heaps");
+        frameProfile->MovieDataMemory = frameProfile->MemoryByStatId->GetValue("Movie Data Heaps");
+        frameProfile->FontMemory = frameProfile->MemoryByStatId->SumValues("Font");
         frameProfile->MovieViewMemory = frameProfile->MemoryByStatId->GetValue("Movie View Heaps");
+        frameProfile->AS3Memory = frameProfile->MemoryByStatId->GetValue("AS3 VM");
 #ifdef SF_MEMORY_ENABLE_DEBUG_INFO
         frameProfile->SoundMemory = frameProfile->MemoryByStatId->SumValues("Sound");
 #else
@@ -1529,7 +1546,6 @@ void Server::CollectMemoryData(ProfileFrame* frameProfile)
             frameProfile->ImageList.Clear();
         }   
     }
-
 
     MemoryComponents += frameProfile->ImageMemory;
     MemoryComponents += frameProfile->VideoMemory;
@@ -1666,6 +1682,7 @@ void Server::CollectRendererData(ProfileFrame* frameProfile)
     CurrentRenderer->GetHAL()->GetStats(&renderStats, false);
     CollectRendererStats(frameProfile, renderStats);
     CollectMeshCacheStats(frameProfile);
+    CollectRendererExternalMemory(frameProfile);
 
     Render::GlyphCache* glyphCache = CurrentRenderer->GetImpl()->GetGlyphCache();
     frameProfile->RasterizedGlyphCount = glyphCache->GetNumRasterizedGlyphs();
@@ -1678,7 +1695,7 @@ void Server::CollectRendererData(ProfileFrame* frameProfile)
     }
     frameProfile->FontCacheMemory = static_cast<UInt32>(glyphCache->GetBytes());
     frameProfile->FontFail = FontFailures;
-    frameProfile->FontThrashing = FontThrashing;
+    frameProfile->FontOptRead = FontOptRead;
 
     frameProfile->MeshThrashing = CurrentRenderer->GetHAL()->GetMeshCache().Thrashing;
 
@@ -1704,8 +1721,8 @@ void Server::CollectMeshCacheStats(ProfileFrame* frameProfile)
 
     for (int i = 0; i < Render::MeshCache::MeshBuffer_StatCount; ++i)
     {
-        UInt32 usedMemory = static_cast<UInt32>(meshStats.UsedSize[i]);
-        UInt32 unusedMemory = static_cast<UInt32>(meshStats.TotalSize[i] - meshStats.UsedSize[i]);
+        UInt32 usedMemory = static_cast<UInt32>(meshStats.TotalSize[i] - meshStats.UsedSize[i]);
+        UInt32 unusedMemory = static_cast<UInt32>(meshStats.UsedSize[i]);
         if (i & Render::MeshCache::MeshBuffer_GpuMem)
         {
             frameProfile->MeshCacheGraphicsMemory += usedMemory;
@@ -1719,6 +1736,11 @@ void Server::CollectMeshCacheStats(ProfileFrame* frameProfile)
     }
 }
 
+void Server::CollectRendererExternalMemory(ProfileFrame* frameProfile)
+{
+    CurrentRenderer->GetImpl()->GetExternalMemory(frameProfile->MemoryByStatId);
+}
+
 
 // Clears all the renderer statistics
 // Clearing needs to happen even when stats are not being reported
@@ -1728,7 +1750,7 @@ void Server::ClearRendererData()
     RenderStats->ClearStats();
     Render::HAL::Stats stats;
     CurrentRenderer->GetHAL()->GetStats(&stats, true);
-    FontThrashing = 0;
+    CurrentRenderer->GetHAL()->GetMeshCache().Thrashing = 0;
     FontFailures = 0;
 }
 
@@ -1871,7 +1893,7 @@ Ptr<ViewStats> Server::GetDebugPausedMovie() const
 //////////////////////////////////////////////////////////////////////////////
 
 Server::ViewProfile::ViewProfile(MovieImpl* movie) : 
-    AdvanceTimings(movie->AdvanceStats)
+    AdvanceTimings(&movie->GetAdvanceStats())
 {
 }
 

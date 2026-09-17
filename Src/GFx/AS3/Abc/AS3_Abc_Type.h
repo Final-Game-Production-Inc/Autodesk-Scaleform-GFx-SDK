@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -342,12 +343,38 @@ struct TypeInfo
         NotImplTypeMask = 1 << NotImplTypeOffset,
     };
 
-    enum TimeType {RunTime = 0, CompileTime = TimeTypeMask};
-    enum ObjectType {SealedObject = 0, DynamicObject = ObjectTypeMask};
-    enum ImplType {Cpp = 0, Abc = ImplTypeMask};
-    enum FinalType {Alterable = 0, Final = FinalTypeMask};
-    enum ClassType {TypeClass = 0, TypeInterface = ClassTypeMask};
-    enum NotImplType {Implemented = 0, NotImplemented = NotImplTypeMask};
+    // Delete Enum, Use static constexpr, To Support C++ 20 Version.
+
+    //enum TimeType : UInt32 {RunTime = 0, CompileTime = TimeTypeMask};
+    //enum ObjectType : UInt32 {SealedObject = 0, DynamicObject = ObjectTypeMask};
+    //enum ImplType : UInt32 {Cpp = 0, Abc = ImplTypeMask};
+    //enum FinalType : UInt32 {Alterable = 0, Final = FinalTypeMask};
+    //enum ClassType : UInt32 {TypeClass = 0, TypeInterface = ClassTypeMask};
+    //enum NotImplType : UInt32 {Implemented = 0, NotImplemented = NotImplTypeMask};
+   
+    static constexpr UInt32 RunTime = 0;
+    static constexpr UInt32 CompileTime = TimeTypeMask;
+
+    static constexpr UInt32 SealedObject = 0;
+    static constexpr UInt32 DynamicObject = ObjectTypeMask;
+
+    static constexpr UInt32 Cpp = 0;
+    static constexpr UInt32 Abc = ImplTypeMask;
+
+    static constexpr UInt32 Alterable = 0;
+    static constexpr UInt32 Final = FinalTypeMask;
+
+    static constexpr UInt32 TypeClass = 0;
+    static constexpr UInt32 TypeInterface = ClassTypeMask;
+
+    static constexpr UInt32 Implemented = 0;
+    static constexpr UInt32 NotImplemented = NotImplTypeMask;
+
+    // 新增：便捷的组合函数（可选，进一步简化代码）
+    template <typename... Args>
+    static constexpr UInt32 CombineFlags(Args... args) {
+        return (args | ...); // C++17 折叠表达式，兼容多值组合
+    }
 
     static const TypeInfo* None[];
 
@@ -365,7 +392,19 @@ struct TypeInfo
     const char* GetPkgName() const { return PkgName; }
     const TypeInfo* GetParent() const { return Parent; }
 
-    UPInt               Flags;
+    bool IsBoolean() const { return (PkgName == NULL || PkgName[0] == 0) && strcmp(Name, "Boolean") == 0; }
+    bool IsInt() const { return (PkgName == NULL || PkgName[0] == 0) && strcmp(Name, "int") == 0; }
+    bool IsUInt() const { return (PkgName == NULL || PkgName[0] == 0) && strcmp(Name, "uint") == 0; }
+    bool IsNumber() const { return (PkgName == NULL || PkgName[0] == 0) && strcmp(Name, "Number") == 0; }
+    bool IsString() const { return (PkgName == NULL || PkgName[0] == 0) && strcmp(Name, "String") == 0; }
+
+    UInt32              Flags;
+    // Future development.
+    UInt16              InstanceSize;
+    UInt16              ClassMethodNum;
+    UInt16              ClassMemberNum;
+    UInt16              InstanceMethodNum;
+    UInt16              InstanceMemberNum;
     const char*         Name;
     const char*         PkgName;
     const TypeInfo*     Parent;
@@ -379,12 +418,6 @@ struct ClassInfo
 {
     const TypeInfo*     Type;
     TTraitsFactory      Factory;
-    UInt8               ClassMethodNum;
-    UInt8               ClassMemberNum;
-    UInt8               InstanceMethodNum;
-    UInt8               InstanceMemberNum;
-    // Future development.
-    // UInt16              InstanceSize;
     const ThunkInfo*    ClassMethod;
     const MemberInfo*   ClassMember;
     const ThunkInfo*    InstanceMethod;
@@ -401,6 +434,12 @@ struct ClassInfo
     const char* GetName() const { return Type->GetName(); }
     const char* GetPkgName() const { return Type->GetPkgName(); }
     const TypeInfo* GetParent() const { return Type->GetParent(); }
+
+    UInt16 GetInstanceSize() const { return Type->InstanceSize; }
+    UInt16 GetClassMethodNum() const { return Type->ClassMethodNum; }
+    UInt16 GetClassMemberNum() const { return Type->ClassMemberNum; }
+    UInt16 GetInstanceMethodNum() const { return Type->InstanceMethodNum; }
+    UInt16 GetInstanceMemberNum() const { return Type->InstanceMemberNum; }
 };
 
 namespace Classes
@@ -411,7 +450,9 @@ namespace Classes
 }
 
 ///////////////////////////////////////////////////////////////////////////
-extern const ClassInfo ClassClassCI;
+namespace fl {
+    extern const ClassInfo ClassCI;
+}
 
 ///////////////////////////////////////////////////////////////////////////
 namespace Abc
@@ -484,6 +525,8 @@ namespace Abc
         }
 
     private:
+        // Make sure the member variables stay with no padding
+        // Padding breaks the hash function that uses this struct as a key
         SInd    Ind;
     };
 

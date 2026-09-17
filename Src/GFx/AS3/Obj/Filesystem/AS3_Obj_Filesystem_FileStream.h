@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,6 +31,8 @@ namespace fl_filesystem
 {
     extern const TypeInfo FileStreamTI;
     extern const ClassInfo FileStreamCI;
+    extern const TypeInfo FileTI;
+    extern const ClassInfo FileCI;
 } // namespace fl_filesystem
 namespace fl
 {
@@ -43,9 +46,13 @@ namespace fl
     extern const ClassInfo BooleanCI;
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
 } // namespace fl
 namespace fl_utils
 {
+    extern const TypeInfo ByteArrayTI;
+    extern const ClassInfo ByteArrayCI;
     extern const TypeInfo IDataInputTI;
     extern const ClassInfo IDataInputCI;
     extern const TypeInfo IDataOutputTI;
@@ -77,17 +84,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_filesystem
 {
-    class FileStream : public Traits
+    class FileStream : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::FileStream"; }
 #endif
     public:
-        typedef Classes::fl_filesystem::FileStream ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_events::EventDispatcher InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        FileStream(VM& vm);
+        FileStream(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

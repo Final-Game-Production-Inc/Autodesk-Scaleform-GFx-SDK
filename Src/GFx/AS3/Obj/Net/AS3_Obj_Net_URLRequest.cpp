@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,6 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "../../AS3_Marshalling.h"
 //##protect##"includes"
 #include "../AS3_Obj_Array.h"
+#include "../Utils/AS3_Obj_Utils_ByteArray.h"
 #include "GFx/AS3/AS3_MovieRoot.h"
 #include "AS3_Obj_Net_URLVariables.h"
 //##protect##"includes"
@@ -30,19 +32,13 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_authenticateGet, bool> TFunc_Instances_URLRequest_authenticateGet;
 typedef ThunkFunc1<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_authenticateSet, const Value, bool> TFunc_Instances_URLRequest_authenticateSet;
 typedef ThunkFunc0<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_cacheResponseGet, bool> TFunc_Instances_URLRequest_cacheResponseGet;
 typedef ThunkFunc1<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_cacheResponseSet, const Value, bool> TFunc_Instances_URLRequest_cacheResponseSet;
 typedef ThunkFunc0<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_contentTypeGet, ASString> TFunc_Instances_URLRequest_contentTypeGet;
 typedef ThunkFunc1<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_contentTypeSet, const Value, const ASString&> TFunc_Instances_URLRequest_contentTypeSet;
-typedef ThunkFunc0<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_dataGet, SPtr<Instances::fl::Object> > TFunc_Instances_URLRequest_dataGet;
+typedef ThunkFunc0<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_dataGet, Value> TFunc_Instances_URLRequest_dataGet;
 typedef ThunkFunc1<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_dataSet, const Value, const Value&> TFunc_Instances_URLRequest_dataSet;
 typedef ThunkFunc0<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_digestGet, ASString> TFunc_Instances_URLRequest_digestGet;
 typedef ThunkFunc1<Instances::fl_net::URLRequest, Instances::fl_net::URLRequest::mid_digestSet, const Value, const ASString&> TFunc_Instances_URLRequest_digestSet;
@@ -92,6 +88,9 @@ namespace Instances { namespace fl_net
     : Instances::fl::Object(t)
 //##protect##"instance::URLRequest::URLRequest()$data"
     , Url(GetVM().GetStringManager().CreateEmptyString())
+    , Method(GetVM().GetStringManager().CreateString("GET"))
+    , ContentType(GetVM().GetStringManager().CreateEmptyString())
+    , Headers(GetVM().MakeArray())
 //##protect##"instance::URLRequest::URLRequest()$data"
     {
 //##protect##"instance::URLRequest::URLRequest()$code"
@@ -129,30 +128,27 @@ namespace Instances { namespace fl_net
     void URLRequest::contentTypeGet(ASString& result)
     {
 //##protect##"instance::URLRequest::contentTypeGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("URLRequest::contentTypeGet()");
+        result = ContentType;
 //##protect##"instance::URLRequest::contentTypeGet()"
     }
     void URLRequest::contentTypeSet(const Value& result, const ASString& value)
     {
 //##protect##"instance::URLRequest::contentTypeSet()"
-        SF_UNUSED2(result, value);
-        WARN_NOT_IMPLEMENTED("URLRequest::contentTypeSet()");
+        SF_UNUSED(result);
+        ContentType = value;
 //##protect##"instance::URLRequest::contentTypeSet()"
     }
-    void URLRequest::dataGet(SPtr<Instances::fl::Object>& result)
+    void URLRequest::dataGet(Value& result)
     {
 //##protect##"instance::URLRequest::dataGet()"
-        SF_UNUSED1(result);
         result = DataObj;
 //##protect##"instance::URLRequest::dataGet()"
     }
     void URLRequest::dataSet(const Value& result, const Value& value)
     {
 //##protect##"instance::URLRequest::dataSet()"
-        SF_UNUSED2(result, value);
-        if (value.IsObject() && GetVM().GetValueTraits(value).IsInstanceTraits())
-            DataObj = static_cast<Instances::fl::Object*>(value.GetObject());
+        SF_UNUSED(result);
+        DataObj = value;
 //##protect##"instance::URLRequest::dataSet()"
     }
     void URLRequest::digestGet(ASString& result)
@@ -200,42 +196,55 @@ namespace Instances { namespace fl_net
     void URLRequest::methodGet(ASString& result)
     {
 //##protect##"instance::URLRequest::methodGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("URLRequest::methodGet()");
+        result = Method;
 //##protect##"instance::URLRequest::methodGet()"
     }
     void URLRequest::methodSet(const Value& result, const ASString& value)
     {
 //##protect##"instance::URLRequest::methodSet()"
-        SF_UNUSED2(result, value);
-        WARN_NOT_IMPLEMENTED("URLRequest::methodSet()");
+        SF_UNUSED1(result);
+        Method = value;
 //##protect##"instance::URLRequest::methodSet()"
     }
     void URLRequest::requestHeadersGet(SPtr<Instances::fl::Array>& result)
     {
 //##protect##"instance::URLRequest::requestHeadersGet()"
-        SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("URLRequest::requestHeadersGet()");
+        result = Headers;
 //##protect##"instance::URLRequest::requestHeadersGet()"
     }
     void URLRequest::requestHeadersSet(const Value& result, Instances::fl::Array* value)
     {
 //##protect##"instance::URLRequest::requestHeadersSet()"
-        SF_UNUSED2(result, value);
-        WARN_NOT_IMPLEMENTED("URLRequest::requestHeadersSet()");
+        SF_UNUSED1(result);
+        bool success = true;
+        if (value)
+        {
+            for (UPInt i = 0; i < value->GetSize(); ++i)
+            {
+                if (!GetVM().IsOfType(value->At(i), "flash.net.URLRequestHeader", GetVM().GetCurrentAppDomain()))
+                {
+                    success = false;
+                    break;
+                }
+            }
+        }
+
+        if (success)
+        {
+            Headers = value;
+        }
 //##protect##"instance::URLRequest::requestHeadersSet()"
     }
     void URLRequest::urlGet(ASString& result)
     {
 //##protect##"instance::URLRequest::urlGet()"
-        SF_UNUSED1(result);
         result = Url;
 //##protect##"instance::URLRequest::urlGet()"
     }
     void URLRequest::urlSet(const Value& result, const ASString& value)
     {
 //##protect##"instance::URLRequest::urlSet()"
-        SF_UNUSED2(result, value);
+        SF_UNUSED1(result);
         Url = value;
 //##protect##"instance::URLRequest::urlSet()"
     }
@@ -278,7 +287,7 @@ namespace Instances { namespace fl_net
     void URLRequest::ForEachChild_GC(Collector* prcc, GcOp op) const
     {
         Object::ForEachChild_GC(prcc, op);
-        AS3::ForEachChild_GC<Instances::fl::Object, Mem_Stat>(prcc, DataObj, op SF_DEBUG_ARG(*this));
+        AS3::ForEachChild_GC<Instances::fl::Array, Mem_Stat>(prcc, Headers, op SF_DEBUG_ARG(*this));
     }
 
     void URLRequest::AS3Constructor(unsigned argc, const Value* argv)
@@ -303,39 +312,67 @@ namespace Instances { namespace fl_net
 
 namespace InstanceTraits { namespace fl_net
 {
+    // const UInt16 URLRequest::tito[URLRequest::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 
+    // };
+    const TypeInfo* URLRequest::tit[36] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, 
+        NULL, NULL, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+    };
     const ThunkInfo URLRequest::ti[URLRequest::ThunkInfoNum] = {
-        {TFunc_Instances_URLRequest_authenticateGet::Func, &AS3::fl::BooleanTI, "authenticate", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_authenticateSet::Func, NULL, "authenticate", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_cacheResponseGet::Func, &AS3::fl::BooleanTI, "cacheResponse", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_cacheResponseSet::Func, NULL, "cacheResponse", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_contentTypeGet::Func, &AS3::fl::StringTI, "contentType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_contentTypeSet::Func, NULL, "contentType", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_dataGet::Func, &AS3::fl::ObjectTI, "data", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_dataSet::Func, NULL, "data", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_digestGet::Func, &AS3::fl::StringTI, "digest", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_digestSet::Func, NULL, "digest", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_followRedirectsGet::Func, &AS3::fl::BooleanTI, "followRedirects", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_followRedirectsSet::Func, NULL, "followRedirects", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_manageCookiesGet::Func, &AS3::fl::BooleanTI, "manageCookies", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_manageCookiesSet::Func, NULL, "manageCookies", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_methodGet::Func, &AS3::fl::StringTI, "method", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_methodSet::Func, NULL, "method", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_requestHeadersGet::Func, &AS3::fl::ArrayTI, "requestHeaders", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_requestHeadersSet::Func, NULL, "requestHeaders", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_urlGet::Func, &AS3::fl::StringTI, "url", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_urlSet::Func, NULL, "url", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_useCacheGet::Func, &AS3::fl::BooleanTI, "useCache", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_useCacheSet::Func, NULL, "useCache", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_URLRequest_userAgentGet::Func, &AS3::fl::StringTI, "userAgent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_URLRequest_userAgentSet::Func, NULL, "userAgent", NULL, Abc::NS_Public, CT_Set, 1, 1},
+        {TFunc_Instances_URLRequest_authenticateGet::Func, &URLRequest::tit[0], "authenticate", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_authenticateSet::Func, &URLRequest::tit[1], "authenticate", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_cacheResponseGet::Func, &URLRequest::tit[3], "cacheResponse", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_cacheResponseSet::Func, &URLRequest::tit[4], "cacheResponse", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_contentTypeGet::Func, &URLRequest::tit[6], "contentType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_contentTypeSet::Func, &URLRequest::tit[7], "contentType", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_dataGet::Func, &URLRequest::tit[9], "data", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_dataSet::Func, &URLRequest::tit[10], "data", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_digestGet::Func, &URLRequest::tit[12], "digest", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_digestSet::Func, &URLRequest::tit[13], "digest", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_followRedirectsGet::Func, &URLRequest::tit[15], "followRedirects", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_followRedirectsSet::Func, &URLRequest::tit[16], "followRedirects", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_manageCookiesGet::Func, &URLRequest::tit[18], "manageCookies", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_manageCookiesSet::Func, &URLRequest::tit[19], "manageCookies", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_methodGet::Func, &URLRequest::tit[21], "method", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_methodSet::Func, &URLRequest::tit[22], "method", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_requestHeadersGet::Func, &URLRequest::tit[24], "requestHeaders", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_requestHeadersSet::Func, &URLRequest::tit[25], "requestHeaders", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_urlGet::Func, &URLRequest::tit[27], "url", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_urlSet::Func, &URLRequest::tit[28], "url", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_useCacheGet::Func, &URLRequest::tit[30], "useCache", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_useCacheSet::Func, &URLRequest::tit[31], "useCache", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_userAgentGet::Func, &URLRequest::tit[33], "userAgent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_URLRequest_userAgentSet::Func, &URLRequest::tit[34], "userAgent", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
     };
 
     URLRequest::URLRequest(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::URLRequest::URLRequest()"
 //##protect##"InstanceTraits::URLRequest::URLRequest()"
-        SetMemSize(sizeof(Instances::fl_net::URLRequest));
 
     }
 
@@ -352,24 +389,27 @@ namespace InstanceTraits { namespace fl_net
 
 namespace ClassTraits { namespace fl_net
 {
-    URLRequest::URLRequest(VM& vm)
-    : Traits(vm, AS3::fl_net::URLRequestCI)
+
+    URLRequest::URLRequest(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::URLRequest::URLRequest()"
 //##protect##"ClassTraits::URLRequest::URLRequest()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_net::URLRequest(vm, AS3::fl_net::URLRequestCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> URLRequest::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) URLRequest(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) URLRequest(vm, AS3::fl_net::URLRequestCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_net::URLRequestCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -380,6 +420,11 @@ namespace fl_net
 {
     const TypeInfo URLRequestTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_net::URLRequest::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_net::URLRequest::ThunkInfoNum,
+        0,
         "URLRequest", "flash.net", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -387,10 +432,6 @@ namespace fl_net
     const ClassInfo URLRequestCI = {
         &URLRequestTI,
         ClassTraits::fl_net::URLRequest::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_net::URLRequest::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_net::URLRequest::ti,

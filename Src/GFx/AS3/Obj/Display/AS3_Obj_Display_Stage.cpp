@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,12 +37,6 @@ namespace Classes
     class NativeWindow;
 }
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::Stage, Instances::fl_display::Stage::mid_alignGet, ASString> TFunc_Instances_Stage_alignGet;
 typedef ThunkFunc1<Instances::fl_display::Stage, Instances::fl_display::Stage::mid_alignSet, const Value, const ASString&> TFunc_Instances_Stage_alignSet;
 typedef ThunkFunc0<Instances::fl_display::Stage, Instances::fl_display::Stage::mid_autoOrientsGet, bool> TFunc_Instances_Stage_autoOrientsGet;
@@ -258,14 +253,13 @@ namespace Instances { namespace fl_display
     void Stage::focusGet(SPtr<Instances::fl_display::InteractiveObject>& result)
     {
 //##protect##"instance::Stage::focusGet()"
-        SF_UNUSED1(result);
         ASVM& asvm = static_cast<ASVM&>(GetVM());
         // only controller 0 is supported for now @TODO
         Ptr<GFx::InteractiveObject> focused = asvm.GetMovieImpl()->GetFocusedCharacter(0);
         if (focused)
         {
             Instances::fl_display::DisplayObject* ido = ToAvmInteractiveObj(focused)->GetAS3Obj();
-            if (IsInteractiveObject(ido->GetTraitsType()))
+            if (ido != NULL && IsInteractiveObject(ido->GetTraitsType()))
             {
                 result = static_cast<Instances::fl_display::InteractiveObject*>(ido);
                 return;
@@ -679,67 +673,122 @@ Stage::~Stage()
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 Stage::tito[Stage::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 6, 8, 9, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23, 25, 26, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 50, 52, 54, 57, 63, 66, 68, 70, 71, 72, 74, 78, 81, 83, 86, 
+    // };
+    const TypeInfo* Stage::tit[88] = {
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl_display::InteractiveObjectTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_text::TextSnapshotTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, NULL, &AS3::fl::BooleanTI, &AS3::fl::int_TI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_events::EventTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+        NULL, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+    };
     const ThunkInfo Stage::ti[Stage::ThunkInfoNum] = {
-        {TFunc_Instances_Stage_alignGet::Func, &AS3::fl::StringTI, "align", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_alignSet::Func, NULL, "align", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_autoOrientsGet::Func, &AS3::fl::BooleanTI, "autoOrients", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_deviceOrientationGet::Func, &AS3::fl::StringTI, "deviceOrientation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_displayStateGet::Func, &AS3::fl::StringTI, "displayState", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_displayStateSet::Func, NULL, "displayState", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_focusGet::Func, &AS3::fl_display::InteractiveObjectTI, "focus", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_focusSet::Func, NULL, "focus", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_frameRateGet::Func, &AS3::fl::NumberTI, "frameRate", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_frameRateSet::Func, NULL, "frameRate", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_fullScreenHeightGet::Func, &AS3::fl::uintTI, "fullScreenHeight", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_fullScreenSourceRectGet::Func, &AS3::fl_geom::RectangleTI, "fullScreenSourceRect", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_fullScreenSourceRectSet::Func, NULL, "fullScreenSourceRect", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_fullScreenWidthGet::Func, &AS3::fl::uintTI, "fullScreenWidth", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_heightGet::Func, &AS3::fl::NumberTI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_heightSet::Func, NULL, "height", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_mouseChildrenGet::Func, &AS3::fl::BooleanTI, "mouseChildren", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_mouseChildrenSet::Func, NULL, "mouseChildren", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_numChildrenGet::Func, &AS3::fl::int_TI, "numChildren", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_orientationGet::Func, &AS3::fl::StringTI, "orientation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_qualityGet::Func, &AS3::fl::StringTI, "quality", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_qualitySet::Func, NULL, "quality", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_scaleModeGet::Func, &AS3::fl::StringTI, "scaleMode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_scaleModeSet::Func, NULL, "scaleMode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_showDefaultContextMenuGet::Func, &AS3::fl::BooleanTI, "showDefaultContextMenu", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_showDefaultContextMenuSet::Func, NULL, "showDefaultContextMenu", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_stageFocusRectGet::Func, &AS3::fl::BooleanTI, "stageFocusRect", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_stageFocusRectSet::Func, NULL, "stageFocusRect", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_stageHeightGet::Func, &AS3::fl::int_TI, "stageHeight", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_stageHeightSet::Func, NULL, "stageHeight", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_stageWidthGet::Func, &AS3::fl::int_TI, "stageWidth", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_stageWidthSet::Func, NULL, "stageWidth", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_tabChildrenGet::Func, &AS3::fl::BooleanTI, "tabChildren", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_tabChildrenSet::Func, NULL, "tabChildren", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_textSnapshotGet::Func, &AS3::fl_text::TextSnapshotTI, "textSnapshot", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_widthGet::Func, &AS3::fl::NumberTI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Stage_widthSet::Func, NULL, "width", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Stage_addChild::Func, &AS3::fl_display::DisplayObjectTI, "addChild", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Stage_addChildAt::Func, &AS3::fl_display::DisplayObjectTI, "addChildAt", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Stage_addEventListener::Func, NULL, "addEventListener", NULL, Abc::NS_Public, CT_Method, 2, 5},
-        {TFunc_Instances_Stage_assignFocus::Func, NULL, "assignFocus", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Stage_dispatchEvent::Func, &AS3::fl::BooleanTI, "dispatchEvent", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Stage_hasEventListener::Func, &AS3::fl::BooleanTI, "hasEventListener", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Stage_invalidate::Func, NULL, "invalidate", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Stage_isFocusInaccessible::Func, &AS3::fl::BooleanTI, "isFocusInaccessible", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Stage_removeChildAt::Func, &AS3::fl_display::DisplayObjectTI, "removeChildAt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Stage_removeEventListener::Func, NULL, "removeEventListener", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_Stage_setChildIndex::Func, NULL, "setChildIndex", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Stage_setOrientation::Func, NULL, "setOrientation", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Stage_swapChildrenAt::Func, NULL, "swapChildrenAt", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Stage_willTrigger::Func, &AS3::fl::BooleanTI, "willTrigger", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_Stage_alignGet::Func, &Stage::tit[0], "align", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_alignSet::Func, &Stage::tit[1], "align", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_autoOrientsGet::Func, &Stage::tit[3], "autoOrients", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_deviceOrientationGet::Func, &Stage::tit[4], "deviceOrientation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_displayStateGet::Func, &Stage::tit[5], "displayState", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_displayStateSet::Func, &Stage::tit[6], "displayState", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_focusGet::Func, &Stage::tit[8], "focus", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_focusSet::Func, &Stage::tit[9], "focus", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_frameRateGet::Func, &Stage::tit[11], "frameRate", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_frameRateSet::Func, &Stage::tit[12], "frameRate", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_fullScreenHeightGet::Func, &Stage::tit[14], "fullScreenHeight", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_fullScreenSourceRectGet::Func, &Stage::tit[15], "fullScreenSourceRect", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_fullScreenSourceRectSet::Func, &Stage::tit[16], "fullScreenSourceRect", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_fullScreenWidthGet::Func, &Stage::tit[18], "fullScreenWidth", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_heightGet::Func, &Stage::tit[19], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_heightSet::Func, &Stage::tit[20], "height", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_mouseChildrenGet::Func, &Stage::tit[22], "mouseChildren", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_mouseChildrenSet::Func, &Stage::tit[23], "mouseChildren", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_numChildrenGet::Func, &Stage::tit[25], "numChildren", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_orientationGet::Func, &Stage::tit[26], "orientation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_qualityGet::Func, &Stage::tit[27], "quality", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_qualitySet::Func, &Stage::tit[28], "quality", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_scaleModeGet::Func, &Stage::tit[30], "scaleMode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_scaleModeSet::Func, &Stage::tit[31], "scaleMode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_showDefaultContextMenuGet::Func, &Stage::tit[33], "showDefaultContextMenu", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_showDefaultContextMenuSet::Func, &Stage::tit[34], "showDefaultContextMenu", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_stageFocusRectGet::Func, &Stage::tit[36], "stageFocusRect", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_stageFocusRectSet::Func, &Stage::tit[37], "stageFocusRect", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_stageHeightGet::Func, &Stage::tit[39], "stageHeight", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_stageHeightSet::Func, &Stage::tit[40], "stageHeight", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_stageWidthGet::Func, &Stage::tit[42], "stageWidth", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_stageWidthSet::Func, &Stage::tit[43], "stageWidth", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_tabChildrenGet::Func, &Stage::tit[45], "tabChildren", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_tabChildrenSet::Func, &Stage::tit[46], "tabChildren", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_textSnapshotGet::Func, &Stage::tit[48], "textSnapshot", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_widthGet::Func, &Stage::tit[49], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_widthSet::Func, &Stage::tit[50], "width", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_addChild::Func, &Stage::tit[52], "addChild", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_addChildAt::Func, &Stage::tit[54], "addChildAt", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Stage_addEventListener::Func, &Stage::tit[57], "addEventListener", NULL, Abc::NS_Public, CT_Method, 2, 5, 0, 0, NULL},
+        {TFunc_Instances_Stage_assignFocus::Func, &Stage::tit[63], "assignFocus", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Stage_dispatchEvent::Func, &Stage::tit[66], "dispatchEvent", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_hasEventListener::Func, &Stage::tit[68], "hasEventListener", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_invalidate::Func, &Stage::tit[70], "invalidate", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_isFocusInaccessible::Func, &Stage::tit[71], "isFocusInaccessible", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Stage_removeChildAt::Func, &Stage::tit[72], "removeChildAt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_removeEventListener::Func, &Stage::tit[74], "removeEventListener", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_Stage_setChildIndex::Func, &Stage::tit[78], "setChildIndex", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Stage_setOrientation::Func, &Stage::tit[81], "setOrientation", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Stage_swapChildrenAt::Func, &Stage::tit[83], "swapChildrenAt", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Stage_willTrigger::Func, &Stage::tit[86], "willTrigger", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     Stage::Stage(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::DisplayObjectContainer(vm, ci)
     {
 //##protect##"InstanceTraits::Stage::Stage()"
         SetTraitsType(Traits_Stage);
 //##protect##"InstanceTraits::Stage::Stage()"
-        SetMemSize(sizeof(Instances::fl_display::Stage));
 
     }
 
@@ -784,28 +833,37 @@ template <> const TFunc_Classes_Stage_supportsOrientationChangeGet::TMethod TFun
 
 namespace ClassTraits { namespace fl_display
 {
-    const ThunkInfo Stage::ti[Stage::ThunkInfoNum] = {
-        {TFunc_Classes_Stage_supportsOrientationChangeGet::Func, &AS3::fl::BooleanTI, "supportsOrientationChange", NULL, Abc::NS_Public, CT_Get, 0, 0},
+    // const UInt16 Stage::tito[Stage::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* Stage::tit[1] = {
+        &AS3::fl::BooleanTI, 
     };
-    Stage::Stage(VM& vm)
-    : Traits(vm, AS3::fl_display::StageCI)
+    const ThunkInfo Stage::ti[Stage::ThunkInfoNum] = {
+        {TFunc_Classes_Stage_supportsOrientationChangeGet::Func, &Stage::tit[0], "supportsOrientationChange", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+    };
+
+    Stage::Stage(VM& vm, const ClassInfo& ci)
+    : fl_display::DisplayObjectContainer(vm, ci)
     {
 //##protect##"ClassTraits::Stage::Stage()"
         SetTraitsType(Traits_Stage);
 //##protect##"ClassTraits::Stage::Stage()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::Stage(vm, AS3::fl_display::StageCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_display::Stage(*this));
 
     }
 
     Pickable<Traits> Stage::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Stage(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Stage(vm, AS3::fl_display::StageCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::StageCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -816,6 +874,11 @@ namespace fl_display
 {
     const TypeInfo StageTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::Stage::InstanceType),
+        ClassTraits::fl_display::Stage::ThunkInfoNum,
+        0,
+        InstanceTraits::fl_display::Stage::ThunkInfoNum,
+        0,
         "Stage", "flash.display", &fl_display::DisplayObjectContainerTI,
         TypeInfo::None
     };
@@ -823,10 +886,6 @@ namespace fl_display
     const ClassInfo StageCI = {
         &StageTI,
         ClassTraits::fl_display::Stage::MakeClassTraits,
-        ClassTraits::fl_display::Stage::ThunkInfoNum,
-        0,
-        InstanceTraits::fl_display::Stage::ThunkInfoNum,
-        0,
         ClassTraits::fl_display::Stage::ti,
         NULL,
         InstanceTraits::fl_display::Stage::ti,

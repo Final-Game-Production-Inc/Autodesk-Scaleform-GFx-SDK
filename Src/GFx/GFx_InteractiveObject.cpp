@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -235,18 +236,20 @@ void InteractiveObject::RemoveFromOptimizedPlayList()
         if (!proot->IsOptAdvanceListInvalid())
         {
             SF_ASSERT(proot);
-            SF_ASSERT(IsValidOptAdvListMember(proot));
-            proot->CheckOptPlaylistConsistency(this);
-
-            if (pPlayPrevOpt)
-                pPlayPrevOpt->pPlayNextOpt = pPlayNextOpt;
-            else
+            if (IsValidOptAdvListMember(proot))
             {
-                SF_ASSERT(proot->pPlayListOptHead == this);
-                proot->pPlayListOptHead = pPlayNextOpt;
+                proot->CheckOptPlaylistConsistency(this);
+
+                if (pPlayPrevOpt)
+                    pPlayPrevOpt->pPlayNextOpt = pPlayNextOpt;
+                else
+                {
+                    SF_ASSERT(proot->pPlayListOptHead == this);
+                    proot->pPlayListOptHead = pPlayNextOpt;
+                }
+                if (pPlayNextOpt)
+                    pPlayNextOpt->pPlayPrevOpt = pPlayPrevOpt;
             }
-            if (pPlayNextOpt)
-                pPlayNextOpt->pPlayPrevOpt = pPlayPrevOpt;
         }
         pPlayNextOpt = pPlayPrevOpt = NULL;
         ClearOptAdvListFlag();

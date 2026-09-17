@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -33,7 +34,7 @@ struct BlurFilterState
     const BlurFilterParams* CurPass;
     int                     BoxTCs, BaseTCs, TotalTCs, VertexAttrs;
 
-    BlurFilterState(int maxTex) : MaxTexOps(maxTex), Passes(0), Prims(0), UsesOriginal(0) {}
+    BlurFilterState(int maxTex = 8) : MaxTexOps(maxTex), Passes(0), Prims(0), UsesOriginal(0) {}
 
     bool Setup(const Filter* filter)
     {
@@ -181,6 +182,8 @@ struct BlurFilterState
 
 struct BlurFilterShaderKey
 {
+    // make sure these member variables continue to stay without padding
+    // Padding breaks the Hash function that uses this struct as a key
     unsigned Mode;
     int      BoxTCs, BaseTCs, TotalTCs;
 

@@ -7,6 +7,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -461,6 +462,9 @@ public:
     {
         MeshCache*                   pCache;
         MeshCacheItem::MeshContent&  MC;
+        bool                         CanCopyData;   // True, if the system is capable of copying vertex/index data from existing MeshCacheItems.
+        bool                         PinMeshes;     // True, if the GenerateMeshes call should pin the meshes in the staging buffer (set to false after first iteration).
+        const VertexFormat*          pVertexFormat; // The required vertex format of the data to be prepared.
 
         // PinedFlagArray is used to coordinate the number of Pins/Unpins; this is
         // necessary in case multiple identical meshes are in the list.
@@ -471,7 +475,7 @@ public:
 
         // Avoid warnings.
         StagingBufferPrep(const StagingBufferPrep& s)
-            : pCache(s.pCache), MC(s.MC) { }
+            : pCache(s.pCache), MC(s.MC), CanCopyData(s.CanCopyData), PinMeshes(s.PinMeshes), pVertexFormat(s.pVertexFormat) { }
         void operator = (StagingBufferPrep&) { SF_ASSERT(0); }
 
     public:
@@ -479,8 +483,13 @@ public:
         StagingBufferPrep(MeshCache* cache,
                           MeshCacheItem::MeshContent &mc,
                           const VertexFormat* format,
-                          bool canCopyData,
-                          MeshCacheItem * skipBatch = 0 );
+                          bool canCopyData);
+
+        // This is called to actually generate the meshes, or alternatively copy them from an existing buffer.
+        // It is called both before (by the constructor) and after the new MeshCacheItem is allocated, because 
+		// this allocation may cause eviction of the previous buffer (and then it cannot be copied from). 
+        void GenerateMeshes(MeshCacheItem * skipBatch = 0);
+
         ~StagingBufferPrep();
     };
 
@@ -668,28 +677,27 @@ inline void MeshCache::fillMaskEraseVertexBuffer(VFormat* pbuffer, unsigned coun
 {
     for(unsigned i = 0; i< count; i++)
     {
-        // This assumes Alpha in first byte. Effect may depend on byte order and
-        // ShaderManager vertex format mapping (offset assigned for VET_Instance8
-        // for ShaderManager::registerVertexFormat).
+        // Set all four components of the alpha to the batch index. This way,
+        // we don't need to worry about swizzling in the VB/shader.
+        for ( UByte j =0; j < 6; j++)
+        {
+            for (UByte k = 0; k < 4; k++)
+                pbuffer[i * 6 + j].Alpha[k] = (UByte)i;
+        }
+
         pbuffer[i * 6 + 0].x  = 0;
         pbuffer[i * 6 + 0].y  = 1;
-        pbuffer[i * 6 + 0].Alpha[0] = (UByte)i;
         pbuffer[i * 6 + 1].x  = 0;
         pbuffer[i * 6 + 1].y  = 0;
-        pbuffer[i * 6 + 1].Alpha[0] = (UByte)i;
         pbuffer[i * 6 + 2].x  = 1;
         pbuffer[i * 6 + 2].y  = 0;
-        pbuffer[i * 6 + 2].Alpha[0] = (UByte)i;
 
         pbuffer[i * 6 + 3].x  = 0;
         pbuffer[i * 6 + 3].y  = 1;
-        pbuffer[i * 6 + 3].Alpha[0] = (UByte)i;
         pbuffer[i * 6 + 4].x  = 1;
         pbuffer[i * 6 + 4].y  = 0;
-        pbuffer[i * 6 + 4].Alpha[0] = (UByte)i;
         pbuffer[i * 6 + 5].x  = 1;
         pbuffer[i * 6 + 5].y  = 1;
-        pbuffer[i * 6 + 5].Alpha[0] = (UByte)i;
     }
 }
 

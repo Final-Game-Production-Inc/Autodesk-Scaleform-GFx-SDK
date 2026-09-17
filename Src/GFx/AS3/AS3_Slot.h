@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -115,8 +116,8 @@ public:
     SlotInfo(
         Pickable<const Instances::fl::Namespace> ns,
         const ClassTraits::Traits* ctraits,
-        int a = aDontEnum 
-        SF_DEBUG_ARG(const Ptr<ASStringNode>& name = NULL)
+        int a = aDontEnum,
+        const Ptr<ASStringNode>& name = NULL
         );
     SlotInfo(const SlotInfo& other);
     ~SlotInfo();
@@ -129,8 +130,8 @@ private:
         Pickable<const Instances::fl::Namespace> ns,
         VMAbcFile& file,
         const Abc::TraitInfo& ti,
-        int a = aDontEnum 
-        SF_DEBUG_ARG(const Ptr<ASStringNode>& name = NULL)
+        int a = aDontEnum,
+        const Ptr<ASStringNode>& name = NULL
         );
 
 public:
@@ -193,6 +194,12 @@ public:
         const BindingType bt = GetBindingType();
         // return bt == BT_Set || bt == BT_GetSet;
         return bt > BT_Get;
+    }
+    //
+    bool IsReadWrite() const
+    {
+        const BindingType bt = GetBindingType();
+        return (bt < BT_ConstChar || bt == BT_GetSet) && !IsConst();
     }
 
     //
@@ -265,15 +272,16 @@ public:
     }
     SInt32 GetValueInd() const
     {
-        return ValueInd;
+        return static_cast<SInt32>(ValueInd);
     }
     AbsoluteIndex GetAValueInd() const
     {
         return AbsoluteIndex(ValueInd);
     }
 #ifdef SF_AS3_NAME_IN_SLOTINFO
-    SF_DEBUG_CODE(ASString GetName() const { return ASString(Name.GetPtr()); })
-    SF_DEBUG_CODE(ASStringNode* GetNameNode() const { return Name.GetPtr(); })
+    ASString GetQualifiedName() const { return ASString(Name.GetPtr()); }
+    ASStringNode* GetQualifiedNameNode() const { return Name.GetPtr(); }
+    ASString GetName() const;
 #endif
     
 private:
@@ -295,23 +303,29 @@ private:
     void SetFlagsFromInt(int a);
 
 private:
-    // Total: 27 bit.
-    UInt32  ReadOnly:1;
-    UInt32  DontEnum:1;
-    UInt32  DontDelete:1;
-    UInt32  Internal:1;
-    UInt32  CppBinding:1;
+    // !!! There is a compiler problem with SPInt + bit-fields + WiiU 
+    // compiler (04/09/2012) !!!
+    // Total: 32 bits.
+    SInt32  ReadOnly:2;
+    SInt32  DontEnum:2;
+    SInt32  DontDelete:2;
+    SInt32  Internal:2;
+    SInt32  CppBinding:2;
     SInt32  BindType:5; // One bit for sign.
     SInt32  ValueInd:17; // 16 bit for data (64K) plus one bit for sign.
 
-    SPtr<const Instances::fl::Namespace>        pNs;
+#ifdef SF_64BIT_POINTERS
+    SInt32  Padding01;
+#endif    
+    
+    SPtr<const Instances::fl::Namespace>    pNs;
     
     mutable SPtr<const ClassTraits::Traits> CTraits;
     SPtr<VMAbcFile>                         File;
     const Abc::TraitInfo*                   TI;
 
 #ifdef SF_AS3_NAME_IN_SLOTINFO
-    SF_DEBUG_CODE(Ptr<ASStringNode>         Name;)
+    Ptr<ASStringNode>                       Name;
 #endif
 };
 
@@ -322,6 +336,8 @@ public:
     // Hash code is stored right in the node
     UPInt operator()(const ASStringNode* data) const
     { return (UPInt) data->HashFlags; }
+    UPInt operator()(const ASString& data) const
+    { return (UPInt) data.GetHashFlags(); }
 };
 
 class SlotContainerType

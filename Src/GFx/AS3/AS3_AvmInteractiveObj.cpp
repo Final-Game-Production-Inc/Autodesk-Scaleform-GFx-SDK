@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -258,15 +259,15 @@ void AvmInteractiveObj::MoveBranchInPlayList()
     InteractiveObject* parent = GetParent();
     if (parent)
     {
-        InteractiveObject* pafter = ToAvmInteractiveObj(parent)->FindInsertToPlayList(p);
-        if (pafter)
+        InteractiveObject* pafterObj = ToAvmInteractiveObj(parent)->FindInsertToPlayList(p);
+        if (pafterObj)
         {
-            p->pPlayNext      = pafter->pPlayNext;
+            p->pPlayNext      = pafterObj->pPlayNext;
             if (p->pPlayNext)
                 p->pPlayNext->pPlayPrev = p;
 
-            pafter->pPlayNext = pend;
-            pend->pPlayPrev   = pafter;
+            pafterObj->pPlayNext = pend;
+            pend->pPlayPrev   = pafterObj;
         }
         else
             parent = NULL;

@@ -7,6 +7,7 @@ Created     :   November, 2008
 Authors     :   Andrew Reisse, Maxim Didenko, Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,6 +20,46 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Sound_SoundRenderer.h"
 #ifdef GFX_ENABLE_SOUND
+
+#if defined(SF_OS_WIN32) && !defined(SF_OS_WINMETRO) && !defined(_DURANGO)
+    #pragma comment(lib, "fmod_vc.lib")
+#endif
+#elif defined(SF_OS_WINMETRO) && !defined(_DURANGO)
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+    #if defined(_M_ARM_FP)  // Windows Phone8 ARM/x86
+    #pragma comment(lib, "fmodex_arm.lib")
+    #else
+    #pragma comment(lib, "fmodex_x86.lib")
+    #endif
+#else
+#if (SF_CC_MSVC == 1700) //Windows 8
+	#if defined(_WIN64)     // Windows Store x64/ARM/x86
+	#pragma comment(lib, "fmodexWSA8064_vc.lib")
+	#elif defined(_M_ARM_FP)
+	#pragma comment(lib, "fmodexWSA80arm_vc.lib")
+	#else
+	#pragma comment(lib, "fmodexWSA80_vc.lib")
+	#endif
+#endif
+#if (SF_CC_MSVC == 1800) //Windows store 8.1
+#if defined(_WIN64)     // Windows Store x64/ARM/x86
+	#pragma comment(lib, "fmodexWSA8164_vc.lib")
+	#elif defined(_M_ARM_FP)
+	#pragma comment(lib, "fmodexWSA81arm_vc.lib")
+	#else
+	#pragma comment(lib, "fmodexWSA81_vc.lib")
+	 #endif
+#endif
+#endif                      // Xbox360, PS3, XboxOne, PS4
+#elif defined(SF_OS_XBOX360)
+    #pragma comment(lib, "fmodxbox360.lib")
+#elif defined(SF_OS_PS3)
+    #pragma comment(lib, "fmodex_SPURS.a")
+#elif defined(_DURANGO)
+    #pragma comment(lib, "fmodex.lib")
+#elif defined(SF_OS_ORBIS)
+    #pragma comment(lib, "libfmodex.a")
+#endif
 
 namespace FMOD
 {
@@ -65,5 +106,3 @@ public:
 }} // Scaleform::Sound
 
 #endif // GFX_ENABLE_SOUND
-
-#endif

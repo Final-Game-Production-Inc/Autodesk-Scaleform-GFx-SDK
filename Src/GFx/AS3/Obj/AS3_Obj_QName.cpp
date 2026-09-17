@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl::QName, Instances::fl::QName::mid_localNameGet, ASString> TFunc_Instances_QName_localNameGet;
 typedef ThunkFunc0<Instances::fl::QName, Instances::fl::QName::mid_uriGet, Value> TFunc_Instances_QName_uriGet;
 typedef ThunkFunc0<Instances::fl::QName, Instances::fl::QName::mid_AS3valueOf, SPtr<Instances::fl::QName> > TFunc_Instances_QName_AS3valueOf;
@@ -345,20 +340,28 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 QName::tito[QName::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 
+    // };
+    const TypeInfo* QName::tit[4] = {
+        &AS3::fl::StringTI, 
+        NULL, 
+        &AS3::fl::QNameTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo QName::ti[QName::ThunkInfoNum] = {
-        {TFunc_Instances_QName_localNameGet::Func, &AS3::fl::StringTI, "localName", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_QName_uriGet::Func, NULL, "uri", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_QName_AS3valueOf::Func, &AS3::fl::QNameTI, "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_QName_AS3toString::Func, &AS3::fl::StringTI, "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_QName_localNameGet::Func, &QName::tit[0], "localName", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_QName_uriGet::Func, &QName::tit[1], "uri", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_QName_AS3valueOf::Func, &QName::tit[2], "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_QName_AS3toString::Func, &QName::tit[3], "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     QName::QName(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::QName::QName()"
         SetTraitsType(Traits_QName);
 //##protect##"InstanceTraits::QName::QName()"
-        SetMemSize(sizeof(Instances::fl::QName));
 
     }
 
@@ -374,8 +377,14 @@ namespace InstanceTraits { namespace fl
 
 namespace Classes { namespace fl
 {
+    // const UInt16 QName::tito[QName::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* QName::tit[1] = {
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo QName::ti[QName::ThunkInfoNum] = {
-        {&Instances::fl::QName::toStringProto, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {&Instances::fl::QName::toStringProto, &QName::tit[0], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     QName::QName(ClassTraits::Traits& t)
@@ -425,25 +434,28 @@ namespace Classes { namespace fl
 
 namespace ClassTraits { namespace fl
 {
-    QName::QName(VM& vm)
-    : Traits(vm, AS3::fl::QNameCI)
+
+    QName::QName(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::QName::QName()"
         SetTraitsType(Traits_QName);
 //##protect##"ClassTraits::QName::QName()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::QName(vm, AS3::fl::QNameCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::QName(*this));
 
     }
 
     Pickable<Traits> QName::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) QName(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) QName(vm, AS3::fl::QNameCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::QNameCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -454,6 +466,11 @@ namespace fl
 {
     const TypeInfo QNameTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl::QName::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl::QName::ThunkInfoNum,
+        0,
         "QName", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -461,10 +478,6 @@ namespace fl
     const ClassInfo QNameCI = {
         &QNameTI,
         ClassTraits::fl::QName::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl::QName::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl::QName::ti,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -495,42 +496,66 @@ template <> const TFunc_Classes_FocusManager_setModalClip::TMethod TFunc_Classes
 
 namespace ClassTraits { namespace fl_gfx
 {
-    const ThunkInfo FocusManager::ti[FocusManager::ThunkInfoNum] = {
-        {TFunc_Classes_FocusManager_alwaysEnableArrowKeysSet::Func, NULL, "alwaysEnableArrowKeys", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_FocusManager_alwaysEnableArrowKeysGet::Func, &AS3::fl::BooleanTI, "alwaysEnableArrowKeys", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_FocusManager_disableFocusKeysSet::Func, NULL, "disableFocusKeys", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_FocusManager_disableFocusKeysGet::Func, &AS3::fl::BooleanTI, "disableFocusKeys", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_FocusManager_moveFocus::Func, &AS3::fl_display::InteractiveObjectTI, "moveFocus", NULL, Abc::NS_Public, CT_Method, 1, 4},
-        {TFunc_Classes_FocusManager_findFocus::Func, &AS3::fl_display::InteractiveObjectTI, "findFocus", NULL, Abc::NS_Public, CT_Method, 1, 6},
-        {TFunc_Classes_FocusManager_setFocus::Func, NULL, "setFocus", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Classes_FocusManager_getFocus::Func, &AS3::fl_display::InteractiveObjectTI, "getFocus", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Classes_FocusManager_numFocusGroupsGet::Func, &AS3::fl::uintTI, "numFocusGroups", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_FocusManager_setFocusGroupMask::Func, NULL, "setFocusGroupMask", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_FocusManager_getFocusGroupMask::Func, &AS3::fl::uintTI, "getFocusGroupMask", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_FocusManager_setControllerFocusGroup::Func, &AS3::fl::BooleanTI, "setControllerFocusGroup", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_FocusManager_getControllerFocusGroup::Func, &AS3::fl::uintTI, "getControllerFocusGroup", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_FocusManager_getControllerMaskByFocusGroup::Func, &AS3::fl::uintTI, "getControllerMaskByFocusGroup", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_FocusManager_getModalClip::Func, &AS3::fl_display::SpriteTI, "getModalClip", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Classes_FocusManager_setModalClip::Func, NULL, "setModalClip", NULL, Abc::NS_Public, CT_Method, 1, 2},
+    // const UInt16 FocusManager::tito[FocusManager::ThunkInfoNum] = {
+    //    0, 2, 3, 5, 6, 11, 18, 21, 23, 24, 27, 29, 32, 34, 36, 38, 
+    // };
+    const TypeInfo* FocusManager::tit[41] = {
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_display::InteractiveObjectTI, &AS3::fl::StringTI, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::BooleanTI, &AS3::fl::uintTI, 
+        &AS3::fl_display::InteractiveObjectTI, &AS3::fl::StringTI, &AS3::fl_display::DisplayObjectContainerTI, &AS3::fl::BooleanTI, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::BooleanTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::uintTI, 
+        &AS3::fl_display::InteractiveObjectTI, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, &AS3::fl_display::InteractiveObjectTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        &AS3::fl_display::SpriteTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl_display::SpriteTI, &AS3::fl::uintTI, 
     };
-    FocusManager::FocusManager(VM& vm)
-    : Traits(vm, AS3::fl_gfx::FocusManagerCI)
+    const ThunkInfo FocusManager::ti[FocusManager::ThunkInfoNum] = {
+        {TFunc_Classes_FocusManager_alwaysEnableArrowKeysSet::Func, &FocusManager::tit[0], "alwaysEnableArrowKeys", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_alwaysEnableArrowKeysGet::Func, &FocusManager::tit[2], "alwaysEnableArrowKeys", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_disableFocusKeysSet::Func, &FocusManager::tit[3], "disableFocusKeys", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_disableFocusKeysGet::Func, &FocusManager::tit[5], "disableFocusKeys", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_moveFocus::Func, &FocusManager::tit[6], "moveFocus", NULL, Abc::NS_Public, CT_Method, 1, 4, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_findFocus::Func, &FocusManager::tit[11], "findFocus", NULL, Abc::NS_Public, CT_Method, 1, 6, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_setFocus::Func, &FocusManager::tit[18], "setFocus", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_getFocus::Func, &FocusManager::tit[21], "getFocus", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_numFocusGroupsGet::Func, &FocusManager::tit[23], "numFocusGroups", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_setFocusGroupMask::Func, &FocusManager::tit[24], "setFocusGroupMask", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_getFocusGroupMask::Func, &FocusManager::tit[27], "getFocusGroupMask", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_setControllerFocusGroup::Func, &FocusManager::tit[29], "setControllerFocusGroup", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_getControllerFocusGroup::Func, &FocusManager::tit[32], "getControllerFocusGroup", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_getControllerMaskByFocusGroup::Func, &FocusManager::tit[34], "getControllerMaskByFocusGroup", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_getModalClip::Func, &FocusManager::tit[36], "getModalClip", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Classes_FocusManager_setModalClip::Func, &FocusManager::tit[38], "setModalClip", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+    };
+
+    FocusManager::FocusManager(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::FocusManager::FocusManager()"
 //##protect##"ClassTraits::FocusManager::FocusManager()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_gfx::FocusManagerCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::FocusManager(*this));
 
     }
 
     Pickable<Traits> FocusManager::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) FocusManager(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) FocusManager(vm, AS3::fl_gfx::FocusManagerCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::FocusManagerCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -541,6 +566,11 @@ namespace fl_gfx
 {
     const TypeInfo FocusManagerTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::FocusManager::InstanceType),
+        ClassTraits::fl_gfx::FocusManager::ThunkInfoNum,
+        0,
+        0,
+        0,
         "FocusManager", "scaleform.gfx", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -548,10 +578,6 @@ namespace fl_gfx
     const ClassInfo FocusManagerCI = {
         &FocusManagerTI,
         ClassTraits::fl_gfx::FocusManager::MakeClassTraits,
-        ClassTraits::fl_gfx::FocusManager::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_gfx::FocusManager::ti,
         NULL,
         NULL,

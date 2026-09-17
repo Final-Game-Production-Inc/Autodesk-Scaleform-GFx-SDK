@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov, Maxim Didenko, Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -43,6 +44,10 @@ public:
     virtual void            SetFileOpener();
     virtual void            OnUpdateFrame(bool needRepaint);
     virtual void            OnShutdown();
+
+#ifdef SF_AMP_SERVER
+	virtual void			GetAmpServerCapabilities(GFx::AMP::MessageAppControl &caps) const;
+#endif
 
     void                    UpdateStatReports();
     virtual void            UpdateViewSize();
@@ -211,6 +216,9 @@ MMOKitApp::MMOKitApp()
 
 	// *** Begin MMO Kit
 
+	KeyCommandMap.Remove(Key::F3 | ctrlMask);
+	KeyCommandMap.Remove(Key::F4 | ctrlMask);
+	KeyCommandMap.Remove(Key::F5 | ctrlMask);
     KeyCommandMap.Remove(Key::R | ctrlMask);
 
     // *** End MMO Kit
@@ -628,6 +636,27 @@ bool MMOKitApp::OnInit(Platform::ViewConfig& config)
 
     return true;
 }
+
+#ifdef SF_AMP_SERVER
+void			MMOKitApp::GetAmpServerCapabilities(GFx::AMP::MessageAppControl &caps) const
+{
+    caps.SetCurveToleranceDown(true);
+    caps.SetCurveToleranceUp(true);
+    caps.SetNextFont(true);
+    caps.SetRestartMovie(false);
+    caps.SetToggleAaMode(true);
+    caps.SetToggleAmpRecording(true);
+    caps.SetToggleFastForward(true);
+    caps.SetToggleInstructionProfile(true);
+    caps.SetToggleOverdraw(true);
+    caps.SetToggleBatch(true);
+    caps.SetToggleBlending(true);
+    caps.SetToggleTextureDensity(true);
+    caps.SetToggleStrokeType(false);
+    caps.SetTogglePause(true);
+    caps.SetToggleWireframe(true);
+}
+#endif
 
 void    MMOKitApp::OnUpdateFrame(bool needRepaint)
 {

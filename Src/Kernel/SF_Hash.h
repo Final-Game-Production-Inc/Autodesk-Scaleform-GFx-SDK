@@ -7,6 +7,7 @@ Created     :   August 20, 2001
 Authors     :   Michael Antonov, Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -63,12 +64,15 @@ public:
 };
 
 // Computes a hash of an object's representation.
+// WARNING: If you are using a struct/class for the key ('C') that may be padded then the padded part 
+//          may be uninitialized, due to C++ object member initialization. In this case, make sure your 
+//          key class initializes the padding, or has manual padding to account for this.
 template<class C>
 class FixedSizeHash
 {
 public:
     // Alternative: "sdbm" hash function, suggested at same web page
-    // above, http::/www.cs.yorku.ca/~oz/hash.html
+    // above, http::/www.cse.yorku.ca/~oz/hash.html
     // This is somewhat slower then Bernstein, but it works way better than the above
     // hash function for hashing large numbers of 32-bit ints.
     static SF_INLINE UPInt SDBM_Hash(const void* data_in, UPInt size, UPInt seed = 5381)     
@@ -91,8 +95,6 @@ public:
         return SDBM_Hash(p, size);
     }
 };
-
-
 
 // *** HashsetEntry Entry types. 
 
@@ -494,7 +496,6 @@ public:
         {
             return ! (*this == it);
         }
-
 
         bool    IsEnd() const
         {
@@ -1221,24 +1222,36 @@ public:
     UPInt HashValue;
     C     Value;
 
+    // 1. 默认构造函数：显式初始化 HashValue 为 0
     HashsetCachedNodeEntry()
-        : NextInChain(-2) { }
-    HashsetCachedNodeEntry(const HashsetCachedNodeEntry& e)
-        : NextInChain(e.NextInChain), HashValue(e.HashValue), Value(e.Value) { }
-    HashsetCachedNodeEntry(const C& key, SPInt next)
-        : NextInChain(next), Value(key) { }
-    HashsetCachedNodeEntry(const typename C::NodeRef& keyRef, SPInt next)
-        : NextInChain(next), Value(keyRef) { }
+        : NextInChain(-2), HashValue(0) {
+    }
 
-    bool    IsEmpty() const            { return NextInChain == -2;  }
-    bool    IsEndOfChain() const       { return NextInChain == -1;  }
-    UPInt   GetCachedHash(UPInt maskValue) const  { SF_UNUSED(maskValue); return HashValue; }
-    void    SetCachedHash(UPInt hashValue)        { HashValue = hashValue; }
+    // 2. 拷贝构造函数：原有逻辑已初始化 HashValue，保留
+    HashsetCachedNodeEntry(const HashsetCachedNodeEntry& e)
+        : NextInChain(e.NextInChain), HashValue(e.HashValue), Value(e.Value) {
+    }
+
+    // 3. 接收 const C& 的构造函数：显式初始化 HashValue 为 0
+    HashsetCachedNodeEntry(const C& key, SPInt next)
+        : NextInChain(next), HashValue(0), Value(key) {
+    }
+
+    // 4. 接收 NodeRef 的构造函数：显式初始化 HashValue 为 0
+    HashsetCachedNodeEntry(const typename C::NodeRef& keyRef, SPInt next)
+        : NextInChain(next), HashValue(0), Value(keyRef) {
+    }
+
+    bool    IsEmpty() const { return NextInChain == -2; }
+    bool    IsEndOfChain() const { return NextInChain == -1; }
+    UPInt   GetCachedHash(UPInt maskValue) const { SF_UNUSED(maskValue); return HashValue; }
+    void    SetCachedHash(UPInt hashValue) { HashValue = hashValue; }
 
     void    Clear()
     {
         Value.~C();
         NextInChain = -2;
+        HashValue = 0; // 可选：Clear 时也重置 HashValue，增强安全性
     }
     // Free is only used from dtor of hash; Clear is used during regular operations:
     // assignment, hash reallocations, value reassignments, so on.

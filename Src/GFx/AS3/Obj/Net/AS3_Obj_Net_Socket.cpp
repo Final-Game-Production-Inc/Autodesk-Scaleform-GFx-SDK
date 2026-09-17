@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -25,6 +26,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "GFx/AS3/Obj/Events/AS3_Obj_Events_IOErrorEvent.h"
 #include "GFx/AS3/Obj/Events/AS3_Obj_Events_ProgressEvent.h"
 #include "GFx/AS3/AS3_MovieRoot.h"
+
 //##protect##"includes"
 
 
@@ -33,12 +35,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_net::Socket, Instances::fl_net::Socket::mid_bytesAvailableGet, UInt32> TFunc_Instances_Socket_bytesAvailableGet;
 typedef ThunkFunc0<Instances::fl_net::Socket, Instances::fl_net::Socket::mid_bytesPendingGet, UInt32> TFunc_Instances_Socket_bytesPendingGet;
 typedef ThunkFunc0<Instances::fl_net::Socket, Instances::fl_net::Socket::mid_connectedGet, bool> TFunc_Instances_Socket_connectedGet;
@@ -137,7 +133,7 @@ namespace Instances { namespace fl_net
 //##protect##"instance::Socket::Socket()$code"
 #ifdef SF_ENABLE_SOCKETS
         ASVM& vm = static_cast<ASVM&>(GetVM());
-        SockMgr = vm.GetMovieRoot()->AddSocket(true, NULL, this);
+        SockMgr = vm.GetMovieRoot()->AddSocket(true, this);
 #endif
 //##protect##"instance::Socket::Socket()$code"
     }
@@ -1113,57 +1109,103 @@ namespace Instances { namespace fl_net
 
 namespace InstanceTraits { namespace fl_net
 {
+    // const UInt16 Socket::tito[Socket::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 20, 21, 22, 23, 27, 28, 29, 30, 33, 34, 35, 36, 37, 38, 39, 41, 43, 45, 49, 51, 53, 55, 58, 60, 62, 64, 66, 
+    // };
+    const TypeInfo* Socket::tit[68] = {
+        &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::int_TI, 
+        NULL, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl_utils::ByteArrayTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, &AS3::fl::uintTI, &AS3::fl::StringTI, 
+        NULL, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl_utils::ByteArrayTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::StringTI, 
+        NULL, NULL, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+    };
     const ThunkInfo Socket::ti[Socket::ThunkInfoNum] = {
-        {TFunc_Instances_Socket_bytesAvailableGet::Func, &AS3::fl::uintTI, "bytesAvailable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_bytesPendingGet::Func, &AS3::fl::uintTI, "bytesPending", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_connectedGet::Func, &AS3::fl::BooleanTI, "connected", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_endianGet::Func, &AS3::fl::StringTI, "endian", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_endianSet::Func, NULL, "endian", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Socket_localAddressGet::Func, &AS3::fl::StringTI, "localAddress", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_localPortGet::Func, &AS3::fl::int_TI, "localPort", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_objectEncodingGet::Func, &AS3::fl::uintTI, "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_objectEncodingSet::Func, NULL, "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Socket_remoteAddressGet::Func, &AS3::fl::StringTI, "remoteAddress", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_remotePortGet::Func, &AS3::fl::int_TI, "remotePort", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_timeoutGet::Func, &AS3::fl::uintTI, "timeout", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Socket_timeoutSet::Func, NULL, "timeout", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Socket_close::Func, NULL, "close", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_connect::Func, NULL, "connect", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Socket_flush::Func, NULL, "flush", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readBoolean::Func, &AS3::fl::BooleanTI, "readBoolean", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readByte::Func, &AS3::fl::int_TI, "readByte", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readBytes::Func, NULL, "readBytes", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_Socket_readDouble::Func, &AS3::fl::NumberTI, "readDouble", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readFloat::Func, &AS3::fl::NumberTI, "readFloat", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readInt::Func, &AS3::fl::int_TI, "readInt", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readMultiByte::Func, &AS3::fl::StringTI, "readMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Socket_readObject::Func, NULL, "readObject", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readShort::Func, &AS3::fl::int_TI, "readShort", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readUnsignedByte::Func, &AS3::fl::uintTI, "readUnsignedByte", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readUnsignedInt::Func, &AS3::fl::uintTI, "readUnsignedInt", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readUnsignedShort::Func, &AS3::fl::uintTI, "readUnsignedShort", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readUTF::Func, &AS3::fl::StringTI, "readUTF", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Socket_readUTFBytes::Func, &AS3::fl::StringTI, "readUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeBoolean::Func, NULL, "writeBoolean", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeByte::Func, NULL, "writeByte", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeBytes::Func, NULL, "writeBytes", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_Socket_writeDouble::Func, NULL, "writeDouble", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeFloat::Func, NULL, "writeFloat", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeInt::Func, NULL, "writeInt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeMultiByte::Func, NULL, "writeMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Socket_writeObject::Func, NULL, "writeObject", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeShort::Func, NULL, "writeShort", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeUnsignedInt::Func, NULL, "writeUnsignedInt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeUTF::Func, NULL, "writeUTF", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Socket_writeUTFBytes::Func, NULL, "writeUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_Socket_bytesAvailableGet::Func, &Socket::tit[0], "bytesAvailable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_bytesPendingGet::Func, &Socket::tit[1], "bytesPending", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_connectedGet::Func, &Socket::tit[2], "connected", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_endianGet::Func, &Socket::tit[3], "endian", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_endianSet::Func, &Socket::tit[4], "endian", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_localAddressGet::Func, &Socket::tit[6], "localAddress", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_localPortGet::Func, &Socket::tit[7], "localPort", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_objectEncodingGet::Func, &Socket::tit[8], "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_objectEncodingSet::Func, &Socket::tit[9], "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_remoteAddressGet::Func, &Socket::tit[11], "remoteAddress", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_remotePortGet::Func, &Socket::tit[12], "remotePort", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_timeoutGet::Func, &Socket::tit[13], "timeout", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_timeoutSet::Func, &Socket::tit[14], "timeout", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_close::Func, &Socket::tit[16], "close", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_connect::Func, &Socket::tit[17], "connect", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Socket_flush::Func, &Socket::tit[20], "flush", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readBoolean::Func, &Socket::tit[21], "readBoolean", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readByte::Func, &Socket::tit[22], "readByte", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readBytes::Func, &Socket::tit[23], "readBytes", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_Socket_readDouble::Func, &Socket::tit[27], "readDouble", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readFloat::Func, &Socket::tit[28], "readFloat", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readInt::Func, &Socket::tit[29], "readInt", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readMultiByte::Func, &Socket::tit[30], "readMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Socket_readObject::Func, &Socket::tit[33], "readObject", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readShort::Func, &Socket::tit[34], "readShort", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readUnsignedByte::Func, &Socket::tit[35], "readUnsignedByte", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readUnsignedInt::Func, &Socket::tit[36], "readUnsignedInt", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readUnsignedShort::Func, &Socket::tit[37], "readUnsignedShort", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readUTF::Func, &Socket::tit[38], "readUTF", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Socket_readUTFBytes::Func, &Socket::tit[39], "readUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeBoolean::Func, &Socket::tit[41], "writeBoolean", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeByte::Func, &Socket::tit[43], "writeByte", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeBytes::Func, &Socket::tit[45], "writeBytes", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeDouble::Func, &Socket::tit[49], "writeDouble", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeFloat::Func, &Socket::tit[51], "writeFloat", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeInt::Func, &Socket::tit[53], "writeInt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeMultiByte::Func, &Socket::tit[55], "writeMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeObject::Func, &Socket::tit[58], "writeObject", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeShort::Func, &Socket::tit[60], "writeShort", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeUnsignedInt::Func, &Socket::tit[62], "writeUnsignedInt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeUTF::Func, &Socket::tit[64], "writeUTF", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Socket_writeUTFBytes::Func, &Socket::tit[66], "writeUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     Socket::Socket(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::Socket::Socket()"
 //##protect##"InstanceTraits::Socket::Socket()"
-        SetMemSize(sizeof(Instances::fl_net::Socket));
 
     }
 
@@ -1180,24 +1222,27 @@ namespace InstanceTraits { namespace fl_net
 
 namespace ClassTraits { namespace fl_net
 {
-    Socket::Socket(VM& vm)
-    : Traits(vm, AS3::fl_net::SocketCI)
+
+    Socket::Socket(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::Socket::Socket()"
 //##protect##"ClassTraits::Socket::Socket()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_net::Socket(vm, AS3::fl_net::SocketCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Socket::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Socket(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Socket(vm, AS3::fl_net::SocketCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_net::SocketCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1214,6 +1259,11 @@ namespace fl_net
 
     const TypeInfo SocketTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_net::Socket::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_net::Socket::ThunkInfoNum,
+        0,
         "Socket", "flash.net", &fl_events::EventDispatcherTI,
         SocketImplements
     };
@@ -1221,10 +1271,6 @@ namespace fl_net
     const ClassInfo SocketCI = {
         &SocketTI,
         ClassTraits::fl_net::Socket::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_net::Socket::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_net::Socket::ti,

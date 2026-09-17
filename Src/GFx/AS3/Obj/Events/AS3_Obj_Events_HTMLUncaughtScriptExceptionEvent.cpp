@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,12 +30,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace Instances { namespace fl_events
 {
     HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent(InstanceTraits::Traits& t)
@@ -56,8 +51,14 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 HTMLUncaughtScriptExceptionEvent::tito[HTMLUncaughtScriptExceptionEvent::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* HTMLUncaughtScriptExceptionEvent::tit[1] = {
+        &AS3::fl_events::EventTI, 
+    };
     const ThunkInfo HTMLUncaughtScriptExceptionEvent::ti[HTMLUncaughtScriptExceptionEvent::ThunkInfoNum] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &HTMLUncaughtScriptExceptionEvent::tit[0], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
     const MemberInfo HTMLUncaughtScriptExceptionEvent::mi[HTMLUncaughtScriptExceptionEvent::MemberInfoNum] = {
         {"exceptionValue", NULL, OFFSETOF(Instances::fl_events::HTMLUncaughtScriptExceptionEvent, exceptionValue), Abc::NS_Public, SlotInfo::BT_Value, 0},
@@ -66,11 +67,10 @@ namespace InstanceTraits { namespace fl_events
 
 
     HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent()"
 //##protect##"InstanceTraits::HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent()"
-        SetMemSize(sizeof(Instances::fl_events::HTMLUncaughtScriptExceptionEvent));
 
     }
 
@@ -104,24 +104,27 @@ namespace ClassTraits { namespace fl_events
         {"UNCAUGHT_SCRIPT_EXCEPTION", NULL, OFFSETOF(Classes::fl_events::HTMLUncaughtScriptExceptionEvent, UNCAUGHT_SCRIPT_EXCEPTION), Abc::NS_Public, SlotInfo::BT_Value, 1},
     };
 
-    HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::HTMLUncaughtScriptExceptionEventCI)
+
+    HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent()"
 //##protect##"ClassTraits::HTMLUncaughtScriptExceptionEvent::HTMLUncaughtScriptExceptionEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::HTMLUncaughtScriptExceptionEvent(vm, AS3::fl_events::HTMLUncaughtScriptExceptionEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::HTMLUncaughtScriptExceptionEvent(*this));
 
     }
 
     Pickable<Traits> HTMLUncaughtScriptExceptionEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) HTMLUncaughtScriptExceptionEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) HTMLUncaughtScriptExceptionEvent(vm, AS3::fl_events::HTMLUncaughtScriptExceptionEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::HTMLUncaughtScriptExceptionEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -132,6 +135,11 @@ namespace fl_events
 {
     const TypeInfo HTMLUncaughtScriptExceptionEventTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_events::HTMLUncaughtScriptExceptionEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::HTMLUncaughtScriptExceptionEvent::MemberInfoNum,
+        InstanceTraits::fl_events::HTMLUncaughtScriptExceptionEvent::ThunkInfoNum,
+        InstanceTraits::fl_events::HTMLUncaughtScriptExceptionEvent::MemberInfoNum,
         "HTMLUncaughtScriptExceptionEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -139,10 +147,6 @@ namespace fl_events
     const ClassInfo HTMLUncaughtScriptExceptionEventCI = {
         &HTMLUncaughtScriptExceptionEventTI,
         ClassTraits::fl_events::HTMLUncaughtScriptExceptionEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::HTMLUncaughtScriptExceptionEvent::MemberInfoNum,
-        InstanceTraits::fl_events::HTMLUncaughtScriptExceptionEvent::ThunkInfoNum,
-        InstanceTraits::fl_events::HTMLUncaughtScriptExceptionEvent::MemberInfoNum,
         NULL,
         ClassTraits::fl_events::HTMLUncaughtScriptExceptionEvent::mi,
         InstanceTraits::fl_events::HTMLUncaughtScriptExceptionEvent::ti,

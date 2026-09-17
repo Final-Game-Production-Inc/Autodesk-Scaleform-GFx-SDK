@@ -7,6 +7,7 @@ Created     :   November, 2010
 Authors     :   Michael Antonov, Dmitry Polenur, Maxim Didenko, 
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -76,25 +77,25 @@ otherwise accompanies this software in either electronic or hard copy form.
     #define FXPLAYER_RENDER_DIRECT3D
     #define FXPLAYER_FONT_SIZE          10
 
-	#if _XDK_VER >= 9328
-		#ifdef SF_BUILD_DEBUG
-			#pragma comment(lib, "xmahald")
-			#pragma comment(lib, "xuirund")
-			#pragma comment(lib, "xuirenderd")
-		#else
-			#pragma comment(lib, "xmahal")
-			#pragma comment(lib, "xuirun")
-			#pragma comment(lib, "xuirender")
-		#endif
-	#else
-		#ifdef SF_BUILD_DEBUG
-			#pragma comment(lib, "xactd")
-			#pragma comment(lib, "xaudiod")
-		#else
-			#pragma comment(lib, "xact")
-			#pragma comment(lib, "xaudio")
-		#endif
-	#endif
+    #if _XDK_VER >= 9328
+        #ifdef SF_BUILD_DEBUG
+            #pragma comment(lib, "xmahald")
+            #pragma comment(lib, "xuirund")
+            #pragma comment(lib, "xuirenderd")
+        #else
+            #pragma comment(lib, "xmahal")
+            #pragma comment(lib, "xuirun")
+            #pragma comment(lib, "xuirender")
+        #endif
+    #else
+        #ifdef SF_BUILD_DEBUG
+            #pragma comment(lib, "xactd")
+            #pragma comment(lib, "xaudiod")
+        #else
+            #pragma comment(lib, "xact")
+            #pragma comment(lib, "xaudio")
+        #endif
+    #endif
 
 #elif defined (SF_OS_PS3)
     #include <sys/paths.h>
@@ -143,12 +144,16 @@ namespace Scaleform {
 class FxPlayerAutoTest;
 }
 
+#include "GFx/AMP/Amp_Interfaces.h"
+
 
 //------------------------------------------------------------------------
 // ***** FxPlayerAppBase
 
-class FxPlayerAppBase : public Platform::App<FxRenderThread>,
-                        public Scaleform::GFx::AMP::AppControlInterface
+class FxPlayerAppBase : public Platform::App<FxRenderThread>
+#ifdef SF_AMP_SERVER
+    , public AMP::AppControlInterface
+#endif
 {
 public:
     typedef Platform::App<FxRenderThread> BaseClass;
@@ -194,18 +199,19 @@ public:
     bool                    ScaleEnable;
     bool                    ClippingEnable;
 
+#ifdef SF_AMP_SERVER
     Lock                                        AmpCallbackLock;
     Array< Ptr<GFx::AMP::MessageAppControl> >   AmpAppControlMsgs;
     UInt32                                      AmpPort;
-
+#endif
     // Rendering state
-    bool                PlayOnce;
-    bool                Rendering;
-    bool                DoSound;
-    bool                NoControlKeys; //Disable all keyboard shortcuts
-    bool                NoCtrlKey; // Disable handling of Ctrl key
-    bool                OverdrawProfile;
-    bool                BatchProfile;
+    bool                  PlayOnce;
+    bool                  Rendering;
+    bool                  DoSound;
+    bool                  NoControlKeys;    //Disable all keyboard shortcuts
+    bool                  NoCtrlKey;        // Disable handling of Ctrl key
+    Render::ProfilerModes ProfileMode;      // The current profile mode.
+    int                   BatchHighlight;   // In Batch profile mode, specifies the index of the batch that should be highlighted (-ve to disable highlighting).
 
     //Sound properties 
     float               SoundVolume;
@@ -229,7 +235,17 @@ public:
     TrackingState           MouseTracking;
     Point<int>              MouseDownPos;
     Point<int>              MousePrevPos;
-
+    
+    enum PadStickMode
+    {
+        PSM_NoStick,
+        PSM_NoPad,
+        PSM_StickAndPad,
+        PSM_Count
+    };
+    
+    int                     StickMode;
+    
     // This variable is set when the movie is paused in the player.
     bool                    Paused;
     // Store playstate when paused, so that we can restore it.
@@ -330,10 +346,13 @@ public:
     virtual void            OnUpdateFrame(bool needRepaint);
     virtual void            OnAutoUpdateFrame();
     virtual void            OnShutdown();
-	virtual void            OnPause() {}
+    virtual void            OnPause() {}
 
     virtual void            OnRenderThreadCreated();
 
+#ifdef SF_AMP_SERVER
+	virtual void			GetAmpServerCapabilities(GFx::AMP::MessageAppControl &caps) const;
+#endif
     
     // *** App Event Overrides
  
@@ -347,7 +366,8 @@ public:
     virtual void            OnKey(unsigned controllerIndex, KeyCode keyCode,
                                   unsigned wcharCode, bool downFlag, KeyModifiers mods);
     virtual void            OnPad(unsigned controllerIndex, PadKeyCode padCode, bool downFlag);
-	virtual bool            OnIMEEvent(unsigned message, UPInt wParam, UPInt lParam, UPInt hWND, bool preprocess);
+    virtual void            OnPadStick(unsigned controllerIndex, PadKeyCode padCode, float xpos, float ypos);
+    virtual bool            OnIMEEvent(unsigned message, UPInt wParam, UPInt lParam, UPInt hWND, bool preprocess);
     virtual void            OnMouseButton(unsigned mouseIndex, unsigned button, bool downFlag, 
                                           const Point<int>& mousePos, KeyModifiers mods);    
     virtual void            OnMouseMove(unsigned mouseIndex,
@@ -398,11 +418,12 @@ public:
     void                    ResetUserMatrix();
     void                    UpdateUserMatrix();
     //  SizeF                   GetMovieScaleSize();
-    Render::PointF			AdjustToViewPort(const Point<int>& pos);
+    Render::PointF          AdjustToViewPort(const Point<int>& pos);
     Render::Point<int>      AdjustMovieDefToViewPort(const Point<int>& pos);
     // *** Overrides
+#ifdef SF_AMP_SERVER
     virtual bool            HandleAmpRequest(const GFx::AMP::MessageAppControl* message);
-
+#endif
 
     virtual void            OnPause(bool paused);
     virtual void            OnObjectsReport();
@@ -430,8 +451,10 @@ public:
     void                    ToggleAaMode();
     void                    ToggleStrokeType();
     void                    CycleFontConfig();
+#ifdef SF_AMP_SERVER
     void                    HandleAmpAppMessages();
     void                    UpdateAmpState();
+#endif
 
 
     void                    ProcessCommand(unsigned controllerIdx, const FxPlayerCommand& cmd, bool downFlag);

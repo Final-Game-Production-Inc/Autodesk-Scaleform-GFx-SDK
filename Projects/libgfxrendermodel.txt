@@ -2,13 +2,11 @@ Include/GFx.h
 Include/GFxCompat.h
 Include/GFxConfig.h
 Include/GFxConfigAddons.h
-Include/GFxConfigAddons_Blank.h
 Include/GFxVersion.h
 Include/GFx_AMP.h
 Include/GFx_FontProvider_FT2.h
 Include/GFx_FontProvider_PS3.h
 Include/GFx_FontProvider_Win32.h
-Include/GFx_FontProvider_HUD.h
 Include/GFx_Kernel.h
 Include/GFx_Render.h
 Include/GFx_Renderer_D3D9.h
@@ -43,7 +41,6 @@ Src/Kernel/HeapPT/HeapPT_AllocLite.h
 Src/Kernel/HeapPT/HeapPT_AllocLite.cpp
 Src/Kernel/HeapPT/HeapPT_BitSet1.h
 Src/Kernel/HeapPT/HeapPT_BitSet1.cpp
-Src/Kernel/HeapPT/HeapPT_BitSet2.h
 Src/Kernel/HeapPT/HeapPT_Bookkeeper.h
 Src/Kernel/HeapPT/HeapPT_Bookkeeper.cpp
 Src/Kernel/HeapPT/HeapPT_DebugInfo.h
@@ -64,7 +61,6 @@ Src/Kernel/HeapPT/HeapPT_SysAllocMalloc.h
 Src/Kernel/HeapPT/HeapPT_SysAllocMapper.cpp
 Src/Kernel/HeapPT/HeapPT_SysAllocMapper.h
 Src/Kernel/HeapPT/HeapPT_SysAllocStatic.cpp
-Src/Kernel/HeapPT/HeapPT_Types.h
 
 Src/Kernel/SF_Alg.cpp
 Src/Kernel/SF_Alg.h
@@ -111,7 +107,6 @@ Src/Kernel/SF_Random.h
 Src/Kernel/SF_Range.h
 Src/Kernel/SF_RefCount.cpp
 Src/Kernel/SF_RefCount.h
-Src/Kernel/SF_RefCountCollector.h
 Src/Kernel/SF_SIMD.h
 Src/Kernel/SF_SIMD_Altivec.h
 Src/Kernel/SF_SIMD_SSE.h
@@ -187,7 +182,6 @@ Src/Render/Render_HitTest.cpp
 Src/Render/Render_HitTest.h
 Src/Render/Render_Image.cpp
 Src/Render/Render_Image.h
-Src/Render/Render_JPEGUtil.h
 Src/Render/Render_Math2D.h
 Src/Render/Render_Matrix2x4.cpp
 Src/Render/Render_Matrix2x4.h
@@ -203,7 +197,6 @@ Src/Render/Render_MeshCache.h
 Src/Render/Render_MeshCacheConfig.h
 Src/Render/Render_MeshKey.cpp
 Src/Render/Render_MeshKey.h
-Src/Render/Render_PathDataInt.h
 Src/Render/Render_PathDataPacker.cpp
 Src/Render/Render_PathDataPacker.h
 Src/Render/Render_Point3.h

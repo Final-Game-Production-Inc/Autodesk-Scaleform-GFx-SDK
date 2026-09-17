@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,34 +30,52 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_filters
 {
+    // const UInt16 ConvolutionFilter_tito[19] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 
+    // };
+    const TypeInfo* ConvolutionFilter_tit[28] = {
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_filters::BitmapFilterTI, 
+    };
     const ThunkInfo ConvolutionFilter_ti[19] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "bias", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "bias", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "clamp", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "clamp", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::uintTI, "color", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "color", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "divisor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "divisor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::ArrayTI, "matrix", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "matrix", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "matrixX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "matrixX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "matrixY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "matrixY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "preserveAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "preserveAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, &AS3::fl_filters::BitmapFilterTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[0], "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[1], "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[3], "bias", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[4], "bias", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[6], "clamp", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[7], "clamp", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[9], "color", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[10], "color", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[12], "divisor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[13], "divisor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[15], "matrix", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[16], "matrix", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[18], "matrixX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[19], "matrixX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[21], "matrixY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[22], "matrixY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[24], "preserveAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[25], "preserveAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ConvolutionFilter_tit[27], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -64,24 +83,27 @@ namespace InstanceTraits { namespace fl_filters
 
 namespace ClassTraits { namespace fl_filters
 {
-    ConvolutionFilter::ConvolutionFilter(VM& vm)
-    : Traits(vm, AS3::fl_filters::ConvolutionFilterCI)
+
+    ConvolutionFilter::ConvolutionFilter(VM& vm, const ClassInfo& ci)
+    : fl_filters::BitmapFilter(vm, ci)
     {
 //##protect##"ClassTraits::ConvolutionFilter::ConvolutionFilter()"
 //##protect##"ClassTraits::ConvolutionFilter::ConvolutionFilter()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_filters::BitmapFilter(vm, AS3::fl_filters::ConvolutionFilterCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> ConvolutionFilter::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) ConvolutionFilter(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) ConvolutionFilter(vm, AS3::fl_filters::ConvolutionFilterCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_filters::ConvolutionFilterCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -92,6 +114,11 @@ namespace fl_filters
 {
     const TypeInfo ConvolutionFilterTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_filters::ConvolutionFilter::InstanceType),
+        0,
+        0,
+        19,
+        0,
         "ConvolutionFilter", "flash.filters", &fl_filters::BitmapFilterTI,
         TypeInfo::None
     };
@@ -99,10 +126,6 @@ namespace fl_filters
     const ClassInfo ConvolutionFilterCI = {
         &ConvolutionFilterTI,
         ClassTraits::fl_filters::ConvolutionFilter::MakeClassTraits,
-        0,
-        0,
-        19,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_filters::ConvolutionFilter_ti,

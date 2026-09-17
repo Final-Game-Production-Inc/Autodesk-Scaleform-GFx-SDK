@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -489,8 +490,8 @@ void InvokeContext::Setup()
         {
             pargArray = *SF_HEAP_NEW(pheap) ArrayObject(pOurEnv);
             pargArray->Resize(mFnCall.NArgs);
-            for (int i = 0; i < mFnCall.NArgs; i++)
-                pargArray->SetElement(i, mFnCall.Arg(i));
+            for (int ipa = 0; ipa < mFnCall.NArgs; ipa++)
+                pargArray->SetElement(ipa, mFnCall.Arg(ipa));
         }
 
         if (pThis->Function2Flags & 0x04)

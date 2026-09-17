@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -39,6 +40,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "../Filters/AS3_Obj_Filters_ColorMatrixFilter.h"
 #include "../Filters/AS3_Obj_Filters_DropShadowFilter.h"
 #include "../Filters/AS3_Obj_Filters_GlowFilter.h"
+#include "../Filters/AS3_Obj_Filters_GradientGlowFilter.h"
+#include "../Filters/AS3_Obj_Filters_GradientBevelFilter.h"
+#include "../Filters/AS3_Obj_Filters_DisplacementMapFilter.h"
 //##protect##"includes"
 
 
@@ -47,12 +51,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_accessibilityPropertiesGet, SPtr<Instances::fl_accessibility::AccessibilityProperties> > TFunc_Instances_DisplayObject_accessibilityPropertiesGet;
 typedef ThunkFunc1<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_accessibilityPropertiesSet, const Value, Instances::fl_accessibility::AccessibilityProperties*> TFunc_Instances_DisplayObject_accessibilityPropertiesSet;
 typedef ThunkFunc0<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_alphaGet, Value::Number> TFunc_Instances_DisplayObject_alphaGet;
@@ -115,6 +113,10 @@ typedef ThunkFunc1<Instances::fl_display::DisplayObject, Instances::fl_display::
 typedef ThunkFunc3<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_hitTestPoint, bool, Value::Number, Value::Number, bool> TFunc_Instances_DisplayObject_hitTestPoint;
 typedef ThunkFunc1<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_localToGlobal, SPtr<Instances::fl_geom::Point>, Instances::fl_geom::Point*> TFunc_Instances_DisplayObject_localToGlobal;
 typedef ThunkFunc1<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_local3DToGlobal, SPtr<Instances::fl_geom::Point>, Instances::fl_geom::Vector3D*> TFunc_Instances_DisplayObject_local3DToGlobal;
+typedef ThunkFunc0<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_backgroundAlphaGet, Value::Number> TFunc_Instances_DisplayObject_backgroundAlphaGet;
+typedef ThunkFunc1<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_backgroundAlphaSet, const Value, Value::Number> TFunc_Instances_DisplayObject_backgroundAlphaSet;
+typedef ThunkFunc0<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_mouseEnableGet, bool> TFunc_Instances_DisplayObject_mouseEnableGet;
+typedef ThunkFunc1<Instances::fl_display::DisplayObject, Instances::fl_display::DisplayObject::mid_mouseEnableSet, const Value, bool> TFunc_Instances_DisplayObject_mouseEnableSet;
 
 template <> const TFunc_Instances_DisplayObject_accessibilityPropertiesGet::TMethod TFunc_Instances_DisplayObject_accessibilityPropertiesGet::Method = &Instances::fl_display::DisplayObject::accessibilityPropertiesGet;
 template <> const TFunc_Instances_DisplayObject_accessibilityPropertiesSet::TMethod TFunc_Instances_DisplayObject_accessibilityPropertiesSet::Method = &Instances::fl_display::DisplayObject::accessibilityPropertiesSet;
@@ -178,6 +180,10 @@ template <> const TFunc_Instances_DisplayObject_hitTestObject::TMethod TFunc_Ins
 template <> const TFunc_Instances_DisplayObject_hitTestPoint::TMethod TFunc_Instances_DisplayObject_hitTestPoint::Method = &Instances::fl_display::DisplayObject::hitTestPoint;
 template <> const TFunc_Instances_DisplayObject_localToGlobal::TMethod TFunc_Instances_DisplayObject_localToGlobal::Method = &Instances::fl_display::DisplayObject::localToGlobal;
 template <> const TFunc_Instances_DisplayObject_local3DToGlobal::TMethod TFunc_Instances_DisplayObject_local3DToGlobal::Method = &Instances::fl_display::DisplayObject::local3DToGlobal;
+template <> const TFunc_Instances_DisplayObject_backgroundAlphaGet::TMethod TFunc_Instances_DisplayObject_backgroundAlphaGet::Method = &Instances::fl_display::DisplayObject::backgroundAlphaGet;
+template <> const TFunc_Instances_DisplayObject_backgroundAlphaSet::TMethod TFunc_Instances_DisplayObject_backgroundAlphaSet::Method = &Instances::fl_display::DisplayObject::backgroundAlphaSet;
+template <> const TFunc_Instances_DisplayObject_mouseEnableGet::TMethod TFunc_Instances_DisplayObject_mouseEnableGet::Method = &Instances::fl_display::DisplayObject::mouseEnableGet;
+template <> const TFunc_Instances_DisplayObject_mouseEnableSet::TMethod TFunc_Instances_DisplayObject_mouseEnableSet::Method = &Instances::fl_display::DisplayObject::mouseEnableSet;
 
 namespace Instances { namespace fl_display
 {
@@ -319,11 +325,14 @@ namespace Instances { namespace fl_display
             const char* className = 0;
             switch( filter->GetFilterType() )
             {
-                case Render::Filter_Blur:           className = "flash.filters.BlurFilter"; break;
-                case Render::Filter_Shadow:         className = "flash.filters.DropShadowFilter"; break;
-                case Render::Filter_Glow:           className = "flash.filters.GlowFilter"; break;
-                case Render::Filter_Bevel:          className = "flash.filters.BevelFilter"; break;
-                case Render::Filter_ColorMatrix:    className = "flash.filters.ColorMatrixFilter"; break;
+                case Render::Filter_Blur:            className = "flash.filters.BlurFilter"; break;
+                case Render::Filter_Shadow:          className = "flash.filters.DropShadowFilter"; break;
+                case Render::Filter_Glow:            className = "flash.filters.GlowFilter"; break;
+                case Render::Filter_Bevel:           className = "flash.filters.BevelFilter"; break;
+                case Render::Filter_GradientGlow:    className = "flash.filters.GradientGlowFilter"; break;
+                case Render::Filter_GradientBevel:   className = "flash.filters.GradientBevelFilter"; break;
+                case Render::Filter_ColorMatrix:     className = "flash.filters.ColorMatrixFilter"; break;
+                case Render::Filter_DisplacementMap: className = "flash.filters.DisplacementMapFilter"; break;
                 default:
                     array->PushBack(0);
                     continue;
@@ -374,10 +383,28 @@ namespace Instances { namespace fl_display
                     Ptr<Render::BlurFilter> data = *(Render::BlurFilter*)filter->GetFilterData()->Clone(GetVM().GetMemoryHeap());
                     filters->AddFilter(data);
                 }
+                else if ( className == "GradientGlowFilter")
+                {
+                    Instances::fl_filters::GradientGlowFilter* filter = (Instances::fl_filters::GradientGlowFilter*)fv.GetObject();
+                    Ptr<Render::GradientFilter> data = *(Render::GradientFilter*)filter->GetFilterData()->Clone(GetVM().GetMemoryHeap());
+                    filters->AddFilter(data);
+                }
+                else if ( className == "GradientBevelFilter")
+                {
+                    Instances::fl_filters::GradientBevelFilter* filter = (Instances::fl_filters::GradientBevelFilter*)fv.GetObject();
+                    Ptr<Render::GradientFilter> data = *(Render::GradientFilter*)filter->GetFilterData()->Clone(GetVM().GetMemoryHeap());
+                    filters->AddFilter(data);
+                }
                 else if ( className == "ColorMatrixFilter")
                 {
                     Instances::fl_filters::ColorMatrixFilter* filter = (Instances::fl_filters::ColorMatrixFilter*)fv.GetObject();
                     Ptr<Render::ColorMatrixFilter> data = *(Render::ColorMatrixFilter*)filter->GetFilterData()->Clone(GetVM().GetMemoryHeap());
+                    filters->AddFilter(data);
+                }
+                else if ( className == "DisplacementMapFilter")
+                {
+                    Instances::fl_filters::DisplacementMapFilter* filter = (Instances::fl_filters::DisplacementMapFilter*)fv.GetObject();
+                    Ptr<Render::DisplacementMapFilter> data = *(Render::DisplacementMapFilter*)filter->GetFilterData()->Clone(GetVM().GetMemoryHeap());
                     filters->AddFilter(data);
                 }
             }
@@ -408,20 +435,24 @@ namespace Instances { namespace fl_display
     void DisplayObject::loaderInfoGet(SPtr<Instances::fl_display::LoaderInfo>& result)
     {
 //##protect##"instance::DisplayObject::loaderInfoGet()"
-        SF_UNUSED1(result);
+        result = NULL;
         if (!pLoaderInfo)
         {
             AvmDisplayObj* prootContainer = ToAvmDisplayObj(ToAvmDisplayObj(pDispObj)->GetRoot());
             if (prootContainer)
             {
-                SF_ASSERT(prootContainer->GetAS3Obj());
-                result = prootContainer->GetAS3Obj()->pLoaderInfo;
+                Instances::fl_display::DisplayObject* as3obj = prootContainer->GetAS3Obj();
+                SF_ASSERT(as3obj != NULL);
+                if (as3obj != NULL)
+                {
+                    result = as3obj->pLoaderInfo;
+                }
             }
-            else
-                result = NULL;
         }
         else
+        {
             result = pLoaderInfo;
+        }
 //##protect##"instance::DisplayObject::loaderInfoGet()"
     }
     void DisplayObject::maskGet(SPtr<Instances::fl_display::DisplayObject>& result)
@@ -1078,6 +1109,24 @@ namespace Instances { namespace fl_display
 //##protect##"instance::DisplayObject::local3DToGlobal()"
     }
 
+    void DisplayObject::backgroundAlphaSet(const Value& result, Value::Number value)
+    {
+        SF_UNUSED2(result, value);
+    }
+    void DisplayObject::backgroundAlphaGet(Value::Number& result)
+    {
+        result = 1.0;
+    }
+
+    void DisplayObject::mouseEnableSet(const Value& result, bool value)
+    {
+        SF_UNUSED2(result, value);
+    }
+    void DisplayObject::mouseEnableGet(bool& result)
+    {
+        result = true;
+    }
+
     SPtr<Instances::fl_accessibility::AccessibilityProperties> DisplayObject::accessibilityPropertiesGet()
     {
         SPtr<Instances::fl_accessibility::AccessibilityProperties> result;
@@ -1246,78 +1295,152 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 DisplayObject::tito[DisplayObject::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 35, 36, 38, 39, 41, 42, 44, 45, 47, 48, 50, 51, 53, 54, 56, 57, 59, 60, 61, 63, 64, 66, 67, 69, 70, 72, 73, 75, 76, 78, 80, 82, 84, 86, 88, 92, 94, 
+    // };
+    const TypeInfo* DisplayObject::tit[102] = {
+        &AS3::fl_accessibility::AccessibilityPropertiesTI, 
+        NULL, &AS3::fl_accessibility::AccessibilityPropertiesTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::ArrayTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_display::LoaderInfoTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl_display::DisplayObjectContainerTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl_display::StageTI, 
+        &AS3::fl_geom::TransformTI, 
+        NULL, &AS3::fl_geom::TransformTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::BooleanTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl_geom::PointTI, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+    };
     const ThunkInfo DisplayObject::ti[DisplayObject::ThunkInfoNum] = {
-        {TFunc_Instances_DisplayObject_accessibilityPropertiesGet::Func, &AS3::fl_accessibility::AccessibilityPropertiesTI, "accessibilityProperties", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_accessibilityPropertiesSet::Func, NULL, "accessibilityProperties", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_alphaGet::Func, &AS3::fl::NumberTI, "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_alphaSet::Func, NULL, "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_blendModeGet::Func, &AS3::fl::StringTI, "blendMode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_blendModeSet::Func, NULL, "blendMode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_cacheAsBitmapGet::Func, &AS3::fl::BooleanTI, "cacheAsBitmap", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_cacheAsBitmapSet::Func, NULL, "cacheAsBitmap", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_filtersGet::Func, &AS3::fl::ArrayTI, "filters", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_filtersSet::Func, NULL, "filters", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_heightGet::Func, &AS3::fl::NumberTI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_heightSet::Func, NULL, "height", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_loaderInfoGet::Func, &AS3::fl_display::LoaderInfoTI, "loaderInfo", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_maskGet::Func, &AS3::fl_display::DisplayObjectTI, "mask", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_maskSet::Func, NULL, "mask", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_mouseXGet::Func, &AS3::fl::NumberTI, "mouseX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_mouseYGet::Func, &AS3::fl::NumberTI, "mouseY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_nameGet::Func, &AS3::fl::StringTI, "name", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_nameSet::Func, NULL, "name", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_opaqueBackgroundGet::Func, &AS3::fl::ObjectTI, "opaqueBackground", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_opaqueBackgroundSet::Func, NULL, "opaqueBackground", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_parentGet::Func, &AS3::fl_display::DisplayObjectContainerTI, "parent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_rootGet::Func, &AS3::fl_display::DisplayObjectTI, "root", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_rotationGet::Func, &AS3::fl::NumberTI, "rotation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_rotationSet::Func, NULL, "rotation", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_rotationXGet::Func, &AS3::fl::NumberTI, "rotationX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_rotationXSet::Func, NULL, "rotationX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_rotationYGet::Func, &AS3::fl::NumberTI, "rotationY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_rotationYSet::Func, NULL, "rotationY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_rotationZGet::Func, &AS3::fl::NumberTI, "rotationZ", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_rotationZSet::Func, NULL, "rotationZ", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_scale9GridGet::Func, &AS3::fl_geom::RectangleTI, "scale9Grid", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_scale9GridSet::Func, NULL, "scale9Grid", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_scaleXGet::Func, &AS3::fl::NumberTI, "scaleX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_scaleXSet::Func, NULL, "scaleX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_scaleYGet::Func, &AS3::fl::NumberTI, "scaleY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_scaleYSet::Func, NULL, "scaleY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_scaleZGet::Func, &AS3::fl::NumberTI, "scaleZ", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_scaleZSet::Func, NULL, "scaleZ", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_scrollRectGet::Func, &AS3::fl_geom::RectangleTI, "scrollRect", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_scrollRectSet::Func, NULL, "scrollRect", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_stageGet::Func, &AS3::fl_display::StageTI, "stage", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_transformGet::Func, &AS3::fl_geom::TransformTI, "transform", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_transformSet::Func, NULL, "transform", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_visibleGet::Func, &AS3::fl::BooleanTI, "visible", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_visibleSet::Func, NULL, "visible", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_widthGet::Func, &AS3::fl::NumberTI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_widthSet::Func, NULL, "width", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_xGet::Func, &AS3::fl::NumberTI, "x", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_xSet::Func, NULL, "x", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_yGet::Func, &AS3::fl::NumberTI, "y", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_ySet::Func, NULL, "y", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_zGet::Func, &AS3::fl::NumberTI, "z", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObject_zSet::Func, NULL, "z", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObject_getBounds::Func, &AS3::fl_geom::RectangleTI, "getBounds", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObject_getRect::Func, &AS3::fl_geom::RectangleTI, "getRect", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObject_globalToLocal::Func, &AS3::fl_geom::PointTI, "globalToLocal", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObject_globalToLocal3D::Func, &AS3::fl_geom::Vector3DTI, "globalToLocal3D", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObject_hitTestObject::Func, &AS3::fl::BooleanTI, "hitTestObject", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObject_hitTestPoint::Func, &AS3::fl::BooleanTI, "hitTestPoint", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_DisplayObject_localToGlobal::Func, &AS3::fl_geom::PointTI, "localToGlobal", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObject_local3DToGlobal::Func, &AS3::fl_geom::PointTI, "local3DToGlobal", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_DisplayObject_accessibilityPropertiesGet::Func, &DisplayObject::tit[0], "accessibilityProperties", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_accessibilityPropertiesSet::Func, &DisplayObject::tit[1], "accessibilityProperties", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_alphaGet::Func, &DisplayObject::tit[3], "alpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_alphaSet::Func, &DisplayObject::tit[4], "alpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_blendModeGet::Func, &DisplayObject::tit[6], "blendMode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_blendModeSet::Func, &DisplayObject::tit[7], "blendMode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_cacheAsBitmapGet::Func, &DisplayObject::tit[9], "cacheAsBitmap", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_cacheAsBitmapSet::Func, &DisplayObject::tit[10], "cacheAsBitmap", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_filtersGet::Func, &DisplayObject::tit[12], "filters", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_filtersSet::Func, &DisplayObject::tit[13], "filters", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_heightGet::Func, &DisplayObject::tit[15], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_heightSet::Func, &DisplayObject::tit[16], "height", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_loaderInfoGet::Func, &DisplayObject::tit[18], "loaderInfo", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_maskGet::Func, &DisplayObject::tit[19], "mask", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_maskSet::Func, &DisplayObject::tit[20], "mask", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_mouseXGet::Func, &DisplayObject::tit[22], "mouseX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_mouseYGet::Func, &DisplayObject::tit[23], "mouseY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_nameGet::Func, &DisplayObject::tit[24], "name", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_nameSet::Func, &DisplayObject::tit[25], "name", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_opaqueBackgroundGet::Func, &DisplayObject::tit[27], "opaqueBackground", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_opaqueBackgroundSet::Func, &DisplayObject::tit[28], "opaqueBackground", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_parentGet::Func, &DisplayObject::tit[30], "parent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rootGet::Func, &DisplayObject::tit[31], "root", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationGet::Func, &DisplayObject::tit[32], "rotation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationSet::Func, &DisplayObject::tit[33], "rotation", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationXGet::Func, &DisplayObject::tit[35], "rotationX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationXSet::Func, &DisplayObject::tit[36], "rotationX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationYGet::Func, &DisplayObject::tit[38], "rotationY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationYSet::Func, &DisplayObject::tit[39], "rotationY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationZGet::Func, &DisplayObject::tit[41], "rotationZ", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_rotationZSet::Func, &DisplayObject::tit[42], "rotationZ", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scale9GridGet::Func, &DisplayObject::tit[44], "scale9Grid", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scale9GridSet::Func, &DisplayObject::tit[45], "scale9Grid", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scaleXGet::Func, &DisplayObject::tit[47], "scaleX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scaleXSet::Func, &DisplayObject::tit[48], "scaleX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scaleYGet::Func, &DisplayObject::tit[50], "scaleY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scaleYSet::Func, &DisplayObject::tit[51], "scaleY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scaleZGet::Func, &DisplayObject::tit[53], "scaleZ", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scaleZSet::Func, &DisplayObject::tit[54], "scaleZ", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scrollRectGet::Func, &DisplayObject::tit[56], "scrollRect", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_scrollRectSet::Func, &DisplayObject::tit[57], "scrollRect", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_stageGet::Func, &DisplayObject::tit[59], "stage", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_transformGet::Func, &DisplayObject::tit[60], "transform", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_transformSet::Func, &DisplayObject::tit[61], "transform", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_visibleGet::Func, &DisplayObject::tit[63], "visible", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_visibleSet::Func, &DisplayObject::tit[64], "visible", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_widthGet::Func, &DisplayObject::tit[66], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_widthSet::Func, &DisplayObject::tit[67], "width", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_xGet::Func, &DisplayObject::tit[69], "x", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_xSet::Func, &DisplayObject::tit[70], "x", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_yGet::Func, &DisplayObject::tit[72], "y", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_ySet::Func, &DisplayObject::tit[73], "y", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_zGet::Func, &DisplayObject::tit[75], "z", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_zSet::Func, &DisplayObject::tit[76], "z", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_getBounds::Func, &DisplayObject::tit[78], "getBounds", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_getRect::Func, &DisplayObject::tit[80], "getRect", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_globalToLocal::Func, &DisplayObject::tit[82], "globalToLocal", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_globalToLocal3D::Func, &DisplayObject::tit[84], "globalToLocal3D", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_hitTestObject::Func, &DisplayObject::tit[86], "hitTestObject", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_hitTestPoint::Func, &DisplayObject::tit[88], "hitTestPoint", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_localToGlobal::Func, &DisplayObject::tit[92], "localToGlobal", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_local3DToGlobal::Func, &DisplayObject::tit[94], "local3DToGlobal", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_backgroundAlphaGet::Func, &DisplayObject::tit[96], "backgroundAlpha", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_backgroundAlphaSet::Func, &DisplayObject::tit[97], "backgroundAlpha", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_mouseEnableGet::Func, &DisplayObject::tit[99], "mouseEnable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObject_mouseEnableSet::Func, &DisplayObject::tit[100], "mouseEnable", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
     };
 
     DisplayObject::DisplayObject(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::DisplayObject::DisplayObject()"
         SetTraitsType(Traits_DisplayObject);
 //##protect##"InstanceTraits::DisplayObject::DisplayObject()"
-        SetMemSize(sizeof(Instances::fl_display::DisplayObject));
 
     }
 
@@ -1334,25 +1457,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    DisplayObject::DisplayObject(VM& vm)
-    : Traits(vm, AS3::fl_display::DisplayObjectCI)
+
+    DisplayObject::DisplayObject(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::DisplayObject::DisplayObject()"
         SetTraitsType(Traits_DisplayObject);
 //##protect##"ClassTraits::DisplayObject::DisplayObject()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::DisplayObject(vm, AS3::fl_display::DisplayObjectCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> DisplayObject::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) DisplayObject(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) DisplayObject(vm, AS3::fl_display::DisplayObjectCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::DisplayObjectCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1368,6 +1494,11 @@ namespace fl_display
 
     const TypeInfo DisplayObjectTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::DisplayObject::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::DisplayObject::ThunkInfoNum,
+        0,
         "DisplayObject", "flash.display", &fl_events::EventDispatcherTI,
         DisplayObjectImplements
     };
@@ -1375,10 +1506,6 @@ namespace fl_display
     const ClassInfo DisplayObjectCI = {
         &DisplayObjectTI,
         ClassTraits::fl_display::DisplayObject::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::DisplayObject::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::DisplayObject::ti,

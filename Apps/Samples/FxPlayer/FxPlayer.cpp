@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov, Maxim Didenko, Boris Rayskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -106,6 +107,26 @@ public:
     virtual String GetHelpString() const
     {
         return "Print HUD report to console";
+    }
+};
+
+class FxPlayerCommandToggleStickMode : public FxPlayerCommand
+{
+public:
+    virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
+    {
+        SF_UNUSED2(controllerIdx, keyDown);
+        app->StickMode++;
+        app->StickMode %= FxPlayerAppBase::PSM_Count;
+        FxPlayerApp* playerApp = (FxPlayerApp*)app;
+        if (playerApp->pHud)
+        {
+            playerApp->pHud->SetStickMode(app->StickMode);
+        }
+    }
+    virtual String GetHelpString() const
+    {
+        return "Toggle Pad Stick Mode";
     }
 };
 
@@ -227,10 +248,11 @@ FxPlayerApp::FxPlayerApp()
     KeyCommandMap.Set(Key::F5, *SF_NEW FxPlayerCommandHudReport());
     KeyCommandMap.Set(Key::F1, *SF_NEW FxPlayerCommandInfoHelp());
     KeyCommandMap.Set(Key::F2, *SF_NEW FxPlayerCommandInfoSummary());
+    KeyCommandMap.Set(Key::K | ctrlMask, *SF_NEW FxPlayerCommandToggleStickMode());
     KeyCommandMap.Set(Key::F12, *SF_NEW FxPlayerCommandHudClose());
     KeyCommandMap.Set(Key::H | ctrlMask, *SF_NEW FxPlayerCommandHudNextTab());
 
-#if defined(SF_OS_XBOX360) || defined(SF_OS_WIN32)
+#if defined(SF_OS_XBOX360) || defined(SF_OS_WIN32) || defined(_DURANGO)
     PadKeyCommandMap.Set(Pad_X, *SF_NEW FxPlayerCommandHudNextTab());
     HudPadKeyCommandMap.Set(Pad_X, *SF_NEW FxPlayerCommandHudNextTab());
 #elif defined(SF_OS_PS3) || defined(SF_OS_PS2) || defined(SF_OS_ORBIS)
@@ -653,7 +675,7 @@ class CustomExternalInterface : public GFx::ExternalInterface
 public:
     virtual void Callback(Movie* pmovieView, const char* methodName, const Value* args, unsigned argCount)
     {
-        
+
     }
 };
 

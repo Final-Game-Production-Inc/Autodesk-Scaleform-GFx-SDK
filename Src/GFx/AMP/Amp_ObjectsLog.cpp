@@ -15,6 +15,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Amp_ObjectsLog.h"
 
+#ifdef SF_AMP_SERVER
+
 namespace Scaleform {
 namespace GFx {
 namespace AMP {
@@ -35,3 +37,5 @@ const char* ObjectsLog::ToCStr() const
 } // namespace AMP
 } // namespace GFx
 } // namespace Scaleform
+
+#endif

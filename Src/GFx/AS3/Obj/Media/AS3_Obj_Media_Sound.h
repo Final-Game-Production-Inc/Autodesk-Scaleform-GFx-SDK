@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,6 +35,10 @@ namespace fl_media
     extern const ClassInfo SoundCI;
     extern const TypeInfo ID3InfoTI;
     extern const ClassInfo ID3InfoCI;
+    extern const TypeInfo SoundLoaderContextTI;
+    extern const ClassInfo SoundLoaderContextCI;
+    extern const TypeInfo SoundTransformTI;
+    extern const ClassInfo SoundTransformCI;
 } // namespace fl_media
 namespace fl
 {
@@ -48,6 +53,11 @@ namespace fl
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
 } // namespace fl
+namespace fl_net
+{
+    extern const TypeInfo URLRequestTI;
+    extern const ClassInfo URLRequestCI;
+} // namespace fl_net
 
 namespace ClassTraits { namespace fl_media
 {
@@ -143,7 +153,7 @@ namespace Instances { namespace fl_media
         void urlGet(ASString& result);
         void close(const Value& result);
         void load(const Value& result, Instances::fl_net::URLRequest* stream, Instances::fl_media::SoundLoaderContext* context = NULL);
-        void play(Value& result, Value::Number startTime = 0, SInt32 loops = 0, Instances::fl_media::SoundTransform* sndTransform = NULL);
+        void play(Value& result, Value::Number startTime = 0.0, SInt32 loops = 0, Instances::fl_media::SoundTransform* sndTransform = NULL);
 
         // C++ friendly wrappers for AS3 methods.
         UInt32 bytesLoadedGet()
@@ -185,7 +195,7 @@ namespace Instances { namespace fl_media
         {
             load(Value::GetUndefined(), stream, context);
         }
-        Value play(Value::Number startTime = 0, SInt32 loops = 0, Instances::fl_media::SoundTransform* sndTransform = NULL)
+        Value play(Value::Number startTime = 0.0, SInt32 loops = 0, Instances::fl_media::SoundTransform* sndTransform = NULL)
         {
             Value result;
             play(result, startTime, loops, sndTransform);
@@ -208,7 +218,7 @@ namespace Instances { namespace fl_media
 
 namespace InstanceTraits { namespace fl_media
 {
-    class Sound : public CTraits
+    class Sound : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -234,6 +244,9 @@ namespace InstanceTraits { namespace fl_media
 
         enum { ThunkInfoNum = 9 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[14];
+        static const Abc::ConstValue dva[3];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -246,17 +259,19 @@ namespace InstanceTraits { namespace fl_media
     
 namespace ClassTraits { namespace fl_media
 {
-    class Sound : public Traits
+    class Sound : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Sound"; }
 #endif
     public:
-        typedef Classes::fl_media::Sound ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_media::Sound InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Sound(VM& vm);
+        Sound(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

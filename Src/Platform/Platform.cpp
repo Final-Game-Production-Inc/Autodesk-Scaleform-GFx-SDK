@@ -7,6 +7,7 @@ Created     :   Oct 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -151,6 +152,7 @@ bool AppImplBase::OnArgs(const Args& args, Args::ParseResult parseResult)
 void AppBase::ApplyViewConfigArgs(ViewConfig* config, const Args& args)
 {
     pImplBase->ApplyViewConfigArgs(config, args);
+    config->CommandLineArgs = &args;
 }
 
 // Applies default command line arguments to ViewConfig.

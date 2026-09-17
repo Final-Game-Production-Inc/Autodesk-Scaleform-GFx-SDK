@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -111,8 +112,14 @@ Object* ObjectInterface::FindOwner(ASStringContext *psc, const ASString& name)
 
 void    ObjectInterface::SetUserData(Movie* pmovieView, ASUserData* puserData, bool isdobj)
 {
-    if (pUserDataHolder) { delete pUserDataHolder; }
+    if (pUserDataHolder)
+    {
+        pUserDataHolder->NotifyDestroy(this);
+        delete pUserDataHolder;
+    }
+
     pUserDataHolder = SF_HEAP_AUTO_NEW(this) UserDataHolder(pmovieView, puserData);
+
     if (puserData)
     {
         MovieImpl* pmovieImpl = static_cast<MovieImpl*>(pmovieView);
@@ -188,12 +195,12 @@ void Object::ForEachChild_GC(Collector* prcc) const
     ResolveHandler.template ForEachChild_GC<Functor>(prcc);
     if (pWatchpoints)
     {
-        WatchpointHash::ConstIterator it = pWatchpoints->Begin();
-        while(it != pWatchpoints->End())
+        WatchpointHash::ConstIterator wpIt = pWatchpoints->Begin();
+        while(wpIt != pWatchpoints->End())
         {   
-            const Watchpoint& value = it->Second;
+            const Watchpoint& value = wpIt->Second;
             value.template ForEachChild_GC<Functor>(prcc);
-            ++it;
+            ++wpIt;
         }
     }
     if (pProto)
@@ -468,7 +475,7 @@ bool Object::SetMemberRaw(ASStringContext *psc, const ASString& name, const Valu
                     const ActionBufferData* bufData = asfo->GetActionBuffer()->GetBufferData();
 
                     MovieImpl* pRoot = psc->pContext->GetAS2Root()->GetMovieImpl();
-                    pRoot->AdvanceStats->RegisterScriptFunction(bufData->GetSwdHandle(), 
+                    pRoot->GetAdvanceStats().RegisterScriptFunction(bufData->GetSwdHandle(), 
                         bufData->GetSWFFileOffset() + asfo->GetStartPC(), 
                         name.ToCStr(), asfo->GetLength(), 2, false);
                 }
@@ -695,7 +702,7 @@ void    Object::VisitMembers(ASStringContext *psc,
             else
             {
                 // If value is not set - get it by GetMember
-                Value value;
+                Value palValue;
                 if (!(visitFlags & ObjectInterface::VisitMember_NamesOnly))
                 {
                     //!AB: basically, we need just a name here. We need to use original instance 
@@ -704,9 +711,9 @@ void    Object::VisitMembers(ASStringContext *psc,
                     ObjectInterface* pobj = 
                         const_cast<ObjectInterface*>((instance) ? instance : 
                         static_cast<const ObjectInterface*>(this));
-                    pobj->GetMemberRaw(psc, it->First, &value);
+                    pobj->GetMemberRaw(psc, it->First, &palValue);
                 }
-                pvisitor->Visit(it->First, value, memberFlags.Flags);
+                pvisitor->Visit(it->First, palValue, memberFlags.Flags);
             }
         }
         ++it;

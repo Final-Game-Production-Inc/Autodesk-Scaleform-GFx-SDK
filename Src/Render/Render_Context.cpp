@@ -6,6 +6,7 @@ Created     :   August 17, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -447,7 +448,7 @@ SnapshotPage* SnapshotPage::Alloc(MemoryHeap* pheap, EntryPage* pentryPage)
     SnapshotPage* ppage = (SnapshotPage*)
         SF_HEAP_MEMALIGN(pheap, sizeof(SnapshotPage), 16, StatRender_Context_Mem);
     if (!ppage)
-        return false;
+        return 0;
 #ifdef SF_BUILD_DEBUG
     memset(ppage, 0, sizeof(SnapshotPage));
 #endif
@@ -907,8 +908,7 @@ Context::~Context()
      while(!CaptureNotifyList.IsEmpty())
      {
          ContextCaptureNotify* notify = CaptureNotifyList.GetFirst();
-         notify->pOwnedContext = 0;
-         notify->RemoveNode();
+         RemoveCaptureNotify(notify);
      }
 }
 
@@ -964,9 +964,9 @@ void Context::destroySnapshot(Snapshot* p)
                 continue;
             // Get current snapshot's page.
             EntryRef      entryRef(change.pNode);
-            SnapshotPage* ppage = entryRef.GetEntryPage()->pTempPage;
-            SF_ASSERT(ppage->pData[entryRef.GetIndex()] != change.pNode->GetNative());
-            ppage->pData[entryRef.GetIndex()]->Destroy();
+            SnapshotPage* sPPage = entryRef.GetEntryPage()->pTempPage;
+            SF_ASSERT(sPPage->pData[entryRef.GetIndex()] != change.pNode->GetNative());
+            sPPage->pData[entryRef.GetIndex()]->Destroy();
 
         }
         pcbPage = pcbPage->pNext;
@@ -1097,13 +1097,13 @@ bool Context::Capture()
     Snapshot* pd = pSnapshots[SS_Displaying];
     if (pd)
     {
-        ChangeBuffer::Page* pcbPage = pd->Changes.GetFirstPage();
-        while(pcbPage)
+        ChangeBuffer::Page* pcbPageBuffer = pd->Changes.GetFirstPage();
+        while(pcbPageBuffer)
         {
             unsigned iitem;
-            for (iitem = 0; iitem < pcbPage->GetSize(); iitem++)
+            for (iitem = 0; iitem <pcbPageBuffer->GetSize(); iitem++)
             {
-                EntryChange&    change = pcbPage->GetItem(iitem);
+                EntryChange&    change = pcbPageBuffer->GetItem(iitem);
                 Entry*          pentry = change.pNode;
                 if (!pentry || (change.IsNewNode()))
                     continue;
@@ -1138,7 +1138,7 @@ bool Context::Capture()
                     // one will be in its own buffer, so do nothing.
                 }
             }
-            pcbPage = pcbPage->pNext;
+            pcbPageBuffer = pcbPageBuffer->pNext;
         }
     }
 
@@ -1301,6 +1301,19 @@ bool Context::nextCapture_LockScope(Snapshot** updateSnapshot,
     {
         clearRTHandleList();
         shutdownRendering_NoLock();
+
+        // The capture notifies must still be notified of this NextCapture call. They have already received
+        // an OnShutdown() call at this point, and thus this call to will should call their shutdownRendering.
+        ContextCaptureNotify* notify = CaptureNotifyList.GetFirst(), *notifyNext;
+        while(!CaptureNotifyList.IsNull(notify))
+        {
+            // OnNextCapture may destroy the current notify.
+            notifyNext = notify->pNext;
+            notify->OnNextCapture(pnotify);
+            notify = notifyNext;
+        }
+        DIChangesRequired = false;
+
         return false;
     }
 
@@ -1434,9 +1447,14 @@ void Context::AddCaptureNotify(ContextCaptureNotify* notify)
 void Context::RemoveCaptureNotify(ContextCaptureNotify* notify)
 {
     Lock::Locker scopeLock(getLock());
-    SF_ASSERT(notify->pOwnedContext == this);    
-    notify->RemoveNode();
-    notify->pOwnedContext = 0;
+
+    // Note: the owned context may be NULL, if the context was destroyed on the main thread.
+    // In this case, assume the main thread has already removed this notify.
+    if (notify->pOwnedContext == this)
+    {
+        notify->RemoveNode();
+        notify->pOwnedContext = 0;
+    }
 }
 
 

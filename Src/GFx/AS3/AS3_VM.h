@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -42,6 +43,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define SF_AS3_ENABLE_GETABSOBJECT
 #define SF_AS3_VARARGNUM 4095
 #define SF_AS3_SETUP_INSTANCE_CONSTRUCTOR_IN_CLASS
+#define SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+// #define SF_AS3_EMIT_DEF_ARGS
 
 // #define SF_AS3_ENABLE_EXPLICIT_GO
 
@@ -87,6 +90,11 @@ namespace Classes {
         class Vector_String;
         class Vector_object;
     }
+
+    namespace fl_utils
+    {
+        class ByteArray;
+    }
 }
 
 namespace ClassTraits { 
@@ -104,6 +112,8 @@ namespace ClassTraits {
         class QName;
         class XML;
         class XMLList;
+
+        class Domain;
     }
 
     namespace fl_vec
@@ -119,7 +129,11 @@ namespace ClassTraits {
     namespace fl_system
     {
         class ApplicationDomain;
-        class Domain;
+    }
+
+    namespace fl_utils
+    {
+        class ByteArray;
     }
 }
 
@@ -128,14 +142,21 @@ namespace Instances
     class Function;
 }
 
-namespace Instances { namespace fl
-{
-    class Function;
-    class XML;
-    class XMLList;
-    class QName;
-    class GlobalObject;
-}}
+namespace Instances {
+    namespace fl
+    {
+        class Function;
+        class XML;
+        class XMLList;
+        class QName;
+        class GlobalObject;
+    }
+
+    namespace fl_utils
+    {
+        class ByteArray;
+    }
+}
 
 namespace InstanceTraits { namespace fl
 {
@@ -258,7 +279,6 @@ public:
     {
         return Entries.IsEmpty();
     }
-
 }; // class MultinameHash
 
 
@@ -340,8 +360,16 @@ private:
 
 class VMAppDomain;
 
+namespace TR
+{
+    class State;
+}
+
 class VMFile : public GASRefCountBase
 {
+    friend class TR::State; // Because of ASStringNodeSet.
+    friend class Tracer; // Because of ASStringNodeSet.
+
 public:
     VMFile(VM& vm, VMAppDomain& appDomain);
     virtual ~VMFile();
@@ -365,11 +393,15 @@ public:
     {
         LoadedClasses.PushBack(tr);
     }
+    UPInt GetNumOfLoadedClasses() const
+    {
+        return LoadedClasses.GetSize();
+    }
 
 public:
     VMAppDomain& GetAppDomain() const
     {
-        return AppDomain;
+        return *AppDomain;
     }
 
     VM& GetVM() const
@@ -390,14 +422,22 @@ protected:
     void RemoveClassTrait(const ASString& name, const Instances::fl::Namespace& ns);
     void RemoveClassTraitValue(ClassTraits::Traits* val);
 
-    void UnregisterUserDefinedClassTraits();
+    ClassTraits::Traits* GetLoadedClass(UPInt i)
+    {
+        return LoadedClasses[i];
+    }
+    void ClearLoadedClasses()
+    {
+        LoadedClasses.Clear();
+    }
 
 private:
     // It should store Activation Traits and not just Traits.
     typedef HashLH<Abc::MbiInd, SPtr<InstanceTraits::Traits>, FixedSizeHash<Abc::MbiInd>, StatMV_VM_VMAbcFile_Mem> TActivationTraitsCache;
+    typedef HashSetUncachedLH<Ptr<ASStringNode>, ASStringNodePtrHashFunc, ASStringNodePtrHashFunc, StatMV_VM_VMAbcFile_Mem> TASStringNodeSet;
 
     VM& VMRef;
-    VMAppDomain& AppDomain;
+    SPtr<VMAppDomain> AppDomain;
 
     // Interned namespaces and namespace-sets arrays are file-specific.    
     //ArrayLH<SPtr<Instances::fl::Namespace> > IntNamespaces;
@@ -409,7 +449,17 @@ private:
     // and classes created indirectly from directly loaded classes.
     // At this time indirectly created classes are Vector-based classes.
     ArrayLH<SPtr<ClassTraits::Traits>, StatMV_VM_VMAbcFile_Mem> LoadedClasses;
+    TASStringNodeSet ASStringNodeSet;
 }; // class VMFile
+
+struct MethodInfo
+{
+    MethodInfo() : MaxOpStackSize(0) {}
+
+    UPInt MaxOpStackSize;
+    Abc::TOpCode OpCode;
+    Abc::MethodBodyInfo::Exception Exception;
+};
 
 // VMAbcFile wraps the use of Abc::File in the VM and stores extra VM-specific
 // data associated with it, such as string pool and {Multiname -> Class} mapping tables.
@@ -438,6 +488,7 @@ public:
         );
     virtual ~VMAbcFile();
 
+public:
     Value                       GetDetailValue(const Abc::ValueDetail& d);
     InstanceTraits::Function&   GetFunctionInstanceTraits(Instances::fl::GlobalObjectScript& gos, UInt32 method_ind);
 
@@ -475,12 +526,12 @@ public:
         return mi.GetMethodBodyInfo(GetMethodBody());
     }
 
-    const Abc::TOpCode& GetOpCode(Abc::MbiInd ind, const CallFrame& cf);
+    const Abc::TOpCode& GetOpCode(const CallFrame& cf);
 
     const Abc::MethodBodyInfo::Exception& GetException(Abc::MbiInd ind) const
     {
 #ifdef SF_AS3_USE_WORDCODE
-        return Exceptions[ind.Get()];
+        return MethodInfoArray[ind.Get()].Exception;
 #else
         return GetMethodBody().Get(ind).GetException();
 #endif
@@ -504,6 +555,8 @@ private:
     // Register all ClassTraits from a file.
     // Return true if a file should be loaded.
     bool            RegisterUserDefinedClassTraits();
+    void            UnregisterUserDefinedClassTraits();
+
     bool            RegisterScrips(bool to_execute);
 
     CheckResult     Load(bool to_execute);
@@ -519,20 +572,23 @@ private:
     
 private:
     typedef HashLH<UInt32, SPtr<InstanceTraits::Function>, FixedSizeHash<UInt32>, StatMV_VM_VMAbcFile_Mem> TFunctionTraitsCache;
+    typedef HashSetUncachedLH<ASString, ASStringNodeHashFunc, ASStringNodeHashFunc, StatMV_VM_VMAbcFile_Mem> TAliasClass;
 
     Ptr<Abc::File>  File;
 
 #ifdef SF_AS3_ENABLE_GETABSOBJECT
     HashSetLH<SPtr<GASRefCountBase> >               AbsObjects;
 #endif
+
     // GlobalObjects registers associated global objects.
     TGlobalObjectScriptSet                          GlobalObjects;
     ArrayLH<SPtr<VMAbcFile>, StatMV_VM_VMAbcFile_Mem> Children;
     TFunctionTraitsCache                            FunctionTraitsCache;
-    // OpCodeArray maps *method body index* (from Abc file) into optimized code.
-    ArrayLH<Abc::TOpCode, StatMV_VM_VMAbcFile_Mem>  OpCodeArray;
-    // Exceptions maps *method body index* (from Abc file) into exceptions for it.
-    ArrayLH<Abc::MethodBodyInfo::Exception, StatMV_VM_VMAbcFile_Mem> Exceptions;
+
+    // Exceptions maps *method body index* (from Abc file) into MethodInfo.
+    ArrayLH<MethodInfo, StatMV_VM_VMAbcFile_Mem>    MethodInfoArray;
+
+    TAliasClass                                     AliasClass;
 
 #if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
     AOT::InfoCollector* pIC;
@@ -548,6 +604,7 @@ class CallFrame : public NewOverrideBase<StatMV_VM_CallFrame_Mem>
 {
     friend class VM;
     friend class CallFrameCache;
+    friend class VMAbcFile;
     
 public:
 #ifndef SF_AS3_ENABLE_CALLFRAME_CACHE
@@ -612,10 +669,20 @@ public:
                GetReturnType(GetFile().GetConstPool());
     }
     // Can throw exceptions.
+#ifdef GFX_AS3_TRACE
     const Abc::TOpCode& GetCode() const
     {
-        return GetFile().GetOpCode(GetMethodBodyInd(), *this);
+        if (OCPtr == NULL)
+            OCPtr = &GetFile().GetOpCode(*this);
+
+        return *OCPtr;
     }
+#else
+    const Abc::TOpCode& GetCode() const
+    {
+        return GetFile().GetOpCode(*this);
+    }
+#endif
     Abc::TOpCodeVTP GetCP() const;
     const ScopeStackType& GetSavedScope() const
     {
@@ -730,12 +797,18 @@ private:
     
 private:
     bool                        DiscardResult;
+#ifdef SF_AS3_EMIT_DEF_ARGS
+    mutable bool                OpStackIsAllocated;
+#endif
 #ifndef SF_AS3_ENABLE_CALLFRAME_CACHE
     bool                        ACopy;
 #endif
     SF_DEBUG_CODE(bool          RegisteredFunction;)
     UPInt                       ScopeStackBaseInd; // Hot data.
     mutable Abc::TOpCodeVTP     CP;
+#ifdef GFX_AS3_TRACE
+    mutable const Abc::TOpCode* OCPtr;
+#endif
     RegistersType*              pRegisterFile;
     MemoryHeap*                 pHeap;
     VMAbcFile*                  pFile;
@@ -751,7 +824,7 @@ private:
 #endif
 
     // Default XML Namespace.
-    SPtr<Instances::fl::Namespace>      DefXMLNamespace;
+    SPtr<Instances::fl::Namespace>  DefXMLNamespace;
 
     Value*                          PrevFirstStackPos;
     SF_DEBUG_CODE(UInt16            PrevReservedNum;)
@@ -836,7 +909,6 @@ public:
     virtual bool Add(Value& result, Object& l, Object& r) const; 
     virtual CheckResult ToXMLString(VM& vm, Value& v) const;
     virtual void DescribeType(VM& vm, SPtr<Instances::fl::XML>& result, const Value& value) const;
-    virtual CheckResult GetDescendants(Value& v, const Multiname& mn) const;
 
     // XML
     virtual const ClassTraits::Traits* GetClassTraitsXML() const;
@@ -905,13 +977,14 @@ class Scripts;
 
 typedef MultinameHash<ClassTraits::Traits*, StatMV_VM_VM_Mem>   TClassTraitsCache;
 
-class VMAppDomain : public NewOverrideBase<StatMV_VM_VM_Mem>
+class VMAppDomain : public GASRefCountBase
 {
 public:
     VMAppDomain(VM& vm, VMAppDomain* parentDomain);
     virtual ~VMAppDomain();
+
     void AddChild(VMAppDomain& childDomain);
-    VMAppDomain& AddNewChild(VM& vm);
+    SPtr<VMAppDomain> AddNewChild(VM& vm);
     VMAppDomain* GetParent() const;
     bool RemoveChild(VMAppDomain& childDomain);
     ClassTraits::Traits** GetClassTrait(const ASString& name, const Instances::fl::Namespace& ns);
@@ -924,16 +997,19 @@ public:
     void GetMultinames(Array<SPtr<const Instances::fl::Namespace> >& multinames) const;
     bool IsEmpty() const;
 
+    virtual void ForEachChild_GC(Collector* prcc, GcOp op) const;
 
     static void SetEnabled(bool enabled) { Enabled = enabled; }
     static bool IsEnabled() { return Enabled; }
 
 private:
-    VMAppDomain* ParentDomain;
-    TClassTraitsCache ClassTraitsSet;
-    ArrayLH<VMAppDomain*, StatMV_VM_VM_Mem> ChildDomains;
+    typedef ArrayLH<SPtr<VMAppDomain>, StatMV_VM_VM_Mem> TChildDomains;
 
-    static bool Enabled;
+    VMAppDomain*        ParentDomain;
+    TClassTraitsCache   ClassTraitsSet;
+    TChildDomains       ChildDomains;
+
+    static bool         Enabled;
 };
 
 inline
@@ -973,6 +1049,7 @@ class VM : public NewOverrideBase<StatMV_VM_VM_Mem>
     friend class Instances::fl::GlobalObjectScript; // Because of ExecuteCode().
     friend class Instances::FunctionBase; // Because of PushResult()/RetrieveResult()
     friend class Instances::Function; // Because of ExecuteCode().
+    friend class Instances::fl_utils::ByteArray; // Because of deserialization.
 
     friend class Classes::fl::Object; // Because of different data type classes.
     friend class Classes::fl::System; // Because of the Garbage Collector.
@@ -995,10 +1072,10 @@ class VM : public NewOverrideBase<StatMV_VM_VM_Mem>
     friend int Read(VM& vm, Multiname& obj);    
     
 public:
-    VM(FlashUI& _ui, FileLoader& loader, AS3::StringManager& sm, ASRefCountCollector& gc SF_AOTC_ARG(AOT::InfoCollector* ic) SF_AOTC2_ARG(AOT::InfoCollector* ic));
+    VM(FlashUI& _ui, AS3::StringManager& sm, ASRefCountCollector& gc SF_AOTC_ARG(AOT::InfoCollector* ic) SF_AOTC2_ARG(AOT::InfoCollector* ic));
     virtual ~VM();
 
-    virtual AMP::ViewStats* GetAdvanceStats() const { return NULL; }
+    SF_AMP_CODE(virtual AMP::ViewStats* GetAdvanceStats() const { return NULL; } )
     
 public:
     enum ErrorID
@@ -1143,6 +1220,7 @@ public:
         eParamRangeError                                = 2006,
         eNullPointerError                               = 2007,
         eInvalidEnumError                               = 2008,
+        eCannotInstantiateError                         = 2012,
         eArgumentError                                  = 2015,
         eAddObjectItselfError                           = 2024,
         eMustBeChildError                               = 2025,
@@ -1151,6 +1229,17 @@ public:
         eCompressedDataError                            = 2058,
 
         eIllegalOperationError                          = 2077,
+
+        // flash.utils.Proxy - related error codes.
+        eProxyGetPropertyError                          = 2088,
+        eProxySetPropertyError                          = 2089,
+        eProxyCallPropertyError                         = 2090,
+        eProxyHasPropertyError                          = 2091,
+        eProxyDeletePropertyError                       = 2092,
+        eProxyGetDescendantsError                       = 2093,
+        eProxyNextNameIndexError                        = 2105,
+        eProxyNextNameError                             = 2106,
+        eProxyNextValueError                            = 2107,
 
         eSceneNotFound                                  = 2108,
         eFrameLabelNotFoundInScene                      = 2109,
@@ -1237,7 +1326,7 @@ public:
     void exec_pop_nrc();
     void exec_dup_nrc();
     void exec_swap();
-    void exec_pushstring(const StringDataPtr& str);
+    void exec_pushstring(VMFile& file, const UPInt ind);
     void exec_pushint(SInt32 v);
     void exec_pushuint(UInt32 v);
     void exec_pushdouble(double v);
@@ -1433,7 +1522,7 @@ public:
 
     private:
         const UInt16                RegNum;
-        SF_DEBUG_CODE(UInt16        PrevReservedNum);
+        SF_DEBUG_CODE(UInt16        PrevReservedNum;)
         UPInt                       ScopeStackBaseInd;
         VM&                         VMRef;
         Value*                      PrevFirstStackPos;
@@ -1571,14 +1660,14 @@ public:
 
 public:
     SPtr<VMAbcFile> LoadFile(const Ptr<Abc::File>& file, VMAppDomain& appDomain, bool to_execute = false);
-    void AddFile(Ptr<Abc::File>& file);
 
 public:
     // GetRegisteredClassTraits() returns a hashed value if any.
     const ClassTraits::Traits* GetRegisteredClassTraits(const Multiname& mn, VMAppDomain& appDomain);
     const ClassTraits::Traits* GetRegisteredClassTraits(const ASString& name, const Instances::fl::Namespace& ns, VMAppDomain& appDomain);
 
-    const ClassTraits::Traits* Resolve2ClassTraits(const TypeInfo& ti, VMAppDomain& appDomain);
+    // Classes having TypeInfo always belong to the System Application Domain.
+    const ClassTraits::Traits* Resolve2ClassTraits(const TypeInfo& ti);
     const ClassTraits::Traits* Resolve2ClassTraits(const Multiname& mn, VMAppDomain& appDomain);
     const ClassTraits::Traits* Resolve2ClassTraits(const ASString& name, const Instances::fl::Namespace& ns, VMAppDomain& appDomain);
     const ClassTraits::Traits* Resolve2ClassTraits(VMFile& file, const Abc::Multiname& mn);
@@ -1593,6 +1682,10 @@ public:
         GlobalObjects.PushBack(&go);
     }
     void UnregisterGlobalObject(Instances::fl::GlobalObject& go);
+
+    ASString GetAliasByClass(Class& cl) const;
+    Class* GetClassByAlias(const ASString& alias) const;
+    void SetClassAlias(const ASString& alias, Class& cl);
 
 public:
     // Utility method.
@@ -1751,8 +1844,9 @@ private:
     }
     
 public:
-    Pickable<Instances::fl::Object>     MakeObject() const;
-    Pickable<Instances::fl::Array>      MakeArray() const;
+    Pickable<Instances::fl::Object>             MakeObject() const;
+    Pickable<Instances::fl::Array>              MakeArray() const;
+    Pickable<Instances::fl_utils::ByteArray>    MakeByteArray() const;
 
 public:
     // typedef ValueArray OpStackType;
@@ -2060,6 +2154,15 @@ public:
     }
     InstanceTraits::Traits& GetITraitsArray() const;
 
+    // ByteArray.
+    Classes::fl_utils::ByteArray& GetClassByteArray() const;
+    const ClassTraits::fl_utils::ByteArray& GetClassTraitsByteArray() const
+    {
+        SF_ASSERT(TraitsByteArray.GetPtr());
+        return *TraitsByteArray;
+    }
+    InstanceTraits::Traits& GetITraitsByteArray() const;
+
     // QName.
     Classes::fl::QName& GetClassQName() const;
     const ClassTraits::fl::QName& GetClassTraitsQName() const
@@ -2132,7 +2235,7 @@ public:
     }
     InstanceTraits::Traits& GetITraitsApplicationDomain() const;
 
-    const ClassTraits::fl_system::Domain& GetClassDomain() const
+    const ClassTraits::fl::Domain& GetClassDomain() const
     {
         return *TraitsDomain;
     }
@@ -2151,17 +2254,21 @@ public:
     }
 
 public:
-    bool IsFixedNumType(const InstanceTraits::Traits& tr) const;
-    bool IsFixedNumType(const ClassTraits::Traits& tr) const;
-    bool IsFixedNumType(const Traits& tr) const;
-
-    bool IsNumericType(const InstanceTraits::Traits& tr) const;
-    bool IsNumericType(const ClassTraits::Traits& tr) const;
-    bool IsNumericType(const Traits& tr) const;
-
-    bool IsPrimitiveType(const InstanceTraits::Traits& tr) const;
-    bool IsPrimitiveType(const ClassTraits::Traits& tr) const;
-    bool IsPrimitiveType(const Traits& tr) const;
+    static bool IsFixedNumType(const Traits& tr)
+    {
+        const BuiltinTraitsType tt = tr.GetTraitsType();
+        return tt == Traits_SInt || tt == Traits_UInt;
+    }
+    static bool IsNumericType(const Traits& tr)
+    {
+        const BuiltinTraitsType tt = tr.GetTraitsType();
+        return tt >= Traits_SInt && tt <= Traits_Number;
+    }
+    static bool IsPrimitiveType(const Traits& tr)
+    {
+        const BuiltinTraitsType tt = tr.GetTraitsType();
+        return tt >= Traits_Boolean && tt <= Traits_String;
+    }
 
     bool IsVMCachedType(const InstanceTraits::Traits& tr) const;
     bool IsVMCachedType(const ClassTraits::Traits& tr) const;
@@ -2269,6 +2376,11 @@ public:
         SF_ASSERT(VectorNamespace.GetPtr());
         return *VectorNamespace;
     }
+    Instances::fl::Namespace& GetProxyNamespace() const
+    {
+        SF_ASSERT(ProxyNamespace.GetPtr());
+        return *ProxyNamespace;
+    }
     Instances::fl::Namespace& GetXMLNamespace() const
     {
         SF_ASSERT(XMLNamespace.GetPtr());
@@ -2349,6 +2461,9 @@ public:
         return (!IsException() && !v.IsNullOrUndefined());
     }
 
+    CheckResult ConstructBuiltinValue(Value& v, const TypeInfo& ti,
+        unsigned argc = 0, const Value* argv = NULL);
+
     // Register user-defined ClassInfo structures.
     void RegisterClassInfoTable(const ClassInfo* table[]);
 
@@ -2359,6 +2474,7 @@ private:
     // !!! This method shouldn't be exposed to users because it may require ExecuteCode() call.
     bool Construct(const char* gname, VMAppDomain& appDomain, Value& result, unsigned argc = 0, const Value* argv = NULL, 
         bool extCall = true);
+    bool Construct(Class& cl, Value& result, unsigned argc = 0, const Value* argv = NULL, bool extCall = true);
 
     // Private helper to ConstructBuiltinObject
     CheckResult constructBuiltinObject(SPtr<Object> &pobj, const char* gname,
@@ -2367,7 +2483,7 @@ private:
 
 public:
     // public for AOTC.
-    // Get C++ Global Object, which holds all buildin classes.
+    // Get C++ Global Object, which holds all builtin classes.
     Instances::fl::GlobalObjectCPP& GetGlobalObjectCPP()
     {
         return *GlobalObject;
@@ -2563,6 +2679,7 @@ public:
     void UnregisterAllAbcFiles();
 
 public:
+     // XML-related.
 
 #ifdef GFX_ENABLE_XML
     void EnableXMLSupport();
@@ -2570,6 +2687,8 @@ public:
 
     const XMLSupport& GetXMLSupport() const { return *XMLSupport_; }
 
+public:
+    // Application Domain - related.
     VMAppDomain& GetCurrentAppDomain() const
     {
         SF_ASSERT(CurrentDomain);
@@ -2584,6 +2703,9 @@ public:
     bool RemoveAppDomain(VMAppDomain& appDomain);
 
 private:
+    typedef HashUncachedLH<ASString, Class*, ASStringNodeHashFunc, StatMV_VM_VM_Mem> AliasClassType;
+    typedef HashLH<Class*, ASString, FixedSizeHash<Class*>, StatMV_VM_VM_Mem> ClassAliasType;
+
     //enum {MaxCallStackSize = 1024};
     enum {MaxCallStackSize = 128};
 
@@ -2595,7 +2717,6 @@ private:
     GCGuard             GC;
 
     FlashUI&            UI;
-    FileLoader&         Loader;
     int                 InInitializer;
     MemoryHeap* const   MHeap;
     SPtr<XMLSupport>    XMLSupport_;
@@ -2623,8 +2744,8 @@ private:
     SF_AMP_CODE(void SetActiveFile(UInt64 fileId);)
 
     ///////////////////////////////////////////////////////////////////////
-    VMAppDomain* SystemDomain;
-    VMAppDomain* CurrentDomain;
+    SPtr<VMAppDomain> SystemDomain;
+    SPtr<VMAppDomain> CurrentDomain;
 
 #ifndef SF_AS3_CLASS_AS_SLOT
     // GenericClasses holds strong references to "Generic Classes".
@@ -2636,6 +2757,7 @@ private:
     SPtr<Instances::fl::Namespace>          PublicNamespace;
     SPtr<Instances::fl::Namespace>          AS3Namespace;
     SPtr<Instances::fl::Namespace>          VectorNamespace;
+    SPtr<Instances::fl::Namespace>          ProxyNamespace;
     // Namespace with URI "http://www.w3.org/XML/1998/namespace".
     SPtr<Instances::fl::Namespace>          XMLNamespace;
     
@@ -2656,9 +2778,8 @@ private:
     SPtr<ClassTraits::fl_vec::Vector_uint>      TraitsVector_uint;
     SPtr<ClassTraits::fl_vec::Vector_double>    TraitsVector_Number;
     SPtr<ClassTraits::fl_vec::Vector_String>    TraitsVector_String;
-//     SPtr<ClassTraits::fl_vec::Vector_object>    TraitsVector_object;
     SPtr<ClassTraits::fl_system::ApplicationDomain>    TraitsApplicationDomain;
-    SPtr<ClassTraits::fl_system::Domain>        TraitsDomain;
+    SPtr<ClassTraits::fl::Domain>               TraitsDomain;
 
     SPtr<InstanceTraits::Traits>        TraitsNull;
     SPtr<InstanceTraits::Traits>        TraitsVoid;
@@ -2666,15 +2787,20 @@ private:
     SPtr<InstanceTraits::Function>      NoFunctionTraits;
 
     // Default XML Namespace.
-    SPtr<Instances::fl::Namespace>          DefXMLNamespace;
+    SPtr<Instances::fl::Namespace>      DefXMLNamespace;
     
     // CPP GlobalObject ...
     SPtr<InstanceTraits::fl::GlobalObject>  TraitaGlobalObject;
     SPtr<Instances::fl::GlobalObjectCPP>    GlobalObject;
     // This is the same GlobalObject. We just need it for convenience to return
     // in GetGlobalObject().
-    Value                               GlobalObjectValue;
+    Value                                   GlobalObjectValue;
 
+    // TraitsByteArray HAS TO follow GlobalObject because it implements interfaces.
+    SPtr<ClassTraits::fl_utils::ByteArray>  TraitsByteArray;
+
+    AliasClassType                              AliasClass;
+    ClassAliasType                              ClassAlias;
     ArrayLH_POD<VMAbcFile*, StatMV_VM_VM_Mem>   VMAbcFilesWeak;
 
 #if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
@@ -2760,12 +2886,6 @@ SF_INLINE
 Instances::fl::GlobalObjectCPP& Object::GetGlobalObjectCPP() const
 {
     return GetVM().GetGlobalObjectCPP();
-}
-
-SF_INLINE
-void Object::ExecuteValueUnsafe(Value& value, Value& result, unsigned argc, const Value* argv)
-{
-	GetVM().ExecuteUnsafe(value, Value(this), result, argc, argv);
 }
 
 inline
@@ -2903,10 +3023,16 @@ CallFrame::CallFrame(
     SF_DEBUG_ARG(UInt64 startTicks)
     )
     : DiscardResult(discard_result)
+#ifdef SF_AS3_EMIT_DEF_ARGS
+    , OpStackIsAllocated(false)
+#endif
     , ACopy(false)
     SF_DEBUG_ARG(RegisteredFunction(false))
     , ScopeStackBaseInd(file.GetVM().GetScopeStack().GetSize())
     , CP(NULL)
+#ifdef GFX_AS3_TRACE
+    , OCPtr(NULL)
+#endif
     , pRegisterFile(&file.GetVM().GetRegisters())
     , pHeap(file.GetVM().GetMemoryHeap())
     , pFile(&file)
@@ -2925,16 +3051,20 @@ CallFrame::CallFrame(
 {
     // Store previous stack position.
     VM::OpStackType& stack = file.GetVM().OpStack;
+#ifdef SF_BUILD_DEBUG
     SF_ASSERT(stack.IsValid());
+#endif
     PrevInitialStackPos = stack.GetCurrent();
     SF_DEBUG_CODE(PrevReservedNum = stack.GetNumOfReservedElem();)
     PrevFirstStackPos = stack.GetFirst();
 
     const Abc::MethodBodyInfo& mbi = GetMethodBodyInfo();
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
     // !!! We need this PLUS ONE at this time because return and returnvoid
     // put result on method's stack.
     stack.Reserve(static_cast<UInt16>(mbi.GetMaxStackSize() + 1));
+#endif
 
     pRegisterFile->Reserve(static_cast<UInt16>(mbi.GetMaxLocalRegisterIndex()));
 

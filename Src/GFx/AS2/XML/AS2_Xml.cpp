@@ -6,6 +6,7 @@ Created     :   3/7/2007
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -90,7 +91,21 @@ void XMLFileLoaderAndParserImpl::Load( const String& filename, FileOpener* pfo )
 {
     // Could be on a seperate thread here if thread support is enabled.
 
-    Ptr<File> pFile = *pfo->OpenFile(filename);
+    Ptr<File> pFile;
+    Array<UByte> bytes;
+    if (URLBuilder::IsProtocol(filename))
+    {
+#ifdef SF_ENABLE_HTTP_LOADING
+        if (URLBuilder::SendURLRequest(&bytes, filename) && !bytes.IsEmpty())
+        {
+            pFile = *SF_NEW MemoryFile(filename, bytes.GetDataPtr(), (int)bytes.GetSize());
+        }
+#endif
+    }
+    else
+    {
+        pFile = *pfo->OpenFile(filename);
+    }
     if (pFile && pFile->IsValid())
     {
         if ((FileLength = pFile->GetLength()) != 0)
@@ -203,7 +218,21 @@ void XMLFileLoaderImpl::Load( const String& filename, FileOpener* pfo )
 {
     // Could be on a seperate thread here if thread support is enabled.
 
-    Ptr<File> pFile = *pfo->OpenFile(filename);
+    Ptr<File> pFile;
+    Array<UByte> bytes;
+    if (URLBuilder::IsProtocol(filename))
+    {
+#ifdef SF_ENABLE_HTTP_LOADING
+        if (URLBuilder::SendURLRequest(&bytes, filename) && !bytes.IsEmpty())
+        {
+            pFile = *SF_NEW MemoryFile(filename, bytes.GetDataPtr(), (int)bytes.GetSize());
+        }
+#endif
+    }
+    else
+    {
+        pFile = *pfo->OpenFile(filename);
+    }
     if (pFile && pFile->IsValid())
     {
         if ((FileLength = pFile->GetLength()) != 0)

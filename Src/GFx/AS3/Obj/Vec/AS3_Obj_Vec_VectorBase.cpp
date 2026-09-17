@@ -6,6 +6,7 @@ Created     :   Apr, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -115,7 +116,7 @@ void VectorBase<Ptr<ASStringNode> >::Value2NumberCollector::operator()(UInt32 in
 }
 
 template<>
-void VectorBase<Value::Number>::Value2NumberCollector::operator()(UInt32 ind, const Value::Number& v)
+void VectorBase<double>::Value2NumberCollector::operator()(UInt32 ind, const double& v)
 {
     Value::Number num = v;
 
@@ -166,7 +167,7 @@ void VectorBase<Ptr<ASStringNode> >::Value2StrCollector::operator()(UInt32 ind, 
 }
 
 template<>
-void VectorBase<Value::Number>::Value2StrCollector::operator()(UInt32 ind, const Value::Number& v)
+void VectorBase<double>::Value2StrCollector::operator()(UInt32 ind, const double& v)
 {
     // Convert to string.
     StringManager& sm = GetVM().GetStringManager();
@@ -331,9 +332,6 @@ ASString ArrayBase::ToString(const ASString& sep) const
         Value v;
         GetValueUnsafe(i, v);
 
-        if (v.IsNullOrUndefined())
-            continue;
-
         if (!v.Convert2String(buff))
             // Exception.
             break;
@@ -418,37 +416,46 @@ void ArrayBase::AppendCoerce(const ArrayBase& arr, const ClassTraits::Traits& tr
 bool ArrayBase::AppendCoerce(const Value& value, const ClassTraits::Traits& tr)
 {
     VM& vm = GetVM();
-    const ClassTraits::Traits& value_tr = vm.GetClassTraits(value);
+    const Traits& vtr = vm.GetValueTraits(value);
+    const BuiltinTraitsType tt = vtr.GetTraitsType();
 
-    if (value_tr.IsParentTypeOf(vm.GetClassTraitsArray()))
-    {
-        // Value is an Array.
-        const Instances::fl::Array& arr = *static_cast<Instances::fl::Array*>(value.GetObject());
-
-        AppendCoerce(arr, tr);
-
-        return !GetVM().IsException();
-    }
-    else
+    if (vtr.IsInstanceTraits())
     {
         const ArrayBase* ab = NULL;
 
-        if (value_tr.IsParentTypeOf(vm.GetClassTraitsVectorSInt()))
-            ab = &static_cast<Instances::fl_vec::Vector_int*>(value.GetObject())->GetArrayBase();
-        else if (value_tr.IsParentTypeOf(vm.GetClassTraitsVectorUInt()))
-            ab = &static_cast<Instances::fl_vec::Vector_uint*>(value.GetObject())->GetArrayBase();
-        else if (value_tr.IsParentTypeOf(vm.GetClassTraitsVectorNumber()))
-            ab = &static_cast<Instances::fl_vec::Vector_double*>(value.GetObject())->GetArrayBase();
-        else if (value_tr.IsParentTypeOf(vm.GetClassTraitsVectorString()))
-            ab = &static_cast<Instances::fl_vec::Vector_String*>(value.GetObject())->GetArrayBase();
-        else if (value_tr.GetTraitsType() == Traits_Vector_object && value_tr.IsClassTraits())
-            ab = &static_cast<Instances::fl_vec::Vector_object*>(value.GetObject())->GetArrayBase();
-
-        if (ab)
+        // TODO: Vector.<Class>
+        switch (tt)
         {
-            AppendCoerce(*ab, tr);
+        case Traits_Array:
+            {
+                // Value is an Array.
+                const Instances::fl::Array& arr = *static_cast<Instances::fl::Array*>(value.GetObject());
 
+                AppendCoerce(arr, tr);
+            }
+            return !GetVM().IsException();
+        case Traits_Vector_int:
+            ab = &static_cast<Instances::fl_vec::Vector_int*>(value.GetObject())->GetArrayBase();
+            AppendCoerce(*ab, tr);
             return !vm.IsException();
+        case Traits_Vector_uint:
+            ab = &static_cast<Instances::fl_vec::Vector_uint*>(value.GetObject())->GetArrayBase();
+            AppendCoerce(*ab, tr);
+            return !vm.IsException();
+        case Traits_Vector_double:
+            ab = &static_cast<Instances::fl_vec::Vector_double*>(value.GetObject())->GetArrayBase();
+            AppendCoerce(*ab, tr);
+            return !vm.IsException();
+        case Traits_Vector_String:
+            ab = &static_cast<Instances::fl_vec::Vector_String*>(value.GetObject())->GetArrayBase();
+            AppendCoerce(*ab, tr);
+            return !vm.IsException();
+        case Traits_Vector_object:
+            ab = &static_cast<Instances::fl_vec::Vector_object*>(value.GetObject())->GetArrayBase();
+            AppendCoerce(*ab, tr);
+            return !vm.IsException();
+        default:
+            break;
         }
     }
 

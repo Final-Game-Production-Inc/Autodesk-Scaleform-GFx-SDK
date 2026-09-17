@@ -7,6 +7,7 @@ Created     :   April 29, 2008
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -193,6 +194,7 @@ public:
             Mask_OnScroll           = 0x02,
             Mask_OnMaxScrollChanged = 0x04,
             Mask_OnViewChanged      = 0x08,
+            Mask_BidirectionalText  = 0x10,
 
             Mask_All = (Mask_OnLineFormat | Mask_OnScroll | Mask_OnMaxScrollChanged | Mask_OnViewChanged)
         };
@@ -203,11 +205,28 @@ public:
         bool DoesHandleOnScroll() const    { return (HandlersMask & Mask_OnScroll) != 0; }
         bool DoesHandleOnMaxScrollChanged() const { return (HandlersMask & Mask_OnMaxScrollChanged) != 0; }
         bool DoesHandleOnViewChanged() const { return (HandlersMask & Mask_OnViewChanged) != 0; }
+        bool DoesHandleBidirectionalText() const { return (HandlersMask & Mask_BidirectionalText) != 0; }
 
         // fired if Mask_OnLineFormat bit is set and line is formatted and 
         // ready to be committed. Might be used to implement custom word wrapping
         // or hyphenation.
         virtual bool    View_OnLineFormat(DocView&, LineFormatDesc&) { return false; }
+
+        // A callback that is called on bidirectional text enabled textfields. This method
+        // receives original text ('text'/'textLen' parameters) and pre-allocated buffers: 
+        //   'newText'  - new re-ordered text should be put there, do not overrun the length (the length is the same as 'textLen')
+        //   'indexMap' - a buffer for an array of unsigned integers, that should be filled with new indices of each char. For
+        //                example, if original char at index 0 was relocated to index 10, then indexMap[0] = 10.
+        //   'mirrorBits'- a buffer for an array of bools (length = 'textLen'), where index is an index of char in 'newText' and the value (true/false)
+        //                indicates necessity of the glyph mirroring (for example, for integral sign).
+        // Should return 'true' if method was successful and the core should use contents of the buffers; false, if no changes
+        // to the textfield should be applied.
+        virtual bool    View_PrepareBidiText(DocView&, const wchar_t* paraText, UPInt textLen, 
+                                             wchar_t* newParaText, unsigned* indexMap, bool* mirroredBits)
+        {
+            SF_UNUSED5(paraText, textLen, newParaText, indexMap, mirroredBits);
+            return false;
+        }
 
         // view-related events
         virtual void    View_OnHScroll(DocView& , unsigned newScroll) { SF_UNUSED(newScroll); }
@@ -223,6 +242,9 @@ public:
         virtual void     Editor_OnChanged(EditorKitBase& ) {  }
         virtual void     Editor_OnCursorMoved(EditorKitBase& ) {  }
         virtual void     Editor_OnCursorBlink(EditorKitBase&, bool cursorState) { SF_UNUSED(cursorState); }
+        
+        virtual bool     Editor_OnInsertingText(EditorKitBase&, UPInt pos, UPInt len, const wchar_t*) { SF_UNUSED2(pos, len); return true; }
+        virtual bool     Editor_OnRemovingText(EditorKitBase&, UPInt pos, UPInt len) { SF_UNUSED2(pos, len); return true; }
 
         virtual String GetCharacterPath() { return String(); }
     };
@@ -322,6 +344,11 @@ protected:
     void SetBitmapFontFlag()     { RTFlags |= RTFlags_BitmapFontUsed; }
     void ClearBitmapFontFlag()   { RTFlags &= (~RTFlags_BitmapFontUsed); }
     bool IsBitmapFontFlagSet() const { return (RTFlags & RTFlags_BitmapFontUsed) != 0; }
+
+    // run-time flag, set when a textfield is actually using bidirectional text
+    void SetBidirectionalTextRTFlag()     { RTFlags |= RTFlags_HasBidirectionalText; }
+    void ClearBidirectionalTextRTFlag()   { RTFlags &= (~RTFlags_HasBidirectionalText); }
+    bool IsBidirectionalTextRTFlagSet() const { return (RTFlags & RTFlags_HasBidirectionalText) != 0; }
 public:
     // types of view notifications, used for NotifyViewsChanged/OnDocumentChanged
     enum ViewNotificationMasks
@@ -504,6 +531,14 @@ public:
     void ClearAutoFit()   { Flags &= (~Flags_AutoFit); }
     bool IsAutoFit() const{ return (Flags & Flags_AutoFit) != 0; }
 
+    bool IsBidirectionalTextEnabled() const
+    { 
+        return (FlagsEx & FlagsEx_BidiEnabled) && pDocumentListener && 
+            pDocumentListener->DoesHandleBidirectionalText(); 
+    }
+    void EnableBidirectionalText() { FlagsEx |= FlagsEx_BidiEnabled; }
+    void DisableBidirectionalText() { FlagsEx &= ~FlagsEx_BidiEnabled; }
+
     bool SetFilters(const TextFilter& f) { if ( Filter == f ) { return false; } Filter = f; return true; } 
     const TextFilter& GetFilters() const { return Filter; }
     void SetDefaultShadow()  { Filter.SetDefaultShadow(); }
@@ -521,6 +556,9 @@ public:
 
     void  SetFauxItalic(bool f) { if(f) FlagsEx |= FlagsEx_FauxItalic; else FlagsEx &= ~FlagsEx_FauxItalic; }
     bool  GetFauxItalic() const { return (FlagsEx & FlagsEx_FauxItalic) != 0; }
+
+    void SetForceVector(bool f) { if (f) FlagsEx |= FlagsEx_ForceVector; else FlagsEx &= ~FlagsEx_ForceVector; }
+    bool GetForceVector() const { return (FlagsEx & FlagsEx_ForceVector) != 0; }
 
     void  SetOutline(float v) { Outline = v; }
     float GetOutline() const  { return Outline; }
@@ -584,23 +622,33 @@ public:
     // Returns true, if reformat actually occurred
     bool  ForceReformat();
 
-    void SetAlignment(ViewAlignment alignment) 
-    { 
-        AlignProps = (UByte)((AlignProps & ~(Align_Mask << Align_Shift)) | ((alignment & Align_Mask) << Align_Shift));
+    void SetAlignment(ViewAlignment alignment)
+    {
+        // 显式转换为UInt8，消除不同枚举类型位运算警告
+        AlignProps = (UByte)((AlignProps & ~(static_cast<UInt8>(Align_Mask) << static_cast<UInt8>(Align_Shift))) |
+            (static_cast<UInt8>(alignment & static_cast<ViewAlignment>(Align_Mask)) << static_cast<UInt8>(Align_Shift)));
         SetReformatReq();
     }
-    ViewAlignment GetAlignment() const { return ViewAlignment((AlignProps >> Align_Shift) & Align_Mask); }
+    ViewAlignment GetAlignment() const
+    {
+        return static_cast<ViewAlignment>((AlignProps >> static_cast<UInt8>(Align_Shift)) & static_cast<UInt8>(Align_Mask));
+    }
 
     void SetVAlignment(ViewVAlignment valignment)
-    { 
-        AlignProps = (UByte)((AlignProps & ~(VAlign_Mask << VAlign_Shift)) | ((valignment & VAlign_Mask) << VAlign_Shift));
+    {
+        AlignProps = (UByte)((AlignProps & ~(static_cast<UInt8>(VAlign_Mask) << static_cast<UInt8>(VAlign_Shift))) |
+            (static_cast<UInt8>(valignment & static_cast<ViewVAlignment>(VAlign_Mask)) << static_cast<UInt8>(VAlign_Shift)));
         SetReformatReq();
     }
-    ViewVAlignment GetVAlignment() const { return ViewVAlignment((AlignProps >> VAlign_Shift) & VAlign_Mask); }
+    ViewVAlignment GetVAlignment() const
+    {
+        return static_cast<ViewVAlignment>((AlignProps >> static_cast<UInt8>(VAlign_Shift)) & static_cast<UInt8>(VAlign_Mask));
+    }
 
-    void SetTextAutoSize(ViewTextAutoSize valignment)
-    { 
-        AlignProps = (UByte)((AlignProps & ~(TAS_Mask << TAS_Shift)) | ((valignment & TAS_Mask) << TAS_Shift));
+    void SetTextAutoSize(ViewTextAutoSize tas)
+    {
+        AlignProps = (UByte)((AlignProps & ~(static_cast<UInt8>(TAS_Mask) << static_cast<UInt8>(TAS_Shift))) |
+            (static_cast<UInt8>(tas & static_cast<ViewTextAutoSize>(TAS_Mask)) << static_cast<UInt8>(TAS_Shift)));
         SetReformatReq();
     }
     ViewTextAutoSize GetTextAutoSize() const { return ViewTextAutoSize((AlignProps >> TAS_Shift) & TAS_Mask); }
@@ -767,7 +815,6 @@ protected:
     UInt16                  FormatCounter; // being incremented each Format call
     UInt16                  FontScaleFactor; // in twips, 0 .. 1000.0
     float                   Outline;
-    UInt8                   AlignProps; // combined H- and V- alignments and TAS_<>
 
     enum
     {
@@ -780,12 +827,15 @@ protected:
         Flags_AAReadability = 0x40,
         Flags_AutoFit       = 0x80
     };
-    UInt8                           Flags;
+    UInt8                   Flags;
 
+    UInt8                   AlignProps; // combined H- and V- alignments and TAS_<>
     enum
     {
         FlagsEx_FauxBold    = 0x1,
-        FlagsEx_FauxItalic  = 0x2
+        FlagsEx_FauxItalic  = 0x2,
+        FlagsEx_BidiEnabled = 0x4,
+        FlagsEx_ForceVector = 0x8
     };
     UInt8                           FlagsEx;
 
@@ -796,7 +846,8 @@ protected:
         RTFlags_HasFontScaleFactor  = 0x4,
         RTFlags_CompressCRLF        = 0x8,
         RTFlags_FontErrorDetected   = 0x10,
-        RTFlags_BitmapFontUsed      = 0x20
+        RTFlags_BitmapFontUsed      = 0x20,
+        RTFlags_HasBidirectionalText= 0x40
     };
     UInt8                           RTFlags; // run-time flags
 };

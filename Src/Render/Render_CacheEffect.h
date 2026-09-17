@@ -9,6 +9,7 @@ Created     :   July 8, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -114,10 +115,14 @@ public:
         return false;
     }
 
-    inline MaskEffect* GetMaskEffect() const;
-    inline FilterEffect* GetFilterEffect() const;
-    inline ViewMatrix3DEffect* GetViewMatrix3DEffect() const;
-    inline ProjectionMatrix3DEffect* GetProjectionMatrix3DEffect() const;
+    template<class EffectType, StateType Type>
+    inline EffectType* GetEffectOfType() const
+    {
+        CacheEffect* effect = pEffect;
+        while (effect && effect->GetType() != Type)
+            effect = effect->pNext;
+        return (EffectType*)effect;
+    }
 
 private:
     void updateBundleChain(CacheEffect* effect,
@@ -132,7 +137,6 @@ enum MaskEffectState
 {
     MES_NoMask,
     MES_Culled,
-    MES_Clipped,
     MES_Combinable,
     MES_Entry_Count
 };
@@ -168,45 +172,17 @@ public:
     static CacheEffect*    Create(TreeCacheNode*, const State*, CacheEffect* next);
 };
 
-inline MaskEffect* CacheEffectChain::GetMaskEffect() const
-{
-    CacheEffect* effect = pEffect;
-    while (effect && effect->GetType() != State_MaskNode)
-        effect = effect->pNext;
-    return (MaskEffect*)effect;
-}
-
-inline FilterEffect* CacheEffectChain::GetFilterEffect() const
-{
-    CacheEffect* effect = pEffect;
-    while (effect && effect->GetType() != State_Filter)
-        effect = effect->pNext;
-    return (FilterEffect*)effect;
-}
-
-inline ViewMatrix3DEffect* CacheEffectChain::GetViewMatrix3DEffect() const
-{
-    CacheEffect* effect = pEffect;
-    while (effect && effect->GetType() != State_ViewMatrix3D)
-        effect = effect->pNext;
-    return (ViewMatrix3DEffect*)effect;
-}
-
-inline ProjectionMatrix3DEffect* CacheEffectChain::GetProjectionMatrix3DEffect() const
-{
-    CacheEffect* effect = pEffect;
-    while (effect && effect->GetType() != State_ProjectionMatrix3D)
-        effect = effect->pNext;
-    return (ProjectionMatrix3DEffect*)effect;
-}
-
 class BlendModeEffect : public CacheEffect
 {
 public:
-    BlendModeEffect(TreeCacheNode* node, const BlendState& state, CacheEffect* next);
+    BlendModeEffect(TreeCacheNode* node, const HMatrix& m, const BlendState& state, CacheEffect* next);
 
-    BundleEntry  StartEntry, EndEntry;
+    BundleEntry             StartEntry, EndEntry;
+    HMatrix                 BoundsMatrix;
 
+    HMatrix                GetBoundsMatrix() const { return BoundsMatrix; }
+    bool                   UpdateMatrix(const Matrix2F& boundsMatrix);
+    void                   UpdateCxform(const Cxform& cx);
     virtual StateType      GetType() const { return State_BlendMode; }
     virtual TreeCacheNode* GetSourceNode() const { return StartEntry.pSourceNode; }
     virtual bool           Update(const State*);

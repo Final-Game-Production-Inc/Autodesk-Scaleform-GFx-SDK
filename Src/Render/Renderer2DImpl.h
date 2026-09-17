@@ -7,6 +7,7 @@ Created     :   November 3, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -109,6 +110,8 @@ public:
     // If pcontext is specified it will update only roots corresponding to the
     // context; otherwise all roots will be used.
     void    ForceUpdateImages(Context* pcontext = NULL);
+
+    SF_AMP_CODE(void GetExternalMemory(MemItem* root);)
 protected:
     // Viewport and its HW matrix being used.
     Viewport            VP;

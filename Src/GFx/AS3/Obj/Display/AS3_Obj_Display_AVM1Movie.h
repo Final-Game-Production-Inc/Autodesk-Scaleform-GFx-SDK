@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -87,7 +88,7 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
-    class AVM1Movie : public CTraits
+    class AVM1Movie : public fl_display::DisplayObject
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -123,17 +124,19 @@ namespace InstanceTraits { namespace fl_display
     
 namespace ClassTraits { namespace fl_display
 {
-    class AVM1Movie : public Traits
+    class AVM1Movie : public fl_display::DisplayObject
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::AVM1Movie"; }
 #endif
     public:
-        typedef Classes::fl_display::AVM1Movie ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::AVM1Movie InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        AVM1Movie(VM& vm);
+        AVM1Movie(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

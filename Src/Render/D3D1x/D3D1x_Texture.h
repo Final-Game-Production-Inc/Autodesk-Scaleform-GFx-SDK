@@ -6,6 +6,7 @@ Created     :   Mar 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -38,6 +39,7 @@ struct TextureFormat : public Render::TextureFormat
         ImageFormat              Format;
         DXGI_FORMAT              D3DFormat;
         UByte                    BytesPerPixel;
+        D3D_FEATURE_LEVEL        MinFeatureLevel;
         Image::CopyScanlineFunc  CopyFunc;
         Image::CopyScanlineFunc  UncopyFunc;
     };
@@ -162,7 +164,7 @@ class TextureManager : public Render::TextureManager
     D3DResourceArray          D3DTextureKillList;
     D3DViewArray              D3DTexViewKillList;
     
-    static const unsigned       SamplerTypeCount = (Sample_Count * Wrap_Count);
+    static const unsigned       SamplerTypeCount = (static_cast<unsigned>(Sample_Count) * static_cast<unsigned>(Wrap_Count));
     ID3D1x(SamplerState)*       SamplerStates[SamplerTypeCount];
 
     // Detecting redundant sampler/address setting.
@@ -183,7 +185,7 @@ public:
     TextureManager(ID3D1x(Device)* pdevice,
                    ID3D1x(DeviceContext) * pcontext,
                    ThreadId renderThreadId, 
-                   ThreadCommandQueue* commandQueue = 0,
+                   ThreadCommandQueue* commandQueue,
                    TextureCache* texCache = 0);
     ~TextureManager();
 

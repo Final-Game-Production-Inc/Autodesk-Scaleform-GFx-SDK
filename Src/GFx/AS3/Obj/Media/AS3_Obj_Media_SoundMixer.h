@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,12 +31,21 @@ namespace fl_media
 {
     extern const TypeInfo SoundMixerTI;
     extern const ClassInfo SoundMixerCI;
+    extern const TypeInfo SoundTransformTI;
+    extern const ClassInfo SoundTransformCI;
 } // namespace fl_media
 namespace fl
 {
+    extern const TypeInfo int_TI;
+    extern const ClassInfo int_CI;
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
 } // namespace fl
+namespace fl_utils
+{
+    extern const TypeInfo ByteArrayTI;
+    extern const ClassInfo ByteArrayCI;
+} // namespace fl_utils
 
 namespace ClassTraits { namespace fl_media
 {
@@ -62,7 +72,7 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_media
 {
-    class SoundMixer : public Traits
+    class SoundMixer : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -70,9 +80,11 @@ namespace ClassTraits { namespace fl_media
 #endif
     public:
         typedef Classes::fl_media::SoundMixer ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        SoundMixer(VM& vm);
+        SoundMixer(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

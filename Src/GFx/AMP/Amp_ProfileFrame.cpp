@@ -1,4 +1,7 @@
 #include "Amp_ProfileFrame.h"
+
+#ifdef SF_ENABLE_STATS
+
 #include "Kernel/SF_MemItem.h"
 #include "Kernel/SF_File.h"
 #include "Kernel/SF_MsgFormat.h"
@@ -55,9 +58,11 @@ ProfileFrame::ProfileFrame() :
     InvokeTime(0),
     DisplayTime(0),
     PresentTime(0),
-    TesselationTime(0),
+    FontThrashingTime(0),
     GradientGenTime(0),
+    FontMissTime(0),
     UserTime(0),
+    UserCalls(0),
     LineCount(0),
     MaskCount(0),
     FilterCount(0),
@@ -76,11 +81,14 @@ ProfileFrame::ProfileFrame() :
     FontMisses(0),
     FontTotalArea(0),
     FontUsedArea(0),
+    FontOptRead(0),
     TotalMemory(0),
     ImageMemory(0),
     ImageGraphicsMemory(0),
     MovieDataMemory(0),
+    FontMemory(0),
     MovieViewMemory(0),
+    AS3Memory(0),
     MeshCacheMemory(0),
     MeshCacheGraphicsMemory(0),
     MeshCacheUnusedMemory(0),
@@ -122,9 +130,11 @@ ProfileFrame& ProfileFrame::operator+=(const ProfileFrame& rhs)
     InvokeTime += rhs.InvokeTime;
     DisplayTime += rhs.DisplayTime;
     PresentTime += rhs.PresentTime;
-    TesselationTime += rhs.TesselationTime;
+    FontThrashingTime += rhs.FontThrashingTime;
     GradientGenTime += rhs.GradientGenTime;
+    FontMissTime += rhs.FontMissTime;
     UserTime += rhs.UserTime;
+    UserCalls += rhs.UserCalls;
     LineCount += rhs.LineCount;
     MaskCount += rhs.MaskCount;
     FilterCount += rhs.FilterCount;
@@ -143,11 +153,14 @@ ProfileFrame& ProfileFrame::operator+=(const ProfileFrame& rhs)
     FontMisses += rhs.FontMisses;
     FontTotalArea += rhs.FontTotalArea;
     FontUsedArea += rhs.FontUsedArea;
+    FontOptRead = Alg::Max(rhs.FontOptRead, FontOptRead);
     TotalMemory += rhs.TotalMemory;
     ImageMemory += rhs.ImageMemory;
     ImageGraphicsMemory += rhs.ImageGraphicsMemory;
     MovieDataMemory += rhs.MovieDataMemory;
+    FontMemory += rhs.FontMemory;
     MovieViewMemory += rhs.MovieViewMemory;
+    AS3Memory += rhs.AS3Memory;
     MeshCacheMemory += rhs.MeshCacheMemory;
     MeshCacheGraphicsMemory += rhs.MeshCacheGraphicsMemory;
     MeshCacheUnusedMemory += rhs.MeshCacheUnusedMemory;
@@ -260,9 +273,11 @@ ProfileFrame& ProfileFrame::operator/=(unsigned numFrames)
     InvokeTime /= numFrames;
     DisplayTime /= numFrames;
     PresentTime /= numFrames;
-    TesselationTime /= numFrames;
+    FontThrashingTime /= numFrames;
     GradientGenTime /= numFrames;
+    FontMissTime /= numFrames;
     UserTime /= numFrames;
+    UserCalls /= numFrames;
     LineCount /= numFrames;
     MaskCount /= numFrames;
     FilterCount /= numFrames;
@@ -285,7 +300,9 @@ ProfileFrame& ProfileFrame::operator/=(unsigned numFrames)
     ImageMemory /= numFrames;
     ImageGraphicsMemory /= numFrames;
     MovieDataMemory /= numFrames;
+    FontMemory /= numFrames;
     MovieViewMemory /= numFrames;
+    AS3Memory /= numFrames;
     MeshCacheMemory /= numFrames;
     MeshCacheGraphicsMemory /= numFrames;
     MeshCacheUnusedMemory /= numFrames;
@@ -331,9 +348,11 @@ ProfileFrame& ProfileFrame::operator*=(unsigned num)
     InvokeTime *= num;
     DisplayTime *= num;
     PresentTime *= num;
-    TesselationTime *= num;
+    FontThrashingTime *= num;
     GradientGenTime *= num;
+    FontMissTime *= num;
     UserTime *= num;
+    UserCalls *= num;
     LineCount *= num;
     MaskCount *= num;
     FilterCount *= num;
@@ -356,7 +375,9 @@ ProfileFrame& ProfileFrame::operator*=(unsigned num)
     ImageMemory *= num;
     ImageGraphicsMemory *= num;
     MovieDataMemory *= num;
+    FontMemory *= num;
     MovieViewMemory *= num;
+    AS3Memory *= num;
     MeshCacheMemory *= num;
     MeshCacheGraphicsMemory *= num;
     MeshCacheUnusedMemory *= num;
@@ -418,9 +439,17 @@ void ProfileFrame::Read(File& str, UInt32 version)
     {
         PresentTime = str.ReadUInt32();
     }
-    TesselationTime = str.ReadUInt32();
+    FontThrashingTime = str.ReadUInt32();
     GradientGenTime = str.ReadUInt32();
+    if (version >= 42)
+    {
+        FontMissTime = str.ReadUInt32();
+    }
     UserTime = str.ReadUInt32();
+    if (version >= 37)
+    {
+        UserCalls = str.ReadUInt32();
+    }
     LineCount = str.ReadUInt32();
     MaskCount = str.ReadUInt32();
     FilterCount = str.ReadUInt32();
@@ -450,6 +479,10 @@ void ProfileFrame::Read(File& str, UInt32 version)
             FontTotalArea = str.ReadUInt32();
             FontUsedArea = str.ReadUInt32();
         }
+        if (version >= 34)
+        {
+            FontOptRead = str.ReadUInt32();
+        }
     }
     TotalMemory = str.ReadUInt32();
     ImageMemory = str.ReadUInt32();
@@ -458,7 +491,15 @@ void ProfileFrame::Read(File& str, UInt32 version)
         ImageGraphicsMemory = str.ReadUInt32();
     }
     MovieDataMemory = str.ReadUInt32();
+    if (version >= 40)
+    {
+        FontMemory = str.ReadUInt32();
+    }
     MovieViewMemory = str.ReadUInt32();
+    if (version >= 35)
+    {
+        AS3Memory = str.ReadUInt32();
+    }
     MeshCacheMemory = str.ReadUInt32();
     if (version >= 28)
     {
@@ -570,9 +611,17 @@ void ProfileFrame::Write(File& str, UInt32 version) const
     {
         str.WriteUInt32(PresentTime);
     }
-    str.WriteUInt32(TesselationTime);
+    str.WriteUInt32(FontThrashingTime);
     str.WriteUInt32(GradientGenTime);
+    if (version >= 42)
+    {
+        str.WriteUInt32(FontMissTime);
+    }
     str.WriteUInt32(UserTime);
+    if (version >= 37)
+    {
+        str.WriteUInt32(UserCalls);
+    }
     str.WriteUInt32(LineCount);
     str.WriteUInt32(MaskCount);
     str.WriteUInt32(FilterCount);
@@ -602,6 +651,10 @@ void ProfileFrame::Write(File& str, UInt32 version) const
             str.WriteUInt32(FontTotalArea);
             str.WriteUInt32(FontUsedArea);
         }
+        if (version >= 34)
+        {
+            str.WriteUInt32(FontOptRead);
+        }
     }
     str.WriteUInt32(TotalMemory);
     str.WriteUInt32(ImageMemory);
@@ -610,7 +663,15 @@ void ProfileFrame::Write(File& str, UInt32 version) const
         str.WriteUInt32(ImageGraphicsMemory);
     }
     str.WriteUInt32(MovieDataMemory);
+    if (version >= 40)
+    {
+        str.WriteUInt32(FontMemory);
+    }
     str.WriteUInt32(MovieViewMemory);
+    if (version >= 35)
+    {
+        str.WriteUInt32(AS3Memory);
+    }
     str.WriteUInt32(MeshCacheMemory);
     if (version >= 28)
     {
@@ -1641,7 +1702,8 @@ ServerState::ServerState() :
     CurveToleranceMax(0.0f),
     CurveToleranceStep(0.0f),
     CurrentFileId(0),
-    CurrentLineNumber(0)
+    CurrentLineNumber(0),
+    Platform(0)
 {
 }
 
@@ -1665,6 +1727,7 @@ ServerState& ServerState::operator=(const ServerState& rhs)
     CurveToleranceStep = rhs.CurveToleranceStep;
     CurrentFileId = rhs.CurrentFileId;
     CurrentLineNumber = rhs.CurrentLineNumber;
+    Platform = rhs.Platform;
     return *this;
 }
 
@@ -1688,6 +1751,7 @@ bool ServerState::operator!=(const ServerState& rhs) const
     if (Alg::Abs(CurveToleranceStep - rhs.CurveToleranceStep) > 0.0001) return true;
     if (CurrentFileId != rhs.CurrentFileId) return true;
     if (CurrentLineNumber != rhs.CurrentLineNumber) return true;
+    if (Platform != rhs.Platform) return true;
 
     return false;
 }
@@ -1724,6 +1788,10 @@ void ServerState::Read(File& str, UInt32 version)
         CurrentFileId = str.ReadUInt64();
         CurrentLineNumber = str.ReadUInt32();
     }
+    if (version >= 36)
+    {
+        Platform = str.ReadUInt32();
+    }
 }
 
 // Serialization
@@ -1756,8 +1824,14 @@ void ServerState::Write(File& str, UInt32 version) const
         str.WriteUInt64(CurrentFileId);
         str.WriteUInt32(CurrentLineNumber);
     }
+    if (version >= 36)
+    {
+        str.WriteUInt32(Platform);
+    }
 }
 
 } // namespace AMP
 } // namespace GFx
 } // namespace Scaleform
+
+#endif

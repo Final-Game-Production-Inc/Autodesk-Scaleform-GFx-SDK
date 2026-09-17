@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -100,7 +101,7 @@ namespace Instances { namespace fl_desktop
 
 namespace InstanceTraits { namespace fl_desktop
 {
-    class NativeDragOptions : public CTraits
+    class NativeDragOptions : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -128,6 +129,8 @@ namespace InstanceTraits { namespace fl_desktop
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 1 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[1];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -140,17 +143,19 @@ namespace InstanceTraits { namespace fl_desktop
     
 namespace ClassTraits { namespace fl_desktop
 {
-    class NativeDragOptions : public Traits
+    class NativeDragOptions : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::NativeDragOptions"; }
 #endif
     public:
-        typedef Classes::fl_desktop::NativeDragOptions ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_desktop::NativeDragOptions InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        NativeDragOptions(VM& vm);
+        NativeDragOptions(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

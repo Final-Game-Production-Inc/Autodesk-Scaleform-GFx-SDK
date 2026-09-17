@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,21 +29,26 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 BrowserInvokeEvent_tito[6] = {
+    //    0, 1, 2, 3, 4, 5, 
+    // };
+    const TypeInfo* BrowserInvokeEvent_tit[6] = {
+        &AS3::fl::ArrayTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl_events::EventTI, 
+    };
     const ThunkInfo BrowserInvokeEvent_ti[6] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::ArrayTI, "arguments", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "isHTTPS", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "isUserEvent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "sandboxType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "securityDomain", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &BrowserInvokeEvent_tit[0], "arguments", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &BrowserInvokeEvent_tit[1], "isHTTPS", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &BrowserInvokeEvent_tit[2], "isUserEvent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &BrowserInvokeEvent_tit[3], "sandboxType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &BrowserInvokeEvent_tit[4], "securityDomain", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &BrowserInvokeEvent_tit[5], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -68,24 +74,27 @@ namespace ClassTraits { namespace fl_events
         {"BROWSER_INVOKE", NULL, OFFSETOF(Classes::fl_events::BrowserInvokeEvent, BROWSER_INVOKE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    BrowserInvokeEvent::BrowserInvokeEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::BrowserInvokeEventCI)
+
+    BrowserInvokeEvent::BrowserInvokeEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::BrowserInvokeEvent::BrowserInvokeEvent()"
 //##protect##"ClassTraits::BrowserInvokeEvent::BrowserInvokeEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::Event(vm, AS3::fl_events::BrowserInvokeEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::BrowserInvokeEvent(*this));
 
     }
 
     Pickable<Traits> BrowserInvokeEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) BrowserInvokeEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) BrowserInvokeEvent(vm, AS3::fl_events::BrowserInvokeEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::BrowserInvokeEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -96,6 +105,11 @@ namespace fl_events
 {
     const TypeInfo BrowserInvokeEventTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_events::BrowserInvokeEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::BrowserInvokeEvent::MemberInfoNum,
+        6,
+        0,
         "BrowserInvokeEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -103,10 +117,6 @@ namespace fl_events
     const ClassInfo BrowserInvokeEventCI = {
         &BrowserInvokeEventTI,
         ClassTraits::fl_events::BrowserInvokeEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::BrowserInvokeEvent::MemberInfoNum,
-        6,
-        0,
         NULL,
         ClassTraits::fl_events::BrowserInvokeEvent::mi,
         InstanceTraits::fl_events::BrowserInvokeEvent_ti,

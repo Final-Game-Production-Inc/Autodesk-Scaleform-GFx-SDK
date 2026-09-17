@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -118,10 +119,11 @@ public:
     bool                    EdgeAA, Wireframe;
     bool                    LockOrientation, StageClipping;
     bool                    MeasurePerformance, FastForward;
-    FxRenderThread::ProfileMode ProfileMode;
+    Render::ProfilerModes   ProfileMode;
     int                     CurveTolerancePosition;
     bool                    ButtonDown, TouchDown;
     GFx::Viewport           mViewport;
+	Render::ToleranceParams tolParams;
 
     struct Window
     {
@@ -193,6 +195,12 @@ public:
 
     virtual void OnDropFiles(const String& filename);
 
+	virtual void OnStatus(String* code, String* level, String* extensionId, String* contextId);
+
+    virtual void OnAccelerometerUpdate(int idAcc, double timestamp, double accelerationX, double accelerationY, double accelerationZ);
+
+	virtual void OnGeolocationUpdate(int idGeo, double latitude, double longitude, double altitude, double hAccuracy, double vAccuracy, double speed, double heading, double timestamp);
+
     virtual bool PrepareMovie(MovieDef* pdef, Movie* pview);
 
     virtual void InitArgDescriptions(Args* args);
@@ -201,8 +209,13 @@ public:
     virtual void NotifyShowVirtualKeyboard(const Render::RectF& keyboardRect, const Render::RectF& textBox);
     virtual void NotifyHideVirtualKeyboard();
 
+    virtual void OnFocus(bool setFocus, KeyModifiers mods);
     virtual void OnPause();
     virtual void OnResume();
+    // Returns current orientation
+    virtual unsigned GetOrientation() { return Orientation; }
+
+    virtual bool IsOrientationLocked() { return LockOrientation; }
 
     //void Display(MovieDisplayHandle& movie, bool setTime = false);
 

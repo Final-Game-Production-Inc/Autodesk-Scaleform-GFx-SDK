@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_ui
 {
@@ -68,11 +63,10 @@ namespace InstanceTraits { namespace fl_ui
 
 
     ContextMenuClipboardItems::ContextMenuClipboardItems(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::ContextMenuClipboardItems::ContextMenuClipboardItems()"
 //##protect##"InstanceTraits::ContextMenuClipboardItems::ContextMenuClipboardItems()"
-        SetMemSize(sizeof(Instances::fl_ui::ContextMenuClipboardItems));
 
     }
 
@@ -89,24 +83,27 @@ namespace InstanceTraits { namespace fl_ui
 
 namespace ClassTraits { namespace fl_ui
 {
-    ContextMenuClipboardItems::ContextMenuClipboardItems(VM& vm)
-    : Traits(vm, AS3::fl_ui::ContextMenuClipboardItemsCI)
+
+    ContextMenuClipboardItems::ContextMenuClipboardItems(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::ContextMenuClipboardItems::ContextMenuClipboardItems()"
 //##protect##"ClassTraits::ContextMenuClipboardItems::ContextMenuClipboardItems()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_ui::ContextMenuClipboardItems(vm, AS3::fl_ui::ContextMenuClipboardItemsCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> ContextMenuClipboardItems::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) ContextMenuClipboardItems(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) ContextMenuClipboardItems(vm, AS3::fl_ui::ContextMenuClipboardItemsCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_ui::ContextMenuClipboardItemsCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -117,6 +114,11 @@ namespace fl_ui
 {
     const TypeInfo ContextMenuClipboardItemsTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_ui::ContextMenuClipboardItems::InstanceType),
+        0,
+        0,
+        0,
+        InstanceTraits::fl_ui::ContextMenuClipboardItems::MemberInfoNum,
         "ContextMenuClipboardItems", "flash.ui", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -124,10 +126,6 @@ namespace fl_ui
     const ClassInfo ContextMenuClipboardItemsCI = {
         &ContextMenuClipboardItemsTI,
         ClassTraits::fl_ui::ContextMenuClipboardItems::MakeClassTraits,
-        0,
-        0,
-        0,
-        InstanceTraits::fl_ui::ContextMenuClipboardItems::MemberInfoNum,
         NULL,
         NULL,
         NULL,

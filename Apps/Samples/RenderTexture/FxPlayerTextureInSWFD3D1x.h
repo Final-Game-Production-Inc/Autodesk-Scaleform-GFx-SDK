@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov, Andrew Reise
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -16,111 +17,40 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef FX_PlayerTextureInSWFD3D1x_H
 #define FX_PlayerTextureInSWFD3D1x_H
 
-#include "../Common/FxPlayerAppBase.h"
-#include "../Common/FxPlayerAppBase.h"
+#include "FxPlayerTextureInSWF.h"
+
+// NOTE: the appropriate D3D10 or D3D11 headers will be included D3D1x_Config.h. This includes
+// creating macros which replace the function names with appropriate ones, depending on which one
+// is being compiled (for example, the ID3D1x macros used below).
+#include "Render/D3D1x/D3D1x_Config.h"
+
 #include "Render/D3D1x/D3D1x_HAL.h"
 
-#if (SF_D3D_VERSION == 10)
-#include <d3d10.h>
-#include <d3dx10.h>
-#define GRendererD3D1x      GRendererD3D10
-#define GTextureD3D1x       GTextureD3D10
-
-// add D3D10 or ID3D10 before classes and enums that are similar in D3D10/11
-#define D3Dx(name)      D3D10_##name
-#define ID3Dx(name)     ID3D10##name
-
-// context is new in D3D11
-//    #define pContext pDevice
-
-#define ID3D1xDeviceContext           ID3Dx(Device)
-#define NULL_SHADER_CLASS   
-#define NULL_SHADER_LINKAGE
-
-#define IDIRECT3DDEVICE ID3D10Device
-#define IDIRECT3DCONTEXT ID3D10Device
-#define D3DVIEWPORT D3D10_VIEWPORT
-#define D3DxVIEWPORT_COORD            int
-
-#else
-#include <d3d11.h>
-#include <d3dx11.h>
-#define GRendererD3D1x      GRendererD3D11
-#define GTextureD3D1x       GTextureD3D11
-
-// add D3D11_ or ID3D11 before classes and enums that are similar in D3D10/11
-#define D3Dx(name)      D3D11_##name
-#define ID3Dx(name)     ID3D11##name
-
-#define ID3D1xDeviceContext         ID3D11DeviceContext
-#define NULL_SHADER_CLASS           , NULL, 0
-#define NULL_SHADER_LINKAGE         , NULL
-
-#define IDIRECT3DDEVICE ID3D11Device
-#define IDIRECT3DCONTEXT ID3D11DeviceContext
-#define D3DVIEWPORT D3D11_VIEWPORT
-#define D3DxVIEWPORT_COORD          FLOAT
-#endif
-
-
-
-class   TextureInSWFD3D1xApp : public FxPlayerAppBase, public HALNotify
+class FxPlayerTextureInSWFAppD3D1x : public FxPlayerTextureInSWFApp
 {
 public:
-    TextureInSWFD3D1xApp() 
-    {
-        CubeWireframe       = 0;
-        MeshRotation        = 0.0f;
-        LastRotationTick    = 0;
-        pMyHWTexture        = 0;
-        RTWidth             = 256;
-        RTHeight            = 256;
-    }
+    virtual void                     RenderMesh();
+    virtual void                     InitGraphicsResources();
 
+protected:
 
-    virtual bool            CreateVertexBuffer();
-    D3D1x::Texture*         CreateHWTexture();
-    virtual bool            OnInit(Platform::ViewConfig& config);
-    virtual void            OnShutdown(); 
+    Ptr<ID3D1x(Device)>              pDevice;               // The device (used for creating resources)
+    Ptr<ID3D1x(DeviceContext)>       pDeviceContext;        // The device context (used for rendering, maps to 'pDevice' in D3D10).
 
-    bool            SetupRTTexture();
-    void            SetupMatrices();
-    void            RenderMesh();
+    Ptr<ID3D1x(Texture2D)>           pRenderTexture;        // The render texture.
+    Ptr<ID3D1x(RenderTargetView)>    pRenderTextureView;    // The render texture view.
+    Ptr<ID3D1x(Texture2D)>           pRTDepthStencilBuf;    // The depth/stencil surface used when rendering the rendered texture.
+    Ptr<ID3D1x(DepthStencilView)>    pRTDepthStencil;       // The depth/stencil surface view.
 
-    enum TrackingState
-    {
-        None,
-        Zooming,
-        Moving,
-        Tilting,
-        Centering,
-    };
+    Ptr<ID3D1x(Buffer)>              pCubeVertexBuffer;     // The vertex buffer, containing the cube mesh data.
+    Ptr<ID3D1x(InputLayout)>         pVertexLayout;         // The vertex format layout.
+    Ptr<ID3D1x(VertexShader)>        pVertexShader;         // The vertex shader.
+    Ptr<ID3D1x(PixelShader)>         pPixelShader;          // The fragment (pixel) shader.
+    Ptr<ID3D1x(Buffer)>              pVShaderUniforms;      // The buffer containing the uniforms (shader constants), used with the vertex shader.
 
-    Ptr<ID3Dx(Texture2D)>           pRenderTexture;
-    Ptr<ID3Dx(RenderTargetView)>    pRenderTextureView;
-    Ptr<ID3Dx(DepthStencilView)>    pRTDepthStencil;
-    Ptr<ID3Dx(Texture2D)>           pRTDepthStencilBuf;
-    Ptr<ID3Dx(Buffer)>              pCubeVertexBuffer;
-    Ptr<ID3Dx(Buffer)>              PShaderConst, VShaderConst;
-    Ptr<ID3Dx(DepthStencilState)>   pDepthTest;
-    Ptr<ID3Dx(RasterizerState)>     pRSFill, pRSLine;
-    Ptr<ID3Dx(BlendState)>          pBlendState;
-    Ptr<ID3Dx(VertexShader)>        p3DVShader;
-    Ptr<ID3Dx(PixelShader)>         pSolidShader;
-    Ptr<ID3Dx(InputLayout)>         p3DILayout;
-
-    ID3Dx(RenderTargetView)*        pRenderTarget;
-    ID3Dx(DepthStencilView)*        pDepthStencil;
-
-    D3D1x::HAL*              pPlatformHAL; 
-    IDIRECT3DDEVICE*        pDevice;
-    IDIRECT3DCONTEXT*       pContext;
-
-    Ptr<D3D1x::Texture>              pMyHWTexture;
-    int                             RTWidth, RTHeight;
-    float                           MeshRotation;
-    UInt64                          LastRotationTick;
-    bool                            CubeWireframe;
+    Ptr<ID3D1x(DepthStencilState)>   pDepthTest;            // The depth/stencil state object
+    Ptr<ID3D1x(RasterizerState)>     pRSFill, pRSLine;      // The rasterizer state objects (solid, and wireframe fills)
+    Ptr<ID3D1x(BlendState)>          pBlendState;           // The blend state object.
 };
 
 

@@ -6,6 +6,7 @@ Created     :   2009-2010
 Authors     :   Maxim Shemanarev, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -184,7 +185,7 @@ private:
 
 bool TreeShape::NodeData::PropagateUp(Entry* entry) const
 {        
-    RectF    bounds, parentBounds;
+    RectF    bounds, parentBounds, orgBounds;
 
     // TO DO: Force Update bounds when the shape changes!!!
     if (AproxLocalBounds.IsEmpty())
@@ -204,6 +205,7 @@ bool TreeShape::NodeData::PropagateUp(Entry* entry) const
     if (!bounds.IsEmpty())
     {
         // Must apply any filters to the bounds before it is transformed into parent space.
+        orgBounds = bounds;
         expandByFilterBounds(&bounds, false );
         if ( !Is3D() )
             parentBounds = M2D().EncloseTransform(bounds);
@@ -217,6 +219,7 @@ bool TreeShape::NodeData::PropagateUp(Entry* entry) const
         NodeData* d = pc->GetWritableData(Change_AproxBounds);
         d->AproxLocalBounds = bounds;
         d->AproxParentBounds = parentBounds;
+        d->updateOriginalBoundState(orgBounds);
         return IsVisible();
     }
     return false;   
@@ -617,8 +620,13 @@ unsigned TreeCacheShapeLayer::calcMeshKey(const ShapeMeshProvider* pmeshProvider
                 s9g->ViewMtx   = m;
 
                 // Scale9 expects that the bounds do not include the filter size in local bounds.
-                // So, if a filter exists this call should remove the filter area from the bounds.
-                nd->contractByFilterBounds(&s9g->Bounds);
+                // The original bounds should be stored as a state on the node, if they were modified by a filter.
+                const OrigNodeBoundsState* boundsState = nd->GetState<OrigNodeBoundsState>();
+                if (boundsState)
+                    s9g->Bounds = *boundsState->GetBounds();
+                else
+                    s9g->Bounds = nd->AproxLocalBounds;
+
                 flags |= MeshKey::KF_Scale9Grid;
                 break;
             }
@@ -745,6 +753,7 @@ void TreeCacheShapeLayer::getShapeMatrixFrom3D(const TreeShape::NodeData* nd, Ma
     SF_ASSERT(M.Has3D());
     RectF bounds = nd->pMeshProvider->GetIdentityBounds();
 
+    const ToleranceParams& cfg = pRenderer2D->GetToleranceParams();
     Matrix4F m(viewProj, M.GetMatrix3D());
     const Viewport & vp = pRoot->GetNodeData()->VP;
 
@@ -752,15 +761,15 @@ void TreeCacheShapeLayer::getShapeMatrixFrom3D(const TreeShape::NodeData* nd, Ma
     m.TransformHomogeneousAndScaleCorners(bounds, (float)vp.Width, (float)vp.Height, coord);
     mat->SetRectToParl(bounds.x1, bounds.y1, bounds.x2, bounds.y2, coord);
 
-    if (fabsf(mat->GetDeterminant()) < 0.001f) // TO DO: Move constants to ToleranceParams
+    if (fabsf(mat->GetDeterminant()) < cfg.MinDet3D) // TO DO: Move constants to ToleranceParams
        *mat = Matrix2F::Scaling(mat->GetScale());
 
     unsigned strokeStyle = nd->pMeshProvider->GetLayerStroke(getLayer());
     if (strokeStyle)
     {
         float s = mat->GetScale();
-        if (s < 0.05f) // TO DO: Move constants to ToleranceParams
-            s = 0.05f;
+        if (s < cfg.MinScale3D) // TO DO: Move constants to ToleranceParams
+            s = cfg.MinScale3D;
         *mat = Matrix2F::Scaling(s);
     }
 }
@@ -787,10 +796,8 @@ void TreeCacheShapeLayer::UpdateTransform(const TreeNode::NodeData* nodeData,
         return;
 
     const TreeShape::NodeData* shapeNodeData = (const TreeShape::NodeData*)nodeData;    
-    Bundle* bundle = GetBundle();
-    if (!bundle)
+    if (!pMeshKey)
         return;
-    SF_ASSERT(pMeshKey);
 
     unsigned meshKeyFlags = 0;
     bool     updateMesh = false;
@@ -812,11 +819,7 @@ void TreeCacheShapeLayer::UpdateTransform(const TreeNode::NodeData* nodeData,
             updateTexture0Matrix();
         }
     }
-    // TBD: This adjustment should really be done before (!bundle) return
-    //      above, but before updateMeshKey. Else its not applied in first frame...
-    //      Currently updateMeshKey isn't called immediately to avoid allocation
-    //      for hidden objects.
-    // TO DO: revise, consider offset in the MeshKey
+
     if (M.Has3D() == 0 && (meshKeyFlags & MeshKey::KF_KeyTypeMask) == MeshKey::KF_StrokeHinted)
     {
         Matrix m2 = t.Mat;
@@ -824,6 +827,10 @@ void TreeCacheShapeLayer::UpdateTransform(const TreeNode::NodeData* nodeData,
         m2.Ty() = floorf(m2.Ty() + ((m2.Ty() < 0) ? -0.5f : +0.5f));
         M.SetMatrix2D(m2);
     }
+
+    Bundle* bundle = GetBundle();
+    if (!bundle)
+        return;
 
     if (updateMesh)
         bundle->UpdateMesh(&SorterShapeNode);

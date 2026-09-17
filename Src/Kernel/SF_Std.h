@@ -7,6 +7,7 @@ Created     :   2/25/2007
 Authors     :   Ankur Mohan, Michael Antonov, Artem Bolgar, Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -193,7 +194,7 @@ inline const char* SFstrrchr(const char* str, char c)
     for (UPInt i=len; i>0; i--)     
         if (str[i]==c) 
             return str+i;
-    return 0;
+    return str[0] == c ? str : 0;
 }
 
 inline const UByte* SF_CDECL SFmemrchr(const UByte* str, UPInt size, UByte c)
@@ -203,7 +204,7 @@ inline const UByte* SF_CDECL SFmemrchr(const UByte* str, UPInt size, UByte c)
         if (str[i] == c) 
             return str + i;
     }
-    return 0;
+    return str[0] == c ? str : 0;
 }
 
 inline char* SF_CDECL SFstrrchr(char* str, char c)
@@ -212,7 +213,7 @@ inline char* SF_CDECL SFstrrchr(char* str, char c)
     for (UPInt i=len; i>0; i--)     
         if (str[i]==c) 
             return str+i;
-    return 0;
+    return str[0] == c ? str : 0;
 }
 
 
@@ -223,7 +224,7 @@ inline long SF_CDECL SFstrtol(const char* string, char** tailptr, int radix)
     return strtol(string, tailptr, radix);
 }
 
-inline long SF_CDECL SFstrtoul(const char* string, char** tailptr, int radix)
+inline unsigned long SF_CDECL SFstrtoul(const char* string, char** tailptr, int radix)
 {
     return strtoul(string, tailptr, radix);
 }
@@ -368,8 +369,6 @@ inline int SF_CDECL SFwcscoll(const wchar_t* a, const wchar_t* b)
 #endif
 }
 
-#ifndef SF_NO_WCTYPE
-
 inline int SF_CDECL UnicodeCharIs(const UInt16* table, wchar_t charCode)
 {
     unsigned offset = table[charCode >> 8];
@@ -377,6 +376,8 @@ inline int SF_CDECL UnicodeCharIs(const UInt16* table, wchar_t charCode)
     if (offset == 1) return 1;
     return (table[offset + ((charCode >> 4) & 15)] & (1 << (charCode & 15))) != 0;
 }
+
+#ifndef SF_NO_WCTYPE
 
 extern const UInt16 UnicodeAlnumBits[];
 extern const UInt16 UnicodeAlphaBits[];
@@ -530,6 +531,19 @@ inline long SF_CDECL SFwcstol(const wchar_t* string, wchar_t** tailptr, int radi
     return wcstol(string, tailptr, radix);
 #endif
 }
+
+extern const UInt16 UnicodeNonSpacingMarksBits[];
+extern const UInt16 UnicodeDirectionNeutralBits[];
+extern const UInt16 UnicodeRightToLeftBits[];
+
+// returns true, if char is a non-spacing mark ('Mn', see UnicodeData.txt)
+inline int SF_CDECL SFisNonSpacingMark(wchar_t charCode) { return UnicodeCharIs(UnicodeNonSpacingMarksBits, charCode); }
+
+// returns true, if char belongs to right-to-left language (Arabic/Hebrew). ('R' or 'AL' in UnicodeData.txt)
+inline int SF_CDECL SFisRightToLeft(wchar_t charCode) { return UnicodeCharIs(UnicodeRightToLeftBits, charCode); }
+
+// returns true, if char is directionally neutral ('B', 'S', 'WS' or 'ON' in UnicodeData.txt)
+inline int SF_CDECL SFisDirNeutral(wchar_t charCode) { return UnicodeCharIs(UnicodeDirectionNeutralBits, charCode); }
 
 } // Scaleform
 

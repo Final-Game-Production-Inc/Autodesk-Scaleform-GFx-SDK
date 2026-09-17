@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -640,8 +641,8 @@ SInt32  Value::ToInt32(Environment* penv) const
     {
         // follow to algorithm described in ECMA-262, clause 9.5
         static const Number UINT32MAX = Number(~0u);
-        static const Number INT32MAX  = Number(1UL<<31)-1;
-        static const Number INT32MIN  = -Number(1UL<<31);
+        static const Number INT32MAX  = Number(double(1UL<<31))-1;
+        static const Number INT32MIN  = -Number(double(1UL<<31));
 
         Number v = ToNumber(penv);
         if (NumberUtil::IsNaNOrInfinity(v) || v == 0)
@@ -1072,7 +1073,7 @@ bool    Value::IsEqual (Environment* penv, const Value& v) const
                 return true;
             else if (NumberUtil::IsNaN(NV.NumberValue) || NumberUtil::IsNaN(pv))
                 return false;
-            return NV.NumberValue == pv;
+            return Double(NV.NumberValue) == pv;
         }
         case INTEGER:
             {

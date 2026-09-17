@@ -6,6 +6,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -309,7 +310,7 @@ TextMeshProvider::TextMeshProvider(GlyphCache* cache) :
     Entries(cache->GetHeap()),
     Layers(cache->GetHeap()),
     PinCount(0), pBundle(0), pBundleEntry(0),
-    HeightRatio(0), ClipBox(0,0,0,0), pRenderer(0)
+    HeightRatio(0), ClipBox(0,0,0,0), Bounds(0,0,0,0), pRenderer(0)
 {}
 
 //------------------------------------------------------------------------
@@ -571,6 +572,8 @@ bool TextMeshProvider::generateSelection(Renderer2DImpl* ren, VertexOutput* verO
 
         if (Flags & BF_Clip)
             r.Intersect(ClipBox);
+        else
+            r.Intersect(Bounds); // still need to clip selection using Bounds
 
         if (!r.IsEmpty())
         {
@@ -969,7 +972,6 @@ bool TextMeshProvider::generateUnderlines(Renderer2DImpl* ren, VertexOutput* ver
     MeshGenerator* gen = ren->GetMeshGen();
     gen->Clear();
 
-    const ToleranceParams param = ren->GetToleranceParams();
     bool edgeAA = ((meshGenFlags & Mesh_EdgeAA) != 0 && (meshGenFlags & Mesh_Mask) == 0);
 
     gen->mStrokerAA.SetLineCap(StrokerTypes::ButtCap);
@@ -1041,10 +1043,10 @@ bool TextMeshProvider::generateUnderlines(Renderer2DImpl* ren, VertexOutput* ver
         float x;
         if (und.Style == TextUnderline_Dotted || und.Style == TextUnderline_DottedThick)
         {
-            x1 = floor(x1)-0.5f;
-            x2 = floor(x2)+0.5f;
-            y1 = floor(y1)+0.5f;
-            y2 = floor(y2)+0.5f;
+            x1 = (float)floor(x1)-0.5f;
+            x2 = (float)floor(x2)+0.5f;
+            y1 = (float)floor(y1)+0.5f;
+            y2 = (float)floor(y2)+0.5f;
             for (x = x1; x <= x2; x += 5)
             {
                 gen->mStrokerAA.AddVertex(x,   floorf(y1)+0.5f);
@@ -1055,10 +1057,10 @@ bool TextMeshProvider::generateUnderlines(Renderer2DImpl* ren, VertexOutput* ver
 
         if (und.Style == TextUnderline_Dithered || und.Style == TextUnderline_DitheredThick)
         {
-            x1 = floor(x1);
-            x2 = floor(x2)+1;
-            y1 = floor(y1)+0.5f;
-            y2 = floor(y2)+0.5f;
+            x1 = (float)floor(x1);
+            x2 = (float)floor(x2)+1;
+            y1 = (float)floor(y1)+0.5f;
+            y2 = (float)floor(y2)+0.5f;
             float dx = 4;
             float dy = 0.75f;
             if (und.Style == TextUnderline_DitheredThick)
@@ -2099,6 +2101,7 @@ bool TextMeshProvider::CreateMeshData(const TextLayout* layout, Renderer2DImpl* 
         data.Param.ShadowParam.SetAutoFit(false);
     }
 
+    Bounds = layout->GetBounds();
     Flags &= ~BF_Clip;
     ClipBox = layout->GetClipBox();
     if (!ClipBox.IsEmpty())
@@ -2143,7 +2146,7 @@ bool TextMeshProvider::CreateMeshData(const TextLayout* layout, Renderer2DImpl* 
             data.NewLineX = rec.mLine.x;
             data.NewLineY = rec.mLine.y;
             if (snap && 
-                (data.pFont && data.pFont->IsRasterOnly() || 
+                ((data.pFont && data.pFont->IsRasterOnly()) || 
                  data.Param.TextParam.IsOptRead()))
             {
                 data.NewLineY = snapY(data);

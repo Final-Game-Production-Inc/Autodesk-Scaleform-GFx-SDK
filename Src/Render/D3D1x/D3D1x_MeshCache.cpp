@@ -6,6 +6,7 @@ Created     :   Mar 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -14,7 +15,11 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 
 #include "Render/D3D1x/D3D1x_MeshCache.h"
-#include "Render/D3D1x/D3D1x_ShaderDescs.h"
+#if defined(_DURANGO)
+    #include "Render/D3D1x/XboxOne_ShaderDescs.h"
+#else
+    #include "Render/D3D1x/D3D1x_ShaderDescs.h"
+#endif
 #include "Render/D3D1x/D3D1x_Shader.h"
 #include "Kernel/SF_Debug.h"
 #include "Kernel/SF_Alg.h"
@@ -67,12 +72,6 @@ bool MeshCache::Initialize(ID3D1x(Device)* pdevice, ID3D1x(DeviceContext) *pcont
 
     adjustMeshCacheParams(&Params);
 
-    // If SetDevice fails, it means that creating queries failed.
-    if ( !RSync.SetDevice(pdevice, pcontext))
-    {
-        SF_DEBUG_WARNING(1, "RenderSync initialization failed. Using static buffers in MeshCache.");
-    }
-
     if (!StagingBuffer.Initialize(pHeap, Params.StagingBufferSize))
         return false;
 
@@ -94,10 +93,6 @@ bool MeshCache::Initialize(ID3D1x(Device)* pdevice, ID3D1x(DeviceContext) *pcont
 
 void MeshCache::Reset()
 {
-    // This must happen before destroying buffers. If the device is lost, then the WaitFence implementation
-    // depends on the RenderSync to be reset before any meshes are destroy. Otherwise and infinite wait may occur.
-    RSync.SetDevice(0, 0);
-
     if (pDevice)
         destroyBuffers();
     // Unconditional to simplify Initialize fail logic:
@@ -111,6 +106,8 @@ void MeshCache::Reset()
 void MeshCache::ClearCache()
 {
     destroyBuffers(MeshBuffer::AT_Chunk);
+    StagingBuffer.Reset();
+    StagingBuffer.Initialize(pHeap, Params.StagingBufferSize);
     SF_ASSERT(BatchCacheItemHash.GetSize() == 0);
 }
 
@@ -223,14 +220,11 @@ void MeshCache::destroyPendingBuffers()
 
 void MeshCache::BeginFrame()
 {
-    RSync.BeginFrame();
 }
 
 void MeshCache::EndFrame()
 {
     SF_AMP_SCOPE_RENDER_TIMER(__FUNCTION__, Amp_Profile_Level_Medium);
-
-    RSync.EndFrame();
 
     CacheList.EndFrame();
 
@@ -444,6 +438,7 @@ UPInt MeshCache::Evict(Render::MeshCacheItem* pbatch, AllocAddr* pallocator, Mes
 
 }
 
+bool allocSizeAvailable = false;
 
 // Allocates the buffer, while evicting LRU data.
 bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
@@ -460,7 +455,7 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
     // #1. Try and reclaim memory from items that have already been destroyed, but not freed.
     //     These cannot be reused, so it is best to evict their memory first, if possible.
     if (CacheList.EvictPendingFree(mbs.Allocator))
-        goto alloc_size_available;
+        allocSizeAvailable = true;
 
     // #2. Then, apply LRU (least recently used) swapping from data stale in
     //    earlier frames until the total size 
@@ -469,7 +464,7 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
     {
         if (CacheList.EvictLRUTillLimit(MCL_LRUTail, mbs.GetAllocator(),
                                         size, Params.LRUTailSize))
-            goto alloc_size_available;
+            allocSizeAvailable = true;
 
         // TBD: May cause spinning? Should we have two error codes?
         SF_ASSERT(size <= mbs.GetGranularity());
@@ -486,13 +481,13 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
 #ifdef SF_RENDER_LOG_CACHESIZE
                 LogDebugMessage(Log_Message, "Cache grew to %dK\n", getTotalSize() / 1024);
 #endif
-                goto alloc_size_available;
+                allocSizeAvailable = true;
             }
         }
     }
 
     if (CacheList.EvictLRU(MCL_LRUTail, mbs.GetAllocator(), size))
-        goto alloc_size_available;
+        allocSizeAvailable = true;
 
     if (VBSizeEvictedInLock > Params.VBLockEvictSizeLimit)
         return false;
@@ -506,10 +501,16 @@ bool MeshCache::allocBuffer(UPInt* poffset, MeshBuffer** pbuffer,
     {
         if (!pitems->GPUFence || !pitems->GPUFence->IsPending(FenceType_Vertex))
         {
-        if (Evict(pitems, &mbs.GetAllocator()) >= size)
-            goto alloc_size_available;
+            if (Evict(pitems, &mbs.GetAllocator()) >= size)
+                allocSizeAvailable = true;
+
+            // Get the first item in the list, because and the head of the list will now be different, due to eviction.
+            pitems = (MeshCacheItem*)prevFrameList.GetFirst();
         }
-        pitems = (MeshCacheItem*)prevFrameList.GetFirst();
+        else
+        {
+            pitems = (MeshCacheItem*)prevFrameList.GetNext(pitems);
+        }
     }
 
     // #4. If MRU swapping didn't work for ThisFrame items due to them still
@@ -563,6 +564,11 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
         return true;
     }
 
+    // Prepare and Pin mesh data with the StagingBuffer. NOTE: this must happen before calculating mesh sizes.
+    // This stage updates the mesh vertex/index counts, so calculating them first, it could be incorrect, for
+    // example in the case of MeshCache::ClearCache, and changing ToleranceParams.
+    StagingBufferPrep   meshPrep(this, mc, prim->GetVertexFormat(), false);
+
     // NOTE: We always know that meshes in one batch fit into Mesh Staging Cache.
     unsigned totalVertexCount, totalIndexCount;
     pbatch->CalcMeshSizes(&totalVertexCount, &totalIndexCount);
@@ -587,8 +593,10 @@ bool MeshCache::PreparePrimitive(PrimitiveBatch* pbatch,
 
     pbatch->SetCacheItem(batchData);
 
-    // Prepare and Pin mesh data with the StagingBuffer.
-    StagingBufferPrep meshPrep(this, mc, prim->GetVertexFormat(), false);
+    // This step either generates the mesh into the staging buffer, or locates an existing MeshCacheItem
+    // that we can copy the mesh from. It must be done after creating the cache item, because that may
+    // evict the item that would be copied from.
+    meshPrep.GenerateMeshes(batchData);
 
     // Copy meshes into the Vertex/Index buffers.
 

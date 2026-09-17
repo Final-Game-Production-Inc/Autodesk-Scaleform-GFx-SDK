@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -207,12 +208,7 @@ MovieImpl* AS3Support::CreateMovie(MemoryContext* memContext)
     AS3::MemoryContextImpl* memContextImpl = static_cast<AS3::MemoryContextImpl*>(memContext);
     MemoryHeap* pheap = memContextImpl->Heap;
     MovieImpl* pmovie           = SF_HEAP_NEW(pheap) MovieImpl(pheap);
-#if defined(SF_SHOW_WATERMARK)
-    if(!pmovie->IsValidEval())
-    {
-        return NULL;
-    }
-#endif
+
     Ptr<ASMovieRootBase> pasmr = *SF_HEAP_NEW(pheap) AS3::MovieRoot(memContextImpl, pmovie, this);
     return pmovie;
 }

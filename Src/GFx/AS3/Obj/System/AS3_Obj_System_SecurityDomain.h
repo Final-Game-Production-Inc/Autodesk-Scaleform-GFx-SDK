@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -87,7 +88,7 @@ namespace Instances { namespace fl_system
 
 namespace InstanceTraits { namespace fl_system
 {
-    class SecurityDomain : public CTraits
+    class SecurityDomain : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -123,7 +124,7 @@ namespace InstanceTraits { namespace fl_system
     
 namespace ClassTraits { namespace fl_system
 {
-    class SecurityDomain : public Traits
+    class SecurityDomain : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -131,12 +132,16 @@ namespace ClassTraits { namespace fl_system
 #endif
     public:
         typedef Classes::fl_system::SecurityDomain ClassType;
+        typedef InstanceTraits::fl_system::SecurityDomain InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        SecurityDomain(VM& vm);
+        SecurityDomain(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 1 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[1];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

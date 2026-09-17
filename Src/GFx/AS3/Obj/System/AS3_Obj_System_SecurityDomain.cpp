@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_system
 {
@@ -55,11 +50,10 @@ namespace InstanceTraits { namespace fl_system
 {
 
     SecurityDomain::SecurityDomain(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::SecurityDomain::SecurityDomain()"
 //##protect##"InstanceTraits::SecurityDomain::SecurityDomain()"
-        SetMemSize(sizeof(Instances::fl_system::SecurityDomain));
 
     }
 
@@ -99,27 +93,36 @@ template <> const TFunc_Classes_SecurityDomain_currentDomainGet::TMethod TFunc_C
 
 namespace ClassTraits { namespace fl_system
 {
-    const ThunkInfo SecurityDomain::ti[SecurityDomain::ThunkInfoNum] = {
-        {TFunc_Classes_SecurityDomain_currentDomainGet::Func, &AS3::fl_system::SecurityDomainTI, "currentDomain", NULL, Abc::NS_Public, CT_Get, 0, 0},
+    // const UInt16 SecurityDomain::tito[SecurityDomain::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* SecurityDomain::tit[1] = {
+        &AS3::fl_system::SecurityDomainTI, 
     };
-    SecurityDomain::SecurityDomain(VM& vm)
-    : Traits(vm, AS3::fl_system::SecurityDomainCI)
+    const ThunkInfo SecurityDomain::ti[SecurityDomain::ThunkInfoNum] = {
+        {TFunc_Classes_SecurityDomain_currentDomainGet::Func, &SecurityDomain::tit[0], "currentDomain", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+    };
+
+    SecurityDomain::SecurityDomain(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::SecurityDomain::SecurityDomain()"
 //##protect##"ClassTraits::SecurityDomain::SecurityDomain()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_system::SecurityDomain(vm, AS3::fl_system::SecurityDomainCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_system::SecurityDomain(*this));
 
     }
 
     Pickable<Traits> SecurityDomain::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) SecurityDomain(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) SecurityDomain(vm, AS3::fl_system::SecurityDomainCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_system::SecurityDomainCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -130,6 +133,11 @@ namespace fl_system
 {
     const TypeInfo SecurityDomainTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_system::SecurityDomain::InstanceType),
+        ClassTraits::fl_system::SecurityDomain::ThunkInfoNum,
+        0,
+        0,
+        0,
         "SecurityDomain", "flash.system", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -137,10 +145,6 @@ namespace fl_system
     const ClassInfo SecurityDomainCI = {
         &SecurityDomainTI,
         ClassTraits::fl_system::SecurityDomain::MakeClassTraits,
-        ClassTraits::fl_system::SecurityDomain::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_system::SecurityDomain::ti,
         NULL,
         NULL,

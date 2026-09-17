@@ -8,6 +8,7 @@ Created     :   June 15, 2005
 Authors     :   All Scaleform Engineers
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -57,15 +58,19 @@ otherwise accompanies this software in either electronic or hard copy form.
 // Enables multitouch support.
 //#define GFX_MULTITOUCH_SUPPORT_ENABLE
 
-// Use Scaleform internal gesture recognizer
-//#define GFX_GESTURE_RECOGNIZE
-
 #if defined(SF_OS_ANDROID) || defined(SF_OS_IPHONE) || defined(SF_OS_3DS) || defined(SF_OS_WINMETRO)
 #define GFX_MULTITOUCH_SUPPORT_ENABLE
 #endif
 
 // Mobile app features, such as orientation and lifecycle events
 #if defined(SF_OS_ANDROID) || defined(SF_OS_IPHONE)
+
+// Initialize native gesture recognition (currently only available on iOS)
+#define NATIVE_GESTURE_RECOGNIZE
+
+// Initialize Scaleform gesture recognition (overrides NATIVE_GESTURE_RECOGNIZE)
+#define GFX_GESTURE_RECOGNIZE
+
 #define GFX_ENABLE_MOBILE_APP_SUPPORT
 #endif
 
@@ -74,8 +79,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 //---------------------------------------------------------------------------
 
 // Enable/disable addons for MSVC builds
-#if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360) || defined(SF_OS_PS3)
-    #include "GFxConfigAddons.h"
+#if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360) || defined(SF_OS_PS3) || defined(SF_OS_ORBIS) || defined(SF_OS_WIIU)
+    #include "GFxConfigCRIVideo.h"
 
 #if defined(SF_OS_WIN32) && defined(GFX_USE_VIDEO_WIN32)
     #define GFX_USE_VIDEO
@@ -83,20 +88,34 @@ otherwise accompanies this software in either electronic or hard copy form.
     #define GFX_USE_VIDEO
 #elif defined(SF_OS_PS3) && defined(GFX_USE_VIDEO_PS3) && !defined(GFX_USE_VIDEO)
     #define GFX_USE_VIDEO
+#elif defined(SF_OS_WIIU) && defined(GFX_USE_VIDEO_WIIU) && !defined(GFX_USE_VIDEO)
+    #define GFX_USE_VIDEO
+#elif defined(SF_OS_ORBIS) && defined(GFX_USE_VIDEO_PS4)
+    #define GFX_USE_VIDEO
 #endif
 #endif
 
 
 // ***** General Scaleform options
 //---------------------------------------------------------------------------
+// Use a wrapper of built-in data type double.
+// #define SF_SAFE_DOUBLE
 
-// This macro needs to be defined if it is necessary to avoid the use of Double.
-// In that case Double in defined as float and thus extra #ifdef checks on
-// overloads need to be done.
-// NOTE: The use of this option may cause differences in behavior as compared to 
-// Adobe Flash and is therefore not recommended.  It was originally introduced for
-// legacy systems without double support and may be removed in future versions of the SDK.
-//#define SF_NO_DOUBLE
+// If this macro is defined, then code can be compiled with not ANSI-compatible
+// support of floating point numbers. (Example: /fp:fast on Windows)
+// #define SF_FLOATING_POINT_FAST
+
+// Uncomment to enable SF_FLOATING_POINT_FAST on Durango x64, off by default.
+#if !defined(SF_FLOATING_POINT_FAST) && defined(SF_OS_WINMETRO) && defined(_DURANGO) && defined(SF_CPU_X86_64)
+//    #define SF_FLOATING_POINT_FAST
+#endif
+
+#ifdef SF_FLOATING_POINT_FAST
+    #ifndef SF_SAFE_DOUBLE
+        #define SF_SAFE_DOUBLE
+    #endif
+#endif
+
 
 // Define this macro to eliminate custom wctype tables for functions such as
 // G_iswspace, SFtowlower, g_towupper and so on. If this macro is defined GFx 
@@ -107,7 +126,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 // Enable thread support
 #define SF_ENABLE_THREADS
 
-// Define this to disable statistics tracking; this is useful for the final build.
+// Undefine this to disable statistics tracking; this is useful for the final build.
 #define SF_ENABLE_STATS
 
 // Enable use of LIBJPEG. Wjen disabled, JPEGUtil becomes a no-op stub,
@@ -143,11 +162,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 #endif
 
 // Enable the use of TCP/IP sockets
-// This is needed for AMP
+// Needed for AMP and AS3 Net Sockets
 #define SF_ENABLE_SOCKETS
-#ifdef SF_BUILD_SHIPPING
-	#undef SF_ENABLE_SOCKETS
-#endif
 
 // Enable use of PCRE - Perl Compatible Regular Expressions
 #define SF_ENABLE_PCRE
@@ -230,13 +246,19 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #define SF_NO_GRADIENT_GEN 
 
-// Profile view modes
+// Profile view modes (overdraw, etc.)
 #if !defined(SF_BUILD_SHIPPING)
     #define SF_RENDERER_PROFILE
 #endif
 
 // Enable filters. Undefine this to disable rendering of all filters.
 #define SF_RENDER_ENABLE_FILTERS
+
+// In versions of GFx before 4.3, the Lighten and Darken blend modes were estimations, and were
+// not always correct. In 4.3, these require render targets to render properly, and (since 4.3.26) require
+// a parent clip to have a Layer blend mode. Enabling this define returns these blend modes to their pre-4.3
+// behavior.
+//#define SF_RENDER_DARKEN_LIGHTEN_OLD_BEHAVIOR
 
 // ***** GFx Logging options
 //---------------------------------------------------------------------------
@@ -269,7 +291,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 // FMOD sound support is enabled for MSVC builds (PC/Xbox360) by default
 // It will be automatically enabled for other platforms if FMOD is detected by build system
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360) || defined(SF_PS3_MSVC_BUILD) || \
-	defined(SF_PSVITA_MSVC_BUILD) || defined(SF_WIIU_MSVC_BUILD) || defined(SF_3DS_MSVC_BUILD)
+    defined(SF_PSVITA_MSVC_BUILD) || defined(SF_WIIU_MSVC_BUILD) || defined(SF_3DS_MSVC_BUILD) || \
+    defined(SF_OS_ORBIS)
     #define GFX_SOUND_FMOD
 #endif
 
@@ -277,14 +300,14 @@ otherwise accompanies this software in either electronic or hard copy form.
 //#define GFX_SOUND_WWISE
 
 // Define this macro to enable sound support (including core and ActionScript)
-#if defined(GFX_SOUND_FMOD) && !defined(GFX_ENABLE_SOUND)
+#if (defined(GFX_SOUND_FMOD) || defined(GFX_SOUND_WWISE)) && !defined(GFX_ENABLE_SOUND)
     // Enable sound if FMOD has been enabled/detected
     #define GFX_ENABLE_SOUND
 #endif
 
 // Define this macro to enable video support (including core and ActionScript)
 #if defined(GFX_USE_VIDEO) && (defined(SF_OS_WIN32) || defined(SF_OS_MAC) || \
-    defined(SF_OS_XBOX360) ||  defined(SF_OS_PS3)   || defined(SF_OS_WII) || defined(SF_OS_WIIU))
+    defined(SF_OS_XBOX360) ||  defined(SF_OS_PS3)   || defined(SF_OS_WII) || defined(SF_OS_WIIU) || defined(SF_OS_ORBIS))
     // Enable video only for CRI supported platforms
     #define GFX_ENABLE_VIDEO
 #endif
@@ -295,6 +318,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 // Video sound interfaces based on FMOD & Wwise 
 //#define GFX_VIDEO_USE_FMOD
 //#define GFX_VIDEO_USE_WWISE
+
+// Use DCR instead of TV for sound output on WiiU.
+// By default audio will be played out of the TV speakers only.
+//#define GFX_SOUND_OUTPUT_DRC
 
 // Video can be used only with multithreading support
 #if !defined(SF_ENABLE_THREADS)
@@ -313,9 +340,17 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define SF_USE_STD11_THREADS
 #endif
 // Disable TCP/IP sockets (AMP)
-#undef SF_ENABLE_SOCKETS
-// Disable video support
+//#undef SF_ENABLE_SOCKETS
+// Disable video support (except Durango XDK)
+#ifndef _DURANGO
 #undef GFX_ENABLE_VIDEO
+#endif
+// Disable sound and video support for Durango ADK
+#ifdef _DURANGO_ADK
+#undef GFX_SOUND_FMOD
+#undef GFX_ENABLE_SOUND
+#undef GFX_ENABLE_VIDEO
+#endif
 // Disable core IME support
 #define SF_NO_IME_SUPPORT
 #endif
@@ -331,6 +366,14 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 // Enable built-in Korean IME logic
 //#define GFX_ENABLE_BUILTIN_KOREAN_IME
+
+// Enable support for bidirectional text
+#define GFX_ENABLE_BIDIRECTIONAL_TEXT
+
+// Enable Adobe Native Extension support globally
+#if defined (SF_OS_IPHONE) || defined (SF_OS_ANDROID)
+#define SF_ENABLE_ANE
+#endif
 
 
 // ***** Other GFx Options
@@ -354,7 +397,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #endif
 
 // Enable game pad analog input support.
-#if ( defined(SF_OS_PSVITA) || defined(SF_OS_PS3) || defined(SF_OS_XBOX360) || defined(SF_OS_3DS) || defined(SF_OS_WIIU) )
+#if ( defined(SF_OS_PSVITA) || defined(SF_OS_PS3) || defined(SF_OS_XBOX360) || defined(SF_OS_3DS) || defined(SF_OS_WIIU) || defined(SF_OS_WIN32) || defined(SF_OS_ORBIS) )
 #define GFX_ENABLE_ANALOG_GAMEPAD
 #endif
 
@@ -373,6 +416,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 // as well (since it is a part of text editing).
 #define GFX_ENABLE_TEXT_INPUT
 
+// Scale9 hit-testing may affect performance. Disabling it may result 
+// in incorrect Scale9 hit-testing.
+#define GFX_ENABLE_SCALE9_HITTEST
+
 // Define this macro to throw assertion if any font texture is generated during
 // the runtime.
 //#define GFX_ASSERT_ON_FONT_BITMAP_GEN
@@ -389,6 +436,19 @@ otherwise accompanies this software in either electronic or hard copy form.
 // renderer during the runtime.
 //#define GFX_ASSERT_ON_RENDERER_MIPMAP_GEN
 
+// Define this macro to throw assertion if fast math floating point model is used
+// since it not officially supported
+#define GFX_ASSERT_ON_IMPRECISE_FLOAT
+
+// Check if Fast Math Floating point model is enabled with gcc, and warn user about potential problems
+#if  defined (__FAST_MATH__) && defined (GFX_ASSERT_ON_IMPRECISE_FLOAT)
+// ctremblay ++ Seems alright on Orbis. It saves us 2-3ms ...
+//#error This compiler option can result in incorrect output for programs that depend on an exact implementation 
+//#error of IEEE or ISO rules/specifications for math functions, and is not supported by the Scaleform SDK
+// ctremblay --
+#endif
+
+
 // Scaleform Profiling configuration (Shipping + Debug Information), internal use only  
 #ifdef SF_BUILD_PROFILING
 #define SF_BUILD_SHIPPING
@@ -400,14 +460,12 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #if !defined(SF_BUILD_SHIPPING) && defined(SF_ENABLE_THREADS)
 
-#ifdef SF_ENABLE_SOCKETS
-	#define SF_AMP_SERVER
+#if defined(SF_ENABLE_SOCKETS) && defined(SF_ENABLE_STATS)
+    #define SF_AMP_SERVER
 #endif
 
 // Enable debug memory tracking when AMP is enabled
 //#define SF_MEMORY_ENABLE_DEBUG_INFO
-
-#define SF_RENDERER_PROFILE
 
 // GPA 4.0 support
 #if defined(PROFILE_GPA)
@@ -468,7 +526,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 // Enable cleanup of orphaned GFx::Value instances holding references to objects
 // in a Movie VM that is being destroyed. The GFx::Value instances will be set
 // to UNDEFINED and its orphaned flag will be set.
-//#define GFX_AS_ENABLE_GFXVALUE_CLEANUP
+#define GFX_AS_ENABLE_GFXVALUE_CLEANUP
 
 // Enable ActionScript object user data storage (GFx::Value::SetUserData/GetUserData)
 #define GFX_AS_ENABLE_USERDATA
@@ -539,8 +597,14 @@ otherwise accompanies this software in either electronic or hard copy form.
 // Enable 'Mouse' ActionScript class support. 
 #define GFX_AS2_ENABLE_MOUSE
 
-// *** Example defines for shipping (final) GFX build
-#ifdef SF_BUILD_SHIPPING
+// Enable HTTP requests for loading
+#if (defined (SF_OS_IPHONE) || defined (SF_OS_ANDROID) || defined (SF_OS_MAC) || defined (SF_OS_WIN32) || defined SF_OS_PS3) && !(defined (_DURANGO) || defined (SF_OS_WINMETRO))
+//#define SF_ENABLE_HTTP_LOADING
+#endif
+
+// *** Some defines removed from shipping (final) GFX build, to improve performance
+// Add them back in if you need the functionality, even in shipping.
+#if defined(SF_BUILD_SHIPPING) && !defined(SF_AMP_CLIENT)
 #undef SF_ENABLE_STATS
 #undef GFX_VERBOSE_PARSE
 #undef GFX_AS2_VERBOSE_ERRORS 
@@ -555,6 +619,7 @@ otherwise accompanies this software in either electronic or hard copy form.
     #undef SF_ENABLE_LIBPNG
 
     #undef SF_ENABLE_STATS
+    #undef SF_AMP_SERVER
 
     #undef GFX_VERBOSE_PARSE
     #undef GFX_VERBOSE_PARSE_ACTION
@@ -608,6 +673,12 @@ otherwise accompanies this software in either electronic or hard copy form.
     #if defined(SF_OS_XBOX360) || defined(SF_OS_PS3) 
         #undef GFX_ENABLE_MOUSE
     #endif
+#endif
+
+// Shipping builds that use AS3 Net Sockets need approval from Nintendo, as they use the SO library
+// To enable AS3 Net Sockets, comment out the following lines
+#if defined(SF_OS_WIIU) && defined(SF_BUILD_SHIPPING)
+#undef SF_ENABLE_SOCKETS
 #endif
 
 

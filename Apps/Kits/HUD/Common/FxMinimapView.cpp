@@ -6,6 +6,7 @@ Created     :   November 13, 2009
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -129,7 +130,7 @@ public:
         if (hasIcon && (State != (int)showDir))
         {
             // state 0: no arrow, state 1: show arrow
-            Value frame(Double(showDir ? 2.0 : 1.0));
+            Value frame(double(showDir ? 2.0 : 1.0));
             MovieClip.Invoke("gotoAndStop", NULL, &frame, 1);
             State = (int)showDir;
         }
@@ -181,7 +182,7 @@ public:
         // (the movie needs to advance after creation) 
         if (hasIcon && (IconData != pentity->GetIconData()))
         {
-            Value frame(pentity->GetIconData() + Double(1.0));
+            Value frame(pentity->GetIconData() + double(1.0));
             MovieClip.Invoke("gotoAndStop", NULL, &frame, 1);
             IconData = pentity->GetIconData();
         }
@@ -292,7 +293,7 @@ public:
         if (bsticky)
         {
             // Rotate arrow if sticky
-            Double angleRad = pt.Angle(1, 0) - SF_MATH_PI_2;
+            double angleRad = pt.Angle(1, 0) - SF_MATH_PI_2;
             info.Clear();
             info.SetRotation(SF_RADTODEG(angleRad));
             ArrowMC.SetDisplayInfo(info);
@@ -403,7 +404,16 @@ void FxMinimapView::RemoveIconsImpl(Value canvas, String symbol)
 	while (canvas.HasMember(instanceName))
 	{
 		canvas.GetMember(instanceName, &temp);
-		temp.Invoke("removeMovieClip");
+		
+        if (canvas.GetMovie()->GetAVMVersion() == 1) 
+        {
+            temp.Invoke("removeMovieClip");
+        }
+        else
+        {
+            canvas.Invoke("removeChild", NULL, &temp, 1);
+        }
+        
 		Format(instanceName, "{0}{1}", symbol, ++i);
 	}
 }
@@ -729,11 +739,11 @@ void FxMinimapIconCache::BeginUpdate(UInt64 currentTicks)
             {
                 FxMinimapIcon* next = FadeInSet.GetNext(picon);
                 picon->GetDisplayInfo(&info);
-                Double alpha = info.GetAlpha();
+                GFx::Double alpha = info.GetAlpha();
                 info.Clear();
                 if (alpha != 100)
                 {
-                    info.SetAlpha(Alg::Min(Double(100.0), alpha + delta));
+                    info.SetAlpha(Alg::Min(GFx::Double(100.0), alpha + delta));
                     picon->SetDisplayInfo(info);
                 }
                 else
@@ -751,11 +761,11 @@ void FxMinimapIconCache::BeginUpdate(UInt64 currentTicks)
             {
                 FxMinimapIcon* next = FadeOutSet.GetNext(picon);
                 picon->GetDisplayInfo(&info);
-                Double alpha = info.GetAlpha();
+                GFx::Double alpha = info.GetAlpha();
                 info.Clear();
                 if (alpha != 0)
                 {
-                    info.SetAlpha(Alg::Max(Double(0.0), alpha - delta));
+                    info.SetAlpha(Alg::Max(GFx::Double(0.0), alpha - delta));
                     picon->SetDisplayInfo(info);
                 }
                 else

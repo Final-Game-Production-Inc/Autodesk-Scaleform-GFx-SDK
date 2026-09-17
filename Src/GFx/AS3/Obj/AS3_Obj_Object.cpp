@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,6 +20,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "../AS3_VM.h"
 #include "../AS3_Marshalling.h"
 //##protect##"includes"
+#include "AS3_Obj_Array.h"
 //##protect##"includes"
 
 
@@ -46,12 +48,6 @@ namespace InstanceTraits
     }
 }
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 
 namespace Instances { namespace fl
@@ -120,10 +116,10 @@ namespace Instances { namespace fl
 
         if (_this.IsObject())
         {
-            PropRef r;
-            // Do not look into prototype, use FindSet.
-            _this.GetObject()->FindProperty(r, Multiname(vm.GetPublicNamespace(), argv[0]), FindSet);
-            result.SetBool(r);
+            const Value& name = argv[0];
+            const Multiname mn(vm.GetPublicNamespace(), name);
+            // DO NOT check prototype.
+            result.SetBool(_this.GetObject()->HasProperty(mn, false));
         }
         else
         {
@@ -365,10 +361,18 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 Object::tito[Object::ThunkInfoNum] = {
+    //    0, 2, 4, 
+    // };
+    const TypeInfo* Object::tit[5] = {
+        &AS3::fl::BooleanTI, &AS3::fl::ObjectTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+    };
     const ThunkInfo Object::ti[Object::ThunkInfoNum] = {
-        {&Instances::fl::Object::AS3isPrototypeOf, &AS3::fl::BooleanTI, "isPrototypeOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {&Instances::fl::Object::AS3hasOwnProperty, &AS3::fl::BooleanTI, "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {&Instances::fl::Object::AS3propertyIsEnumerable, &AS3::fl::BooleanTI, "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+        {&Instances::fl::Object::AS3isPrototypeOf, &Object::tit[0], "isPrototypeOf", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {&Instances::fl::Object::AS3hasOwnProperty, &Object::tit[2], "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {&Instances::fl::Object::AS3propertyIsEnumerable, &Object::tit[4], "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
     };
 
     Object::Object(VM& vm, const ClassInfo& ci)
@@ -376,7 +380,6 @@ namespace InstanceTraits { namespace fl
     {
 //##protect##"InstanceTraits::Object::Object()"
 //##protect##"InstanceTraits::Object::Object()"
-        SetMemSize(sizeof(Instances::fl::Object));
 
     }
 
@@ -392,14 +395,29 @@ namespace InstanceTraits { namespace fl
 
 namespace Classes { namespace fl
 {
+    // const UInt16 Object::tito[Object::ThunkInfoNum] = {
+    //    0, 2, 3, 6, 8, 9, 10, 
+    // };
+    const TypeInfo* Object::tit[11] = {
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::ObjectTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::ObjectTI, 
+    };
+    const Abc::ConstValue Object::dva[1] = {
+        {Abc::CONSTANT_True, 0}, 
+    };
     const ThunkInfo Object::ti[Object::ThunkInfoNum] = {
-        {&Instances::fl::Object::hasOwnPropertyProto, &AS3::fl::BooleanTI, "hasOwnProperty", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {&Instances::fl::Object::propertyIsEnumerableProto, &AS3::fl::BooleanTI, "propertyIsEnumerable", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {&Instances::fl::Object::setPropertyIsEnumerableProto, NULL, "setPropertyIsEnumerable", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {&Instances::fl::Object::isPrototypeOfProto, &AS3::fl::BooleanTI, "isPrototypeOf", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {&Instances::fl::Object::toStringProto, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {&Instances::fl::Object::toLocaleStringProto, &AS3::fl::StringTI, "toLocaleString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {&Instances::fl::Object::valueOfProto, &AS3::fl::ObjectTI, "valueOf", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {&Instances::fl::Object::hasOwnPropertyProto, &Object::tit[0], "hasOwnProperty", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {&Instances::fl::Object::propertyIsEnumerableProto, &Object::tit[2], "propertyIsEnumerable", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {&Instances::fl::Object::setPropertyIsEnumerableProto, &Object::tit[3], "setPropertyIsEnumerable", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 1, &Object::dva[0]},
+        {&Instances::fl::Object::isPrototypeOfProto, &Object::tit[6], "isPrototypeOf", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {&Instances::fl::Object::toStringProto, &Object::tit[8], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {&Instances::fl::Object::toLocaleStringProto, &Object::tit[9], "toLocaleString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {&Instances::fl::Object::valueOfProto, &Object::tit[10], "valueOf", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Object::Object(ClassTraits::Traits& t)
@@ -471,24 +489,27 @@ namespace Classes { namespace fl
 
 namespace ClassTraits { namespace fl
 {
-    Object::Object(VM& vm)
-    : Traits(vm, AS3::fl::ObjectCI)
+
+    Object::Object(VM& vm, const ClassInfo& ci)
+    : Traits(vm, ci)
     {
 //##protect##"ClassTraits::Object::Object()"
 //##protect##"ClassTraits::Object::Object()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl::ObjectCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::Object(*this));
 
     }
 
     Pickable<Traits> Object::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Object(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Object(vm, AS3::fl::ObjectCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::ObjectCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -499,6 +520,11 @@ namespace fl
 {
     const TypeInfo ObjectTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject,
+        sizeof(ClassTraits::fl::Object::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl::Object::ThunkInfoNum,
+        0,
         "Object", "", NULL,
         TypeInfo::None
     };
@@ -506,10 +532,6 @@ namespace fl
     const ClassInfo ObjectCI = {
         &ObjectTI,
         ClassTraits::fl::Object::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl::Object::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl::Object::ti,

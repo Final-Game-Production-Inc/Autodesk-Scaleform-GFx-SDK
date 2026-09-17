@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,12 +30,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::FocusEvent, Instances::fl_events::FocusEvent::mid_directionGet, ASString> TFunc_Instances_FocusEvent_directionGet;
 typedef ThunkFunc1<Instances::fl_events::FocusEvent, Instances::fl_events::FocusEvent::mid_directionSet, const Value, const ASString&> TFunc_Instances_FocusEvent_directionSet;
 typedef ThunkFunc0<Instances::fl_events::FocusEvent, Instances::fl_events::FocusEvent::mid_keyCodeGet, UInt32> TFunc_Instances_FocusEvent_keyCodeGet;
@@ -218,25 +213,39 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 FocusEvent::tito[FocusEvent::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 
+    // };
+    const TypeInfo* FocusEvent::tit[14] = {
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl_display::InteractiveObjectTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo FocusEvent::ti[FocusEvent::ThunkInfoNum] = {
-        {TFunc_Instances_FocusEvent_directionGet::Func, &AS3::fl::StringTI, "direction", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_FocusEvent_directionSet::Func, NULL, "direction", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_FocusEvent_keyCodeGet::Func, &AS3::fl::uintTI, "keyCode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_FocusEvent_keyCodeSet::Func, NULL, "keyCode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_FocusEvent_relatedObjectGet::Func, &AS3::fl_display::InteractiveObjectTI, "relatedObject", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_FocusEvent_relatedObjectSet::Func, NULL, "relatedObject", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_FocusEvent_shiftKeyGet::Func, &AS3::fl::BooleanTI, "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_FocusEvent_shiftKeySet::Func, NULL, "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_FocusEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_FocusEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_FocusEvent_directionGet::Func, &FocusEvent::tit[0], "direction", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_directionSet::Func, &FocusEvent::tit[1], "direction", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_keyCodeGet::Func, &FocusEvent::tit[3], "keyCode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_keyCodeSet::Func, &FocusEvent::tit[4], "keyCode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_relatedObjectGet::Func, &FocusEvent::tit[6], "relatedObject", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_relatedObjectSet::Func, &FocusEvent::tit[7], "relatedObject", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_shiftKeyGet::Func, &FocusEvent::tit[9], "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_shiftKeySet::Func, &FocusEvent::tit[10], "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_clone::Func, &FocusEvent::tit[12], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_FocusEvent_toString::Func, &FocusEvent::tit[13], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     FocusEvent::FocusEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::FocusEvent::FocusEvent()"
 //##protect##"InstanceTraits::FocusEvent::FocusEvent()"
-        SetMemSize(sizeof(Instances::fl_events::FocusEvent));
 
     }
 
@@ -277,24 +286,27 @@ namespace ClassTraits { namespace fl_events
         {"MOUSE_FOCUS_CHANGE", NULL, OFFSETOF(Classes::fl_events::FocusEvent, MOUSE_FOCUS_CHANGE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    FocusEvent::FocusEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::FocusEventCI)
+
+    FocusEvent::FocusEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::FocusEvent::FocusEvent()"
 //##protect##"ClassTraits::FocusEvent::FocusEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::FocusEvent(vm, AS3::fl_events::FocusEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::FocusEvent(*this));
 
     }
 
     Pickable<Traits> FocusEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) FocusEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) FocusEvent(vm, AS3::fl_events::FocusEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::FocusEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -305,6 +317,11 @@ namespace fl_events
 {
     const TypeInfo FocusEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::FocusEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::FocusEvent::MemberInfoNum,
+        InstanceTraits::fl_events::FocusEvent::ThunkInfoNum,
+        0,
         "FocusEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -312,10 +329,6 @@ namespace fl_events
     const ClassInfo FocusEventCI = {
         &FocusEventTI,
         ClassTraits::fl_events::FocusEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::FocusEvent::MemberInfoNum,
-        InstanceTraits::fl_events::FocusEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::FocusEvent::mi,
         InstanceTraits::fl_events::FocusEvent::ti,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,12 +37,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::Sprite, Instances::fl_display::Sprite::mid_buttonModeGet, bool> TFunc_Instances_Sprite_buttonModeGet;
 typedef ThunkFunc1<Instances::fl_display::Sprite, Instances::fl_display::Sprite::mid_buttonModeSet, const Value, bool> TFunc_Instances_Sprite_buttonModeSet;
 typedef ThunkFunc0<Instances::fl_display::Sprite, Instances::fl_display::Sprite::mid_dropTargetGet, SPtr<Instances::fl_display::DisplayObject> > TFunc_Instances_Sprite_dropTargetGet;
@@ -153,7 +148,7 @@ namespace Instances { namespace fl_display
                 // sprite should have create AS instance already (AB). 
                 //ToAvmSprite(hitAreaSprite)->CreateASInstance(true);
                 Instances::fl_display::DisplayObject* ido = ToAvmSprite(hitAreaSprite)->GetAS3Obj();
-                if (IsSprite(ido->GetTraitsType()))
+                if (ido != NULL && IsSprite(ido->GetTraitsType()))
                 {
                     result = static_cast<Instances::fl_display::Sprite*>(ido);
                     return;
@@ -438,30 +433,48 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 Sprite::tito[Sprite::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 6, 8, 9, 11, 12, 14, 17, 18, 22, 
+    // };
+    const TypeInfo* Sprite::tit[24] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::GraphicsTI, 
+        &AS3::fl_display::SpriteTI, 
+        NULL, &AS3::fl_display::SpriteTI, 
+        &AS3::fl_media::SoundTransformTI, 
+        NULL, &AS3::fl_media::SoundTransformTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, &AS3::fl_geom::RectangleTI, 
+        NULL, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::BooleanTI, &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl::int_TI, 
+    };
     const ThunkInfo Sprite::ti[Sprite::ThunkInfoNum] = {
-        {TFunc_Instances_Sprite_buttonModeGet::Func, &AS3::fl::BooleanTI, "buttonMode", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sprite_buttonModeSet::Func, NULL, "buttonMode", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Sprite_dropTargetGet::Func, &AS3::fl_display::DisplayObjectTI, "dropTarget", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sprite_graphicsGet::Func, &AS3::fl_display::GraphicsTI, "graphics", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sprite_hitAreaGet::Func, &AS3::fl_display::SpriteTI, "hitArea", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sprite_hitAreaSet::Func, NULL, "hitArea", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Sprite_soundTransformGet::Func, &AS3::fl_media::SoundTransformTI, "soundTransform", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sprite_soundTransformSet::Func, NULL, "soundTransform", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Sprite_useHandCursorGet::Func, &AS3::fl::BooleanTI, "useHandCursor", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sprite_useHandCursorSet::Func, NULL, "useHandCursor", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Sprite_startDrag::Func, NULL, "startDrag", NULL, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_Sprite_stopDrag::Func, NULL, "stopDrag", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Sprite_startTouchDrag::Func, NULL, "startTouchDrag", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_Sprite_stopTouchDrag::Func, NULL, "stopTouchDrag", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_Sprite_buttonModeGet::Func, &Sprite::tit[0], "buttonMode", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_buttonModeSet::Func, &Sprite::tit[1], "buttonMode", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Sprite_dropTargetGet::Func, &Sprite::tit[3], "dropTarget", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_graphicsGet::Func, &Sprite::tit[4], "graphics", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_hitAreaGet::Func, &Sprite::tit[5], "hitArea", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_hitAreaSet::Func, &Sprite::tit[6], "hitArea", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Sprite_soundTransformGet::Func, &Sprite::tit[8], "soundTransform", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_soundTransformSet::Func, &Sprite::tit[9], "soundTransform", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Sprite_useHandCursorGet::Func, &Sprite::tit[11], "useHandCursor", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_useHandCursorSet::Func, &Sprite::tit[12], "useHandCursor", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Sprite_startDrag::Func, &Sprite::tit[14], "startDrag", NULL, Abc::NS_Public, CT_Method, 0, 2, 0, 0, NULL},
+        {TFunc_Instances_Sprite_stopDrag::Func, &Sprite::tit[17], "stopDrag", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sprite_startTouchDrag::Func, &Sprite::tit[18], "startTouchDrag", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_Sprite_stopTouchDrag::Func, &Sprite::tit[22], "stopTouchDrag", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     Sprite::Sprite(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::DisplayObjectContainer(vm, ci)
     {
 //##protect##"InstanceTraits::Sprite::Sprite()"
         SetTraitsType(Traits_Sprite);
 //##protect##"InstanceTraits::Sprite::Sprite()"
-        SetMemSize(sizeof(Instances::fl_display::Sprite));
 
     }
 
@@ -478,25 +491,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    Sprite::Sprite(VM& vm)
-    : Traits(vm, AS3::fl_display::SpriteCI)
+
+    Sprite::Sprite(VM& vm, const ClassInfo& ci)
+    : fl_display::DisplayObjectContainer(vm, ci)
     {
 //##protect##"ClassTraits::Sprite::Sprite()"
         SetTraitsType(Traits_Sprite);
 //##protect##"ClassTraits::Sprite::Sprite()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::Sprite(vm, AS3::fl_display::SpriteCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Sprite::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Sprite(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Sprite(vm, AS3::fl_display::SpriteCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::SpriteCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -507,6 +523,11 @@ namespace fl_display
 {
     const TypeInfo SpriteTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::Sprite::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::Sprite::ThunkInfoNum,
+        0,
         "Sprite", "flash.display", &fl_display::DisplayObjectContainerTI,
         TypeInfo::None
     };
@@ -514,10 +535,6 @@ namespace fl_display
     const ClassInfo SpriteCI = {
         &SpriteTI,
         ClassTraits::fl_display::Sprite::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::Sprite::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::Sprite::ti,

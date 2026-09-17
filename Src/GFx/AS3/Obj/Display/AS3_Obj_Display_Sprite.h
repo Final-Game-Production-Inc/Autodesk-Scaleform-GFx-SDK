@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -39,12 +40,19 @@ namespace fl
 {
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
+    extern const TypeInfo int_TI;
+    extern const ClassInfo int_CI;
 } // namespace fl
 namespace fl_media
 {
     extern const TypeInfo SoundTransformTI;
     extern const ClassInfo SoundTransformCI;
 } // namespace fl_media
+namespace fl_geom
+{
+    extern const TypeInfo RectangleTI;
+    extern const ClassInfo RectangleCI;
+} // namespace fl_geom
 
 namespace ClassTraits { namespace fl_display
 {
@@ -212,7 +220,7 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
-    class Sprite : public CTraits
+    class Sprite : public fl_display::DisplayObjectContainer
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -238,6 +246,8 @@ namespace InstanceTraits { namespace fl_display
 
         enum { ThunkInfoNum = 14 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[24];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -250,17 +260,19 @@ namespace InstanceTraits { namespace fl_display
     
 namespace ClassTraits { namespace fl_display
 {
-    class Sprite : public Traits
+    class Sprite : public fl_display::DisplayObjectContainer
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Sprite"; }
 #endif
     public:
-        typedef Classes::fl_display::Sprite ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::Sprite InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Sprite(VM& vm);
+        Sprite(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

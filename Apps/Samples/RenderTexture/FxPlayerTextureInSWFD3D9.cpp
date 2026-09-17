@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov, Andrew Reise
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -13,202 +14,80 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 **************************************************************************/
 
-
 #include "FxPlayerTextureInSWFD3D9.h"
-using namespace Render;
-using namespace D3D9;
+#include "Render/D3D9/D3D9_HAL.h"
 
-#define     GFC_2PI             (2*3.1415926f)
+// This file contains binary shaders, which were compiled offline using fxc.
+#include "FxPlayerTextureInSWFD3D9_cubeshader.h"
 
-// Used for functions that have an extra last argument of NULL in D3D9 only
-#define NULL9                   , NULL
-
-struct Vertex
-{
-    enum
-    {
-        FVF = D3DFVF_XYZ | D3DFVF_TEX1
-    };
-    float x, y, z;
-    float tu, tv;
-};
-
-Vertex g_cubeVertices[] =
-{
-    {-1.0f, 1.0f,-1.0f,  0.0f,0.0f },
-    { 1.0f, 1.0f,-1.0f,  1.0f,0.0f },
-    {-1.0f,-1.0f,-1.0f,  0.0f,1.0f },
-    { 1.0f,-1.0f,-1.0f,  1.0f,1.0f },
-
-    {-1.0f, 1.0f, 1.0f,  1.0f,0.0f },
-    {-1.0f,-1.0f, 1.0f,  1.0f,1.0f },
-    { 1.0f, 1.0f, 1.0f,  0.0f,0.0f },
-    { 1.0f,-1.0f, 1.0f,  0.0f,1.0f },
-
-    {-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
-    { 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
-    {-1.0f, 1.0f,-1.0f,  0.0f,1.0f },
-    { 1.0f, 1.0f,-1.0f,  1.0f,1.0f },
-
-    {-1.0f,-1.0f, 1.0f,  0.0f,0.0f },
-    {-1.0f,-1.0f,-1.0f,  1.0f,0.0f },
-    { 1.0f,-1.0f, 1.0f,  0.0f,1.0f },
-    { 1.0f,-1.0f,-1.0f,  1.0f,1.0f },
-
-    { 1.0f, 1.0f,-1.0f,  0.0f,0.0f },
-    { 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
-    { 1.0f,-1.0f,-1.0f,  0.0f,1.0f },
-    { 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
-
-    {-1.0f, 1.0f,-1.0f,  1.0f,0.0f },
-    {-1.0f,-1.0f,-1.0f,  1.0f,1.0f },
-    {-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
-    {-1.0f,-1.0f, 1.0f,  0.0f,1.0f }
-};
-
-
-void    TextureInSWFD3D9App::SetupMatrices()
-{
-    // For our world matrix, we will just leave it as the identity
-    D3DXMATRIXA16 matWorld;
-    D3DXMatrixRotationY( &matWorld, MeshRotation );
-    pDevice->SetTransform( D3DTS_WORLD, &matWorld );
-
-    // Set up our view matrix. A view matrix can be defined given an eye point,
-    // a point to lookat, and a direction for which way is up. Here, we set the
-    // eye five units back along the z-axis and up three units, look at the
-    // origin, and define "up" to be in the y-direction.
-
-    D3DXVECTOR3 vEyePt( 0.0f, 4.0f, -5.5f );
-    D3DXVECTOR3 vLookatPt( -1.0f, 0.0f, 0.0f );
-    D3DXVECTOR3 vUpVec( -0.1f, 1.0f, 0.0f );
-
-    D3DXMATRIXA16 matView;
-    D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
-    pDevice->SetTransform( D3DTS_VIEW, &matView );
-
-
-    D3DXMATRIX matProj;
-    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ),
-        /*640.0f / 480.0f*/1.0f, 0.1f, 100.0f );
-    pDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-}
-
-// Rendering
-void    TextureInSWFD3D9App::RenderMesh()
+// This function renders the cube-mesh that can be seen in the rendered texture. It should
+// be executed on the render thread (in multi-threaded mode).
+void FxPlayerTextureInSWFAppD3D9::RenderMesh()
 {
     if (!pRenderTexture)
+    {
+        SF_DEBUG_WARNING(1, "Rendered texture not initialized. Cannot render mesh.");
         return;
+    }
 
-    IDirect3DSurfaceX *poldSurface      = 0;
-    IDirect3DSurfaceX *poldDepthSurface = 0;
-    IDirect3DSurfaceX *psurface         = 0;
+    IDirect3DSurface9 *poldSurface      = 0;
+    IDirect3DSurface9 *poldDepthSurface = 0;
+    IDirect3DSurface9 *psurface         = 0;
 
-    pRenderTexture->GetSurfaceLevel(0, &psurface);
-
-    // Save both RT and depth-stencil.
+    // Remember the current RenderTarget and DepthStencil surface.
     pDevice->GetRenderTarget(0, &poldSurface);
     pDevice->GetDepthStencilSurface(&poldDepthSurface);
 
-    // Set texture as render target
+    // Set rendered texture as current render target
+    pRenderTexture->GetSurfaceLevel(0, &psurface);
     if (!FAILED(pDevice->SetRenderTarget(0, psurface )))
     {
         // Set stencil; this will disable it if not available.
         pDevice->SetDepthStencilSurface(pStencilSurface);
     }
 
-
-    static D3DCOLOR clearColor = D3DCOLOR_ARGB(90,0,0,255);
-
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,
-        clearColor, 1.0f, 0 );
-
-    UInt64    ticks = Timer::GetTicks() / 1000;
-
-    // 1/10 revolution per second
-    float dt = 0.0f;
-    {
-        float t  = (float)((double)fmod((double)ticks, 20000.0) / 20000.0) * GFC_2PI;
-        float lt = (float)((double)fmod((double)LastRotationTick, 20000.0) / 20000.0) * GFC_2PI;
-        dt = t - lt;
-    }
-
-    LastRotationTick    = ticks;
-    MeshRotation        += dt;
-
-    if (MeshRotation > GFC_2PI)
-        MeshRotation -= GFC_2PI;
-    if (MeshRotation < 0.0f)
-        MeshRotation += GFC_2PI;
-
-    // Setup the world, view, and projection matrices
-    SetupMatrices();
-
-    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
-    pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-    pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-    pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-
-    D3DVIEWPORTx vp;
-    vp.X        = 0;
-    vp.Y        = 0;
-    vp.Width    = RTWidth;
-    vp.Height   = RTHeight;
-    vp.MinZ     = 0.0f;
-    vp.MaxZ     = 1.0f;
+    // Set the viewport to the entire RenderTarget.
+    ImageSize textureSize = pMyHWTexture->GetSize();
+    D3DVIEWPORT9 vp = { 0, 0, textureSize.Width, textureSize.Height, 0.0f, 1.0f };
     pDevice->SetViewport(&vp);
 
-    pDevice->BeginScene();
+    // Clear the render target to Blue (alpha = 35%). Also clear the depth and stencil.
+    static D3DCOLOR clearColor = D3DCOLOR_ARGB(90,0,0,255);
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, clearColor, 1.0f, 0 );
 
-    pDevice->SetPixelShader(0);
-    pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-    pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TFACTOR);
-    pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-    pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TFACTOR);
-    pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-    pDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-    // Blending
+    // Ensure that many D3D states are the way we expect (GFx may modify any of these states).
+    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, FALSE);
     pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-    //pDevice->SetRenderState(D3DRS_BLENDFACTOR, 0x60606060);
-
     pDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
     pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
     pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-
     pDevice->SetRenderState(D3DRS_FILLMODE, CubeWireframe ? D3DFILL_WIREFRAME : D3DFILL_SOLID);
 
-    pDevice->SetTexture( 0, 0 );
+    pDevice->BeginScene();
 
+    // Setup the shaders, and cube-mesh vertex buffer
+    pDevice->SetPixelShader(pPixelShader);
+    pDevice->SetVertexShader(pVertexShader);
+    pDevice->SetVertexDeclaration(pVertexDecl);
+    pDevice->SetStreamSource(0, pCubeVertexBuffer, 0, sizeof(Vertex) );
+    pDevice->SetIndices(0);
 
-    pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, FALSE);
+    // Update the WxVxP matrix uniform.
+    ComputeMatrices();
+    pDevice->SetVertexShaderConstantF(0, WorldViewProjMatrix, 4 );
 
-    pDevice->SetStreamSource( 0, pCubeVertexBuffer, 0, sizeof(Vertex) );
-    pDevice->SetFVF( Vertex::FVF );
-    pDevice->SetVertexShader(0);
-
-
-
-    pDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,180,0,0));
+    // Now draw the sides of the cube.
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP,  0, 2 );
-    pDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,180,180,0));
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP,  4, 2 );
-    pDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,0,180,180));
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP,  8, 2 );
 
-    pDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,0,180,0));
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 12, 2 );
-    pDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,0,0,180));
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 16, 2 );
-    pDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,180,0,180));
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 20, 2 );
-
-    pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-    pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
     pDevice->EndScene();
 
@@ -222,58 +101,117 @@ void    TextureInSWFD3D9App::RenderMesh()
         poldSurface->Release();
     if (poldDepthSurface)
         poldDepthSurface->Release();
-
-    // Need to do this so that mipmaps are updated.
-    pRenderTexture->AddDirtyRect(0);
 }
 
-// also recreates if lost
-bool    TextureInSWFD3D9App::SetupRTTexture()
+// Initializes the graphics resources used by the sample (this does not include the ones used by GFx).
+// This includes the rendered texture, the depth/stencil buffer used when rendering the rendered texture,
+// the shaders used to render the cube, and the vertex buffers for the cube mesh.
+void FxPlayerTextureInSWFAppD3D9::InitGraphicsResources()
 {
-    if (FAILED( pDevice->CreateTexture(
-        RTWidth,RTHeight,0,
-        D3DUSAGE_RENDERTARGET|D3DUSAGE_AUTOGENMIPMAP, D3DFMT_A8R8G8B8,
-        D3DPOOL_DEFAULT, &pRenderTexture.GetRawRef(), 0) ))
-        return 0;
-
-    pDevice->CreateDepthStencilSurface( RTWidth,RTHeight, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, 0,
-        TRUE, &pStencilSurface.GetRawRef(), NULL);
-
-    return 1;
-}
-
-bool TextureInSWFD3D9App::CreateVertexBuffer()
-{
-    pDevice->CreateVertexBuffer( 24*sizeof(Vertex),0, Vertex::FVF,
-        D3DPOOL_MANAGED, &pCubeVertexBuffer.GetRawRef() NULL9 );
-    void *pVertices = NULL;
-
-    pCubeVertexBuffer->Lock( 0, sizeof(g_cubeVertices), (void**)&pVertices, 0 );
-
-    memcpy( pVertices, g_cubeVertices, sizeof(g_cubeVertices) );
-    pCubeVertexBuffer->Unlock();
-    return true;
-}
-
-bool TextureInSWFD3D9App::OnInit( Platform::ViewConfig& config )
-{
-    SF_UNUSED(config);
-    pPlatformHAL = (D3D9::HAL*) AppBase::pDevice->GetHAL();
-    pDevice = (IDirect3DDeviceX*)pPlatformHAL->pDevice;
+    // Store the device pointer (for ease of access), and add this to the HAL's notify list. This is required,
+    // because on D3D9 device loss, we will need to destroy and recreate our rendered texture resources.
+    D3D9::HAL* phal = reinterpret_cast<D3D9::HAL*>(pPlatformHAL);
+    pDevice = phal->GetDevice();
     pPlatformHAL->AddNotify(this);
-    return true;
-}
 
-D3D9::Texture* TextureInSWFD3D9App::CreateHWTexture()
-{
-    D3D9::TextureManager * pmanager = (D3D9::TextureManager*)pPlatformHAL->GetTextureManager(); 
-    return (D3D9::Texture*)pmanager->CreateTexture( pRenderTexture, ImageSize(RTWidth, RTHeight));
-}
+    // Create the rendered texture's buffers.
+    CreateRenderTextureBuffers();
 
-void TextureInSWFD3D9App::OnShutdown()
-{
-    if (pDevice)
+    // Create the vertex buffer used for the cube's mesh data.
+    HRESULT hr;
+    hr = pDevice->CreateVertexBuffer(sizeof(CubeVertices), 0, 0, D3DPOOL_MANAGED, &pCubeVertexBuffer.GetRawRef(), 0);
+    if (FAILED(hr))
     {
-        pDevice->SetStreamSource( 0, 0, 0, 0);
+        SF_DEBUG_MESSAGE1(1, "Failed to create cube mesh vertex buffer (HRESULT=0x%08x).", hr);
+        return;
+    }
+
+    // Copy the cube mesh vertex data to the vertex buffer.
+    void *pVertices = NULL;
+    pCubeVertexBuffer->Lock( 0, sizeof(CubeVertices), (void**)&pVertices, 0 );
+    memcpy( pVertices, CubeVertices, sizeof(CubeVertices) );
+    pCubeVertexBuffer->Unlock();
+
+    // Create the shaders.
+    hr = pDevice->CreateVertexShader((const DWORD*)CubeVertexShader, &pVertexShader.GetRawRef());
+    if (FAILED(hr))
+    {
+        SF_DEBUG_MESSAGE1(1, "Failed to create vertex shader (HRESULT=0x%08x).", hr);
+        return;
+    }
+    hr = pDevice->CreatePixelShader((const DWORD*)CubePixelShader, &pPixelShader.GetRawRef());
+    if (FAILED(hr))
+    {
+        SF_DEBUG_MESSAGE1(1, "Failed to create pixel shader (HRESULT=0x%08x).", hr);
+        return;
+    }
+
+    // Create the vertex input declaration.
+    D3DVERTEXELEMENT9 cubeMeshElements[] = {
+        { 0, 0,               D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+        { 0, 3*sizeof(float), D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,    0 },
+        D3DDECL_END()
+    };
+    hr = pDevice->CreateVertexDeclaration(cubeMeshElements, &pVertexDecl.GetRawRef());
+    if (FAILED(hr))
+    {
+        SF_DEBUG_MESSAGE1(1, "Failed to create vertex declaration (HRESULT=0x%08x).", hr);
+        return;
     }
 }
+
+// Respond to device reset type notifications. We will need to release, and reallocate our
+// non-managed pool rendering resources.
+void FxPlayerTextureInSWFAppD3D9::OnHALEvent(HALNotifyType type)
+{
+    switch(type)
+    {
+    case HAL_PrepareForReset:
+        // These are smart pointers, so setting them to zero should destroy the resources.
+        pRenderTexture = 0;
+        pStencilSurface = 0;
+        pMyHWTexture = 0;
+        break;
+
+    case HAL_RestoreAfterReset:
+        // Recreate the buffers after the device has been reset.
+        CreateRenderTextureBuffers();
+
+        // Now call ReplaceTexture, so that our new pMyHWTexture will be applied to the resource.
+        ReplaceTexture();
+        break;
+    }
+}
+
+// This method is called by both InitGraphicsResources (to initially create the resources), and also
+// in the HALNotify callback, after the device is reset, to reallocate the buffers.
+bool FxPlayerTextureInSWFAppD3D9::CreateRenderTextureBuffers()
+{
+    HRESULT hr;
+    hr = pDevice->CreateTexture(RTWidth,RTHeight,0, D3DUSAGE_RENDERTARGET|D3DUSAGE_AUTOGENMIPMAP, 
+        D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pRenderTexture.GetRawRef(), 0);
+    if (FAILED(hr))
+    {
+        SF_DEBUG_MESSAGE(1, "Failed to create rendered texture.");
+        return false;
+    }
+
+    hr = pDevice->CreateDepthStencilSurface( RTWidth,RTHeight, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, 0,
+        TRUE, &pStencilSurface.GetRawRef(), 0);
+    if (FAILED(hr))
+    {
+        SF_DEBUG_MESSAGE(1, "Failed to create depth/stencil target.");
+        return false;
+    }
+
+    // Now create the GFx texture, that will actually be applied, from our D3D targets.
+    D3D9::TextureManager * pmanager = (D3D9::TextureManager*)pPlatformHAL->GetTextureManager(); 
+    pMyHWTexture = *pmanager->CreateTexture( pRenderTexture, ImageSize(RTWidth, RTHeight));
+
+    return pMyHWTexture != 0;
+}
+
+//------------------------------------------------------------------------
+// ***** Main APP implementation (This macro handles the main function, on all platforms).
+
+SF_PLATFORM_SYSTEM_APP(TextureInSWF, Scaleform::GFx::System, FxPlayerTextureInSWFAppD3D9)

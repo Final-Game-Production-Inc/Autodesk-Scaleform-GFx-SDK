@@ -3,10 +3,10 @@
     PublicHeader:   Render
     Filename    :   D3D9_ShaderDescs.cpp
     Content     :   D3D9 Shader descriptors
-    Created     :   12/11/2012
+    Created     :   2025/12/17
     Authors     :   Automatically generated.
 
-    Copyright   :   Copyright 2012 Autodesk, Inc. All Rights reserved.
+    Copyright   :   Copyright 2025 Autodesk, Inc. All Rights reserved.
 
     Use of this software is subject to the terms of the Autodesk license
     agreement provided at the time of installation or download, or which
@@ -21,12 +21,22 @@ namespace Scaleform { namespace Render { namespace D3D9 {
 
 const char* ShaderUniformNames[Uniform::SU_Count] = 
 {
+    "alphatex",
+    "boundColor",
+    "compx",
+    "compy",
     "cxadd",
     "cxmul",
     "cxmul1",
+    "dsttex",
     "fsize",
+    "gradtex",
+    "mapScale",
+    "maptex",
+    "mipLevels",
     "mvp",
     "offset",
+    "scale",
     "scolor",
     "scolor2",
     "srctex",
@@ -34,18 +44,29 @@ const char* ShaderUniformNames[Uniform::SU_Count] =
     "tex",
     "texgen",
     "texscale",
+    "textureDims",
     "vfmuniforms",
     "vfuniforms",
 };
 
 const unsigned char Uniform::UniformFlags[Uniform::SU_Count] = 
 {
+    0,  // alphatex
+    0,  // boundColor
+    0,  // compx
+    0,  // compy
     0,  // cxadd
     0,  // cxmul
     0,  // cxmul1
+    0,  // dsttex
     0,  // fsize
+    0,  // gradtex
+    0,  // mapScale
+    0,  // maptex
+    0,  // mipLevels
     0,  // mvp
     0,  // offset
+    0,  // scale
     0,  // scolor
     0,  // scolor2
     0,  // srctex
@@ -53,6 +74,7 @@ const unsigned char Uniform::UniformFlags[Uniform::SU_Count] =
     0,  // tex
     0,  // texgen
     0,  // texscale
+    0,  // textureDims
     0,  // vfmuniforms
     0,  // vfuniforms
 };
@@ -163,6 +185,18 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dTexTGCxformEAlphaInv:                  return STI_Position3dTexTGCxformEAlphaInv;
         case ST_BatchPosition3dTexTGCxformEAlphaInv:             return STI_BatchPosition3dTexTGCxformEAlphaInv;
         case ST_InstancedPosition3dTexTGCxformEAlphaInv:         return STI_InstancedPosition3dTexTGCxformEAlphaInv;
+        case ST_TexTGTexDensity:                                 return STI_TexTGTexDensity;
+        case ST_BatchTexTGTexDensity:                            return STI_BatchTexTGTexDensity;
+        case ST_InstancedTexTGTexDensity:                        return STI_InstancedTexTGTexDensity;
+        case ST_Position3dTexTGTexDensity:                       return STI_Position3dTexTGTexDensity;
+        case ST_BatchPosition3dTexTGTexDensity:                  return STI_BatchPosition3dTexTGTexDensity;
+        case ST_InstancedPosition3dTexTGTexDensity:              return STI_InstancedPosition3dTexTGTexDensity;
+        case ST_TexTGEAlphaTexDensity:                           return STI_TexTGEAlphaTexDensity;
+        case ST_BatchTexTGEAlphaTexDensity:                      return STI_BatchTexTGEAlphaTexDensity;
+        case ST_InstancedTexTGEAlphaTexDensity:                  return STI_InstancedTexTGEAlphaTexDensity;
+        case ST_Position3dTexTGEAlphaTexDensity:                 return STI_Position3dTexTGEAlphaTexDensity;
+        case ST_BatchPosition3dTexTGEAlphaTexDensity:            return STI_BatchPosition3dTexTGEAlphaTexDensity;
+        case ST_InstancedPosition3dTexTGEAlphaTexDensity:        return STI_InstancedPosition3dTexTGEAlphaTexDensity;
         case ST_TexTGCxformAc:                                   return STI_TexTGCxformAc;
         case ST_TexTGCxformAcMul:                                return STI_TexTGCxformAcMul;
         case ST_BatchTexTGCxformAc:                              return STI_BatchTexTGCxformAc;
@@ -199,114 +233,6 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dTexTGCxformAcEAlphaInv:                return STI_Position3dTexTGCxformAcEAlphaInv;
         case ST_BatchPosition3dTexTGCxformAcEAlphaInv:           return STI_BatchPosition3dTexTGCxformAcEAlphaInv;
         case ST_InstancedPosition3dTexTGCxformAcEAlphaInv:       return STI_InstancedPosition3dTexTGCxformAcEAlphaInv;
-        case ST_Vertex:                                          return STI_Vertex;
-        case ST_VertexMul:                                       return STI_VertexMul;
-        case ST_BatchVertex:                                     return STI_BatchVertex;
-        case ST_BatchVertexMul:                                  return STI_BatchVertexMul;
-        case ST_InstancedVertex:                                 return STI_InstancedVertex;
-        case ST_InstancedVertexMul:                              return STI_InstancedVertexMul;
-        case ST_Position3dVertex:                                return STI_Position3dVertex;
-        case ST_Position3dVertexMul:                             return STI_Position3dVertexMul;
-        case ST_BatchPosition3dVertex:                           return STI_BatchPosition3dVertex;
-        case ST_BatchPosition3dVertexMul:                        return STI_BatchPosition3dVertexMul;
-        case ST_InstancedPosition3dVertex:                       return STI_InstancedPosition3dVertex;
-        case ST_InstancedPosition3dVertexMul:                    return STI_InstancedPosition3dVertexMul;
-        case ST_VertexCxform:                                    return STI_VertexCxform;
-        case ST_VertexCxformMul:                                 return STI_VertexCxformMul;
-        case ST_BatchVertexCxform:                               return STI_BatchVertexCxform;
-        case ST_BatchVertexCxformMul:                            return STI_BatchVertexCxformMul;
-        case ST_InstancedVertexCxform:                           return STI_InstancedVertexCxform;
-        case ST_InstancedVertexCxformMul:                        return STI_InstancedVertexCxformMul;
-        case ST_Position3dVertexCxform:                          return STI_Position3dVertexCxform;
-        case ST_Position3dVertexCxformMul:                       return STI_Position3dVertexCxformMul;
-        case ST_BatchPosition3dVertexCxform:                     return STI_BatchPosition3dVertexCxform;
-        case ST_BatchPosition3dVertexCxformMul:                  return STI_BatchPosition3dVertexCxformMul;
-        case ST_InstancedPosition3dVertexCxform:                 return STI_InstancedPosition3dVertexCxform;
-        case ST_InstancedPosition3dVertexCxformMul:              return STI_InstancedPosition3dVertexCxformMul;
-        case ST_VertexEAlpha:                                    return STI_VertexEAlpha;
-        case ST_VertexEAlphaMul:                                 return STI_VertexEAlphaMul;
-        case ST_BatchVertexEAlpha:                               return STI_BatchVertexEAlpha;
-        case ST_BatchVertexEAlphaMul:                            return STI_BatchVertexEAlphaMul;
-        case ST_InstancedVertexEAlpha:                           return STI_InstancedVertexEAlpha;
-        case ST_InstancedVertexEAlphaMul:                        return STI_InstancedVertexEAlphaMul;
-        case ST_Position3dVertexEAlpha:                          return STI_Position3dVertexEAlpha;
-        case ST_Position3dVertexEAlphaMul:                       return STI_Position3dVertexEAlphaMul;
-        case ST_BatchPosition3dVertexEAlpha:                     return STI_BatchPosition3dVertexEAlpha;
-        case ST_BatchPosition3dVertexEAlphaMul:                  return STI_BatchPosition3dVertexEAlphaMul;
-        case ST_InstancedPosition3dVertexEAlpha:                 return STI_InstancedPosition3dVertexEAlpha;
-        case ST_InstancedPosition3dVertexEAlphaMul:              return STI_InstancedPosition3dVertexEAlphaMul;
-        case ST_VertexCxformEAlpha:                              return STI_VertexCxformEAlpha;
-        case ST_VertexCxformEAlphaMul:                           return STI_VertexCxformEAlphaMul;
-        case ST_BatchVertexCxformEAlpha:                         return STI_BatchVertexCxformEAlpha;
-        case ST_BatchVertexCxformEAlphaMul:                      return STI_BatchVertexCxformEAlphaMul;
-        case ST_InstancedVertexCxformEAlpha:                     return STI_InstancedVertexCxformEAlpha;
-        case ST_InstancedVertexCxformEAlphaMul:                  return STI_InstancedVertexCxformEAlphaMul;
-        case ST_Position3dVertexCxformEAlpha:                    return STI_Position3dVertexCxformEAlpha;
-        case ST_Position3dVertexCxformEAlphaMul:                 return STI_Position3dVertexCxformEAlphaMul;
-        case ST_BatchPosition3dVertexCxformEAlpha:               return STI_BatchPosition3dVertexCxformEAlpha;
-        case ST_BatchPosition3dVertexCxformEAlphaMul:            return STI_BatchPosition3dVertexCxformEAlphaMul;
-        case ST_InstancedPosition3dVertexCxformEAlpha:           return STI_InstancedPosition3dVertexCxformEAlpha;
-        case ST_InstancedPosition3dVertexCxformEAlphaMul:        return STI_InstancedPosition3dVertexCxformEAlphaMul;
-        case ST_VertexInv:                                       return STI_VertexInv;
-        case ST_BatchVertexInv:                                  return STI_BatchVertexInv;
-        case ST_InstancedVertexInv:                              return STI_InstancedVertexInv;
-        case ST_Position3dVertexInv:                             return STI_Position3dVertexInv;
-        case ST_BatchPosition3dVertexInv:                        return STI_BatchPosition3dVertexInv;
-        case ST_InstancedPosition3dVertexInv:                    return STI_InstancedPosition3dVertexInv;
-        case ST_VertexCxformInv:                                 return STI_VertexCxformInv;
-        case ST_BatchVertexCxformInv:                            return STI_BatchVertexCxformInv;
-        case ST_InstancedVertexCxformInv:                        return STI_InstancedVertexCxformInv;
-        case ST_Position3dVertexCxformInv:                       return STI_Position3dVertexCxformInv;
-        case ST_BatchPosition3dVertexCxformInv:                  return STI_BatchPosition3dVertexCxformInv;
-        case ST_InstancedPosition3dVertexCxformInv:              return STI_InstancedPosition3dVertexCxformInv;
-        case ST_VertexEAlphaInv:                                 return STI_VertexEAlphaInv;
-        case ST_BatchVertexEAlphaInv:                            return STI_BatchVertexEAlphaInv;
-        case ST_InstancedVertexEAlphaInv:                        return STI_InstancedVertexEAlphaInv;
-        case ST_Position3dVertexEAlphaInv:                       return STI_Position3dVertexEAlphaInv;
-        case ST_BatchPosition3dVertexEAlphaInv:                  return STI_BatchPosition3dVertexEAlphaInv;
-        case ST_InstancedPosition3dVertexEAlphaInv:              return STI_InstancedPosition3dVertexEAlphaInv;
-        case ST_VertexCxformEAlphaInv:                           return STI_VertexCxformEAlphaInv;
-        case ST_BatchVertexCxformEAlphaInv:                      return STI_BatchVertexCxformEAlphaInv;
-        case ST_InstancedVertexCxformEAlphaInv:                  return STI_InstancedVertexCxformEAlphaInv;
-        case ST_Position3dVertexCxformEAlphaInv:                 return STI_Position3dVertexCxformEAlphaInv;
-        case ST_BatchPosition3dVertexCxformEAlphaInv:            return STI_BatchPosition3dVertexCxformEAlphaInv;
-        case ST_InstancedPosition3dVertexCxformEAlphaInv:        return STI_InstancedPosition3dVertexCxformEAlphaInv;
-        case ST_VertexCxformAc:                                  return STI_VertexCxformAc;
-        case ST_VertexCxformAcMul:                               return STI_VertexCxformAcMul;
-        case ST_BatchVertexCxformAc:                             return STI_BatchVertexCxformAc;
-        case ST_BatchVertexCxformAcMul:                          return STI_BatchVertexCxformAcMul;
-        case ST_InstancedVertexCxformAc:                         return STI_InstancedVertexCxformAc;
-        case ST_InstancedVertexCxformAcMul:                      return STI_InstancedVertexCxformAcMul;
-        case ST_Position3dVertexCxformAc:                        return STI_Position3dVertexCxformAc;
-        case ST_Position3dVertexCxformAcMul:                     return STI_Position3dVertexCxformAcMul;
-        case ST_BatchPosition3dVertexCxformAc:                   return STI_BatchPosition3dVertexCxformAc;
-        case ST_BatchPosition3dVertexCxformAcMul:                return STI_BatchPosition3dVertexCxformAcMul;
-        case ST_InstancedPosition3dVertexCxformAc:               return STI_InstancedPosition3dVertexCxformAc;
-        case ST_InstancedPosition3dVertexCxformAcMul:            return STI_InstancedPosition3dVertexCxformAcMul;
-        case ST_VertexCxformAcEAlpha:                            return STI_VertexCxformAcEAlpha;
-        case ST_VertexCxformAcEAlphaMul:                         return STI_VertexCxformAcEAlphaMul;
-        case ST_BatchVertexCxformAcEAlpha:                       return STI_BatchVertexCxformAcEAlpha;
-        case ST_BatchVertexCxformAcEAlphaMul:                    return STI_BatchVertexCxformAcEAlphaMul;
-        case ST_InstancedVertexCxformAcEAlpha:                   return STI_InstancedVertexCxformAcEAlpha;
-        case ST_InstancedVertexCxformAcEAlphaMul:                return STI_InstancedVertexCxformAcEAlphaMul;
-        case ST_Position3dVertexCxformAcEAlpha:                  return STI_Position3dVertexCxformAcEAlpha;
-        case ST_Position3dVertexCxformAcEAlphaMul:               return STI_Position3dVertexCxformAcEAlphaMul;
-        case ST_BatchPosition3dVertexCxformAcEAlpha:             return STI_BatchPosition3dVertexCxformAcEAlpha;
-        case ST_BatchPosition3dVertexCxformAcEAlphaMul:          return STI_BatchPosition3dVertexCxformAcEAlphaMul;
-        case ST_InstancedPosition3dVertexCxformAcEAlpha:         return STI_InstancedPosition3dVertexCxformAcEAlpha;
-        case ST_InstancedPosition3dVertexCxformAcEAlphaMul:      return STI_InstancedPosition3dVertexCxformAcEAlphaMul;
-        case ST_VertexCxformAcInv:                               return STI_VertexCxformAcInv;
-        case ST_BatchVertexCxformAcInv:                          return STI_BatchVertexCxformAcInv;
-        case ST_InstancedVertexCxformAcInv:                      return STI_InstancedVertexCxformAcInv;
-        case ST_Position3dVertexCxformAcInv:                     return STI_Position3dVertexCxformAcInv;
-        case ST_BatchPosition3dVertexCxformAcInv:                return STI_BatchPosition3dVertexCxformAcInv;
-        case ST_InstancedPosition3dVertexCxformAcInv:            return STI_InstancedPosition3dVertexCxformAcInv;
-        case ST_VertexCxformAcEAlphaInv:                         return STI_VertexCxformAcEAlphaInv;
-        case ST_BatchVertexCxformAcEAlphaInv:                    return STI_BatchVertexCxformAcEAlphaInv;
-        case ST_InstancedVertexCxformAcEAlphaInv:                return STI_InstancedVertexCxformAcEAlphaInv;
-        case ST_Position3dVertexCxformAcEAlphaInv:               return STI_Position3dVertexCxformAcEAlphaInv;
-        case ST_BatchPosition3dVertexCxformAcEAlphaInv:          return STI_BatchPosition3dVertexCxformAcEAlphaInv;
-        case ST_InstancedPosition3dVertexCxformAcEAlphaInv:      return STI_InstancedPosition3dVertexCxformAcEAlphaInv;
         case ST_TexTGTexTG:                                      return STI_TexTGTexTG;
         case ST_TexTGTexTGMul:                                   return STI_TexTGTexTGMul;
         case ST_BatchTexTGTexTG:                                 return STI_BatchTexTGTexTG;
@@ -379,6 +305,18 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dTexTGTexTGCxformEAlphaInv:             return STI_Position3dTexTGTexTGCxformEAlphaInv;
         case ST_BatchPosition3dTexTGTexTGCxformEAlphaInv:        return STI_BatchPosition3dTexTGTexTGCxformEAlphaInv;
         case ST_InstancedPosition3dTexTGTexTGCxformEAlphaInv:    return STI_InstancedPosition3dTexTGTexTGCxformEAlphaInv;
+        case ST_TexTGTexTGTexDensity:                            return STI_TexTGTexTGTexDensity;
+        case ST_BatchTexTGTexTGTexDensity:                       return STI_BatchTexTGTexTGTexDensity;
+        case ST_InstancedTexTGTexTGTexDensity:                   return STI_InstancedTexTGTexTGTexDensity;
+        case ST_Position3dTexTGTexTGTexDensity:                  return STI_Position3dTexTGTexTGTexDensity;
+        case ST_BatchPosition3dTexTGTexTGTexDensity:             return STI_BatchPosition3dTexTGTexTGTexDensity;
+        case ST_InstancedPosition3dTexTGTexTGTexDensity:         return STI_InstancedPosition3dTexTGTexTGTexDensity;
+        case ST_TexTGTexTGEAlphaTexDensity:                      return STI_TexTGTexTGEAlphaTexDensity;
+        case ST_BatchTexTGTexTGEAlphaTexDensity:                 return STI_BatchTexTGTexTGEAlphaTexDensity;
+        case ST_InstancedTexTGTexTGEAlphaTexDensity:             return STI_InstancedTexTGTexTGEAlphaTexDensity;
+        case ST_Position3dTexTGTexTGEAlphaTexDensity:            return STI_Position3dTexTGTexTGEAlphaTexDensity;
+        case ST_BatchPosition3dTexTGTexTGEAlphaTexDensity:       return STI_BatchPosition3dTexTGTexTGEAlphaTexDensity;
+        case ST_InstancedPosition3dTexTGTexTGEAlphaTexDensity:   return STI_InstancedPosition3dTexTGTexTGEAlphaTexDensity;
         case ST_TexTGTexTGCxformAc:                              return STI_TexTGTexTGCxformAc;
         case ST_TexTGTexTGCxformAcMul:                           return STI_TexTGTexTGCxformAcMul;
         case ST_BatchTexTGTexTGCxformAc:                         return STI_BatchTexTGTexTGCxformAc;
@@ -487,6 +425,18 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dTexTGVertexCxformEAlphaInv:            return STI_Position3dTexTGVertexCxformEAlphaInv;
         case ST_BatchPosition3dTexTGVertexCxformEAlphaInv:       return STI_BatchPosition3dTexTGVertexCxformEAlphaInv;
         case ST_InstancedPosition3dTexTGVertexCxformEAlphaInv:   return STI_InstancedPosition3dTexTGVertexCxformEAlphaInv;
+        case ST_TexTGVertexTexDensity:                           return STI_TexTGVertexTexDensity;
+        case ST_BatchTexTGVertexTexDensity:                      return STI_BatchTexTGVertexTexDensity;
+        case ST_InstancedTexTGVertexTexDensity:                  return STI_InstancedTexTGVertexTexDensity;
+        case ST_Position3dTexTGVertexTexDensity:                 return STI_Position3dTexTGVertexTexDensity;
+        case ST_BatchPosition3dTexTGVertexTexDensity:            return STI_BatchPosition3dTexTGVertexTexDensity;
+        case ST_InstancedPosition3dTexTGVertexTexDensity:        return STI_InstancedPosition3dTexTGVertexTexDensity;
+        case ST_TexTGVertexEAlphaTexDensity:                     return STI_TexTGVertexEAlphaTexDensity;
+        case ST_BatchTexTGVertexEAlphaTexDensity:                return STI_BatchTexTGVertexEAlphaTexDensity;
+        case ST_InstancedTexTGVertexEAlphaTexDensity:            return STI_InstancedTexTGVertexEAlphaTexDensity;
+        case ST_Position3dTexTGVertexEAlphaTexDensity:           return STI_Position3dTexTGVertexEAlphaTexDensity;
+        case ST_BatchPosition3dTexTGVertexEAlphaTexDensity:      return STI_BatchPosition3dTexTGVertexEAlphaTexDensity;
+        case ST_InstancedPosition3dTexTGVertexEAlphaTexDensity:  return STI_InstancedPosition3dTexTGVertexEAlphaTexDensity;
         case ST_TexTGVertexCxformAc:                             return STI_TexTGVertexCxformAc;
         case ST_TexTGVertexCxformAcMul:                          return STI_TexTGVertexCxformAcMul;
         case ST_BatchTexTGVertexCxformAc:                        return STI_BatchTexTGVertexCxformAc;
@@ -523,6 +473,114 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dTexTGVertexCxformAcEAlphaInv:          return STI_Position3dTexTGVertexCxformAcEAlphaInv;
         case ST_BatchPosition3dTexTGVertexCxformAcEAlphaInv:     return STI_BatchPosition3dTexTGVertexCxformAcEAlphaInv;
         case ST_InstancedPosition3dTexTGVertexCxformAcEAlphaInv: return STI_InstancedPosition3dTexTGVertexCxformAcEAlphaInv;
+        case ST_Vertex:                                          return STI_Vertex;
+        case ST_VertexMul:                                       return STI_VertexMul;
+        case ST_BatchVertex:                                     return STI_BatchVertex;
+        case ST_BatchVertexMul:                                  return STI_BatchVertexMul;
+        case ST_InstancedVertex:                                 return STI_InstancedVertex;
+        case ST_InstancedVertexMul:                              return STI_InstancedVertexMul;
+        case ST_Position3dVertex:                                return STI_Position3dVertex;
+        case ST_Position3dVertexMul:                             return STI_Position3dVertexMul;
+        case ST_BatchPosition3dVertex:                           return STI_BatchPosition3dVertex;
+        case ST_BatchPosition3dVertexMul:                        return STI_BatchPosition3dVertexMul;
+        case ST_InstancedPosition3dVertex:                       return STI_InstancedPosition3dVertex;
+        case ST_InstancedPosition3dVertexMul:                    return STI_InstancedPosition3dVertexMul;
+        case ST_VertexCxform:                                    return STI_VertexCxform;
+        case ST_VertexCxformMul:                                 return STI_VertexCxformMul;
+        case ST_BatchVertexCxform:                               return STI_BatchVertexCxform;
+        case ST_BatchVertexCxformMul:                            return STI_BatchVertexCxformMul;
+        case ST_InstancedVertexCxform:                           return STI_InstancedVertexCxform;
+        case ST_InstancedVertexCxformMul:                        return STI_InstancedVertexCxformMul;
+        case ST_Position3dVertexCxform:                          return STI_Position3dVertexCxform;
+        case ST_Position3dVertexCxformMul:                       return STI_Position3dVertexCxformMul;
+        case ST_BatchPosition3dVertexCxform:                     return STI_BatchPosition3dVertexCxform;
+        case ST_BatchPosition3dVertexCxformMul:                  return STI_BatchPosition3dVertexCxformMul;
+        case ST_InstancedPosition3dVertexCxform:                 return STI_InstancedPosition3dVertexCxform;
+        case ST_InstancedPosition3dVertexCxformMul:              return STI_InstancedPosition3dVertexCxformMul;
+        case ST_VertexEAlpha:                                    return STI_VertexEAlpha;
+        case ST_VertexEAlphaMul:                                 return STI_VertexEAlphaMul;
+        case ST_BatchVertexEAlpha:                               return STI_BatchVertexEAlpha;
+        case ST_BatchVertexEAlphaMul:                            return STI_BatchVertexEAlphaMul;
+        case ST_InstancedVertexEAlpha:                           return STI_InstancedVertexEAlpha;
+        case ST_InstancedVertexEAlphaMul:                        return STI_InstancedVertexEAlphaMul;
+        case ST_Position3dVertexEAlpha:                          return STI_Position3dVertexEAlpha;
+        case ST_Position3dVertexEAlphaMul:                       return STI_Position3dVertexEAlphaMul;
+        case ST_BatchPosition3dVertexEAlpha:                     return STI_BatchPosition3dVertexEAlpha;
+        case ST_BatchPosition3dVertexEAlphaMul:                  return STI_BatchPosition3dVertexEAlphaMul;
+        case ST_InstancedPosition3dVertexEAlpha:                 return STI_InstancedPosition3dVertexEAlpha;
+        case ST_InstancedPosition3dVertexEAlphaMul:              return STI_InstancedPosition3dVertexEAlphaMul;
+        case ST_VertexCxformEAlpha:                              return STI_VertexCxformEAlpha;
+        case ST_VertexCxformEAlphaMul:                           return STI_VertexCxformEAlphaMul;
+        case ST_BatchVertexCxformEAlpha:                         return STI_BatchVertexCxformEAlpha;
+        case ST_BatchVertexCxformEAlphaMul:                      return STI_BatchVertexCxformEAlphaMul;
+        case ST_InstancedVertexCxformEAlpha:                     return STI_InstancedVertexCxformEAlpha;
+        case ST_InstancedVertexCxformEAlphaMul:                  return STI_InstancedVertexCxformEAlphaMul;
+        case ST_Position3dVertexCxformEAlpha:                    return STI_Position3dVertexCxformEAlpha;
+        case ST_Position3dVertexCxformEAlphaMul:                 return STI_Position3dVertexCxformEAlphaMul;
+        case ST_BatchPosition3dVertexCxformEAlpha:               return STI_BatchPosition3dVertexCxformEAlpha;
+        case ST_BatchPosition3dVertexCxformEAlphaMul:            return STI_BatchPosition3dVertexCxformEAlphaMul;
+        case ST_InstancedPosition3dVertexCxformEAlpha:           return STI_InstancedPosition3dVertexCxformEAlpha;
+        case ST_InstancedPosition3dVertexCxformEAlphaMul:        return STI_InstancedPosition3dVertexCxformEAlphaMul;
+        case ST_VertexInv:                                       return STI_VertexInv;
+        case ST_BatchVertexInv:                                  return STI_BatchVertexInv;
+        case ST_InstancedVertexInv:                              return STI_InstancedVertexInv;
+        case ST_Position3dVertexInv:                             return STI_Position3dVertexInv;
+        case ST_BatchPosition3dVertexInv:                        return STI_BatchPosition3dVertexInv;
+        case ST_InstancedPosition3dVertexInv:                    return STI_InstancedPosition3dVertexInv;
+        case ST_VertexCxformInv:                                 return STI_VertexCxformInv;
+        case ST_BatchVertexCxformInv:                            return STI_BatchVertexCxformInv;
+        case ST_InstancedVertexCxformInv:                        return STI_InstancedVertexCxformInv;
+        case ST_Position3dVertexCxformInv:                       return STI_Position3dVertexCxformInv;
+        case ST_BatchPosition3dVertexCxformInv:                  return STI_BatchPosition3dVertexCxformInv;
+        case ST_InstancedPosition3dVertexCxformInv:              return STI_InstancedPosition3dVertexCxformInv;
+        case ST_VertexEAlphaInv:                                 return STI_VertexEAlphaInv;
+        case ST_BatchVertexEAlphaInv:                            return STI_BatchVertexEAlphaInv;
+        case ST_InstancedVertexEAlphaInv:                        return STI_InstancedVertexEAlphaInv;
+        case ST_Position3dVertexEAlphaInv:                       return STI_Position3dVertexEAlphaInv;
+        case ST_BatchPosition3dVertexEAlphaInv:                  return STI_BatchPosition3dVertexEAlphaInv;
+        case ST_InstancedPosition3dVertexEAlphaInv:              return STI_InstancedPosition3dVertexEAlphaInv;
+        case ST_VertexCxformEAlphaInv:                           return STI_VertexCxformEAlphaInv;
+        case ST_BatchVertexCxformEAlphaInv:                      return STI_BatchVertexCxformEAlphaInv;
+        case ST_InstancedVertexCxformEAlphaInv:                  return STI_InstancedVertexCxformEAlphaInv;
+        case ST_Position3dVertexCxformEAlphaInv:                 return STI_Position3dVertexCxformEAlphaInv;
+        case ST_BatchPosition3dVertexCxformEAlphaInv:            return STI_BatchPosition3dVertexCxformEAlphaInv;
+        case ST_InstancedPosition3dVertexCxformEAlphaInv:        return STI_InstancedPosition3dVertexCxformEAlphaInv;
+        case ST_VertexCxformAc:                                  return STI_VertexCxformAc;
+        case ST_VertexCxformAcMul:                               return STI_VertexCxformAcMul;
+        case ST_BatchVertexCxformAc:                             return STI_BatchVertexCxformAc;
+        case ST_BatchVertexCxformAcMul:                          return STI_BatchVertexCxformAcMul;
+        case ST_InstancedVertexCxformAc:                         return STI_InstancedVertexCxformAc;
+        case ST_InstancedVertexCxformAcMul:                      return STI_InstancedVertexCxformAcMul;
+        case ST_Position3dVertexCxformAc:                        return STI_Position3dVertexCxformAc;
+        case ST_Position3dVertexCxformAcMul:                     return STI_Position3dVertexCxformAcMul;
+        case ST_BatchPosition3dVertexCxformAc:                   return STI_BatchPosition3dVertexCxformAc;
+        case ST_BatchPosition3dVertexCxformAcMul:                return STI_BatchPosition3dVertexCxformAcMul;
+        case ST_InstancedPosition3dVertexCxformAc:               return STI_InstancedPosition3dVertexCxformAc;
+        case ST_InstancedPosition3dVertexCxformAcMul:            return STI_InstancedPosition3dVertexCxformAcMul;
+        case ST_VertexCxformAcEAlpha:                            return STI_VertexCxformAcEAlpha;
+        case ST_VertexCxformAcEAlphaMul:                         return STI_VertexCxformAcEAlphaMul;
+        case ST_BatchVertexCxformAcEAlpha:                       return STI_BatchVertexCxformAcEAlpha;
+        case ST_BatchVertexCxformAcEAlphaMul:                    return STI_BatchVertexCxformAcEAlphaMul;
+        case ST_InstancedVertexCxformAcEAlpha:                   return STI_InstancedVertexCxformAcEAlpha;
+        case ST_InstancedVertexCxformAcEAlphaMul:                return STI_InstancedVertexCxformAcEAlphaMul;
+        case ST_Position3dVertexCxformAcEAlpha:                  return STI_Position3dVertexCxformAcEAlpha;
+        case ST_Position3dVertexCxformAcEAlphaMul:               return STI_Position3dVertexCxformAcEAlphaMul;
+        case ST_BatchPosition3dVertexCxformAcEAlpha:             return STI_BatchPosition3dVertexCxformAcEAlpha;
+        case ST_BatchPosition3dVertexCxformAcEAlphaMul:          return STI_BatchPosition3dVertexCxformAcEAlphaMul;
+        case ST_InstancedPosition3dVertexCxformAcEAlpha:         return STI_InstancedPosition3dVertexCxformAcEAlpha;
+        case ST_InstancedPosition3dVertexCxformAcEAlphaMul:      return STI_InstancedPosition3dVertexCxformAcEAlphaMul;
+        case ST_VertexCxformAcInv:                               return STI_VertexCxformAcInv;
+        case ST_BatchVertexCxformAcInv:                          return STI_BatchVertexCxformAcInv;
+        case ST_InstancedVertexCxformAcInv:                      return STI_InstancedVertexCxformAcInv;
+        case ST_Position3dVertexCxformAcInv:                     return STI_Position3dVertexCxformAcInv;
+        case ST_BatchPosition3dVertexCxformAcInv:                return STI_BatchPosition3dVertexCxformAcInv;
+        case ST_InstancedPosition3dVertexCxformAcInv:            return STI_InstancedPosition3dVertexCxformAcInv;
+        case ST_VertexCxformAcEAlphaInv:                         return STI_VertexCxformAcEAlphaInv;
+        case ST_BatchVertexCxformAcEAlphaInv:                    return STI_BatchVertexCxformAcEAlphaInv;
+        case ST_InstancedVertexCxformAcEAlphaInv:                return STI_InstancedVertexCxformAcEAlphaInv;
+        case ST_Position3dVertexCxformAcEAlphaInv:               return STI_Position3dVertexCxformAcEAlphaInv;
+        case ST_BatchPosition3dVertexCxformAcEAlphaInv:          return STI_BatchPosition3dVertexCxformAcEAlphaInv;
+        case ST_InstancedPosition3dVertexCxformAcEAlphaInv:      return STI_InstancedPosition3dVertexCxformAcEAlphaInv;
         case ST_Solid:                                           return STI_Solid;
         case ST_SolidMul:                                        return STI_SolidMul;
         case ST_BatchSolid:                                      return STI_BatchSolid;
@@ -559,42 +617,54 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dTextInv:                               return STI_Position3dTextInv;
         case ST_BatchPosition3dTextInv:                          return STI_BatchPosition3dTextInv;
         case ST_InstancedPosition3dTextInv:                      return STI_InstancedPosition3dTextInv;
-        case ST_TextColor:                                       return STI_TextColor;
-        case ST_TextColorMul:                                    return STI_TextColorMul;
-        case ST_BatchTextColor:                                  return STI_BatchTextColor;
-        case ST_BatchTextColorMul:                               return STI_BatchTextColorMul;
-        case ST_InstancedTextColor:                              return STI_InstancedTextColor;
-        case ST_InstancedTextColorMul:                           return STI_InstancedTextColorMul;
-        case ST_Position3dTextColor:                             return STI_Position3dTextColor;
-        case ST_Position3dTextColorMul:                          return STI_Position3dTextColorMul;
-        case ST_BatchPosition3dTextColor:                        return STI_BatchPosition3dTextColor;
-        case ST_BatchPosition3dTextColorMul:                     return STI_BatchPosition3dTextColorMul;
-        case ST_InstancedPosition3dTextColor:                    return STI_InstancedPosition3dTextColor;
-        case ST_InstancedPosition3dTextColorMul:                 return STI_InstancedPosition3dTextColorMul;
-        case ST_TextColorCxform:                                 return STI_TextColorCxform;
-        case ST_TextColorCxformMul:                              return STI_TextColorCxformMul;
-        case ST_BatchTextColorCxform:                            return STI_BatchTextColorCxform;
-        case ST_BatchTextColorCxformMul:                         return STI_BatchTextColorCxformMul;
-        case ST_InstancedTextColorCxform:                        return STI_InstancedTextColorCxform;
-        case ST_InstancedTextColorCxformMul:                     return STI_InstancedTextColorCxformMul;
-        case ST_Position3dTextColorCxform:                       return STI_Position3dTextColorCxform;
-        case ST_Position3dTextColorCxformMul:                    return STI_Position3dTextColorCxformMul;
-        case ST_BatchPosition3dTextColorCxform:                  return STI_BatchPosition3dTextColorCxform;
-        case ST_BatchPosition3dTextColorCxformMul:               return STI_BatchPosition3dTextColorCxformMul;
-        case ST_InstancedPosition3dTextColorCxform:              return STI_InstancedPosition3dTextColorCxform;
-        case ST_InstancedPosition3dTextColorCxformMul:           return STI_InstancedPosition3dTextColorCxformMul;
-        case ST_TextColorInv:                                    return STI_TextColorInv;
-        case ST_BatchTextColorInv:                               return STI_BatchTextColorInv;
-        case ST_InstancedTextColorInv:                           return STI_InstancedTextColorInv;
-        case ST_Position3dTextColorInv:                          return STI_Position3dTextColorInv;
-        case ST_BatchPosition3dTextColorInv:                     return STI_BatchPosition3dTextColorInv;
-        case ST_InstancedPosition3dTextColorInv:                 return STI_InstancedPosition3dTextColorInv;
-        case ST_TextColorCxformInv:                              return STI_TextColorCxformInv;
-        case ST_BatchTextColorCxformInv:                         return STI_BatchTextColorCxformInv;
-        case ST_InstancedTextColorCxformInv:                     return STI_InstancedTextColorCxformInv;
-        case ST_Position3dTextColorCxformInv:                    return STI_Position3dTextColorCxformInv;
-        case ST_BatchPosition3dTextColorCxformInv:               return STI_BatchPosition3dTextColorCxformInv;
-        case ST_InstancedPosition3dTextColorCxformInv:           return STI_InstancedPosition3dTextColorCxformInv;
+        case ST_TextTexDensity:                                  return STI_TextTexDensity;
+        case ST_BatchTextTexDensity:                             return STI_BatchTextTexDensity;
+        case ST_InstancedTextTexDensity:                         return STI_InstancedTextTexDensity;
+        case ST_Position3dTextTexDensity:                        return STI_Position3dTextTexDensity;
+        case ST_BatchPosition3dTextTexDensity:                   return STI_BatchPosition3dTextTexDensity;
+        case ST_InstancedPosition3dTextTexDensity:               return STI_InstancedPosition3dTextTexDensity;
+        case ST_TexUV:                                           return STI_TexUV;
+        case ST_TexUVMul:                                        return STI_TexUVMul;
+        case ST_BatchTexUV:                                      return STI_BatchTexUV;
+        case ST_BatchTexUVMul:                                   return STI_BatchTexUVMul;
+        case ST_InstancedTexUV:                                  return STI_InstancedTexUV;
+        case ST_InstancedTexUVMul:                               return STI_InstancedTexUVMul;
+        case ST_Position3dTexUV:                                 return STI_Position3dTexUV;
+        case ST_Position3dTexUVMul:                              return STI_Position3dTexUVMul;
+        case ST_BatchPosition3dTexUV:                            return STI_BatchPosition3dTexUV;
+        case ST_BatchPosition3dTexUVMul:                         return STI_BatchPosition3dTexUVMul;
+        case ST_InstancedPosition3dTexUV:                        return STI_InstancedPosition3dTexUV;
+        case ST_InstancedPosition3dTexUVMul:                     return STI_InstancedPosition3dTexUVMul;
+        case ST_TexUVCxform:                                     return STI_TexUVCxform;
+        case ST_TexUVCxformMul:                                  return STI_TexUVCxformMul;
+        case ST_BatchTexUVCxform:                                return STI_BatchTexUVCxform;
+        case ST_BatchTexUVCxformMul:                             return STI_BatchTexUVCxformMul;
+        case ST_InstancedTexUVCxform:                            return STI_InstancedTexUVCxform;
+        case ST_InstancedTexUVCxformMul:                         return STI_InstancedTexUVCxformMul;
+        case ST_Position3dTexUVCxform:                           return STI_Position3dTexUVCxform;
+        case ST_Position3dTexUVCxformMul:                        return STI_Position3dTexUVCxformMul;
+        case ST_BatchPosition3dTexUVCxform:                      return STI_BatchPosition3dTexUVCxform;
+        case ST_BatchPosition3dTexUVCxformMul:                   return STI_BatchPosition3dTexUVCxformMul;
+        case ST_InstancedPosition3dTexUVCxform:                  return STI_InstancedPosition3dTexUVCxform;
+        case ST_InstancedPosition3dTexUVCxformMul:               return STI_InstancedPosition3dTexUVCxformMul;
+        case ST_TexUVInv:                                        return STI_TexUVInv;
+        case ST_BatchTexUVInv:                                   return STI_BatchTexUVInv;
+        case ST_InstancedTexUVInv:                               return STI_InstancedTexUVInv;
+        case ST_Position3dTexUVInv:                              return STI_Position3dTexUVInv;
+        case ST_BatchPosition3dTexUVInv:                         return STI_BatchPosition3dTexUVInv;
+        case ST_InstancedPosition3dTexUVInv:                     return STI_InstancedPosition3dTexUVInv;
+        case ST_TexUVCxformInv:                                  return STI_TexUVCxformInv;
+        case ST_BatchTexUVCxformInv:                             return STI_BatchTexUVCxformInv;
+        case ST_InstancedTexUVCxformInv:                         return STI_InstancedTexUVCxformInv;
+        case ST_Position3dTexUVCxformInv:                        return STI_Position3dTexUVCxformInv;
+        case ST_BatchPosition3dTexUVCxformInv:                   return STI_BatchPosition3dTexUVCxformInv;
+        case ST_InstancedPosition3dTexUVCxformInv:               return STI_InstancedPosition3dTexUVCxformInv;
+        case ST_TexUVTexDensity:                                 return STI_TexUVTexDensity;
+        case ST_BatchTexUVTexDensity:                            return STI_BatchTexUVTexDensity;
+        case ST_InstancedTexUVTexDensity:                        return STI_InstancedTexUVTexDensity;
+        case ST_Position3dTexUVTexDensity:                       return STI_Position3dTexUVTexDensity;
+        case ST_BatchPosition3dTexUVTexDensity:                  return STI_BatchPosition3dTexUVTexDensity;
+        case ST_InstancedPosition3dTexUVTexDensity:              return STI_InstancedPosition3dTexUVTexDensity;
         case ST_YUV:                                             return STI_YUV;
         case ST_YUVMul:                                          return STI_YUVMul;
         case ST_BatchYUV:                                        return STI_BatchYUV;
@@ -643,6 +713,18 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_BatchPosition3dYUVCxformEAlphaMul:               return STI_BatchPosition3dYUVCxformEAlphaMul;
         case ST_InstancedPosition3dYUVCxformEAlpha:              return STI_InstancedPosition3dYUVCxformEAlpha;
         case ST_InstancedPosition3dYUVCxformEAlphaMul:           return STI_InstancedPosition3dYUVCxformEAlphaMul;
+        case ST_YUVTexDensity:                                   return STI_YUVTexDensity;
+        case ST_BatchYUVTexDensity:                              return STI_BatchYUVTexDensity;
+        case ST_InstancedYUVTexDensity:                          return STI_InstancedYUVTexDensity;
+        case ST_Position3dYUVTexDensity:                         return STI_Position3dYUVTexDensity;
+        case ST_BatchPosition3dYUVTexDensity:                    return STI_BatchPosition3dYUVTexDensity;
+        case ST_InstancedPosition3dYUVTexDensity:                return STI_InstancedPosition3dYUVTexDensity;
+        case ST_YUVEAlphaTexDensity:                             return STI_YUVEAlphaTexDensity;
+        case ST_BatchYUVEAlphaTexDensity:                        return STI_BatchYUVEAlphaTexDensity;
+        case ST_InstancedYUVEAlphaTexDensity:                    return STI_InstancedYUVEAlphaTexDensity;
+        case ST_Position3dYUVEAlphaTexDensity:                   return STI_Position3dYUVEAlphaTexDensity;
+        case ST_BatchPosition3dYUVEAlphaTexDensity:              return STI_BatchPosition3dYUVEAlphaTexDensity;
+        case ST_InstancedPosition3dYUVEAlphaTexDensity:          return STI_InstancedPosition3dYUVEAlphaTexDensity;
         case ST_YUVCxformAc:                                     return STI_YUVCxformAc;
         case ST_YUVCxformAcMul:                                  return STI_YUVCxformAcMul;
         case ST_BatchYUVCxformAc:                                return STI_BatchYUVCxformAc;
@@ -739,6 +821,18 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dYUVACxformEAlphaInv:                   return STI_Position3dYUVACxformEAlphaInv;
         case ST_BatchPosition3dYUVACxformEAlphaInv:              return STI_BatchPosition3dYUVACxformEAlphaInv;
         case ST_InstancedPosition3dYUVACxformEAlphaInv:          return STI_InstancedPosition3dYUVACxformEAlphaInv;
+        case ST_YUVATexDensity:                                  return STI_YUVATexDensity;
+        case ST_BatchYUVATexDensity:                             return STI_BatchYUVATexDensity;
+        case ST_InstancedYUVATexDensity:                         return STI_InstancedYUVATexDensity;
+        case ST_Position3dYUVATexDensity:                        return STI_Position3dYUVATexDensity;
+        case ST_BatchPosition3dYUVATexDensity:                   return STI_BatchPosition3dYUVATexDensity;
+        case ST_InstancedPosition3dYUVATexDensity:               return STI_InstancedPosition3dYUVATexDensity;
+        case ST_YUVAEAlphaTexDensity:                            return STI_YUVAEAlphaTexDensity;
+        case ST_BatchYUVAEAlphaTexDensity:                       return STI_BatchYUVAEAlphaTexDensity;
+        case ST_InstancedYUVAEAlphaTexDensity:                   return STI_InstancedYUVAEAlphaTexDensity;
+        case ST_Position3dYUVAEAlphaTexDensity:                  return STI_Position3dYUVAEAlphaTexDensity;
+        case ST_BatchPosition3dYUVAEAlphaTexDensity:             return STI_BatchPosition3dYUVAEAlphaTexDensity;
+        case ST_InstancedPosition3dYUVAEAlphaTexDensity:         return STI_InstancedPosition3dYUVAEAlphaTexDensity;
         case ST_YUVACxformAc:                                    return STI_YUVACxformAc;
         case ST_YUVACxformAcMul:                                 return STI_YUVACxformAcMul;
         case ST_BatchYUVACxformAc:                               return STI_BatchYUVACxformAc;
@@ -775,6 +869,90 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Position3dYUVACxformAcEAlphaInv:                 return STI_Position3dYUVACxformAcEAlphaInv;
         case ST_BatchPosition3dYUVACxformAcEAlphaInv:            return STI_BatchPosition3dYUVACxformAcEAlphaInv;
         case ST_InstancedPosition3dYUVACxformAcEAlphaInv:        return STI_InstancedPosition3dYUVACxformAcEAlphaInv;
+        case ST_YUY2:                                            return STI_YUY2;
+        case ST_YUY2Mul:                                         return STI_YUY2Mul;
+        case ST_BatchYUY2:                                       return STI_BatchYUY2;
+        case ST_BatchYUY2Mul:                                    return STI_BatchYUY2Mul;
+        case ST_InstancedYUY2:                                   return STI_InstancedYUY2;
+        case ST_InstancedYUY2Mul:                                return STI_InstancedYUY2Mul;
+        case ST_Position3dYUY2:                                  return STI_Position3dYUY2;
+        case ST_Position3dYUY2Mul:                               return STI_Position3dYUY2Mul;
+        case ST_BatchPosition3dYUY2:                             return STI_BatchPosition3dYUY2;
+        case ST_BatchPosition3dYUY2Mul:                          return STI_BatchPosition3dYUY2Mul;
+        case ST_InstancedPosition3dYUY2:                         return STI_InstancedPosition3dYUY2;
+        case ST_InstancedPosition3dYUY2Mul:                      return STI_InstancedPosition3dYUY2Mul;
+        case ST_YUY2Cxform:                                      return STI_YUY2Cxform;
+        case ST_YUY2CxformMul:                                   return STI_YUY2CxformMul;
+        case ST_BatchYUY2Cxform:                                 return STI_BatchYUY2Cxform;
+        case ST_BatchYUY2CxformMul:                              return STI_BatchYUY2CxformMul;
+        case ST_InstancedYUY2Cxform:                             return STI_InstancedYUY2Cxform;
+        case ST_InstancedYUY2CxformMul:                          return STI_InstancedYUY2CxformMul;
+        case ST_Position3dYUY2Cxform:                            return STI_Position3dYUY2Cxform;
+        case ST_Position3dYUY2CxformMul:                         return STI_Position3dYUY2CxformMul;
+        case ST_BatchPosition3dYUY2Cxform:                       return STI_BatchPosition3dYUY2Cxform;
+        case ST_BatchPosition3dYUY2CxformMul:                    return STI_BatchPosition3dYUY2CxformMul;
+        case ST_InstancedPosition3dYUY2Cxform:                   return STI_InstancedPosition3dYUY2Cxform;
+        case ST_InstancedPosition3dYUY2CxformMul:                return STI_InstancedPosition3dYUY2CxformMul;
+        case ST_YUY2EAlpha:                                      return STI_YUY2EAlpha;
+        case ST_YUY2EAlphaMul:                                   return STI_YUY2EAlphaMul;
+        case ST_BatchYUY2EAlpha:                                 return STI_BatchYUY2EAlpha;
+        case ST_BatchYUY2EAlphaMul:                              return STI_BatchYUY2EAlphaMul;
+        case ST_InstancedYUY2EAlpha:                             return STI_InstancedYUY2EAlpha;
+        case ST_InstancedYUY2EAlphaMul:                          return STI_InstancedYUY2EAlphaMul;
+        case ST_Position3dYUY2EAlpha:                            return STI_Position3dYUY2EAlpha;
+        case ST_Position3dYUY2EAlphaMul:                         return STI_Position3dYUY2EAlphaMul;
+        case ST_BatchPosition3dYUY2EAlpha:                       return STI_BatchPosition3dYUY2EAlpha;
+        case ST_BatchPosition3dYUY2EAlphaMul:                    return STI_BatchPosition3dYUY2EAlphaMul;
+        case ST_InstancedPosition3dYUY2EAlpha:                   return STI_InstancedPosition3dYUY2EAlpha;
+        case ST_InstancedPosition3dYUY2EAlphaMul:                return STI_InstancedPosition3dYUY2EAlphaMul;
+        case ST_YUY2CxformEAlpha:                                return STI_YUY2CxformEAlpha;
+        case ST_YUY2CxformEAlphaMul:                             return STI_YUY2CxformEAlphaMul;
+        case ST_BatchYUY2CxformEAlpha:                           return STI_BatchYUY2CxformEAlpha;
+        case ST_BatchYUY2CxformEAlphaMul:                        return STI_BatchYUY2CxformEAlphaMul;
+        case ST_InstancedYUY2CxformEAlpha:                       return STI_InstancedYUY2CxformEAlpha;
+        case ST_InstancedYUY2CxformEAlphaMul:                    return STI_InstancedYUY2CxformEAlphaMul;
+        case ST_Position3dYUY2CxformEAlpha:                      return STI_Position3dYUY2CxformEAlpha;
+        case ST_Position3dYUY2CxformEAlphaMul:                   return STI_Position3dYUY2CxformEAlphaMul;
+        case ST_BatchPosition3dYUY2CxformEAlpha:                 return STI_BatchPosition3dYUY2CxformEAlpha;
+        case ST_BatchPosition3dYUY2CxformEAlphaMul:              return STI_BatchPosition3dYUY2CxformEAlphaMul;
+        case ST_InstancedPosition3dYUY2CxformEAlpha:             return STI_InstancedPosition3dYUY2CxformEAlpha;
+        case ST_InstancedPosition3dYUY2CxformEAlphaMul:          return STI_InstancedPosition3dYUY2CxformEAlphaMul;
+        case ST_YUY2TexDensity:                                  return STI_YUY2TexDensity;
+        case ST_BatchYUY2TexDensity:                             return STI_BatchYUY2TexDensity;
+        case ST_InstancedYUY2TexDensity:                         return STI_InstancedYUY2TexDensity;
+        case ST_Position3dYUY2TexDensity:                        return STI_Position3dYUY2TexDensity;
+        case ST_BatchPosition3dYUY2TexDensity:                   return STI_BatchPosition3dYUY2TexDensity;
+        case ST_InstancedPosition3dYUY2TexDensity:               return STI_InstancedPosition3dYUY2TexDensity;
+        case ST_YUY2EAlphaTexDensity:                            return STI_YUY2EAlphaTexDensity;
+        case ST_BatchYUY2EAlphaTexDensity:                       return STI_BatchYUY2EAlphaTexDensity;
+        case ST_InstancedYUY2EAlphaTexDensity:                   return STI_InstancedYUY2EAlphaTexDensity;
+        case ST_Position3dYUY2EAlphaTexDensity:                  return STI_Position3dYUY2EAlphaTexDensity;
+        case ST_BatchPosition3dYUY2EAlphaTexDensity:             return STI_BatchPosition3dYUY2EAlphaTexDensity;
+        case ST_InstancedPosition3dYUY2EAlphaTexDensity:         return STI_InstancedPosition3dYUY2EAlphaTexDensity;
+        case ST_YUY2CxformAc:                                    return STI_YUY2CxformAc;
+        case ST_YUY2CxformAcMul:                                 return STI_YUY2CxformAcMul;
+        case ST_BatchYUY2CxformAc:                               return STI_BatchYUY2CxformAc;
+        case ST_BatchYUY2CxformAcMul:                            return STI_BatchYUY2CxformAcMul;
+        case ST_InstancedYUY2CxformAc:                           return STI_InstancedYUY2CxformAc;
+        case ST_InstancedYUY2CxformAcMul:                        return STI_InstancedYUY2CxformAcMul;
+        case ST_Position3dYUY2CxformAc:                          return STI_Position3dYUY2CxformAc;
+        case ST_Position3dYUY2CxformAcMul:                       return STI_Position3dYUY2CxformAcMul;
+        case ST_BatchPosition3dYUY2CxformAc:                     return STI_BatchPosition3dYUY2CxformAc;
+        case ST_BatchPosition3dYUY2CxformAcMul:                  return STI_BatchPosition3dYUY2CxformAcMul;
+        case ST_InstancedPosition3dYUY2CxformAc:                 return STI_InstancedPosition3dYUY2CxformAc;
+        case ST_InstancedPosition3dYUY2CxformAcMul:              return STI_InstancedPosition3dYUY2CxformAcMul;
+        case ST_YUY2CxformAcEAlpha:                              return STI_YUY2CxformAcEAlpha;
+        case ST_YUY2CxformAcEAlphaMul:                           return STI_YUY2CxformAcEAlphaMul;
+        case ST_BatchYUY2CxformAcEAlpha:                         return STI_BatchYUY2CxformAcEAlpha;
+        case ST_BatchYUY2CxformAcEAlphaMul:                      return STI_BatchYUY2CxformAcEAlphaMul;
+        case ST_InstancedYUY2CxformAcEAlpha:                     return STI_InstancedYUY2CxformAcEAlpha;
+        case ST_InstancedYUY2CxformAcEAlphaMul:                  return STI_InstancedYUY2CxformAcEAlphaMul;
+        case ST_Position3dYUY2CxformAcEAlpha:                    return STI_Position3dYUY2CxformAcEAlpha;
+        case ST_Position3dYUY2CxformAcEAlphaMul:                 return STI_Position3dYUY2CxformAcEAlphaMul;
+        case ST_BatchPosition3dYUY2CxformAcEAlpha:               return STI_BatchPosition3dYUY2CxformAcEAlpha;
+        case ST_BatchPosition3dYUY2CxformAcEAlphaMul:            return STI_BatchPosition3dYUY2CxformAcEAlphaMul;
+        case ST_InstancedPosition3dYUY2CxformAcEAlpha:           return STI_InstancedPosition3dYUY2CxformAcEAlpha;
+        case ST_InstancedPosition3dYUY2CxformAcEAlphaMul:        return STI_InstancedPosition3dYUY2CxformAcEAlphaMul;
         case ST_TexTGCMatrixAc:                                  return STI_TexTGCMatrixAc;
         case ST_TexTGCMatrixAcMul:                               return STI_TexTGCMatrixAcMul;
         case ST_TexTGCMatrixAcEAlpha:                            return STI_TexTGCMatrixAcEAlpha;
@@ -783,28 +961,57 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_Box1BlurMul:                                     return STI_Box1BlurMul;
         case ST_Box2Blur:                                        return STI_Box2Blur;
         case ST_Box2BlurMul:                                     return STI_Box2BlurMul;
-        case ST_Box2Shadow:                                      return STI_Box2Shadow;
-        case ST_Box2ShadowMul:                                   return STI_Box2ShadowMul;
-        case ST_Box2ShadowKnockout:                              return STI_Box2ShadowKnockout;
-        case ST_Box2ShadowKnockoutMul:                           return STI_Box2ShadowKnockoutMul;
-        case ST_Box2Shadowonly:                                  return STI_Box2Shadowonly;
-        case ST_Box2ShadowonlyMul:                               return STI_Box2ShadowonlyMul;
-        case ST_Box2InnerShadow:                                 return STI_Box2InnerShadow;
-        case ST_Box2InnerShadowMul:                              return STI_Box2InnerShadowMul;
-        case ST_Box2InnerShadowKnockout:                         return STI_Box2InnerShadowKnockout;
-        case ST_Box2InnerShadowKnockoutMul:                      return STI_Box2InnerShadowKnockoutMul;
-        case ST_Box2ShadowonlyHighlight:                         return STI_Box2ShadowonlyHighlight;
-        case ST_Box2ShadowonlyHighlightMul:                      return STI_Box2ShadowonlyHighlightMul;
-        case ST_Box2FullShadowHighlight:                         return STI_Box2FullShadowHighlight;
-        case ST_Box2FullShadowHighlightMul:                      return STI_Box2FullShadowHighlightMul;
-        case ST_Box2InnerShadowHighlight:                        return STI_Box2InnerShadowHighlight;
-        case ST_Box2InnerShadowHighlightMul:                     return STI_Box2InnerShadowHighlightMul;
-        case ST_Box2InnerShadowHighlightKnockout:                return STI_Box2InnerShadowHighlightKnockout;
-        case ST_Box2InnerShadowHighlightKnockoutMul:             return STI_Box2InnerShadowHighlightKnockoutMul;
-        case ST_Box2ShadowHighlight:                             return STI_Box2ShadowHighlight;
-        case ST_Box2ShadowHighlightMul:                          return STI_Box2ShadowHighlightMul;
-        case ST_Box2ShadowHighlightKnockout:                     return STI_Box2ShadowHighlightKnockout;
-        case ST_Box2ShadowHighlightKnockoutMul:                  return STI_Box2ShadowHighlightKnockoutMul;
+        case ST_SColorOuterBevel:                                return STI_SColorOuterBevel;
+        case ST_SColorOuterBevelMul:                             return STI_SColorOuterBevelMul;
+        case ST_SColorFullBevel:                                 return STI_SColorFullBevel;
+        case ST_SColorFullBevelMul:                              return STI_SColorFullBevelMul;
+        case ST_SColorInnerShadow:                               return STI_SColorInnerShadow;
+        case ST_SColorInnerShadowMul:                            return STI_SColorInnerShadowMul;
+        case ST_SColorHideBaseOuterBevel:                        return STI_SColorHideBaseOuterBevel;
+        case ST_SColorHideBaseOuterBevelMul:                     return STI_SColorHideBaseOuterBevelMul;
+        case ST_SColorHideBaseFullBevel:                         return STI_SColorHideBaseFullBevel;
+        case ST_SColorHideBaseFullBevelMul:                      return STI_SColorHideBaseFullBevelMul;
+        case ST_SColorHideBaseInnerShadow:                       return STI_SColorHideBaseInnerShadow;
+        case ST_SColorHideBaseInnerShadowMul:                    return STI_SColorHideBaseInnerShadowMul;
+        case ST_SGradOuterBevel:                                 return STI_SGradOuterBevel;
+        case ST_SGradOuterBevelMul:                              return STI_SGradOuterBevelMul;
+        case ST_SGradFullBevel:                                  return STI_SGradFullBevel;
+        case ST_SGradFullBevelMul:                               return STI_SGradFullBevelMul;
+        case ST_SGradInnerBevel:                                 return STI_SGradInnerBevel;
+        case ST_SGradInnerBevelMul:                              return STI_SGradInnerBevelMul;
+        case ST_SGradHideBaseOuterBevel:                         return STI_SGradHideBaseOuterBevel;
+        case ST_SGradHideBaseOuterBevelMul:                      return STI_SGradHideBaseOuterBevelMul;
+        case ST_SGradHideBaseFullBevel:                          return STI_SGradHideBaseFullBevel;
+        case ST_SGradHideBaseFullBevelMul:                       return STI_SGradHideBaseFullBevelMul;
+        case ST_SGradHideBaseInnerBevel:                         return STI_SGradHideBaseInnerBevel;
+        case ST_SGradHideBaseInnerBevelMul:                      return STI_SGradHideBaseInnerBevelMul;
+        case ST_SGrad2OuterBevel:                                return STI_SGrad2OuterBevel;
+        case ST_SGrad2OuterBevelMul:                             return STI_SGrad2OuterBevelMul;
+        case ST_SGrad2FullBevel:                                 return STI_SGrad2FullBevel;
+        case ST_SGrad2FullBevelMul:                              return STI_SGrad2FullBevelMul;
+        case ST_SGrad2InnerBevel:                                return STI_SGrad2InnerBevel;
+        case ST_SGrad2InnerBevelMul:                             return STI_SGrad2InnerBevelMul;
+        case ST_SGrad2HideBaseOuterBevel:                        return STI_SGrad2HideBaseOuterBevel;
+        case ST_SGrad2HideBaseOuterBevelMul:                     return STI_SGrad2HideBaseOuterBevelMul;
+        case ST_SGrad2HideBaseFullBevel:                         return STI_SGrad2HideBaseFullBevel;
+        case ST_SGrad2HideBaseFullBevelMul:                      return STI_SGrad2HideBaseFullBevelMul;
+        case ST_SGrad2HideBaseInnerBevel:                        return STI_SGrad2HideBaseInnerBevel;
+        case ST_SGrad2HideBaseInnerBevelMul:                     return STI_SGrad2HideBaseInnerBevelMul;
+        case ST_SColor2OuterBevel:                               return STI_SColor2OuterBevel;
+        case ST_SColor2OuterBevelMul:                            return STI_SColor2OuterBevelMul;
+        case ST_SColor2FullBevel:                                return STI_SColor2FullBevel;
+        case ST_SColor2FullBevelMul:                             return STI_SColor2FullBevelMul;
+        case ST_SColor2InnerBevel:                               return STI_SColor2InnerBevel;
+        case ST_SColor2InnerBevelMul:                            return STI_SColor2InnerBevelMul;
+        case ST_SColor2HideBaseOuterBevel:                       return STI_SColor2HideBaseOuterBevel;
+        case ST_SColor2HideBaseOuterBevelMul:                    return STI_SColor2HideBaseOuterBevelMul;
+        case ST_SColor2HideBaseFullBevel:                        return STI_SColor2HideBaseFullBevel;
+        case ST_SColor2HideBaseFullBevelMul:                     return STI_SColor2HideBaseFullBevelMul;
+        case ST_SColor2HideBaseInnerBevel:                       return STI_SColor2HideBaseInnerBevel;
+        case ST_SColor2HideBaseInnerBevelMul:                    return STI_SColor2HideBaseInnerBevelMul;
+        case ST_DisplacementMap:                                 return STI_DisplacementMap;
+        case ST_DisplacementMapDMColor:                          return STI_DisplacementMapDMColor;
+        case ST_DisplacementMapDMIgnore:                         return STI_DisplacementMapDMIgnore;
         case ST_DrawableCopyPixels:                              return STI_DrawableCopyPixels;
         case ST_DrawableCopyPixelsNoDestAlpha:                   return STI_DrawableCopyPixelsNoDestAlpha;
         case ST_DrawableCopyPixelsMergeAlpha:                    return STI_DrawableCopyPixelsMergeAlpha;
@@ -814,6 +1021,12 @@ ShaderDesc::ShaderIndex ShaderDesc::GetShaderIndex(ShaderType type)
         case ST_DrawableMerge:                                   return STI_DrawableMerge;
         case ST_DrawableCompare:                                 return STI_DrawableCompare;
         case ST_DrawablePaletteMap:                              return STI_DrawablePaletteMap;
+        case ST_BlendLighten:                                    return STI_BlendLighten;
+        case ST_BlendLayer:                                      return STI_BlendLayer;
+        case ST_BlendDifference:                                 return STI_BlendDifference;
+        case ST_BlendHardlight:                                  return STI_BlendHardlight;
+        case ST_BlendOverlay:                                    return STI_BlendOverlay;
+        case ST_BlendDarken:                                     return STI_BlendDarken;
         default: SF_DEBUG_ASSERT1(1, "Invalid ShaderType (%d)", type);
     }
     return STI_None;
@@ -1557,6 +1770,126 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGCxformEAlphaInv
         },
     },
+    { // ST_TexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexTGTexDensity
+        },
+    },
+    { // ST_BatchTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexTGTexDensity
+        },
+    },
+    { // ST_InstancedTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexTGTexDensity
+        },
+    },
+    { // ST_Position3dTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexTGTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexTGTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGTexDensity
+        },
+    },
+    { // ST_TexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_BatchTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_Position3dTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGEAlphaTexDensity
+        },
+    },
     { // ST_TexTGCxformAc
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_D3D9SM20_VTexTGCxformAc,
@@ -1915,1086 +2248,6 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
         { // ShaderVersion_D3D9SM30
             VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGCxformAcEAlphaInv,
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGCxformAcEAlphaInv
-        },
-    },
-    { // ST_Vertex
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertex,
-            FragShaderDesc::FSI_D3D9SM20_FVertex
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertex,
-            FragShaderDesc::FSI_D3D9SM30_FVertex
-        },
-    },
-    { // ST_VertexMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexMul,
-            FragShaderDesc::FSI_D3D9SM20_FVertexMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexMul,
-            FragShaderDesc::FSI_D3D9SM30_FVertexMul
-        },
-    },
-    { // ST_BatchVertex
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertex,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertex
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertex,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertex
-        },
-    },
-    { // ST_BatchVertexMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexMul
-        },
-    },
-    { // ST_InstancedVertex
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertex,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertex
-        },
-    },
-    { // ST_InstancedVertexMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexMul
-        },
-    },
-    { // ST_Position3dVertex
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertex,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertex
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertex,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertex
-        },
-    },
-    { // ST_Position3dVertexMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexMul
-        },
-    },
-    { // ST_BatchPosition3dVertex
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertex,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertex
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertex,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertex
-        },
-    },
-    { // ST_BatchPosition3dVertexMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexMul
-        },
-    },
-    { // ST_InstancedPosition3dVertex
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertex,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertex
-        },
-    },
-    { // ST_InstancedPosition3dVertexMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexMul
-        },
-    },
-    { // ST_VertexCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxform,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxform
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxform,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxform
-        },
-    },
-    { // ST_VertexCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformMul
-        },
-    },
-    { // ST_BatchVertexCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxform,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxform
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxform,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxform
-        },
-    },
-    { // ST_BatchVertexCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformMul
-        },
-    },
-    { // ST_InstancedVertexCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxform,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxform
-        },
-    },
-    { // ST_InstancedVertexCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformMul
-        },
-    },
-    { // ST_Position3dVertexCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxform,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxform
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxform,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxform
-        },
-    },
-    { // ST_Position3dVertexCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformMul
-        },
-    },
-    { // ST_BatchPosition3dVertexCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxform,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxform
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxform,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxform
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformMul
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxform,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxform
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformMul
-        },
-    },
-    { // ST_VertexEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FVertexEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FVertexEAlpha
-        },
-    },
-    { // ST_VertexEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FVertexEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FVertexEAlphaMul
-        },
-    },
-    { // ST_BatchVertexEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexEAlpha
-        },
-    },
-    { // ST_BatchVertexEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexEAlphaMul
-        },
-    },
-    { // ST_InstancedVertexEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexEAlpha
-        },
-    },
-    { // ST_InstancedVertexEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexEAlphaMul
-        },
-    },
-    { // ST_Position3dVertexEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexEAlpha
-        },
-    },
-    { // ST_Position3dVertexEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexEAlphaMul
-        },
-    },
-    { // ST_BatchPosition3dVertexEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexEAlpha
-        },
-    },
-    { // ST_BatchPosition3dVertexEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexEAlphaMul
-        },
-    },
-    { // ST_InstancedPosition3dVertexEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexEAlpha
-        },
-    },
-    { // ST_InstancedPosition3dVertexEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexEAlphaMul
-        },
-    },
-    { // ST_VertexCxformEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformEAlpha
-        },
-    },
-    { // ST_VertexCxformEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformEAlphaMul
-        },
-    },
-    { // ST_BatchVertexCxformEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformEAlpha
-        },
-    },
-    { // ST_BatchVertexCxformEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformEAlphaMul
-        },
-    },
-    { // ST_InstancedVertexCxformEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformEAlpha
-        },
-    },
-    { // ST_InstancedVertexCxformEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformEAlphaMul
-        },
-    },
-    { // ST_Position3dVertexCxformEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformEAlpha
-        },
-    },
-    { // ST_Position3dVertexCxformEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformEAlphaMul
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformEAlpha
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformEAlphaMul
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformEAlpha
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformEAlphaMul
-        },
-    },
-    { // ST_VertexInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexInv,
-            FragShaderDesc::FSI_D3D9SM20_FVertexInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexInv,
-            FragShaderDesc::FSI_D3D9SM30_FVertexInv
-        },
-    },
-    { // ST_BatchVertexInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexInv
-        },
-    },
-    { // ST_InstancedVertexInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexInv
-        },
-    },
-    { // ST_Position3dVertexInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexInv
-        },
-    },
-    { // ST_BatchPosition3dVertexInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexInv
-        },
-    },
-    { // ST_InstancedPosition3dVertexInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexInv
-        },
-    },
-    { // ST_VertexCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformInv
-        },
-    },
-    { // ST_BatchVertexCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformInv
-        },
-    },
-    { // ST_InstancedVertexCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformInv
-        },
-    },
-    { // ST_Position3dVertexCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformInv
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformInv
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformInv
-        },
-    },
-    { // ST_VertexEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FVertexEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FVertexEAlphaInv
-        },
-    },
-    { // ST_BatchVertexEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexEAlphaInv
-        },
-    },
-    { // ST_InstancedVertexEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexEAlphaInv
-        },
-    },
-    { // ST_Position3dVertexEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexEAlphaInv
-        },
-    },
-    { // ST_BatchPosition3dVertexEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexEAlphaInv
-        },
-    },
-    { // ST_InstancedPosition3dVertexEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexEAlphaInv
-        },
-    },
-    { // ST_VertexCxformEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformEAlphaInv
-        },
-    },
-    { // ST_BatchVertexCxformEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformEAlphaInv
-        },
-    },
-    { // ST_InstancedVertexCxformEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformEAlphaInv
-        },
-    },
-    { // ST_Position3dVertexCxformEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformEAlphaInv
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformEAlphaInv
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformEAlphaInv
-        },
-    },
-    { // ST_VertexCxformAc
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAc
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAc
-        },
-    },
-    { // ST_VertexCxformAcMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcMul
-        },
-    },
-    { // ST_BatchVertexCxformAc
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAc
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAc
-        },
-    },
-    { // ST_BatchVertexCxformAcMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcMul
-        },
-    },
-    { // ST_InstancedVertexCxformAc
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAc
-        },
-    },
-    { // ST_InstancedVertexCxformAcMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcMul
-        },
-    },
-    { // ST_Position3dVertexCxformAc
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAc
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAc
-        },
-    },
-    { // ST_Position3dVertexCxformAcMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcMul
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformAc
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAc
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAc
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformAcMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcMul
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformAc
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAc,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAc
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformAcMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcMul
-        },
-    },
-    { // ST_VertexCxformAcEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcEAlpha
-        },
-    },
-    { // ST_VertexCxformAcEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcEAlphaMul
-        },
-    },
-    { // ST_BatchVertexCxformAcEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcEAlpha
-        },
-    },
-    { // ST_BatchVertexCxformAcEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcEAlphaMul
-        },
-    },
-    { // ST_InstancedVertexCxformAcEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcEAlpha
-        },
-    },
-    { // ST_InstancedVertexCxformAcEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcEAlphaMul
-        },
-    },
-    { // ST_Position3dVertexCxformAcEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcEAlpha
-        },
-    },
-    { // ST_Position3dVertexCxformAcEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcEAlphaMul
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformAcEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcEAlpha
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcEAlpha
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformAcEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcEAlphaMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcEAlphaMul
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformAcEAlpha
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcEAlpha,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcEAlpha
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformAcEAlphaMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcEAlphaMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcEAlphaMul
-        },
-    },
-    { // ST_VertexCxformAcInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcInv
-        },
-    },
-    { // ST_BatchVertexCxformAcInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcInv
-        },
-    },
-    { // ST_InstancedVertexCxformAcInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcInv
-        },
-    },
-    { // ST_Position3dVertexCxformAcInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcInv
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformAcInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcInv
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformAcInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcInv
-        },
-    },
-    { // ST_VertexCxformAcEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcEAlphaInv
-        },
-    },
-    { // ST_BatchVertexCxformAcEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcEAlphaInv
-        },
-    },
-    { // ST_InstancedVertexCxformAcEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcEAlphaInv
-        },
-    },
-    { // ST_Position3dVertexCxformAcEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcEAlphaInv
-        },
-    },
-    { // ST_BatchPosition3dVertexCxformAcEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcEAlphaInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcEAlphaInv
-        },
-    },
-    { // ST_InstancedPosition3dVertexCxformAcEAlphaInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcEAlphaInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcEAlphaInv
         },
     },
     { // ST_TexTGTexTG
@@ -3715,6 +2968,126 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
         { // ShaderVersion_D3D9SM30
             VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGTexTGCxformEAlphaInv,
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGTexTGCxformEAlphaInv
+        },
+    },
+    { // ST_TexTGTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexTGTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexTGTexTGTexDensity
+        },
+    },
+    { // ST_BatchTexTGTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexTGTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexTGTexTGTexDensity
+        },
+    },
+    { // ST_InstancedTexTGTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexTGTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexTGTexTGTexDensity
+        },
+    },
+    { // ST_Position3dTexTGTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexTGTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexTGTexTGTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexTGTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexTGTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexTGTexTGTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexTGTexTGTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGTexTGTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGTexTGTexDensity
+        },
+    },
+    { // ST_TexTGTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexTGTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexTGTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_BatchTexTGTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexTGTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexTGTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedTexTGTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexTGTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexTGTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_Position3dTexTGTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexTGTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexTGTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexTGTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexTGTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexTGTexTGEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexTGTexTGEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGTexTGEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGTexTGEAlphaTexDensity
         },
     },
     { // ST_TexTGTexTGCxformAc
@@ -4797,6 +4170,126 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGVertexCxformEAlphaInv
         },
     },
+    { // ST_TexTGVertexTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexTGVertexTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexTGVertexTexDensity
+        },
+    },
+    { // ST_BatchTexTGVertexTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexTGVertexTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexTGVertexTexDensity
+        },
+    },
+    { // ST_InstancedTexTGVertexTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexTGVertexTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexTGVertexTexDensity
+        },
+    },
+    { // ST_Position3dTexTGVertexTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexTGVertexTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexTGVertexTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexTGVertexTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexTGVertexTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexTGVertexTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexTGVertexTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGVertexTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGVertexTexDensity
+        },
+    },
+    { // ST_TexTGVertexEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexTGVertexEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexTGVertexEAlphaTexDensity
+        },
+    },
+    { // ST_BatchTexTGVertexEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexTGVertexEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexTGVertexEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedTexTGVertexEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexTGVertexEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexTGVertexEAlphaTexDensity
+        },
+    },
+    { // ST_Position3dTexTGVertexEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexTGVertexEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexTGVertexEAlphaTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexTGVertexEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexTGVertexEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexTGVertexEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexTGVertexEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGVertexEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGVertexEAlphaTexDensity
+        },
+    },
     { // ST_TexTGVertexCxformAc
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_D3D9SM20_VTexTGVertexCxformAc,
@@ -5155,6 +4648,1086 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
         { // ShaderVersion_D3D9SM30
             VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexTGVertexCxformAcEAlphaInv,
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexTGVertexCxformAcEAlphaInv
+        },
+    },
+    { // ST_Vertex
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertex,
+            FragShaderDesc::FSI_D3D9SM20_FVertex
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertex,
+            FragShaderDesc::FSI_D3D9SM30_FVertex
+        },
+    },
+    { // ST_VertexMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexMul,
+            FragShaderDesc::FSI_D3D9SM20_FVertexMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexMul,
+            FragShaderDesc::FSI_D3D9SM30_FVertexMul
+        },
+    },
+    { // ST_BatchVertex
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertex,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertex
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertex,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertex
+        },
+    },
+    { // ST_BatchVertexMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexMul
+        },
+    },
+    { // ST_InstancedVertex
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertex,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertex
+        },
+    },
+    { // ST_InstancedVertexMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexMul
+        },
+    },
+    { // ST_Position3dVertex
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertex,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertex
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertex,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertex
+        },
+    },
+    { // ST_Position3dVertexMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexMul
+        },
+    },
+    { // ST_BatchPosition3dVertex
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertex,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertex
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertex,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertex
+        },
+    },
+    { // ST_BatchPosition3dVertexMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexMul
+        },
+    },
+    { // ST_InstancedPosition3dVertex
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertex,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertex
+        },
+    },
+    { // ST_InstancedPosition3dVertexMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexMul
+        },
+    },
+    { // ST_VertexCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxform,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxform,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxform
+        },
+    },
+    { // ST_VertexCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformMul
+        },
+    },
+    { // ST_BatchVertexCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxform,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxform,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxform
+        },
+    },
+    { // ST_BatchVertexCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformMul
+        },
+    },
+    { // ST_InstancedVertexCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxform,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxform
+        },
+    },
+    { // ST_InstancedVertexCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformMul
+        },
+    },
+    { // ST_Position3dVertexCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxform,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxform,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxform
+        },
+    },
+    { // ST_Position3dVertexCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformMul
+        },
+    },
+    { // ST_BatchPosition3dVertexCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxform,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxform,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxform
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformMul
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxform,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxform
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformMul
+        },
+    },
+    { // ST_VertexEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FVertexEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FVertexEAlpha
+        },
+    },
+    { // ST_VertexEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FVertexEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FVertexEAlphaMul
+        },
+    },
+    { // ST_BatchVertexEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexEAlpha
+        },
+    },
+    { // ST_BatchVertexEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexEAlphaMul
+        },
+    },
+    { // ST_InstancedVertexEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexEAlpha
+        },
+    },
+    { // ST_InstancedVertexEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexEAlphaMul
+        },
+    },
+    { // ST_Position3dVertexEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexEAlpha
+        },
+    },
+    { // ST_Position3dVertexEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexEAlphaMul
+        },
+    },
+    { // ST_BatchPosition3dVertexEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexEAlpha
+        },
+    },
+    { // ST_BatchPosition3dVertexEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexEAlphaMul
+        },
+    },
+    { // ST_InstancedPosition3dVertexEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexEAlpha
+        },
+    },
+    { // ST_InstancedPosition3dVertexEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexEAlphaMul
+        },
+    },
+    { // ST_VertexCxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformEAlpha
+        },
+    },
+    { // ST_VertexCxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformEAlphaMul
+        },
+    },
+    { // ST_BatchVertexCxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformEAlpha
+        },
+    },
+    { // ST_BatchVertexCxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformEAlphaMul
+        },
+    },
+    { // ST_InstancedVertexCxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformEAlpha
+        },
+    },
+    { // ST_InstancedVertexCxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformEAlphaMul
+        },
+    },
+    { // ST_Position3dVertexCxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformEAlpha
+        },
+    },
+    { // ST_Position3dVertexCxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformEAlphaMul
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformEAlpha
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformEAlphaMul
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformEAlpha
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformEAlphaMul
+        },
+    },
+    { // ST_VertexInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexInv,
+            FragShaderDesc::FSI_D3D9SM20_FVertexInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexInv,
+            FragShaderDesc::FSI_D3D9SM30_FVertexInv
+        },
+    },
+    { // ST_BatchVertexInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexInv
+        },
+    },
+    { // ST_InstancedVertexInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexInv
+        },
+    },
+    { // ST_Position3dVertexInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexInv
+        },
+    },
+    { // ST_BatchPosition3dVertexInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexInv
+        },
+    },
+    { // ST_InstancedPosition3dVertexInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexInv
+        },
+    },
+    { // ST_VertexCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformInv
+        },
+    },
+    { // ST_BatchVertexCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformInv
+        },
+    },
+    { // ST_InstancedVertexCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformInv
+        },
+    },
+    { // ST_Position3dVertexCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformInv
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformInv
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformInv
+        },
+    },
+    { // ST_VertexEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FVertexEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FVertexEAlphaInv
+        },
+    },
+    { // ST_BatchVertexEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexEAlphaInv
+        },
+    },
+    { // ST_InstancedVertexEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexEAlphaInv
+        },
+    },
+    { // ST_Position3dVertexEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexEAlphaInv
+        },
+    },
+    { // ST_BatchPosition3dVertexEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexEAlphaInv
+        },
+    },
+    { // ST_InstancedPosition3dVertexEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexEAlphaInv
+        },
+    },
+    { // ST_VertexCxformEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformEAlphaInv
+        },
+    },
+    { // ST_BatchVertexCxformEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformEAlphaInv
+        },
+    },
+    { // ST_InstancedVertexCxformEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformEAlphaInv
+        },
+    },
+    { // ST_Position3dVertexCxformEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformEAlphaInv
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformEAlphaInv
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformEAlphaInv
+        },
+    },
+    { // ST_VertexCxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAc
+        },
+    },
+    { // ST_VertexCxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcMul
+        },
+    },
+    { // ST_BatchVertexCxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAc
+        },
+    },
+    { // ST_BatchVertexCxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcMul
+        },
+    },
+    { // ST_InstancedVertexCxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAc
+        },
+    },
+    { // ST_InstancedVertexCxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcMul
+        },
+    },
+    { // ST_Position3dVertexCxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAc
+        },
+    },
+    { // ST_Position3dVertexCxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcMul
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAc
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcMul
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAc
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcMul
+        },
+    },
+    { // ST_VertexCxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcEAlpha
+        },
+    },
+    { // ST_VertexCxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcEAlphaMul
+        },
+    },
+    { // ST_BatchVertexCxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcEAlpha
+        },
+    },
+    { // ST_BatchVertexCxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcEAlphaMul
+        },
+    },
+    { // ST_InstancedVertexCxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcEAlpha
+        },
+    },
+    { // ST_InstancedVertexCxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcEAlphaMul
+        },
+    },
+    { // ST_Position3dVertexCxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcEAlpha
+        },
+    },
+    { // ST_Position3dVertexCxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcEAlphaMul
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcEAlpha
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcEAlphaMul
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcEAlpha
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcEAlphaMul
+        },
+    },
+    { // ST_VertexCxformAcInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcInv
+        },
+    },
+    { // ST_BatchVertexCxformAcInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcInv
+        },
+    },
+    { // ST_InstancedVertexCxformAcInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcInv
+        },
+    },
+    { // ST_Position3dVertexCxformAcInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcInv
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformAcInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcInv
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformAcInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcInv
+        },
+    },
+    { // ST_VertexCxformAcEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FVertexCxformAcEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FVertexCxformAcEAlphaInv
+        },
+    },
+    { // ST_BatchVertexCxformAcEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchVertexCxformAcEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchVertexCxformAcEAlphaInv
+        },
+    },
+    { // ST_InstancedVertexCxformAcEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedVertexCxformAcEAlphaInv
+        },
+    },
+    { // ST_Position3dVertexCxformAcEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dVertexCxformAcEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dVertexCxformAcEAlphaInv
+        },
+    },
+    { // ST_BatchPosition3dVertexCxformAcEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dVertexCxformAcEAlphaInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dVertexCxformAcEAlphaInv
+        },
+    },
+    { // ST_InstancedPosition3dVertexCxformAcEAlphaInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dVertexCxformAcEAlphaInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dVertexCxformAcEAlphaInv
         },
     },
     { // ST_Solid
@@ -5517,364 +6090,484 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextInv
         },
     },
-    { // ST_TextColor
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VTextColor,
-            FragShaderDesc::FSI_D3D9SM20_FTextColor
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VTextColor,
-            FragShaderDesc::FSI_D3D9SM30_FTextColor
-        },
-    },
-    { // ST_TextColorMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VTextColorMul,
-            FragShaderDesc::FSI_D3D9SM20_FTextColorMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VTextColorMul,
-            FragShaderDesc::FSI_D3D9SM30_FTextColorMul
-        },
-    },
-    { // ST_BatchTextColor
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchTextColor,
-            FragShaderDesc::FSI_D3D9SM20_FBatchTextColor
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchTextColor,
-            FragShaderDesc::FSI_D3D9SM30_FBatchTextColor
-        },
-    },
-    { // ST_BatchTextColorMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchTextColorMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchTextColorMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchTextColorMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchTextColorMul
-        },
-    },
-    { // ST_InstancedTextColor
+    { // ST_TextTexDensity
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextColor,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedTextColor
+            VertexShaderDesc::VSI_D3D9SM30_VTextTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTextTexDensity
         },
     },
-    { // ST_InstancedTextColorMul
+    { // ST_BatchTextTexDensity
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextColorMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedTextColorMul
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTextTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTextTexDensity
         },
     },
-    { // ST_Position3dTextColor
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTextColor,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dTextColor
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextColor,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextColor
-        },
-    },
-    { // ST_Position3dTextColorMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTextColorMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dTextColorMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextColorMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextColorMul
-        },
-    },
-    { // ST_BatchPosition3dTextColor
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTextColor,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTextColor
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextColor,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextColor
-        },
-    },
-    { // ST_BatchPosition3dTextColorMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTextColorMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTextColorMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextColorMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextColorMul
-        },
-    },
-    { // ST_InstancedPosition3dTextColor
+    { // ST_InstancedTextTexDensity
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextColor,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextColor
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTextTexDensity
         },
     },
-    { // ST_InstancedPosition3dTextColorMul
+    { // ST_Position3dTextTexDensity
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextColorMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextColorMul
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextTexDensity
         },
     },
-    { // ST_TextColorCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM20_FTextColorCxform
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM30_FTextColorCxform
-        },
-    },
-    { // ST_TextColorCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FTextColorCxformMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FTextColorCxformMul
-        },
-    },
-    { // ST_BatchTextColorCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM20_FBatchTextColorCxform
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM30_FBatchTextColorCxform
-        },
-    },
-    { // ST_BatchTextColorCxformMul
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchTextColorCxformMul
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchTextColorCxformMul
-        },
-    },
-    { // ST_InstancedTextColorCxform
+    { // ST_BatchPosition3dTextTexDensity
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedTextColorCxform
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextTexDensity
         },
     },
-    { // ST_InstancedTextColorCxformMul
+    { // ST_InstancedPosition3dTextTexDensity
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedTextColorCxformMul
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextTexDensity
         },
     },
-    { // ST_Position3dTextColorCxform
+    { // ST_TexUV
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dTextColorCxform
+            VertexShaderDesc::VSI_D3D9SM20_VTexUV,
+            FragShaderDesc::FSI_D3D9SM20_FTexUV
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextColorCxform
+            VertexShaderDesc::VSI_D3D9SM30_VTexUV,
+            FragShaderDesc::FSI_D3D9SM30_FTexUV
         },
     },
-    { // ST_Position3dTextColorCxformMul
+    { // ST_TexUVMul
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dTextColorCxformMul
+            VertexShaderDesc::VSI_D3D9SM20_VTexUVMul,
+            FragShaderDesc::FSI_D3D9SM20_FTexUVMul
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextColorCxformMul
+            VertexShaderDesc::VSI_D3D9SM30_VTexUVMul,
+            FragShaderDesc::FSI_D3D9SM30_FTexUVMul
         },
     },
-    { // ST_BatchPosition3dTextColorCxform
+    { // ST_BatchTexUV
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTextColorCxform
+            VertexShaderDesc::VSI_D3D9SM20_VBatchTexUV,
+            FragShaderDesc::FSI_D3D9SM20_FBatchTexUV
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextColorCxform
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUV,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUV
         },
     },
-    { // ST_BatchPosition3dTextColorCxformMul
+    { // ST_BatchTexUVMul
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTextColorCxformMul
+            VertexShaderDesc::VSI_D3D9SM20_VBatchTexUVMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchTexUVMul
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextColorCxformMul
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUVMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUVMul
         },
     },
-    { // ST_InstancedPosition3dTextColorCxform
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextColorCxform,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextColorCxform
-        },
-    },
-    { // ST_InstancedPosition3dTextColorCxformMul
+    { // ST_InstancedTexUV
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextColorCxformMul,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextColorCxformMul
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUV,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUV
         },
     },
-    { // ST_TextColorInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VTextColorInv,
-            FragShaderDesc::FSI_D3D9SM20_FTextColorInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VTextColorInv,
-            FragShaderDesc::FSI_D3D9SM30_FTextColorInv
-        },
-    },
-    { // ST_BatchTextColorInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchTextColorInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchTextColorInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchTextColorInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchTextColorInv
-        },
-    },
-    { // ST_InstancedTextColorInv
+    { // ST_InstancedTexUVMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextColorInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedTextColorInv
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUVMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUVMul
         },
     },
-    { // ST_Position3dTextColorInv
+    { // ST_Position3dTexUV
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTextColorInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dTextColorInv
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTexUV,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dTexUV
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextColorInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextColorInv
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUV,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUV
         },
     },
-    { // ST_BatchPosition3dTextColorInv
+    { // ST_Position3dTexUVMul
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTextColorInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTextColorInv
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTexUVMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dTexUVMul
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextColorInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextColorInv
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUVMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUVMul
         },
     },
-    { // ST_InstancedPosition3dTextColorInv
+    { // ST_BatchPosition3dTexUV
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_None,
-            FragShaderDesc::FSI_None
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTexUV,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTexUV
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextColorInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextColorInv
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUV,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUV
         },
     },
-    { // ST_TextColorCxformInv
+    { // ST_BatchPosition3dTexUVMul
         { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FTextColorCxformInv
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTexUVMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTexUVMul
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FTextColorCxformInv
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUVMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUVMul
         },
     },
-    { // ST_BatchTextColorCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchTextColorCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchTextColorCxformInv
-        },
-    },
-    { // ST_InstancedTextColorCxformInv
+    { // ST_InstancedPosition3dTexUV
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedTextColorCxformInv
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUV,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUV
         },
     },
-    { // ST_Position3dTextColorCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FPosition3dTextColorCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FPosition3dTextColorCxformInv
-        },
-    },
-    { // ST_BatchPosition3dTextColorCxformInv
-        { // ShaderVersion_D3D9SM20
-            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTextColorCxformInv
-        },
-        { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTextColorCxformInv
-        },
-    },
-    { // ST_InstancedPosition3dTextColorCxformInv
+    { // ST_InstancedPosition3dTexUVMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTextColorCxformInv,
-            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTextColorCxformInv
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUVMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUVMul
+        },
+    },
+    { // ST_TexUVCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM20_FTexUVCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM30_FTexUVCxform
+        },
+    },
+    { // ST_TexUVCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FTexUVCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FTexUVCxformMul
+        },
+    },
+    { // ST_BatchTexUVCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM20_FBatchTexUVCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUVCxform
+        },
+    },
+    { // ST_BatchTexUVCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchTexUVCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUVCxformMul
+        },
+    },
+    { // ST_InstancedTexUVCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUVCxform
+        },
+    },
+    { // ST_InstancedTexUVCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUVCxformMul
+        },
+    },
+    { // ST_Position3dTexUVCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dTexUVCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUVCxform
+        },
+    },
+    { // ST_Position3dTexUVCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dTexUVCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUVCxformMul
+        },
+    },
+    { // ST_BatchPosition3dTexUVCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTexUVCxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUVCxform
+        },
+    },
+    { // ST_BatchPosition3dTexUVCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTexUVCxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUVCxformMul
+        },
+    },
+    { // ST_InstancedPosition3dTexUVCxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUVCxform,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUVCxform
+        },
+    },
+    { // ST_InstancedPosition3dTexUVCxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUVCxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUVCxformMul
+        },
+    },
+    { // ST_TexUVInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VTexUVInv,
+            FragShaderDesc::FSI_D3D9SM20_FTexUVInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexUVInv,
+            FragShaderDesc::FSI_D3D9SM30_FTexUVInv
+        },
+    },
+    { // ST_BatchTexUVInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchTexUVInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchTexUVInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUVInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUVInv
+        },
+    },
+    { // ST_InstancedTexUVInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUVInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUVInv
+        },
+    },
+    { // ST_Position3dTexUVInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTexUVInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dTexUVInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUVInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUVInv
+        },
+    },
+    { // ST_BatchPosition3dTexUVInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTexUVInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTexUVInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUVInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUVInv
+        },
+    },
+    { // ST_InstancedPosition3dTexUVInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUVInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUVInv
+        },
+    },
+    { // ST_TexUVCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FTexUVCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FTexUVCxformInv
+        },
+    },
+    { // ST_BatchTexUVCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchTexUVCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUVCxformInv
+        },
+    },
+    { // ST_InstancedTexUVCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUVCxformInv
+        },
+    },
+    { // ST_Position3dTexUVCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dTexUVCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUVCxformInv
+        },
+    },
+    { // ST_BatchPosition3dTexUVCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dTexUVCxformInv
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUVCxformInv
+        },
+    },
+    { // ST_InstancedPosition3dTexUVCxformInv
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUVCxformInv,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUVCxformInv
+        },
+    },
+    { // ST_TexUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VTexUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FTexUVTexDensity
+        },
+    },
+    { // ST_BatchTexUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchTexUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchTexUVTexDensity
+        },
+    },
+    { // ST_InstancedTexUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedTexUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedTexUVTexDensity
+        },
+    },
+    { // ST_Position3dTexUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dTexUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dTexUVTexDensity
+        },
+    },
+    { // ST_BatchPosition3dTexUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dTexUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dTexUVTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dTexUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dTexUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dTexUVTexDensity
         },
     },
     { // ST_YUV
@@ -6355,6 +7048,126 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
         { // ShaderVersion_D3D9SM30
             VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUVCxformEAlphaMul,
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVCxformEAlphaMul
+        },
+    },
+    { // ST_YUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FYUVTexDensity
+        },
+    },
+    { // ST_BatchYUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUVTexDensity
+        },
+    },
+    { // ST_InstancedYUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUVTexDensity
+        },
+    },
+    { // ST_Position3dYUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUVTexDensity
+        },
+    },
+    { // ST_BatchPosition3dYUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUVTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dYUVTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUVTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVTexDensity
+        },
+    },
+    { // ST_YUVEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUVEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FYUVEAlphaTexDensity
+        },
+    },
+    { // ST_BatchYUVEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUVEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUVEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedYUVEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUVEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUVEAlphaTexDensity
+        },
+    },
+    { // ST_Position3dYUVEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUVEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUVEAlphaTexDensity
+        },
+    },
+    { // ST_BatchPosition3dYUVEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUVEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUVEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dYUVEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUVEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVEAlphaTexDensity
         },
     },
     { // ST_YUVCxformAc
@@ -7317,6 +8130,126 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVACxformEAlphaInv
         },
     },
+    { // ST_YUVATexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUVATexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FYUVATexDensity
+        },
+    },
+    { // ST_BatchYUVATexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUVATexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUVATexDensity
+        },
+    },
+    { // ST_InstancedYUVATexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUVATexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUVATexDensity
+        },
+    },
+    { // ST_Position3dYUVATexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUVATexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUVATexDensity
+        },
+    },
+    { // ST_BatchPosition3dYUVATexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUVATexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUVATexDensity
+        },
+    },
+    { // ST_InstancedPosition3dYUVATexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUVATexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVATexDensity
+        },
+    },
+    { // ST_YUVAEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUVAEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FYUVAEAlphaTexDensity
+        },
+    },
+    { // ST_BatchYUVAEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUVAEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUVAEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedYUVAEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUVAEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUVAEAlphaTexDensity
+        },
+    },
+    { // ST_Position3dYUVAEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUVAEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUVAEAlphaTexDensity
+        },
+    },
+    { // ST_BatchPosition3dYUVAEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUVAEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUVAEAlphaTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dYUVAEAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUVAEAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVAEAlphaTexDensity
+        },
+    },
     { // ST_YUVACxformAc
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_D3D9SM20_VYUVACxformAc,
@@ -7677,6 +8610,846 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUVACxformAcEAlphaInv
         },
     },
+    { // ST_YUY2
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2
+        },
+    },
+    { // ST_YUY2Mul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2Mul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2Mul
+        },
+    },
+    { // ST_BatchYUY2
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2
+        },
+    },
+    { // ST_BatchYUY2Mul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2Mul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2Mul
+        },
+    },
+    { // ST_InstancedYUY2
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2
+        },
+    },
+    { // ST_InstancedYUY2Mul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2Mul
+        },
+    },
+    { // ST_Position3dYUY2
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2
+        },
+    },
+    { // ST_Position3dYUY2Mul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2Mul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2Mul
+        },
+    },
+    { // ST_BatchPosition3dYUY2
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2
+        },
+    },
+    { // ST_BatchPosition3dYUY2Mul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2Mul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2Mul
+        },
+    },
+    { // ST_InstancedPosition3dYUY2
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2
+        },
+    },
+    { // ST_InstancedPosition3dYUY2Mul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2Mul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2Mul
+        },
+    },
+    { // ST_YUY2Cxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2Cxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2Cxform
+        },
+    },
+    { // ST_YUY2CxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformMul
+        },
+    },
+    { // ST_BatchYUY2Cxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2Cxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2Cxform
+        },
+    },
+    { // ST_BatchYUY2CxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformMul
+        },
+    },
+    { // ST_InstancedYUY2Cxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2Cxform
+        },
+    },
+    { // ST_InstancedYUY2CxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformMul
+        },
+    },
+    { // ST_Position3dYUY2Cxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2Cxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2Cxform
+        },
+    },
+    { // ST_Position3dYUY2CxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformMul
+        },
+    },
+    { // ST_BatchPosition3dYUY2Cxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2Cxform
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2Cxform
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformMul
+        },
+    },
+    { // ST_InstancedPosition3dYUY2Cxform
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2Cxform,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2Cxform
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformMul
+        },
+    },
+    { // ST_YUY2EAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2EAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2EAlpha
+        },
+    },
+    { // ST_YUY2EAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2EAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2EAlphaMul
+        },
+    },
+    { // ST_BatchYUY2EAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2EAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2EAlpha
+        },
+    },
+    { // ST_BatchYUY2EAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2EAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2EAlphaMul
+        },
+    },
+    { // ST_InstancedYUY2EAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2EAlpha
+        },
+    },
+    { // ST_InstancedYUY2EAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2EAlphaMul
+        },
+    },
+    { // ST_Position3dYUY2EAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2EAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2EAlpha
+        },
+    },
+    { // ST_Position3dYUY2EAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2EAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2EAlphaMul
+        },
+    },
+    { // ST_BatchPosition3dYUY2EAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2EAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2EAlpha
+        },
+    },
+    { // ST_BatchPosition3dYUY2EAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2EAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2EAlphaMul
+        },
+    },
+    { // ST_InstancedPosition3dYUY2EAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2EAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2EAlpha
+        },
+    },
+    { // ST_InstancedPosition3dYUY2EAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2EAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2EAlphaMul
+        },
+    },
+    { // ST_YUY2CxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformEAlpha
+        },
+    },
+    { // ST_YUY2CxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformEAlphaMul
+        },
+    },
+    { // ST_BatchYUY2CxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformEAlpha
+        },
+    },
+    { // ST_BatchYUY2CxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformEAlphaMul
+        },
+    },
+    { // ST_InstancedYUY2CxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformEAlpha
+        },
+    },
+    { // ST_InstancedYUY2CxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformEAlphaMul
+        },
+    },
+    { // ST_Position3dYUY2CxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformEAlpha
+        },
+    },
+    { // ST_Position3dYUY2CxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformEAlphaMul
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformEAlpha
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformEAlphaMul
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformEAlpha
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformEAlphaMul
+        },
+    },
+    { // ST_YUY2TexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2TexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2TexDensity
+        },
+    },
+    { // ST_BatchYUY2TexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2TexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2TexDensity
+        },
+    },
+    { // ST_InstancedYUY2TexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2TexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2TexDensity
+        },
+    },
+    { // ST_Position3dYUY2TexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2TexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2TexDensity
+        },
+    },
+    { // ST_BatchPosition3dYUY2TexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2TexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2TexDensity
+        },
+    },
+    { // ST_InstancedPosition3dYUY2TexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2TexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2TexDensity
+        },
+    },
+    { // ST_YUY2EAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2EAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2EAlphaTexDensity
+        },
+    },
+    { // ST_BatchYUY2EAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2EAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2EAlphaTexDensity
+        },
+    },
+    { // ST_InstancedYUY2EAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2EAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2EAlphaTexDensity
+        },
+    },
+    { // ST_Position3dYUY2EAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2EAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2EAlphaTexDensity
+        },
+    },
+    { // ST_BatchPosition3dYUY2EAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2EAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2EAlphaTexDensity
+        },
+    },
+    { // ST_InstancedPosition3dYUY2EAlphaTexDensity
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2EAlphaTexDensity,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2EAlphaTexDensity
+        },
+    },
+    { // ST_YUY2CxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformAc
+        },
+    },
+    { // ST_YUY2CxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformAcMul
+        },
+    },
+    { // ST_BatchYUY2CxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformAc
+        },
+    },
+    { // ST_BatchYUY2CxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformAcMul
+        },
+    },
+    { // ST_InstancedYUY2CxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformAc
+        },
+    },
+    { // ST_InstancedYUY2CxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformAcMul
+        },
+    },
+    { // ST_Position3dYUY2CxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformAc
+        },
+    },
+    { // ST_Position3dYUY2CxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformAcMul
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformAc
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformAc
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformAcMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformAcMul
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformAc
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformAc,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformAc
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformAcMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformAcMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformAcMul
+        },
+    },
+    { // ST_YUY2CxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformAcEAlpha
+        },
+    },
+    { // ST_YUY2CxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FYUY2CxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FYUY2CxformAcEAlphaMul
+        },
+    },
+    { // ST_BatchYUY2CxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformAcEAlpha
+        },
+    },
+    { // ST_BatchYUY2CxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchYUY2CxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchYUY2CxformAcEAlphaMul
+        },
+    },
+    { // ST_InstancedYUY2CxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformAcEAlpha
+        },
+    },
+    { // ST_InstancedYUY2CxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedYUY2CxformAcEAlphaMul
+        },
+    },
+    { // ST_Position3dYUY2CxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformAcEAlpha
+        },
+    },
+    { // ST_Position3dYUY2CxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VPosition3dYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FPosition3dYUY2CxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VPosition3dYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FPosition3dYUY2CxformAcEAlphaMul
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformAcEAlpha
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformAcEAlpha
+        },
+    },
+    { // ST_BatchPosition3dYUY2CxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBatchPosition3dYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM20_FBatchPosition3dYUY2CxformAcEAlphaMul
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBatchPosition3dYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FBatchPosition3dYUY2CxformAcEAlphaMul
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformAcEAlpha
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformAcEAlpha,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformAcEAlpha
+        },
+    },
+    { // ST_InstancedPosition3dYUY2CxformAcEAlphaMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VInstancedPosition3dYUY2CxformAcEAlphaMul,
+            FragShaderDesc::FSI_D3D9SM30_FInstancedPosition3dYUY2CxformAcEAlphaMul
+        },
+    },
     { // ST_TexTGCMatrixAc
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_D3D9SM20_VTexTGCMatrixAc,
@@ -7757,224 +9530,514 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FBox2BlurMul
         },
     },
-    { // ST_Box2Shadow
+    { // ST_SColorOuterBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2Shadow,
-            FragShaderDesc::FSI_D3D9SM30_FBox2Shadow
+            VertexShaderDesc::VSI_D3D9SM30_VSColorOuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColorOuterBevel
         },
     },
-    { // ST_Box2ShadowMul
+    { // ST_SColorOuterBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowMul
+            VertexShaderDesc::VSI_D3D9SM30_VSColorOuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColorOuterBevelMul
         },
     },
-    { // ST_Box2ShadowKnockout
+    { // ST_SColorFullBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowKnockout,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowKnockout
+            VertexShaderDesc::VSI_D3D9SM30_VSColorFullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColorFullBevel
         },
     },
-    { // ST_Box2ShadowKnockoutMul
+    { // ST_SColorFullBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowKnockoutMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowKnockoutMul
+            VertexShaderDesc::VSI_D3D9SM30_VSColorFullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColorFullBevelMul
         },
     },
-    { // ST_Box2Shadowonly
+    { // ST_SColorInnerShadow
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2Shadowonly,
-            FragShaderDesc::FSI_D3D9SM30_FBox2Shadowonly
+            VertexShaderDesc::VSI_D3D9SM30_VSColorInnerShadow,
+            FragShaderDesc::FSI_D3D9SM30_FSColorInnerShadow
         },
     },
-    { // ST_Box2ShadowonlyMul
+    { // ST_SColorInnerShadowMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowonlyMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowonlyMul
+            VertexShaderDesc::VSI_D3D9SM30_VSColorInnerShadowMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColorInnerShadowMul
         },
     },
-    { // ST_Box2InnerShadow
+    { // ST_SColorHideBaseOuterBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadow,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadow
+            VertexShaderDesc::VSI_D3D9SM30_VSColorHideBaseOuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColorHideBaseOuterBevel
         },
     },
-    { // ST_Box2InnerShadowMul
+    { // ST_SColorHideBaseOuterBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowMul
+            VertexShaderDesc::VSI_D3D9SM30_VSColorHideBaseOuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColorHideBaseOuterBevelMul
         },
     },
-    { // ST_Box2InnerShadowKnockout
+    { // ST_SColorHideBaseFullBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowKnockout,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowKnockout
+            VertexShaderDesc::VSI_D3D9SM30_VSColorHideBaseFullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColorHideBaseFullBevel
         },
     },
-    { // ST_Box2InnerShadowKnockoutMul
+    { // ST_SColorHideBaseFullBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowKnockoutMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowKnockoutMul
+            VertexShaderDesc::VSI_D3D9SM30_VSColorHideBaseFullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColorHideBaseFullBevelMul
         },
     },
-    { // ST_Box2ShadowonlyHighlight
+    { // ST_SColorHideBaseInnerShadow
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowonlyHighlight,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowonlyHighlight
+            VertexShaderDesc::VSI_D3D9SM30_VSColorHideBaseInnerShadow,
+            FragShaderDesc::FSI_D3D9SM30_FSColorHideBaseInnerShadow
         },
     },
-    { // ST_Box2ShadowonlyHighlightMul
+    { // ST_SColorHideBaseInnerShadowMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowonlyHighlightMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowonlyHighlightMul
+            VertexShaderDesc::VSI_D3D9SM30_VSColorHideBaseInnerShadowMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColorHideBaseInnerShadowMul
         },
     },
-    { // ST_Box2FullShadowHighlight
+    { // ST_SGradOuterBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2FullShadowHighlight,
-            FragShaderDesc::FSI_D3D9SM30_FBox2FullShadowHighlight
+            VertexShaderDesc::VSI_D3D9SM30_VSGradOuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGradOuterBevel
         },
     },
-    { // ST_Box2FullShadowHighlightMul
+    { // ST_SGradOuterBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2FullShadowHighlightMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2FullShadowHighlightMul
+            VertexShaderDesc::VSI_D3D9SM30_VSGradOuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGradOuterBevelMul
         },
     },
-    { // ST_Box2InnerShadowHighlight
+    { // ST_SGradFullBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowHighlight,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowHighlight
+            VertexShaderDesc::VSI_D3D9SM30_VSGradFullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGradFullBevel
         },
     },
-    { // ST_Box2InnerShadowHighlightMul
+    { // ST_SGradFullBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowHighlightMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowHighlightMul
+            VertexShaderDesc::VSI_D3D9SM30_VSGradFullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGradFullBevelMul
         },
     },
-    { // ST_Box2InnerShadowHighlightKnockout
+    { // ST_SGradInnerBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowHighlightKnockout,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowHighlightKnockout
+            VertexShaderDesc::VSI_D3D9SM30_VSGradInnerBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGradInnerBevel
         },
     },
-    { // ST_Box2InnerShadowHighlightKnockoutMul
+    { // ST_SGradInnerBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2InnerShadowHighlightKnockoutMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2InnerShadowHighlightKnockoutMul
+            VertexShaderDesc::VSI_D3D9SM30_VSGradInnerBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGradInnerBevelMul
         },
     },
-    { // ST_Box2ShadowHighlight
+    { // ST_SGradHideBaseOuterBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowHighlight,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowHighlight
+            VertexShaderDesc::VSI_D3D9SM30_VSGradHideBaseOuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGradHideBaseOuterBevel
         },
     },
-    { // ST_Box2ShadowHighlightMul
+    { // ST_SGradHideBaseOuterBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowHighlightMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowHighlightMul
+            VertexShaderDesc::VSI_D3D9SM30_VSGradHideBaseOuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGradHideBaseOuterBevelMul
         },
     },
-    { // ST_Box2ShadowHighlightKnockout
+    { // ST_SGradHideBaseFullBevel
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowHighlightKnockout,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowHighlightKnockout
+            VertexShaderDesc::VSI_D3D9SM30_VSGradHideBaseFullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGradHideBaseFullBevel
         },
     },
-    { // ST_Box2ShadowHighlightKnockoutMul
+    { // ST_SGradHideBaseFullBevelMul
         { // ShaderVersion_D3D9SM20
             VertexShaderDesc::VSI_None,
             FragShaderDesc::FSI_None
         },
         { // ShaderVersion_D3D9SM30
-            VertexShaderDesc::VSI_D3D9SM30_VBox2ShadowHighlightKnockoutMul,
-            FragShaderDesc::FSI_D3D9SM30_FBox2ShadowHighlightKnockoutMul
+            VertexShaderDesc::VSI_D3D9SM30_VSGradHideBaseFullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGradHideBaseFullBevelMul
+        },
+    },
+    { // ST_SGradHideBaseInnerBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGradHideBaseInnerBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGradHideBaseInnerBevel
+        },
+    },
+    { // ST_SGradHideBaseInnerBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGradHideBaseInnerBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGradHideBaseInnerBevelMul
+        },
+    },
+    { // ST_SGrad2OuterBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2OuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2OuterBevel
+        },
+    },
+    { // ST_SGrad2OuterBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2OuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2OuterBevelMul
+        },
+    },
+    { // ST_SGrad2FullBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2FullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2FullBevel
+        },
+    },
+    { // ST_SGrad2FullBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2FullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2FullBevelMul
+        },
+    },
+    { // ST_SGrad2InnerBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2InnerBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2InnerBevel
+        },
+    },
+    { // ST_SGrad2InnerBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2InnerBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2InnerBevelMul
+        },
+    },
+    { // ST_SGrad2HideBaseOuterBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2HideBaseOuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2HideBaseOuterBevel
+        },
+    },
+    { // ST_SGrad2HideBaseOuterBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2HideBaseOuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2HideBaseOuterBevelMul
+        },
+    },
+    { // ST_SGrad2HideBaseFullBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2HideBaseFullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2HideBaseFullBevel
+        },
+    },
+    { // ST_SGrad2HideBaseFullBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2HideBaseFullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2HideBaseFullBevelMul
+        },
+    },
+    { // ST_SGrad2HideBaseInnerBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2HideBaseInnerBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2HideBaseInnerBevel
+        },
+    },
+    { // ST_SGrad2HideBaseInnerBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSGrad2HideBaseInnerBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSGrad2HideBaseInnerBevelMul
+        },
+    },
+    { // ST_SColor2OuterBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2OuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2OuterBevel
+        },
+    },
+    { // ST_SColor2OuterBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2OuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2OuterBevelMul
+        },
+    },
+    { // ST_SColor2FullBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2FullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2FullBevel
+        },
+    },
+    { // ST_SColor2FullBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2FullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2FullBevelMul
+        },
+    },
+    { // ST_SColor2InnerBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2InnerBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2InnerBevel
+        },
+    },
+    { // ST_SColor2InnerBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2InnerBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2InnerBevelMul
+        },
+    },
+    { // ST_SColor2HideBaseOuterBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2HideBaseOuterBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2HideBaseOuterBevel
+        },
+    },
+    { // ST_SColor2HideBaseOuterBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2HideBaseOuterBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2HideBaseOuterBevelMul
+        },
+    },
+    { // ST_SColor2HideBaseFullBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2HideBaseFullBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2HideBaseFullBevel
+        },
+    },
+    { // ST_SColor2HideBaseFullBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2HideBaseFullBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2HideBaseFullBevelMul
+        },
+    },
+    { // ST_SColor2HideBaseInnerBevel
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2HideBaseInnerBevel,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2HideBaseInnerBevel
+        },
+    },
+    { // ST_SColor2HideBaseInnerBevelMul
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_None,
+            FragShaderDesc::FSI_None
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VSColor2HideBaseInnerBevelMul,
+            FragShaderDesc::FSI_D3D9SM30_FSColor2HideBaseInnerBevelMul
+        },
+    },
+    { // ST_DisplacementMap
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VDisplacementMap,
+            FragShaderDesc::FSI_D3D9SM20_FDisplacementMap
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VDisplacementMap,
+            FragShaderDesc::FSI_D3D9SM30_FDisplacementMap
+        },
+    },
+    { // ST_DisplacementMapDMColor
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VDisplacementMapDMColor,
+            FragShaderDesc::FSI_D3D9SM20_FDisplacementMapDMColor
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VDisplacementMapDMColor,
+            FragShaderDesc::FSI_D3D9SM30_FDisplacementMapDMColor
+        },
+    },
+    { // ST_DisplacementMapDMIgnore
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VDisplacementMapDMIgnore,
+            FragShaderDesc::FSI_D3D9SM20_FDisplacementMapDMIgnore
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VDisplacementMapDMIgnore,
+            FragShaderDesc::FSI_D3D9SM30_FDisplacementMapDMIgnore
         },
     },
     { // ST_DrawableCopyPixels
@@ -8067,6 +10130,66 @@ static const ShaderIndexEntry ShaderIndexingData[ShaderDesc::STI_Count][ShaderDe
             FragShaderDesc::FSI_D3D9SM30_FDrawablePaletteMap
         },
     },
+    { // ST_BlendLighten
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBlendLighten,
+            FragShaderDesc::FSI_D3D9SM20_FBlendLighten
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBlendLighten,
+            FragShaderDesc::FSI_D3D9SM30_FBlendLighten
+        },
+    },
+    { // ST_BlendLayer
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBlendLayer,
+            FragShaderDesc::FSI_D3D9SM20_FBlendLayer
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBlendLayer,
+            FragShaderDesc::FSI_D3D9SM30_FBlendLayer
+        },
+    },
+    { // ST_BlendDifference
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBlendDifference,
+            FragShaderDesc::FSI_D3D9SM20_FBlendDifference
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBlendDifference,
+            FragShaderDesc::FSI_D3D9SM30_FBlendDifference
+        },
+    },
+    { // ST_BlendHardlight
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBlendHardlight,
+            FragShaderDesc::FSI_D3D9SM20_FBlendHardlight
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBlendHardlight,
+            FragShaderDesc::FSI_D3D9SM30_FBlendHardlight
+        },
+    },
+    { // ST_BlendOverlay
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBlendOverlay,
+            FragShaderDesc::FSI_D3D9SM20_FBlendOverlay
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBlendOverlay,
+            FragShaderDesc::FSI_D3D9SM30_FBlendOverlay
+        },
+    },
+    { // ST_BlendDarken
+        { // ShaderVersion_D3D9SM20
+            VertexShaderDesc::VSI_D3D9SM20_VBlendDarken,
+            FragShaderDesc::FSI_D3D9SM20_FBlendDarken
+        },
+        { // ShaderVersion_D3D9SM30
+            VertexShaderDesc::VSI_D3D9SM30_VBlendDarken,
+            FragShaderDesc::FSI_D3D9SM30_FBlendDarken
+        },
+    },
 };
 extern const BYTE pBinary_D3D9SM20_VTexTG[];
 extern const BYTE pBinary_D3D9SM20_VTexTGEAlpha[];
@@ -8118,31 +10241,58 @@ extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM20_VSolid[];
 extern const BYTE pBinary_D3D9SM20_VText[];
-extern const BYTE pBinary_D3D9SM20_VTextColor[];
-extern const BYTE pBinary_D3D9SM20_VTextColorCxform[];
+extern const BYTE pBinary_D3D9SM20_VTexUV[];
+extern const BYTE pBinary_D3D9SM20_VTexUVCxform[];
 extern const BYTE pBinary_D3D9SM20_VPosition3dSolid[];
 extern const BYTE pBinary_D3D9SM20_VPosition3dText[];
-extern const BYTE pBinary_D3D9SM20_VPosition3dTextColor[];
-extern const BYTE pBinary_D3D9SM20_VPosition3dTextColorCxform[];
+extern const BYTE pBinary_D3D9SM20_VPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM20_VPosition3dTexUVCxform[];
 extern const BYTE pBinary_D3D9SM20_VBatchSolid[];
 extern const BYTE pBinary_D3D9SM20_VBatchText[];
-extern const BYTE pBinary_D3D9SM20_VBatchTextColor[];
-extern const BYTE pBinary_D3D9SM20_VBatchTextColorCxform[];
+extern const BYTE pBinary_D3D9SM20_VBatchTexUV[];
+extern const BYTE pBinary_D3D9SM20_VBatchTexUVCxform[];
 extern const BYTE pBinary_D3D9SM20_VBatchPosition3dSolid[];
 extern const BYTE pBinary_D3D9SM20_VBatchPosition3dText[];
-extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTextColor[];
-extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTextColorCxform[];
+extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexUVCxform[];
+extern const BYTE pBinary_D3D9SM20_VTexTG[];
+extern const BYTE pBinary_D3D9SM20_VTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VTexTGCxform[];
+extern const BYTE pBinary_D3D9SM20_VTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM20_VPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VPosition3dTexTGCxform[];
+extern const BYTE pBinary_D3D9SM20_VPosition3dTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM20_VBatchTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VBatchTexTGCxform[];
+extern const BYTE pBinary_D3D9SM20_VBatchTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexTGCxform[];
+extern const BYTE pBinary_D3D9SM20_VBatchPosition3dTexTGCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM20_VDrawableCopyPixels[];
 extern const BYTE pBinary_D3D9SM20_VDrawableCopyPixelsAlpha[];
+extern const BYTE pBinary_D3D9SM20_VBlendLayer[];
 
-UniformVar Uniforms_2402505279[Uniform::SU_Count] = 
+UniformVar Uniforms_6053769867[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {0, 0, 4, 8, 4, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8150,18 +10300,29 @@ UniformVar Uniforms_2402505279[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {2, 8, 4, 8, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-BatchVar BatchUniforms_6184305142[Uniform::SU_Count] = 
+BatchVar BatchUniforms_5922227411[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_Count, -1, 0},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8169,18 +10330,29 @@ BatchVar BatchUniforms_6184305142[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_Count, -1, 0},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_2315053743[Uniform::SU_Count] = 
+UniformVar Uniforms_5275032247[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 0, 4, 4, 4, 0 },
     /* cxmul*/      {1, 4, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {2, 8, 4, 8, 4, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8188,18 +10360,29 @@ UniformVar Uniforms_2315053743[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {4, 16, 4, 8, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_3962131312[Uniform::SU_Count] = 
+UniformVar Uniforms_3523974654[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {0, 0, 4, 8, 4, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8207,18 +10390,29 @@ UniformVar Uniforms_3962131312[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_4660718830[Uniform::SU_Count] = 
+UniformVar Uniforms_2471894693[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 0, 4, 4, 4, 0 },
     /* cxmul*/      {1, 4, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {2, 8, 4, 8, 4, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8226,18 +10420,29 @@ UniformVar Uniforms_4660718830[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2666373766[Uniform::SU_Count] = 
+UniformVar Uniforms_5886811326[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {0, 0, 4, 8, 4, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8245,18 +10450,29 @@ UniformVar Uniforms_2666373766[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {2, 8, 4, 16, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_3200611686[Uniform::SU_Count] = 
+UniformVar Uniforms_6364798161[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 0, 4, 4, 4, 0 },
     /* cxmul*/      {1, 4, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {2, 8, 4, 8, 4, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8264,18 +10480,29 @@ UniformVar Uniforms_3200611686[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {4, 16, 4, 16, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_6395323925[Uniform::SU_Count] = 
+UniformVar Uniforms_6084028260[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {0, 0, 16, 16, 16, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8283,18 +10510,29 @@ UniformVar Uniforms_6395323925[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {4, 16, 4, 8, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_4496992820[Uniform::SU_Count] = 
+UniformVar Uniforms_4071164700[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 0, 4, 4, 4, 0 },
     /* cxmul*/      {1, 4, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {2, 8, 16, 16, 16, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8302,18 +10540,29 @@ UniformVar Uniforms_4496992820[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {6, 24, 4, 8, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_4480697281[Uniform::SU_Count] = 
+UniformVar Uniforms_3949168912[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {0, 0, 16, 16, 16, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8321,18 +10570,29 @@ UniformVar Uniforms_4480697281[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_3978807109[Uniform::SU_Count] = 
+UniformVar Uniforms_5654917658[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 0, 4, 4, 4, 0 },
     /* cxmul*/      {1, 4, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {2, 8, 16, 16, 16, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8340,18 +10600,29 @@ UniformVar Uniforms_3978807109[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2590809056[Uniform::SU_Count] = 
+UniformVar Uniforms_2934417779[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {0, 0, 16, 16, 16, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8359,18 +10630,29 @@ UniformVar Uniforms_2590809056[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {4, 16, 4, 16, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_6124559549[Uniform::SU_Count] = 
+UniformVar Uniforms_2511910726[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 0, 4, 4, 4, 0 },
     /* cxmul*/      {1, 4, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        {2, 8, 16, 16, 16, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8378,18 +10660,29 @@ UniformVar Uniforms_6124559549[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     {6, 24, 4, 16, 4, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_4025051752[Uniform::SU_Count] = 
+UniformVar Uniforms_3058941776[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8397,18 +10690,29 @@ UniformVar Uniforms_4025051752[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ {0, 0, 4, 384, 4, 4 },
 };
 
-BatchVar BatchUniforms_3478612506[Uniform::SU_Count] = 
+BatchVar BatchUniforms_6195832443[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfuniforms, 0, 2},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8416,18 +10720,29 @@ BatchVar BatchUniforms_3478612506[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 2, 2},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_4705861522[Uniform::SU_Count] = 
+UniformVar Uniforms_3619325970[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8435,18 +10750,29 @@ UniformVar Uniforms_4705861522[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ {0, 0, 4, 576, 4, 6 },
 };
 
-BatchVar BatchUniforms_6232566636[Uniform::SU_Count] = 
+BatchVar BatchUniforms_3285186985[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_vfuniforms, 0, 1},
     /* cxmul*/       {Uniform::SU_vfuniforms, 1, 1},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfuniforms, 2, 2},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8454,18 +10780,29 @@ BatchVar BatchUniforms_6232566636[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 4, 2},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_2647200773[Uniform::SU_Count] = 
+UniformVar Uniforms_2511386934[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8473,18 +10810,29 @@ UniformVar Uniforms_2647200773[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ {0, 0, 4, 192, 4, 2 },
 };
 
-BatchVar BatchUniforms_2375807902[Uniform::SU_Count] = 
+BatchVar BatchUniforms_3566218438[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfuniforms, 0, 2},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8492,18 +10840,29 @@ BatchVar BatchUniforms_2375807902[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_Count, -1, 0},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-BatchVar BatchUniforms_5188561028[Uniform::SU_Count] = 
+BatchVar BatchUniforms_5223862468[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_vfuniforms, 0, 1},
     /* cxmul*/       {Uniform::SU_vfuniforms, 1, 1},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfuniforms, 2, 2},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8511,18 +10870,29 @@ BatchVar BatchUniforms_5188561028[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_Count, -1, 0},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-BatchVar BatchUniforms_3422124174[Uniform::SU_Count] = 
+BatchVar BatchUniforms_3367664256[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfuniforms, 0, 2},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8530,18 +10900,29 @@ BatchVar BatchUniforms_3422124174[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 2, 4},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_2393121201[Uniform::SU_Count] = 
+UniformVar Uniforms_4150627923[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8549,18 +10930,29 @@ UniformVar Uniforms_2393121201[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ {0, 0, 4, 768, 4, 8 },
 };
 
-BatchVar BatchUniforms_4076936984[Uniform::SU_Count] = 
+BatchVar BatchUniforms_3529035068[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_vfuniforms, 0, 1},
     /* cxmul*/       {Uniform::SU_vfuniforms, 1, 1},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfuniforms, 2, 2},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8568,18 +10960,29 @@ BatchVar BatchUniforms_4076936984[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 4, 4},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_3965965598[Uniform::SU_Count] = 
+UniformVar Uniforms_5074989318[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8587,18 +10990,29 @@ UniformVar Uniforms_3965965598[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{0, 0, 16, 384, 16, 1 },
     /* vfuniforms*/ {96, 384, 4, 192, 4, 2 },
 };
 
-BatchVar BatchUniforms_2889592211[Uniform::SU_Count] = 
+BatchVar BatchUniforms_5771973948[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfmuniforms, 0, 1},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8606,18 +11020,29 @@ BatchVar BatchUniforms_2889592211[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 0, 2},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_3892239162[Uniform::SU_Count] = 
+UniformVar Uniforms_3073093853[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8625,18 +11050,29 @@ UniformVar Uniforms_3892239162[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{0, 0, 16, 384, 16, 1 },
     /* vfuniforms*/ {96, 384, 4, 384, 4, 4 },
 };
 
-BatchVar BatchUniforms_4272630808[Uniform::SU_Count] = 
+BatchVar BatchUniforms_5947599052[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_vfuniforms, 0, 1},
     /* cxmul*/       {Uniform::SU_vfuniforms, 1, 1},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfmuniforms, 0, 1},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8644,18 +11080,29 @@ BatchVar BatchUniforms_4272630808[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 2, 2},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_5257564337[Uniform::SU_Count] = 
+UniformVar Uniforms_5940284784[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8663,18 +11110,29 @@ UniformVar Uniforms_5257564337[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{0, 0, 16, 384, 16, 1 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-BatchVar BatchUniforms_4952385266[Uniform::SU_Count] = 
+BatchVar BatchUniforms_6440238568[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfmuniforms, 0, 1},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8682,18 +11140,29 @@ BatchVar BatchUniforms_4952385266[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_Count, -1, 0},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-BatchVar BatchUniforms_5592595562[Uniform::SU_Count] = 
+BatchVar BatchUniforms_4856077762[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_vfuniforms, 0, 1},
     /* cxmul*/       {Uniform::SU_vfuniforms, 1, 1},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfmuniforms, 0, 1},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8701,18 +11170,29 @@ BatchVar BatchUniforms_5592595562[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_Count, -1, 0},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-BatchVar BatchUniforms_4749803573[Uniform::SU_Count] = 
+BatchVar BatchUniforms_6082748694[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_Count, -1, 0},
     /* cxmul*/       {Uniform::SU_Count, -1, 0},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfmuniforms, 0, 1},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8720,18 +11200,29 @@ BatchVar BatchUniforms_4749803573[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 0, 4},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_6117254102[Uniform::SU_Count] = 
+UniformVar Uniforms_4131408663[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -8739,18 +11230,29 @@ UniformVar Uniforms_6117254102[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{0, 0, 16, 384, 16, 1 },
     /* vfuniforms*/ {96, 384, 4, 576, 4, 6 },
 };
 
-BatchVar BatchUniforms_3953522647[Uniform::SU_Count] = 
+BatchVar BatchUniforms_3264360969[Uniform::SU_Count] = 
 {
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
     /* cxadd*/       {Uniform::SU_vfuniforms, 0, 1},
     /* cxmul*/       {Uniform::SU_vfuniforms, 1, 1},
     /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
     /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
     /* mvp*/         {Uniform::SU_vfmuniforms, 0, 1},
     /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
     /* scolor*/      {Uniform::SU_Count, -1, 0},
     /* scolor2*/     {Uniform::SU_Count, -1, 0},
     /* srctex*/      {Uniform::SU_Count, -1, 0},
@@ -8758,27 +11260,39 @@ BatchVar BatchUniforms_3953522647[Uniform::SU_Count] =
     /* tex*/         {Uniform::SU_Count, -1, 0},
     /* texgen*/      {Uniform::SU_vfuniforms, 2, 4},
     /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
     /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
     /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
-UniformVar Uniforms_2267270599[Uniform::SU_Count] = 
+BatchVar BatchUniforms_5673976565[Uniform::SU_Count] = 
 {
-    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
-    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
-    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
-    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
-    /* mvp*/        {0, 0, 4, 8, 4, 0 },
-    /* offset*/     { -1, 0, 0, 0, 0, 0 },
-    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
-    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
-    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
-    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
-    /* tex*/        { -1, 0, 0, 0, 0, 0 },
-    /* texgen*/     {2, 8, 4, 24, 4, 0 },
-    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
-    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
-    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+    /* alphatex*/    {Uniform::SU_Count, -1, 0},
+    /* boundColor*/  {Uniform::SU_Count, -1, 0},
+    /* compx*/       {Uniform::SU_Count, -1, 0},
+    /* compy*/       {Uniform::SU_Count, -1, 0},
+    /* cxadd*/       {Uniform::SU_Count, -1, 0},
+    /* cxmul*/       {Uniform::SU_Count, -1, 0},
+    /* cxmul1*/      {Uniform::SU_Count, -1, 0},
+    /* dsttex*/      {Uniform::SU_Count, -1, 0},
+    /* fsize*/       {Uniform::SU_Count, -1, 0},
+    /* gradtex*/     {Uniform::SU_Count, -1, 0},
+    /* mapScale*/    {Uniform::SU_Count, -1, 0},
+    /* maptex*/      {Uniform::SU_Count, -1, 0},
+    /* mipLevels*/   {Uniform::SU_Count, -1, 0},
+    /* mvp*/         {Uniform::SU_vfuniforms, 0, 2},
+    /* offset*/      {Uniform::SU_Count, -1, 0},
+    /* scale*/       {Uniform::SU_Count, -1, 0},
+    /* scolor*/      {Uniform::SU_Count, -1, 0},
+    /* scolor2*/     {Uniform::SU_Count, -1, 0},
+    /* srctex*/      {Uniform::SU_Count, -1, 0},
+    /* srctexscale*/ {Uniform::SU_Count, -1, 0},
+    /* tex*/         {Uniform::SU_Count, -1, 0},
+    /* texgen*/      {Uniform::SU_vfuniforms, 2, 6},
+    /* texscale*/    {Uniform::SU_Count, -1, 0},
+    /* textureDims*/ {Uniform::SU_Count, -1, 0},
+    /* vfmuniforms*/ {Uniform::SU_Count, -1, 0},
+    /* vfuniforms*/  {Uniform::SU_Count, -1, 0},
 };
 
 static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTG = 
@@ -8787,8 +11301,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTG,
-    /* Uniforms */      Uniforms_2402505279,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -8802,8 +11316,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGEAlpha,
-    /* Uniforms */      Uniforms_2402505279,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -8818,8 +11332,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGCxform,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -8833,8 +11347,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -8849,8 +11363,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VVertex,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -8865,8 +11379,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VVertexEAlpha,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -8882,8 +11396,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VVertexCxform,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -8898,8 +11412,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -8915,8 +11429,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGTexTG,
-    /* Uniforms */      Uniforms_2666373766,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5886811326,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -8931,8 +11445,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_3200611686,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6364798161,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -8947,8 +11461,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGVertex,
-    /* Uniforms */      Uniforms_2402505279,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -8964,8 +11478,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VTexTGVertexCxform,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -8981,8 +11495,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTG,
-    /* Uniforms */      Uniforms_6395323925,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -8996,8 +11510,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGEAlpha,
-    /* Uniforms */      Uniforms_6395323925,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9012,8 +11526,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGCxform,
-    /* Uniforms */      Uniforms_4496992820,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9027,8 +11541,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4496992820,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9043,8 +11557,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dVertex,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9059,8 +11573,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dVertexEAlpha,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9076,8 +11590,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dVertexCxform,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9092,8 +11606,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9109,8 +11623,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGTexTG,
-    /* Uniforms */      Uniforms_2590809056,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2934417779,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9125,8 +11639,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_6124559549,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511910726,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9141,8 +11655,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGVertex,
-    /* Uniforms */      Uniforms_6395323925,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9158,8 +11672,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGVertexCxform,
-    /* Uniforms */      Uniforms_4496992820,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9175,8 +11689,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTG,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9191,8 +11705,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGEAlpha,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9207,8 +11721,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGCxform,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9223,8 +11737,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9239,8 +11753,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchVertex,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9256,8 +11770,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchVertexEAlpha,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9273,8 +11787,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchVertexCxform,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9290,8 +11804,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9307,8 +11821,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGTexTG,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_3422124174,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9323,8 +11837,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_2393121201,
-    /* BatchUniforms */ BatchUniforms_4076936984,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_3529035068,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9339,8 +11853,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGVertex,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9356,8 +11870,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchTexTGVertexCxform,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9373,8 +11887,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTG,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9389,8 +11903,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGEAlpha,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9405,8 +11919,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGCxform,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9421,8 +11935,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGCxformEAlpha
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9437,8 +11951,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dVertex,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9454,8 +11968,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dVertexEAlpha,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9471,8 +11985,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dVertexCxform,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9488,8 +12002,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dVertexCxformEAlph
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9505,8 +12019,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGTexTG,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4749803573,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_6082748694,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9521,8 +12035,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGTexTGCxform 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_6117254102,
-    /* BatchUniforms */ BatchUniforms_3953522647,
+    /* Uniforms */      Uniforms_4131408663,
+    /* BatchUniforms */ BatchUniforms_3264360969,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9537,8 +12051,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGVertex,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9554,8 +12068,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGVertexCxform
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGVertexCxform,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9571,8 +12085,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VSolid,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9586,8 +12100,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VText,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9597,14 +12111,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexUV = 
 {
-    /* Type */          ShaderDesc::ST_TextColor,
+    /* Type */          ShaderDesc::ST_TexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM20_VTextColor,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM20_VTexUV,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9613,14 +12127,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VTexUVCxform = 
 {
-    /* Type */          ShaderDesc::ST_TextColorCxform,
+    /* Type */          ShaderDesc::ST_TexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM20_VTextColorCxform,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM20_VTexUVCxform,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9635,8 +12149,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dSolid,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9650,8 +12164,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_VPosition3dText,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9661,14 +12175,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexUV = 
 {
-    /* Type */          ShaderDesc::ST_Position3dTextColor,
+    /* Type */          ShaderDesc::ST_Position3dTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM20_VPosition3dTextColor,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM20_VPosition3dTexUV,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9677,14 +12191,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dTexUVCxform = 
 {
-    /* Type */          ShaderDesc::ST_Position3dTextColorCxform,
+    /* Type */          ShaderDesc::ST_Position3dTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM20_VPosition3dTextColorCxform,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM20_VPosition3dTexUVCxform,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9699,8 +12213,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchSolid,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9715,8 +12229,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchText,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9727,14 +12241,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexUV = 
 {
-    /* Type */          ShaderDesc::ST_BatchTextColor,
+    /* Type */          ShaderDesc::ST_BatchTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM20_VBatchTextColor,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* pBinary */       pBinary_D3D9SM20_VBatchTexUV,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9744,14 +12258,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchTexUVCxform = 
 {
-    /* Type */          ShaderDesc::ST_BatchTextColorCxform,
+    /* Type */          ShaderDesc::ST_BatchTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM20_VBatchTextColorCxform,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* pBinary */       pBinary_D3D9SM20_VBatchTexUVCxform,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9767,8 +12281,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dSolid,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9783,8 +12297,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dText,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -9795,14 +12309,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexUV = 
 {
-    /* Type */          ShaderDesc::ST_BatchPosition3dTextColor,
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTextColor,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexUV,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -9812,19 +12326,271 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexUVCxform = 
 {
-    /* Type */          ShaderDesc::ST_BatchPosition3dTextColorCxform,
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTextColorCxform,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexUVCxform,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
                               { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VYUV = 
+{
+    /* Type */          ShaderDesc::ST_YUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VTexTG,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VTexTGEAlpha,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_YUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VTexTGCxform,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dYUV = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTG,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGCxform,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VPosition3dYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VPosition3dTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchYUV = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchTexTGCxform,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUV = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGCxform,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_VBatchPosition3dTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
                               },
     
 };
@@ -9833,13 +12599,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VDrawableCopyPixels =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixels,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VDrawableCopyPixels,
-    /* Uniforms */      Uniforms_2666373766,
-    /* BatchUniforms */ BatchUniforms_6184305142,
-    /* NumAttribs */    1,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
+    /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
                               },
     
 };
@@ -9848,18 +12615,37 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VDrawableCopyPixelsAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_VDrawableCopyPixelsAlpha,
-    /* Uniforms */      Uniforms_2267270599,
-    /* BatchUniforms */ BatchUniforms_6184305142,
-    /* NumAttribs */    1,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_5673976565,
+    /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM20_VBlendLayer = 
+{
+    /* Type */          ShaderDesc::ST_BlendLayer,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_VBlendLayer,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_3529035068,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
                               },
     
 };
 
 extern const BYTE pBinary_D3D9SM30_VTexTG[];
+extern const BYTE pBinary_D3D9SM30_VTexTG[];
+extern const BYTE pBinary_D3D9SM30_VTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VTexTGCxformEAlpha[];
@@ -9868,10 +12654,14 @@ extern const BYTE pBinary_D3D9SM30_VVertexEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VVertexCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_VTexTGTexTG[];
 extern const BYTE pBinary_D3D9SM30_VTexTGTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGCxformEAlpha[];
@@ -9880,10 +12670,14 @@ extern const BYTE pBinary_D3D9SM30_VPosition3dVertexEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dVertexCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGTexTG[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxformEAlpha[];
@@ -9892,10 +12686,14 @@ extern const BYTE pBinary_D3D9SM30_VBatchVertexEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchVertexCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGTexTG[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha[];
@@ -9904,10 +12702,14 @@ extern const BYTE pBinary_D3D9SM30_VBatchPosition3dVertexEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dVertexCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGTexTG[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VInstancedTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VInstancedTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VInstancedTexTGCxformEAlpha[];
@@ -9916,10 +12718,14 @@ extern const BYTE pBinary_D3D9SM30_VInstancedVertexEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VInstancedVertexCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VInstancedTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_VInstancedTexTGTexTG[];
 extern const BYTE pBinary_D3D9SM30_VInstancedTexTGTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VInstancedTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VInstancedTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VInstancedTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGCxformEAlpha[];
@@ -9928,36 +12734,87 @@ extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dVertexEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dVertexCxformEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGTexTG[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGVertex[];
 extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGVertexCxform[];
 extern const BYTE pBinary_D3D9SM30_VSolid[];
 extern const BYTE pBinary_D3D9SM30_VText[];
-extern const BYTE pBinary_D3D9SM30_VTextColor[];
-extern const BYTE pBinary_D3D9SM30_VTextColorCxform[];
+extern const BYTE pBinary_D3D9SM30_VText[];
+extern const BYTE pBinary_D3D9SM30_VTexUV[];
+extern const BYTE pBinary_D3D9SM30_VTexUV[];
+extern const BYTE pBinary_D3D9SM30_VTexUVCxform[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dSolid[];
 extern const BYTE pBinary_D3D9SM30_VPosition3dText[];
-extern const BYTE pBinary_D3D9SM30_VPosition3dTextColor[];
-extern const BYTE pBinary_D3D9SM30_VPosition3dTextColorCxform[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dText[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexUVCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchSolid[];
 extern const BYTE pBinary_D3D9SM30_VBatchText[];
-extern const BYTE pBinary_D3D9SM30_VBatchTextColor[];
-extern const BYTE pBinary_D3D9SM30_VBatchTextColorCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchText[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexUVCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dSolid[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dText[];
-extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTextColor[];
-extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTextColorCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dText[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexUVCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchSolid[];
 extern const BYTE pBinary_D3D9SM30_VBatchText[];
-extern const BYTE pBinary_D3D9SM30_VBatchTextColor[];
-extern const BYTE pBinary_D3D9SM30_VBatchTextColorCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchText[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexUVCxform[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dSolid[];
 extern const BYTE pBinary_D3D9SM30_VBatchPosition3dText[];
-extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTextColor[];
-extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTextColorCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dText[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexUV[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexUVCxform[];
+extern const BYTE pBinary_D3D9SM30_VTexTG[];
+extern const BYTE pBinary_D3D9SM30_VTexTG[];
+extern const BYTE pBinary_D3D9SM30_VTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VTexTGEAlpha[];
 extern const BYTE pBinary_D3D9SM30_VTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VPosition3dTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTG[];
+extern const BYTE pBinary_D3D9SM30_VInstancedTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VInstancedTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VInstancedTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTG[];
+extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchPosition3dTexTGCxform[];
+extern const BYTE pBinary_D3D9SM30_VInstancedPosition3dTexTGCxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBatchTexTGCxform[];
 extern const BYTE pBinary_D3D9SM30_VDrawableCopyPixels[];
 extern const BYTE pBinary_D3D9SM30_VDrawableCopyPixelsAlpha[];
+extern const BYTE pBinary_D3D9SM30_VBlendLayer[];
 
 static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTG = 
 {
@@ -9965,8 +12822,23 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTG,
-    /* Uniforms */      Uniforms_2402505279,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexTG,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -9980,8 +12852,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGEAlpha,
-    /* Uniforms */      Uniforms_2402505279,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGEAlpha,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -9996,8 +12884,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGCxform,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10011,8 +12899,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10027,8 +12915,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VVertex,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10043,8 +12931,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VVertexEAlpha,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10060,8 +12948,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VVertexCxform,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10076,8 +12964,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10093,8 +12981,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGTexTG,
-    /* Uniforms */      Uniforms_2666373766,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5886811326,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGTexTG,
+    /* Uniforms */      Uniforms_5886811326,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10109,8 +13013,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_3200611686,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6364798161,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10125,8 +13029,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGVertex,
-    /* Uniforms */      Uniforms_2402505279,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 1},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGVertex,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10142,8 +13063,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VTexTGVertexCxform,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10159,8 +13080,23 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTG,
-    /* Uniforms */      Uniforms_6395323925,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_Position3dTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTG,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10174,8 +13110,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGEAlpha,
-    /* Uniforms */      Uniforms_6395323925,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_Position3dTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10190,8 +13142,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGCxform,
-    /* Uniforms */      Uniforms_4496992820,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10205,8 +13157,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4496992820,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10221,8 +13173,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dVertex,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10237,8 +13189,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dVertexEAlpha,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10254,8 +13206,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dVertexCxform,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10270,8 +13222,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10287,8 +13239,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGTexTG,
-    /* Uniforms */      Uniforms_2590809056,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2934417779,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_Position3dTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGTexTG,
+    /* Uniforms */      Uniforms_2934417779,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10303,8 +13271,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_6124559549,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511910726,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10319,8 +13287,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGVertex,
-    /* Uniforms */      Uniforms_6395323925,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 1},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_Position3dTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGVertex,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10336,8 +13321,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGVertexCxform,
-    /* Uniforms */      Uniforms_4496992820,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10353,8 +13338,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10369,8 +13370,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGEAlpha,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10385,8 +13402,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxform,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10401,8 +13418,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10417,8 +13434,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchVertex,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10434,8 +13451,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchVertexEAlpha,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10451,8 +13468,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchVertexCxform,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10468,8 +13485,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10485,8 +13502,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGTexTG,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_3422124174,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGTexTG,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10501,8 +13534,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_2393121201,
-    /* BatchUniforms */ BatchUniforms_4076936984,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_3529035068,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10517,8 +13550,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGVertex,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 1},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGVertex,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10534,8 +13584,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGVertexCxform,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10551,8 +13601,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10567,8 +13633,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10583,8 +13665,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGCxform,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10599,8 +13681,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10615,8 +13697,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dVertex,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10632,8 +13714,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dVertexEAlpha,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10649,8 +13731,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dVertexCxform,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10666,8 +13748,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexCxformEAlph
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10683,8 +13765,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGTexTG,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4749803573,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_6082748694,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGTexTG,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_6082748694,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10699,8 +13797,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTGCxform 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_6117254102,
-    /* BatchUniforms */ BatchUniforms_3953522647,
+    /* Uniforms */      Uniforms_4131408663,
+    /* BatchUniforms */ BatchUniforms_3264360969,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10715,8 +13813,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGVertex,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 1},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGVertex,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10732,8 +13847,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertexCxform
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGVertexCxform,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10749,8 +13864,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10765,8 +13896,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGEAlpha,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10782,8 +13930,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxform,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10798,8 +13946,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10815,8 +13963,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchVertex,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10832,8 +13980,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedVertexEAlpha,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10850,8 +13998,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchVertexCxform,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10867,8 +14015,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10885,8 +14033,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGTexTG,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_3422124174,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGTexTG,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10902,8 +14067,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_2393121201,
-    /* BatchUniforms */ BatchUniforms_4076936984,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_3529035068,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10919,8 +14084,26 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGVertex,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_3478612506,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    4,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 1},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 2},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGVertex,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10937,8 +14120,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGVertexCxform,
-    /* Uniforms */      Uniforms_4705861522,
-    /* BatchUniforms */ BatchUniforms_6232566636,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -10955,8 +14138,24 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -10971,8 +14170,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -10988,8 +14204,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGCxform,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11004,8 +14220,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGCxformEA
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -11021,8 +14237,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dVertex,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11038,8 +14254,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexEAlpha 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dVertexEAlpha,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11056,8 +14272,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexCxform 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dVertexCxform,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11073,8 +14289,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexCxformE
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11091,8 +14307,25 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGTexTG,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4749803573,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_6082748694,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGTexTG,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_6082748694,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -11108,8 +14341,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTGCxf
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_6117254102,
-    /* BatchUniforms */ BatchUniforms_3953522647,
+    /* Uniforms */      Uniforms_4131408663,
+    /* BatchUniforms */ BatchUniforms_3264360969,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
@@ -11125,8 +14358,26 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGVertex,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_2889592211,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    4,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 1},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 2},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGVertex,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11143,8 +14394,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertexCx
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGVertexCxform,
-    /* Uniforms */      Uniforms_3892239162,
-    /* BatchUniforms */ BatchUniforms_4272630808,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11161,8 +14412,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VSolid,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11176,8 +14427,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VText,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11187,14 +14438,31 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTextTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_TextColor,
+    /* Type */          ShaderDesc::ST_TextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VText,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexUV = 
+{
+    /* Type */          ShaderDesc::ST_TexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM30_VTextColor,
-    /* Uniforms */      Uniforms_3962131312,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM30_VTexUV,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11203,14 +14471,30 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexUVTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_TextColorCxform,
+    /* Type */          ShaderDesc::ST_TexUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexUV,
+    /* Uniforms */      Uniforms_3523974654,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VTexUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_TexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM30_VTextColorCxform,
-    /* Uniforms */      Uniforms_4660718830,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM30_VTexUVCxform,
+    /* Uniforms */      Uniforms_2471894693,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11225,8 +14509,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dSolid,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    1,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11240,8 +14524,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_VPosition3dText,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11251,14 +14535,31 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTextTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_Position3dTextColor,
+    /* Type */          ShaderDesc::ST_Position3dTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dText,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexUV = 
+{
+    /* Type */          ShaderDesc::ST_Position3dTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM30_VPosition3dTextColor,
-    /* Uniforms */      Uniforms_4480697281,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexUV,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11267,14 +14568,30 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexUVTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_Position3dTextColorCxform,
+    /* Type */          ShaderDesc::ST_Position3dTexUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexUV,
+    /* Uniforms */      Uniforms_3949168912,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dTexUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_Position3dTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
-    /* pBinary */       pBinary_D3D9SM30_VPosition3dTextColorCxform,
-    /* Uniforms */      Uniforms_3978807109,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexUVCxform,
+    /* Uniforms */      Uniforms_5654917658,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11289,8 +14606,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchSolid,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11305,8 +14622,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchText,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11317,14 +14634,32 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTextTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_BatchTextColor,
+    /* Type */          ShaderDesc::ST_BatchTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchText,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
+    /* NumAttribs */    4,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 2},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexUV = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM30_VBatchTextColor,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexUV,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11334,14 +14669,31 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexUVTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_BatchTextColorCxform,
+    /* Type */          ShaderDesc::ST_BatchTexUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexUV,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchTexUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM30_VBatchTextColorCxform,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexUVCxform,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11357,8 +14709,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dSolid,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11373,8 +14725,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dText,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11385,14 +14737,32 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_BatchPosition3dTextColor,
+    /* Type */          ShaderDesc::ST_BatchPosition3dTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dText,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
+    /* NumAttribs */    4,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 2},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexUV = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTextColor,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexUV,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11402,14 +14772,31 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexUVTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_BatchPosition3dTextColorCxform,
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexUV,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
-    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTextColorCxform,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexUVCxform,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11425,8 +14812,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchSolid,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11441,8 +14828,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchText,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11453,14 +14840,32 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTextTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_InstancedTextColor,
+    /* Type */          ShaderDesc::ST_InstancedTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchText,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
+    /* NumAttribs */    4,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 2},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexUV = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
-    /* pBinary */       pBinary_D3D9SM30_VBatchTextColor,
-    /* Uniforms */      Uniforms_2647200773,
-    /* BatchUniforms */ BatchUniforms_2375807902,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexUV,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11470,14 +14875,31 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexUVTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_InstancedTextColorCxform,
+    /* Type */          ShaderDesc::ST_InstancedTexUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexUV,
+    /* Uniforms */      Uniforms_2511386934,
+    /* BatchUniforms */ BatchUniforms_3566218438,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedTexUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
-    /* pBinary */       pBinary_D3D9SM30_VBatchTextColorCxform,
-    /* Uniforms */      Uniforms_4025051752,
-    /* BatchUniforms */ BatchUniforms_5188561028,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexUVCxform,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_5223862468,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11493,8 +14915,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dSolid,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
@@ -11509,8 +14931,8 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dText,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
     /* NumAttribs */    4,
     /* Attributes */    {
                               { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
@@ -11521,14 +14943,32 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dText =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextColor = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_InstancedPosition3dTextColor,
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dText,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
+    /* NumAttribs */    4,
+    /* Attributes */    {
+                              { "acolor",     4 | VET_Color, D3DDECLUSAGE_COLOR, 0},
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 2},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexUV = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
-    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTextColor,
-    /* Uniforms */      Uniforms_5257564337,
-    /* BatchUniforms */ BatchUniforms_4952385266,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexUV,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
@@ -11538,17 +14978,610 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextColor =
     
 };
 
-static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextColorCxform = 
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexUVTexDensity = 
 {
-    /* Type */          ShaderDesc::ST_InstancedPosition3dTextColorCxform,
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexUVTexDensity,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
-    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTextColorCxform,
-    /* Uniforms */      Uniforms_3965965598,
-    /* BatchUniforms */ BatchUniforms_5592595562,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexUV,
+    /* Uniforms */      Uniforms_5940284784,
+    /* BatchUniforms */ BatchUniforms_6440238568,
     /* NumAttribs */    3,
     /* Attributes */    {
                               { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dTexUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexUVCxform,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_4856077762,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "atc",        2 | VET_TexCoord, D3DDECLUSAGE_TEXCOORD, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VYUV = 
+{
+    /* Type */          ShaderDesc::ST_YUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VTexTG,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexTG,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGEAlpha,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGEAlpha,
+    /* Uniforms */      Uniforms_6053769867,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_YUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGCxform,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_5275032247,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dYUV = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTG,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTG,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_6084028260,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGCxform,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    1,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VPosition3dYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_Position3dYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VPosition3dTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_4071164700,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchYUV = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxform,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUV = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGCxform,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchPosition3dYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedYUV = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTG,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGEAlpha,
+    /* Uniforms */      Uniforms_3058941776,
+    /* BatchUniforms */ BatchUniforms_6195832443,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxform,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUV = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dYUV,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTG,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dYUVEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGEAlpha,
+    /* Uniforms */      Uniforms_5074989318,
+    /* BatchUniforms */ BatchUniforms_5771973948,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVCxform = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dYUVCxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VBatchPosition3dTexTGCxform,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVCxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedPosition3dYUVCxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_VInstancedPosition3dTexTGCxformEAlpha,
+    /* Uniforms */      Uniforms_3073093853,
+    /* BatchUniforms */ BatchUniforms_5947599052,
+    /* NumAttribs */    3,
+    /* Attributes */    {
+                              { "afactor",    4 | VET_Color | (1 << VET_Index_Shift), D3DDECLUSAGE_COLOR, 0},
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
                               { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
                               },
@@ -11559,13 +15592,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBox1Blur =
 {
     /* Type */          ShaderDesc::ST_Box1Blur,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_VTexTGCxform,
-    /* Uniforms */      Uniforms_2315053743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
-    /* NumAttribs */    1,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_VBatchTexTGCxform,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3285186985,
+    /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
                               },
     
 };
@@ -11574,13 +15608,14 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VDrawableCopyPixels =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixels,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VDrawableCopyPixels,
-    /* Uniforms */      Uniforms_2666373766,
-    /* BatchUniforms */ BatchUniforms_6184305142,
-    /* NumAttribs */    1,
+    /* Uniforms */      Uniforms_3619325970,
+    /* BatchUniforms */ BatchUniforms_3367664256,
+    /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
                               },
     
 };
@@ -11589,13 +15624,30 @@ static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VDrawableCopyPixelsAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_VDrawableCopyPixelsAlpha,
-    /* Uniforms */      Uniforms_2267270599,
-    /* BatchUniforms */ BatchUniforms_6184305142,
-    /* NumAttribs */    1,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_5673976565,
+    /* NumAttribs */    2,
     /* Attributes */    {
                               { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
+                              },
+    
+};
+
+static VertexShaderDesc ShaderDesc_VS_D3D9SM30_VBlendLayer = 
+{
+    /* Type */          ShaderDesc::ST_BlendLayer,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_VBlendLayer,
+    /* Uniforms */      Uniforms_4150627923,
+    /* BatchUniforms */ BatchUniforms_3529035068,
+    /* NumAttribs */    2,
+    /* Attributes */    {
+                              { "pos",        4 | VET_Pos, D3DDECLUSAGE_POSITION, 0},
+                              { "vbatch",     1 | VET_Instance8, D3DDECLUSAGE_COLOR, 1},
                               },
     
 };
@@ -11652,121 +15704,211 @@ const VertexShaderDesc* VertexShaderDesc::Descs[VSI_Count] = {
     &ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexTGVertexCxform,   // 48
     &ShaderDesc_VS_D3D9SM20_VSolid,                              // 49
     &ShaderDesc_VS_D3D9SM20_VText,                               // 50
-    &ShaderDesc_VS_D3D9SM20_VTextColor,                          // 51
-    &ShaderDesc_VS_D3D9SM20_VTextColorCxform,                    // 52
+    &ShaderDesc_VS_D3D9SM20_VTexUV,                              // 51
+    &ShaderDesc_VS_D3D9SM20_VTexUVCxform,                        // 52
     &ShaderDesc_VS_D3D9SM20_VPosition3dSolid,                    // 53
     &ShaderDesc_VS_D3D9SM20_VPosition3dText,                     // 54
-    &ShaderDesc_VS_D3D9SM20_VPosition3dTextColor,                // 55
-    &ShaderDesc_VS_D3D9SM20_VPosition3dTextColorCxform,          // 56
+    &ShaderDesc_VS_D3D9SM20_VPosition3dTexUV,                    // 55
+    &ShaderDesc_VS_D3D9SM20_VPosition3dTexUVCxform,              // 56
     &ShaderDesc_VS_D3D9SM20_VBatchSolid,                         // 57
     &ShaderDesc_VS_D3D9SM20_VBatchText,                          // 58
-    &ShaderDesc_VS_D3D9SM20_VBatchTextColor,                     // 59
-    &ShaderDesc_VS_D3D9SM20_VBatchTextColorCxform,               // 60
+    &ShaderDesc_VS_D3D9SM20_VBatchTexUV,                         // 59
+    &ShaderDesc_VS_D3D9SM20_VBatchTexUVCxform,                   // 60
     &ShaderDesc_VS_D3D9SM20_VBatchPosition3dSolid,               // 61
     &ShaderDesc_VS_D3D9SM20_VBatchPosition3dText,                // 62
-    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dTextColor,           // 63
-    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dTextColorCxform,     // 64
-    &ShaderDesc_VS_D3D9SM20_VDrawableCopyPixels,                 // 65
-    &ShaderDesc_VS_D3D9SM20_VDrawableCopyPixelsAlpha,            // 66
-    &ShaderDesc_VS_D3D9SM30_VTexTG,                              // 67
-    &ShaderDesc_VS_D3D9SM30_VTexTGEAlpha,                        // 68
-    &ShaderDesc_VS_D3D9SM30_VTexTGCxform,                        // 69
-    &ShaderDesc_VS_D3D9SM30_VTexTGCxformEAlpha,                  // 70
-    &ShaderDesc_VS_D3D9SM30_VVertex,                             // 71
-    &ShaderDesc_VS_D3D9SM30_VVertexEAlpha,                       // 72
-    &ShaderDesc_VS_D3D9SM30_VVertexCxform,                       // 73
-    &ShaderDesc_VS_D3D9SM30_VVertexCxformEAlpha,                 // 74
-    &ShaderDesc_VS_D3D9SM30_VTexTGTexTG,                         // 75
-    &ShaderDesc_VS_D3D9SM30_VTexTGTexTGCxform,                   // 76
-    &ShaderDesc_VS_D3D9SM30_VTexTGVertex,                        // 77
-    &ShaderDesc_VS_D3D9SM30_VTexTGVertexCxform,                  // 78
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTG,                    // 79
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGEAlpha,              // 80
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGCxform,              // 81
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGCxformEAlpha,        // 82
-    &ShaderDesc_VS_D3D9SM30_VPosition3dVertex,                   // 83
-    &ShaderDesc_VS_D3D9SM30_VPosition3dVertexEAlpha,             // 84
-    &ShaderDesc_VS_D3D9SM30_VPosition3dVertexCxform,             // 85
-    &ShaderDesc_VS_D3D9SM30_VPosition3dVertexCxformEAlpha,       // 86
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTG,               // 87
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTGCxform,         // 88
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertex,              // 89
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertexCxform,        // 90
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTG,                         // 91
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGEAlpha,                   // 92
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGCxform,                   // 93
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGCxformEAlpha,             // 94
-    &ShaderDesc_VS_D3D9SM30_VBatchVertex,                        // 95
-    &ShaderDesc_VS_D3D9SM30_VBatchVertexEAlpha,                  // 96
-    &ShaderDesc_VS_D3D9SM30_VBatchVertexCxform,                  // 97
-    &ShaderDesc_VS_D3D9SM30_VBatchVertexCxformEAlpha,            // 98
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTG,                    // 99
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTGCxform,              // 100
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGVertex,                   // 101
-    &ShaderDesc_VS_D3D9SM30_VBatchTexTGVertexCxform,             // 102
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTG,               // 103
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGEAlpha,         // 104
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGCxform,         // 105
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha,   // 106
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertex,              // 107
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexEAlpha,        // 108
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexCxform,        // 109
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexCxformEAlpha,  // 110
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTG,          // 111
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTGCxform,    // 112
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertex,         // 113
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertexCxform,   // 114
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTG,                     // 115
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGEAlpha,               // 116
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGCxform,               // 117
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGCxformEAlpha,         // 118
-    &ShaderDesc_VS_D3D9SM30_VInstancedVertex,                    // 119
-    &ShaderDesc_VS_D3D9SM30_VInstancedVertexEAlpha,              // 120
-    &ShaderDesc_VS_D3D9SM30_VInstancedVertexCxform,              // 121
-    &ShaderDesc_VS_D3D9SM30_VInstancedVertexCxformEAlpha,        // 122
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTG,                // 123
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTGCxform,          // 124
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertex,               // 125
-    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertexCxform,         // 126
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTG,           // 127
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGEAlpha,     // 128
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGCxform,     // 129
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGCxformEAlpha, // 130
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertex,          // 131
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexEAlpha,    // 132
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexCxform,    // 133
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexCxformEAlpha, // 134
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTG,      // 135
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTGCxform, // 136
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertex,     // 137
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertexCxform, // 138
-    &ShaderDesc_VS_D3D9SM30_VSolid,                              // 139
-    &ShaderDesc_VS_D3D9SM30_VText,                               // 140
-    &ShaderDesc_VS_D3D9SM30_VTextColor,                          // 141
-    &ShaderDesc_VS_D3D9SM30_VTextColorCxform,                    // 142
-    &ShaderDesc_VS_D3D9SM30_VPosition3dSolid,                    // 143
-    &ShaderDesc_VS_D3D9SM30_VPosition3dText,                     // 144
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTextColor,                // 145
-    &ShaderDesc_VS_D3D9SM30_VPosition3dTextColorCxform,          // 146
-    &ShaderDesc_VS_D3D9SM30_VBatchSolid,                         // 147
-    &ShaderDesc_VS_D3D9SM30_VBatchText,                          // 148
-    &ShaderDesc_VS_D3D9SM30_VBatchTextColor,                     // 149
-    &ShaderDesc_VS_D3D9SM30_VBatchTextColorCxform,               // 150
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dSolid,               // 151
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dText,                // 152
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextColor,           // 153
-    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextColorCxform,     // 154
-    &ShaderDesc_VS_D3D9SM30_VInstancedSolid,                     // 155
-    &ShaderDesc_VS_D3D9SM30_VInstancedText,                      // 156
-    &ShaderDesc_VS_D3D9SM30_VInstancedTextColor,                 // 157
-    &ShaderDesc_VS_D3D9SM30_VInstancedTextColorCxform,           // 158
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dSolid,           // 159
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dText,            // 160
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextColor,       // 161
-    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextColorCxform, // 162
-    &ShaderDesc_VS_D3D9SM30_VBox1Blur,                           // 163
-    &ShaderDesc_VS_D3D9SM30_VDrawableCopyPixels,                 // 164
-    &ShaderDesc_VS_D3D9SM30_VDrawableCopyPixelsAlpha,            // 165
+    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexUV,               // 63
+    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dTexUVCxform,         // 64
+    &ShaderDesc_VS_D3D9SM20_VYUV,                                // 65
+    &ShaderDesc_VS_D3D9SM20_VYUVEAlpha,                          // 66
+    &ShaderDesc_VS_D3D9SM20_VYUVCxform,                          // 67
+    &ShaderDesc_VS_D3D9SM20_VYUVCxformEAlpha,                    // 68
+    &ShaderDesc_VS_D3D9SM20_VPosition3dYUV,                      // 69
+    &ShaderDesc_VS_D3D9SM20_VPosition3dYUVEAlpha,                // 70
+    &ShaderDesc_VS_D3D9SM20_VPosition3dYUVCxform,                // 71
+    &ShaderDesc_VS_D3D9SM20_VPosition3dYUVCxformEAlpha,          // 72
+    &ShaderDesc_VS_D3D9SM20_VBatchYUV,                           // 73
+    &ShaderDesc_VS_D3D9SM20_VBatchYUVEAlpha,                     // 74
+    &ShaderDesc_VS_D3D9SM20_VBatchYUVCxform,                     // 75
+    &ShaderDesc_VS_D3D9SM20_VBatchYUVCxformEAlpha,               // 76
+    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUV,                 // 77
+    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUVEAlpha,           // 78
+    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUVCxform,           // 79
+    &ShaderDesc_VS_D3D9SM20_VBatchPosition3dYUVCxformEAlpha,     // 80
+    &ShaderDesc_VS_D3D9SM20_VDrawableCopyPixels,                 // 81
+    &ShaderDesc_VS_D3D9SM20_VDrawableCopyPixelsAlpha,            // 82
+    &ShaderDesc_VS_D3D9SM20_VBlendLayer,                         // 83
+    &ShaderDesc_VS_D3D9SM30_VTexTG,                              // 84
+    &ShaderDesc_VS_D3D9SM30_VTexTGTexDensity,                    // 85
+    &ShaderDesc_VS_D3D9SM30_VTexTGEAlpha,                        // 86
+    &ShaderDesc_VS_D3D9SM30_VTexTGEAlphaTexDensity,              // 87
+    &ShaderDesc_VS_D3D9SM30_VTexTGCxform,                        // 88
+    &ShaderDesc_VS_D3D9SM30_VTexTGCxformEAlpha,                  // 89
+    &ShaderDesc_VS_D3D9SM30_VVertex,                             // 90
+    &ShaderDesc_VS_D3D9SM30_VVertexEAlpha,                       // 91
+    &ShaderDesc_VS_D3D9SM30_VVertexCxform,                       // 92
+    &ShaderDesc_VS_D3D9SM30_VVertexCxformEAlpha,                 // 93
+    &ShaderDesc_VS_D3D9SM30_VTexTGTexTG,                         // 94
+    &ShaderDesc_VS_D3D9SM30_VTexTGTexTGTexDensity,               // 95
+    &ShaderDesc_VS_D3D9SM30_VTexTGTexTGCxform,                   // 96
+    &ShaderDesc_VS_D3D9SM30_VTexTGVertex,                        // 97
+    &ShaderDesc_VS_D3D9SM30_VTexTGVertexTexDensity,              // 98
+    &ShaderDesc_VS_D3D9SM30_VTexTGVertexCxform,                  // 99
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTG,                    // 100
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexDensity,          // 101
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGEAlpha,              // 102
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGEAlphaTexDensity,    // 103
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGCxform,              // 104
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGCxformEAlpha,        // 105
+    &ShaderDesc_VS_D3D9SM30_VPosition3dVertex,                   // 106
+    &ShaderDesc_VS_D3D9SM30_VPosition3dVertexEAlpha,             // 107
+    &ShaderDesc_VS_D3D9SM30_VPosition3dVertexCxform,             // 108
+    &ShaderDesc_VS_D3D9SM30_VPosition3dVertexCxformEAlpha,       // 109
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTG,               // 110
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTGTexDensity,     // 111
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGTexTGCxform,         // 112
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertex,              // 113
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertexTexDensity,    // 114
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexTGVertexCxform,        // 115
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTG,                         // 116
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGTexDensity,               // 117
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGEAlpha,                   // 118
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGEAlphaTexDensity,         // 119
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGCxform,                   // 120
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGCxformEAlpha,             // 121
+    &ShaderDesc_VS_D3D9SM30_VBatchVertex,                        // 122
+    &ShaderDesc_VS_D3D9SM30_VBatchVertexEAlpha,                  // 123
+    &ShaderDesc_VS_D3D9SM30_VBatchVertexCxform,                  // 124
+    &ShaderDesc_VS_D3D9SM30_VBatchVertexCxformEAlpha,            // 125
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTG,                    // 126
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTGTexDensity,          // 127
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGTexTGCxform,              // 128
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGVertex,                   // 129
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGVertexTexDensity,         // 130
+    &ShaderDesc_VS_D3D9SM30_VBatchTexTGVertexCxform,             // 131
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTG,               // 132
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexDensity,     // 133
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGEAlpha,         // 134
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGEAlphaTexDensity, // 135
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGCxform,         // 136
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGCxformEAlpha,   // 137
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertex,              // 138
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexEAlpha,        // 139
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexCxform,        // 140
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dVertexCxformEAlpha,  // 141
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTG,          // 142
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTGTexDensity, // 143
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGTexTGCxform,    // 144
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertex,         // 145
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertexTexDensity, // 146
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexTGVertexCxform,   // 147
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTG,                     // 148
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexDensity,           // 149
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGEAlpha,               // 150
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGEAlphaTexDensity,     // 151
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGCxform,               // 152
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGCxformEAlpha,         // 153
+    &ShaderDesc_VS_D3D9SM30_VInstancedVertex,                    // 154
+    &ShaderDesc_VS_D3D9SM30_VInstancedVertexEAlpha,              // 155
+    &ShaderDesc_VS_D3D9SM30_VInstancedVertexCxform,              // 156
+    &ShaderDesc_VS_D3D9SM30_VInstancedVertexCxformEAlpha,        // 157
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTG,                // 158
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTGTexDensity,      // 159
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGTexTGCxform,          // 160
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertex,               // 161
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertexTexDensity,     // 162
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexTGVertexCxform,         // 163
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTG,           // 164
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexDensity, // 165
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGEAlpha,     // 166
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGEAlphaTexDensity, // 167
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGCxform,     // 168
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGCxformEAlpha, // 169
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertex,          // 170
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexEAlpha,    // 171
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexCxform,    // 172
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dVertexCxformEAlpha, // 173
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTG,      // 174
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTGTexDensity, // 175
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGTexTGCxform, // 176
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertex,     // 177
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertexTexDensity, // 178
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexTGVertexCxform, // 179
+    &ShaderDesc_VS_D3D9SM30_VSolid,                              // 180
+    &ShaderDesc_VS_D3D9SM30_VText,                               // 181
+    &ShaderDesc_VS_D3D9SM30_VTextTexDensity,                     // 182
+    &ShaderDesc_VS_D3D9SM30_VTexUV,                              // 183
+    &ShaderDesc_VS_D3D9SM30_VTexUVTexDensity,                    // 184
+    &ShaderDesc_VS_D3D9SM30_VTexUVCxform,                        // 185
+    &ShaderDesc_VS_D3D9SM30_VPosition3dSolid,                    // 186
+    &ShaderDesc_VS_D3D9SM30_VPosition3dText,                     // 187
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTextTexDensity,           // 188
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexUV,                    // 189
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexUVTexDensity,          // 190
+    &ShaderDesc_VS_D3D9SM30_VPosition3dTexUVCxform,              // 191
+    &ShaderDesc_VS_D3D9SM30_VBatchSolid,                         // 192
+    &ShaderDesc_VS_D3D9SM30_VBatchText,                          // 193
+    &ShaderDesc_VS_D3D9SM30_VBatchTextTexDensity,                // 194
+    &ShaderDesc_VS_D3D9SM30_VBatchTexUV,                         // 195
+    &ShaderDesc_VS_D3D9SM30_VBatchTexUVTexDensity,               // 196
+    &ShaderDesc_VS_D3D9SM30_VBatchTexUVCxform,                   // 197
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dSolid,               // 198
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dText,                // 199
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTextTexDensity,      // 200
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexUV,               // 201
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexUVTexDensity,     // 202
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dTexUVCxform,         // 203
+    &ShaderDesc_VS_D3D9SM30_VInstancedSolid,                     // 204
+    &ShaderDesc_VS_D3D9SM30_VInstancedText,                      // 205
+    &ShaderDesc_VS_D3D9SM30_VInstancedTextTexDensity,            // 206
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexUV,                     // 207
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexUVTexDensity,           // 208
+    &ShaderDesc_VS_D3D9SM30_VInstancedTexUVCxform,               // 209
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dSolid,           // 210
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dText,            // 211
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTextTexDensity,  // 212
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexUV,           // 213
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexUVTexDensity, // 214
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dTexUVCxform,     // 215
+    &ShaderDesc_VS_D3D9SM30_VYUV,                                // 216
+    &ShaderDesc_VS_D3D9SM30_VYUVTexDensity,                      // 217
+    &ShaderDesc_VS_D3D9SM30_VYUVEAlpha,                          // 218
+    &ShaderDesc_VS_D3D9SM30_VYUVEAlphaTexDensity,                // 219
+    &ShaderDesc_VS_D3D9SM30_VYUVCxform,                          // 220
+    &ShaderDesc_VS_D3D9SM30_VYUVCxformEAlpha,                    // 221
+    &ShaderDesc_VS_D3D9SM30_VPosition3dYUV,                      // 222
+    &ShaderDesc_VS_D3D9SM30_VPosition3dYUVTexDensity,            // 223
+    &ShaderDesc_VS_D3D9SM30_VPosition3dYUVEAlpha,                // 224
+    &ShaderDesc_VS_D3D9SM30_VPosition3dYUVEAlphaTexDensity,      // 225
+    &ShaderDesc_VS_D3D9SM30_VPosition3dYUVCxform,                // 226
+    &ShaderDesc_VS_D3D9SM30_VPosition3dYUVCxformEAlpha,          // 227
+    &ShaderDesc_VS_D3D9SM30_VBatchYUV,                           // 228
+    &ShaderDesc_VS_D3D9SM30_VBatchYUVTexDensity,                 // 229
+    &ShaderDesc_VS_D3D9SM30_VBatchYUVEAlpha,                     // 230
+    &ShaderDesc_VS_D3D9SM30_VBatchYUVEAlphaTexDensity,           // 231
+    &ShaderDesc_VS_D3D9SM30_VBatchYUVCxform,                     // 232
+    &ShaderDesc_VS_D3D9SM30_VBatchYUVCxformEAlpha,               // 233
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUV,                 // 234
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVTexDensity,       // 235
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVEAlpha,           // 236
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVEAlphaTexDensity, // 237
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVCxform,           // 238
+    &ShaderDesc_VS_D3D9SM30_VBatchPosition3dYUVCxformEAlpha,     // 239
+    &ShaderDesc_VS_D3D9SM30_VInstancedYUV,                       // 240
+    &ShaderDesc_VS_D3D9SM30_VInstancedYUVTexDensity,             // 241
+    &ShaderDesc_VS_D3D9SM30_VInstancedYUVEAlpha,                 // 242
+    &ShaderDesc_VS_D3D9SM30_VInstancedYUVEAlphaTexDensity,       // 243
+    &ShaderDesc_VS_D3D9SM30_VInstancedYUVCxform,                 // 244
+    &ShaderDesc_VS_D3D9SM30_VInstancedYUVCxformEAlpha,           // 245
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUV,             // 246
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVTexDensity,   // 247
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVEAlpha,       // 248
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVEAlphaTexDensity, // 249
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVCxform,       // 250
+    &ShaderDesc_VS_D3D9SM30_VInstancedPosition3dYUVCxformEAlpha, // 251
+    &ShaderDesc_VS_D3D9SM30_VBox1Blur,                           // 252
+    &ShaderDesc_VS_D3D9SM30_VDrawableCopyPixels,                 // 253
+    &ShaderDesc_VS_D3D9SM30_VDrawableCopyPixelsAlpha,            // 254
+    &ShaderDesc_VS_D3D9SM30_VBlendLayer,                         // 255
 };
 
 const VertexShaderDesc* VertexShaderDesc::GetDesc(ShaderDesc::ShaderType shader, ShaderDesc::ShaderVersion ver)
@@ -12006,6 +16148,18 @@ extern const BYTE pBinary_D3D9SM20_FYUVACxformAcInv[];
 extern const BYTE pBinary_D3D9SM20_FYUVACxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM20_FYUVACxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM20_FYUVACxformAcEAlphaInv[];
+extern const BYTE pBinary_D3D9SM20_FYUY2[];
+extern const BYTE pBinary_D3D9SM20_FYUY2Mul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2EAlpha[];
+extern const BYTE pBinary_D3D9SM20_FYUY2EAlphaMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2Cxform[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformEAlpha[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformEAlphaMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAc[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAcMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAcEAlpha[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM20_FYUV[];
 extern const BYTE pBinary_D3D9SM20_FYUVMul[];
 extern const BYTE pBinary_D3D9SM20_FYUVEAlpha[];
@@ -12036,10 +16190,25 @@ extern const BYTE pBinary_D3D9SM20_FYUVACxformAcInv[];
 extern const BYTE pBinary_D3D9SM20_FYUVACxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM20_FYUVACxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM20_FYUVACxformAcEAlphaInv[];
+extern const BYTE pBinary_D3D9SM20_FYUY2[];
+extern const BYTE pBinary_D3D9SM20_FYUY2Mul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2EAlpha[];
+extern const BYTE pBinary_D3D9SM20_FYUY2EAlphaMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2Cxform[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformEAlpha[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformEAlphaMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAc[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAcMul[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAcEAlpha[];
+extern const BYTE pBinary_D3D9SM20_FYUY2CxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM20_FTexTGCMatrixAc[];
 extern const BYTE pBinary_D3D9SM20_FTexTGCMatrixAcMul[];
 extern const BYTE pBinary_D3D9SM20_FTexTGCMatrixAcEAlpha[];
 extern const BYTE pBinary_D3D9SM20_FTexTGCMatrixAcEAlphaMul[];
+extern const BYTE pBinary_D3D9SM20_FDisplacementMap[];
+extern const BYTE pBinary_D3D9SM20_FDisplacementMapDMIgnore[];
+extern const BYTE pBinary_D3D9SM20_FDisplacementMapDMColor[];
 extern const BYTE pBinary_D3D9SM20_FDrawableCopyPixels[];
 extern const BYTE pBinary_D3D9SM20_FDrawableCopyPixelsMergeAlpha[];
 extern const BYTE pBinary_D3D9SM20_FDrawableCopyPixelsNoDestAlpha[];
@@ -12049,15 +16218,31 @@ extern const BYTE pBinary_D3D9SM20_FDrawableCopyPixelsAlphaNoDestAlpha[];
 extern const BYTE pBinary_D3D9SM20_FDrawableMerge[];
 extern const BYTE pBinary_D3D9SM20_FDrawableCompare[];
 extern const BYTE pBinary_D3D9SM20_FDrawablePaletteMap[];
+extern const BYTE pBinary_D3D9SM20_FBlendLighten[];
+extern const BYTE pBinary_D3D9SM20_FBlendDarken[];
+extern const BYTE pBinary_D3D9SM20_FBlendOverlay[];
+extern const BYTE pBinary_D3D9SM20_FBlendHardlight[];
+extern const BYTE pBinary_D3D9SM20_FBlendDifference[];
+extern const BYTE pBinary_D3D9SM20_FBlendLayer[];
 
-UniformVar Uniforms_5292135573[Uniform::SU_Count] = 
+UniformVar Uniforms_5919081762[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12065,18 +16250,29 @@ UniformVar Uniforms_5292135573[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2601942360[Uniform::SU_Count] = 
+UniformVar Uniforms_2537398302[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12084,18 +16280,29 @@ UniformVar Uniforms_2601942360[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_4895524107[Uniform::SU_Count] = 
+UniformVar Uniforms_4536263616[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12103,18 +16310,29 @@ UniformVar Uniforms_4895524107[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 2, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2364729977[Uniform::SU_Count] = 
+UniformVar Uniforms_5962203294[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      {0, 1036, 4, 4, 4, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12122,18 +16340,29 @@ UniformVar Uniforms_2364729977[Uniform::SU_Count] =
     /* tex*/        { -1, 0, 0, 0, 0, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_5642581497[Uniform::SU_Count] = 
+UniformVar Uniforms_5215493381[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12141,18 +16370,29 @@ UniformVar Uniforms_5642581497[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 3, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_5475920020[Uniform::SU_Count] = 
+UniformVar Uniforms_6138785872[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12160,18 +16400,29 @@ UniformVar Uniforms_5475920020[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 4, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2817570809[Uniform::SU_Count] = 
+UniformVar Uniforms_2511219955[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      {0, 1036, 4, 4, 4, 0 },
     /* cxmul*/      {1, 1040, 16, 16, 16, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12179,18 +16430,89 @@ UniformVar Uniforms_2817570809[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_3033064606[Uniform::SU_Count] = 
+UniformVar Uniforms_5285172964[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      {0, 1036, 4, 4, 4, 0 },
+    /* compy*/      {1, 1040, 4, 4, 4, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   {2, 1044, 4, 4, 4, 0 },
+    /* maptex*/     {0, 1036, 1, 1, 1, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      {3, 1048, 2, 2, 2, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        {1, 1040, 1, 1, 1, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_3935531125[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ {0, 1036, 4, 4, 4, 0 },
+    /* compx*/      {1, 1040, 4, 4, 4, 0 },
+    /* compy*/      {2, 1044, 4, 4, 4, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   {3, 1048, 4, 4, 4, 0 },
+    /* maptex*/     {0, 1036, 1, 1, 1, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      {4, 1052, 2, 2, 2, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        {1, 1040, 1, 1, 1, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_6217483699[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      {0, 1036, 16, 16, 16, 0 },
     /* cxmul1*/     {4, 1052, 16, 16, 16, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -12198,18 +16520,29 @@ UniformVar Uniforms_3033064606[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 2, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_3820893743[Uniform::SU_Count] = 
+UniformVar Uniforms_3905359981[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     {0, 1036, 1, 1, 1, 0 },
@@ -12217,6 +16550,67 @@ UniformVar Uniforms_3820893743[Uniform::SU_Count] =
     /* tex*/        {1, 1040, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_2155251096[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     {0, 1036, 1, 1, 1, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     {1, 1040, 1, 1, 1, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        { -1, 0, 0, 0, 0, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_3808699271[Uniform::SU_Count] = 
+{
+    /* alphatex*/   {0, 1036, 1, 1, 1, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     {1, 1040, 1, 1, 1, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        { -1, 0, 0, 0, 0, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
@@ -12227,8 +16621,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTG,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12238,8 +16632,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12249,8 +16643,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12260,8 +16654,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12271,8 +16665,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12282,8 +16676,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12293,8 +16687,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12304,8 +16698,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12315,8 +16709,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12326,8 +16720,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12337,8 +16731,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12348,8 +16742,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12359,8 +16753,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12370,8 +16764,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12381,8 +16775,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12392,8 +16786,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12403,8 +16797,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12414,8 +16808,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12425,8 +16819,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertex,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12436,8 +16830,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12447,8 +16841,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12458,8 +16852,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12469,8 +16863,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12480,8 +16874,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12491,8 +16885,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxform,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12502,8 +16896,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12513,8 +16907,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12524,8 +16918,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12535,8 +16929,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12546,8 +16940,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12557,8 +16951,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAc,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12568,8 +16962,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12579,8 +16973,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12590,8 +16984,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12601,8 +16995,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12612,8 +17006,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12623,8 +17017,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTG,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12634,8 +17028,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12645,8 +17039,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12656,8 +17050,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12667,8 +17061,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12678,8 +17072,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12689,8 +17083,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12700,8 +17094,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12711,8 +17105,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12722,8 +17116,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12733,8 +17127,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12744,8 +17138,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12755,8 +17149,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAc,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12766,8 +17160,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12777,8 +17171,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12788,8 +17182,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12799,8 +17193,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12810,8 +17204,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12821,8 +17215,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertex,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12832,8 +17226,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12843,8 +17237,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12854,8 +17248,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12865,8 +17259,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12876,8 +17270,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12887,8 +17281,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12898,8 +17292,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12909,8 +17303,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12920,8 +17314,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12931,8 +17325,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12942,8 +17336,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12953,8 +17347,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12964,8 +17358,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12975,8 +17369,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12986,8 +17380,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -12997,8 +17391,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13008,8 +17402,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13019,8 +17413,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTG,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13030,8 +17424,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13041,8 +17435,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13052,8 +17446,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13063,8 +17457,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13074,8 +17468,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13085,8 +17479,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13096,8 +17490,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13107,8 +17501,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13118,8 +17512,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13129,8 +17523,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13140,8 +17534,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13151,8 +17545,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13162,8 +17556,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13173,8 +17567,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13184,8 +17578,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13195,8 +17589,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13206,8 +17600,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13217,8 +17611,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertex,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13228,8 +17622,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13239,8 +17633,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13250,8 +17644,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13261,8 +17655,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13272,8 +17666,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13283,8 +17677,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxform,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13294,8 +17688,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13305,8 +17699,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13316,8 +17710,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13327,8 +17721,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13338,8 +17732,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13349,8 +17743,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAc,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13360,8 +17754,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13371,8 +17765,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13382,8 +17776,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13393,8 +17787,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13404,8 +17798,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13415,8 +17809,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTG,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13426,8 +17820,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13437,8 +17831,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13448,8 +17842,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13459,8 +17853,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13470,8 +17864,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13481,8 +17875,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13492,8 +17886,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13503,8 +17897,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13514,8 +17908,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13525,8 +17919,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13536,8 +17930,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13547,8 +17941,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAc,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13558,8 +17952,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13569,8 +17963,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13580,8 +17974,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13591,8 +17985,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13602,8 +17996,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13613,8 +18007,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertex,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13624,8 +18018,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13635,8 +18029,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13646,8 +18040,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13657,8 +18051,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13668,8 +18062,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13679,8 +18073,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13690,8 +18084,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13701,8 +18095,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13712,8 +18106,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13723,8 +18117,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13734,8 +18128,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13745,8 +18139,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13756,8 +18150,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13767,8 +18161,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13778,8 +18172,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13789,8 +18183,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformAcEAlphaMul 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13800,8 +18194,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTexTGVertexCxformAcEAlphaInv 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13811,8 +18205,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FSolid,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13822,8 +18216,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FSolidMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FSolidMul,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13833,8 +18227,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FSolidInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FSolidInv,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13844,8 +18238,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FText,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13855,8 +18249,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTextMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTextMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13866,8 +18260,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTextInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM20_FTextInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13877,8 +18271,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FSolid,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13888,8 +18282,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchSolidMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FSolidMul,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13899,8 +18293,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchSolidInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FSolidInv,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13910,8 +18304,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FText,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13921,8 +18315,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTextMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTextMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13932,8 +18326,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchTextInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTextInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13941,10 +18335,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUV =
 {
     /* Type */          ShaderDesc::ST_YUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUV,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13952,10 +18346,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVMul =
 {
     /* Type */          ShaderDesc::ST_YUVMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13963,10 +18357,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13974,10 +18368,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13985,10 +18379,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxform =
 {
     /* Type */          ShaderDesc::ST_YUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxform,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -13996,10 +18390,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14007,10 +18401,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVCxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14018,10 +18412,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14029,10 +18423,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformAc =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAc,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14040,10 +18434,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformAcMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAcMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14051,10 +18445,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14062,10 +18456,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVCxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14073,10 +18467,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVA =
 {
     /* Type */          ShaderDesc::ST_YUVA,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVA,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14084,10 +18478,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVAMul =
 {
     /* Type */          ShaderDesc::ST_YUVAMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14095,10 +18489,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVAInv =
 {
     /* Type */          ShaderDesc::ST_YUVAInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14106,10 +18500,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVAEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVAEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14117,10 +18511,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVAEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVAEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14128,10 +18522,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVAEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_YUVAEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14139,10 +18533,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxform =
 {
     /* Type */          ShaderDesc::ST_YUVACxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxform,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14150,10 +18544,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14161,10 +18555,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14172,10 +18566,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVACxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14183,10 +18577,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14194,10 +18588,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14205,10 +18599,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformAc =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAc,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14216,10 +18610,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformAcMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14227,10 +18621,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformAcInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14238,10 +18632,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14249,10 +18643,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14260,10 +18654,142 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUVACxformAcEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2 = 
+{
+    /* Type */          ShaderDesc::ST_YUY2,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2Mul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2Mul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2Mul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2EAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUY2EAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2EAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2EAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2EAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2EAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2Cxform = 
+{
+    /* Type */          ShaderDesc::ST_YUY2Cxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2Cxform,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformAc = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAc,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAc,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformAcMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAcMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAcMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformAcEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAcEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAcEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FYUY2CxformAcEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAcEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAcEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14271,10 +18797,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUV =
 {
     /* Type */          ShaderDesc::ST_BatchYUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUV,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14282,10 +18808,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14293,10 +18819,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14304,10 +18830,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14315,10 +18841,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxform =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxform,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14326,10 +18852,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14337,10 +18863,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14348,10 +18874,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14359,10 +18885,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAc =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAc,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14370,10 +18896,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAcMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14381,10 +18907,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14392,10 +18918,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14403,10 +18929,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVA =
 {
     /* Type */          ShaderDesc::ST_BatchYUVA,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVA,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14414,10 +18940,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVAMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14425,10 +18951,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVAInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14436,10 +18962,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14447,10 +18973,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14458,10 +18984,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVAEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14469,10 +18995,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxform =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxform,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14480,10 +19006,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14491,10 +19017,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14502,10 +19028,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14513,10 +19039,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14524,10 +19050,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14535,10 +19061,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAc =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAc,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14546,10 +19072,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14557,10 +19083,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14568,10 +19094,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14579,10 +19105,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14590,10 +19116,142 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM20_FYUVACxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2 = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2Mul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2Mul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2Mul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2EAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2EAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2EAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2EAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2EAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2EAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2Cxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2Cxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2Cxform,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAc = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAc,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAc,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAcMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAcMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAcMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAcEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAcEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAcEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAcEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAcEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM20_FYUY2CxformAcEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14601,10 +19259,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAc =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCMatrixAc,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14612,10 +19270,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcMul =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCMatrixAcMul,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14623,10 +19281,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCMatrixAcEAlpha,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14634,10 +19292,43 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FTexTGCMatrixAcEAlphaMul,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDisplacementMap = 
+{
+    /* Type */          ShaderDesc::ST_DisplacementMap,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FDisplacementMap,
+    /* Uniforms */      Uniforms_5285172964,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDisplacementMapDMIgnore = 
+{
+    /* Type */          ShaderDesc::ST_DisplacementMapDMIgnore,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FDisplacementMapDMIgnore,
+    /* Uniforms */      Uniforms_5285172964,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDisplacementMapDMColor = 
+{
+    /* Type */          ShaderDesc::ST_DisplacementMapDMColor,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FDisplacementMapDMColor,
+    /* Uniforms */      Uniforms_3935531125,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14645,10 +19336,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCopyPixels =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixels,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCopyPixels,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14656,10 +19347,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsMergeAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsMergeAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCopyPixelsMergeAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14667,10 +19358,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsNoDestAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsNoDestAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCopyPixelsNoDestAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14678,10 +19369,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCopyPixelsAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14689,10 +19380,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlphaMergeAlpha 
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlphaMergeAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCopyPixelsAlphaMergeAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14700,10 +19391,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlphaNoDestAlpha
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlphaNoDestAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCopyPixelsAlphaNoDestAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14711,10 +19402,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableMerge =
 {
     /* Type */          ShaderDesc::ST_DrawableMerge,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableMerge,
-    /* Uniforms */      Uniforms_3033064606,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6217483699,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14722,10 +19413,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawableCompare =
 {
     /* Type */          ShaderDesc::ST_DrawableCompare,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawableCompare,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -14733,17 +19424,85 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM20_FDrawablePaletteMap =
 {
     /* Type */          ShaderDesc::ST_DrawablePaletteMap,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM20_FDrawablePaletteMap,
-    /* Uniforms */      Uniforms_3820893743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3905359981,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBlendLighten = 
+{
+    /* Type */          ShaderDesc::ST_BlendLighten,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FBlendLighten,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBlendDarken = 
+{
+    /* Type */          ShaderDesc::ST_BlendDarken,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FBlendDarken,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBlendOverlay = 
+{
+    /* Type */          ShaderDesc::ST_BlendOverlay,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FBlendOverlay,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBlendHardlight = 
+{
+    /* Type */          ShaderDesc::ST_BlendHardlight,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FBlendHardlight,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBlendDifference = 
+{
+    /* Type */          ShaderDesc::ST_BlendDifference,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FBlendDifference,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM20_FBlendLayer = 
+{
+    /* Type */          ShaderDesc::ST_BlendLayer,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM20,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM20_FBlendLayer,
+    /* Uniforms */      Uniforms_3808699271,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
 extern const BYTE pBinary_D3D9SM30_FTexTG[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGCxform[];
@@ -14777,9 +19536,11 @@ extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexTGTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxform[];
@@ -14795,9 +19556,11 @@ extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertex[];
+extern const BYTE pBinary_D3D9SM30_FTexTGVertexTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxform[];
@@ -14813,9 +19576,11 @@ extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTG[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGCxform[];
@@ -14849,9 +19614,11 @@ extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexTGTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxform[];
@@ -14867,9 +19634,11 @@ extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertex[];
+extern const BYTE pBinary_D3D9SM30_FTexTGVertexTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxform[];
@@ -14885,9 +19654,11 @@ extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTG[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGCxform[];
@@ -14921,9 +19692,11 @@ extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FVertexCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTG[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexTGTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxform[];
@@ -14939,9 +19712,11 @@ extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertex[];
+extern const BYTE pBinary_D3D9SM30_FTexTGVertexTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FTexTGVertexCxform[];
@@ -14960,23 +19735,28 @@ extern const BYTE pBinary_D3D9SM30_FSolid[];
 extern const BYTE pBinary_D3D9SM30_FSolidMul[];
 extern const BYTE pBinary_D3D9SM30_FSolidInv[];
 extern const BYTE pBinary_D3D9SM30_FText[];
+extern const BYTE pBinary_D3D9SM30_FTextTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTextMul[];
 extern const BYTE pBinary_D3D9SM30_FTextInv[];
 extern const BYTE pBinary_D3D9SM30_FSolid[];
 extern const BYTE pBinary_D3D9SM30_FSolidMul[];
 extern const BYTE pBinary_D3D9SM30_FSolidInv[];
 extern const BYTE pBinary_D3D9SM30_FText[];
+extern const BYTE pBinary_D3D9SM30_FTextTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTextMul[];
 extern const BYTE pBinary_D3D9SM30_FTextInv[];
 extern const BYTE pBinary_D3D9SM30_FSolid[];
 extern const BYTE pBinary_D3D9SM30_FSolidMul[];
 extern const BYTE pBinary_D3D9SM30_FSolidInv[];
 extern const BYTE pBinary_D3D9SM30_FText[];
+extern const BYTE pBinary_D3D9SM30_FTextTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FTextMul[];
 extern const BYTE pBinary_D3D9SM30_FTextInv[];
 extern const BYTE pBinary_D3D9SM30_FYUV[];
+extern const BYTE pBinary_D3D9SM30_FYUVTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUVEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxform[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformMul[];
@@ -14987,9 +19767,11 @@ extern const BYTE pBinary_D3D9SM30_FYUVCxformAcMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVA[];
+extern const BYTE pBinary_D3D9SM30_FYUVATexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVAMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVAInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxform[];
@@ -15004,9 +19786,25 @@ extern const BYTE pBinary_D3D9SM30_FYUVACxformAcInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlphaInv[];
+extern const BYTE pBinary_D3D9SM30_FYUY2[];
+extern const BYTE pBinary_D3D9SM30_FYUY2TexDensity[];
+extern const BYTE pBinary_D3D9SM30_FYUY2Mul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlphaTexDensity[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlphaMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2Cxform[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformEAlphaMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAc[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUV[];
+extern const BYTE pBinary_D3D9SM30_FYUVTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUVEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxform[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformMul[];
@@ -15017,9 +19815,11 @@ extern const BYTE pBinary_D3D9SM30_FYUVCxformAcMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVA[];
+extern const BYTE pBinary_D3D9SM30_FYUVATexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVAMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVAInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxform[];
@@ -15034,9 +19834,25 @@ extern const BYTE pBinary_D3D9SM30_FYUVACxformAcInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlphaInv[];
+extern const BYTE pBinary_D3D9SM30_FYUY2[];
+extern const BYTE pBinary_D3D9SM30_FYUY2TexDensity[];
+extern const BYTE pBinary_D3D9SM30_FYUY2Mul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlphaTexDensity[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlphaMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2Cxform[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformEAlphaMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAc[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUV[];
+extern const BYTE pBinary_D3D9SM30_FYUVTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUVEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxform[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformMul[];
@@ -15047,9 +19863,11 @@ extern const BYTE pBinary_D3D9SM30_FYUVCxformAcMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FYUVCxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVA[];
+extern const BYTE pBinary_D3D9SM30_FYUVATexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVAMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVAInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaTexDensity[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVAEAlphaInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxform[];
@@ -15064,6 +19882,20 @@ extern const BYTE pBinary_D3D9SM30_FYUVACxformAcInv[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlpha[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FYUVACxformAcEAlphaInv[];
+extern const BYTE pBinary_D3D9SM30_FYUY2[];
+extern const BYTE pBinary_D3D9SM30_FYUY2TexDensity[];
+extern const BYTE pBinary_D3D9SM30_FYUY2Mul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlphaTexDensity[];
+extern const BYTE pBinary_D3D9SM30_FYUY2EAlphaMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2Cxform[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformEAlphaMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAc[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcMul[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcEAlpha[];
+extern const BYTE pBinary_D3D9SM30_FYUY2CxformAcEAlphaMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGCMatrixAc[];
 extern const BYTE pBinary_D3D9SM30_FTexTGCMatrixAcMul[];
 extern const BYTE pBinary_D3D9SM30_FTexTGCMatrixAcEAlpha[];
@@ -15072,28 +19904,57 @@ extern const BYTE pBinary_D3D9SM30_FBox1Blur[];
 extern const BYTE pBinary_D3D9SM30_FBox1BlurMul[];
 extern const BYTE pBinary_D3D9SM30_FBox2Blur[];
 extern const BYTE pBinary_D3D9SM30_FBox2BlurMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2Shadow[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowKnockout[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowKnockoutMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadow[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowKnockout[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowKnockoutMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2Shadowonly[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowonlyMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowHighlight[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowHighlightMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowHighlightKnockout[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowHighlightKnockoutMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowHighlight[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowHighlightMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowHighlightKnockout[];
-extern const BYTE pBinary_D3D9SM30_FBox2InnerShadowHighlightKnockoutMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2FullShadowHighlight[];
-extern const BYTE pBinary_D3D9SM30_FBox2FullShadowHighlightMul[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowonlyHighlight[];
-extern const BYTE pBinary_D3D9SM30_FBox2ShadowonlyHighlightMul[];
+extern const BYTE pBinary_D3D9SM30_FSColorOuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColorOuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColorInnerShadow[];
+extern const BYTE pBinary_D3D9SM30_FSColorInnerShadowMul[];
+extern const BYTE pBinary_D3D9SM30_FSColorFullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColorFullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColorHideBaseOuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColorHideBaseOuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColorHideBaseInnerShadow[];
+extern const BYTE pBinary_D3D9SM30_FSColorHideBaseInnerShadowMul[];
+extern const BYTE pBinary_D3D9SM30_FSColorHideBaseFullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColorHideBaseFullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGradOuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGradOuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGradInnerBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGradInnerBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGradFullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGradFullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGradHideBaseOuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGradHideBaseOuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGradHideBaseInnerBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGradHideBaseInnerBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGradHideBaseFullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGradHideBaseFullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColor2OuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColor2OuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColor2InnerBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColor2InnerBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColor2FullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColor2FullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColor2HideBaseOuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColor2HideBaseOuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColor2HideBaseInnerBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColor2HideBaseInnerBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSColor2HideBaseFullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSColor2HideBaseFullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2OuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2OuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2InnerBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2InnerBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2FullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2FullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2HideBaseOuterBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2HideBaseOuterBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2HideBaseInnerBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2HideBaseInnerBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2HideBaseFullBevel[];
+extern const BYTE pBinary_D3D9SM30_FSGrad2HideBaseFullBevelMul[];
+extern const BYTE pBinary_D3D9SM30_FDisplacementMap[];
+extern const BYTE pBinary_D3D9SM30_FDisplacementMapDMIgnore[];
+extern const BYTE pBinary_D3D9SM30_FDisplacementMapDMColor[];
 extern const BYTE pBinary_D3D9SM30_FDrawableCopyPixels[];
 extern const BYTE pBinary_D3D9SM30_FDrawableCopyPixelsMergeAlpha[];
 extern const BYTE pBinary_D3D9SM30_FDrawableCopyPixelsNoDestAlpha[];
@@ -15103,15 +19964,151 @@ extern const BYTE pBinary_D3D9SM30_FDrawableCopyPixelsAlphaNoDestAlpha[];
 extern const BYTE pBinary_D3D9SM30_FDrawableMerge[];
 extern const BYTE pBinary_D3D9SM30_FDrawableCompare[];
 extern const BYTE pBinary_D3D9SM30_FDrawablePaletteMap[];
+extern const BYTE pBinary_D3D9SM30_FBlendLighten[];
+extern const BYTE pBinary_D3D9SM30_FBlendDarken[];
+extern const BYTE pBinary_D3D9SM30_FBlendOverlay[];
+extern const BYTE pBinary_D3D9SM30_FBlendHardlight[];
+extern const BYTE pBinary_D3D9SM30_FBlendDifference[];
+extern const BYTE pBinary_D3D9SM30_FBlendLayer[];
 
-UniformVar Uniforms_5656300913[Uniform::SU_Count] = 
+UniformVar Uniforms_5264443859[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
-    /* fsize*/      {0, 1036, 4, 4, 4, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  {0, 1036, 1, 1, 1, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        {0, 1036, 1, 1, 1, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{1, 1040, 2, 2, 2, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_3018454129[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  {0, 1036, 1, 1, 1, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        {0, 1036, 1, 2, 1, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{1, 1040, 2, 2, 2, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_4368787141[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  {0, 1036, 1, 1, 1, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        {0, 1036, 1, 3, 1, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{1, 1040, 2, 2, 2, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_5254451294[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      { -1, 0, 0, 0, 0, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  {0, 1036, 1, 1, 1, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
+    /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
+    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
+    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
+    /* tex*/        {0, 1036, 1, 4, 1, 0 },
+    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
+    /* texscale*/   { -1, 0, 0, 0, 0, 0 },
+    /* textureDims*/{1, 1040, 2, 2, 2, 0 },
+    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
+    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
+};
+
+UniformVar Uniforms_4749493479[Uniform::SU_Count] = 
+{
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
+    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
+    /* fsize*/      {0, 1036, 4, 4, 4, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
+    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
+    /* offset*/     { -1, 0, 0, 0, 0, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     { -1, 0, 0, 0, 0, 0 },
@@ -15119,18 +20116,29 @@ UniformVar Uniforms_5656300913[Uniform::SU_Count] =
     /* tex*/        {0, 1036, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   {1, 1040, 4, 4, 4, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2478189079[Uniform::SU_Count] = 
+UniformVar Uniforms_4956672183[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      {0, 1036, 4, 4, 4, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     {1, 1040, 4, 4, 4, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     {2, 1044, 4, 4, 4, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
     /* srctex*/     {0, 1036, 1, 1, 1, 0 },
@@ -15138,37 +20146,59 @@ UniformVar Uniforms_2478189079[Uniform::SU_Count] =
     /* tex*/        {1, 1040, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   {4, 1052, 4, 4, 4, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_2286958232[Uniform::SU_Count] = 
+UniformVar Uniforms_4589999521[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      {0, 1036, 4, 4, 4, 0 },
+    /* gradtex*/    {0, 1036, 1, 1, 1, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     {1, 1040, 4, 4, 4, 0 },
-    /* scolor*/     {2, 1044, 4, 4, 4, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
+    /* scolor*/     { -1, 0, 0, 0, 0, 0 },
     /* scolor2*/    { -1, 0, 0, 0, 0, 0 },
-    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
-    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
-    /* tex*/        {0, 1036, 1, 1, 1, 0 },
+    /* srctex*/     {1, 1040, 1, 1, 1, 0 },
+    /* srctexscale*/{2, 1044, 4, 4, 4, 0 },
+    /* tex*/        {2, 1044, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   {3, 1048, 4, 4, 4, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
 
-UniformVar Uniforms_3893930098[Uniform::SU_Count] = 
+UniformVar Uniforms_4474371776[Uniform::SU_Count] = 
 {
+    /* alphatex*/   { -1, 0, 0, 0, 0, 0 },
+    /* boundColor*/ { -1, 0, 0, 0, 0, 0 },
+    /* compx*/      { -1, 0, 0, 0, 0, 0 },
+    /* compy*/      { -1, 0, 0, 0, 0, 0 },
     /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
     /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
+    /* dsttex*/     { -1, 0, 0, 0, 0, 0 },
     /* fsize*/      {0, 1036, 4, 4, 4, 0 },
+    /* gradtex*/    { -1, 0, 0, 0, 0, 0 },
+    /* mapScale*/   { -1, 0, 0, 0, 0, 0 },
+    /* maptex*/     { -1, 0, 0, 0, 0, 0 },
+    /* mipLevels*/  { -1, 0, 0, 0, 0, 0 },
     /* mvp*/        { -1, 0, 0, 0, 0, 0 },
     /* offset*/     {1, 1040, 4, 4, 4, 0 },
+    /* scale*/      { -1, 0, 0, 0, 0, 0 },
     /* scolor*/     {2, 1044, 4, 4, 4, 0 },
     /* scolor2*/    {3, 1048, 4, 4, 4, 0 },
     /* srctex*/     {0, 1036, 1, 1, 1, 0 },
@@ -15176,25 +20206,7 @@ UniformVar Uniforms_3893930098[Uniform::SU_Count] =
     /* tex*/        {1, 1040, 1, 1, 1, 0 },
     /* texgen*/     { -1, 0, 0, 0, 0, 0 },
     /* texscale*/   {5, 1056, 4, 4, 4, 0 },
-    /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
-    /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
-};
-
-UniformVar Uniforms_6259487864[Uniform::SU_Count] = 
-{
-    /* cxadd*/      { -1, 0, 0, 0, 0, 0 },
-    /* cxmul*/      { -1, 0, 0, 0, 0, 0 },
-    /* cxmul1*/     { -1, 0, 0, 0, 0, 0 },
-    /* fsize*/      {0, 1036, 4, 4, 4, 0 },
-    /* mvp*/        { -1, 0, 0, 0, 0, 0 },
-    /* offset*/     {1, 1040, 4, 4, 4, 0 },
-    /* scolor*/     {2, 1044, 4, 4, 4, 0 },
-    /* scolor2*/    {3, 1048, 4, 4, 4, 0 },
-    /* srctex*/     { -1, 0, 0, 0, 0, 0 },
-    /* srctexscale*/{ -1, 0, 0, 0, 0, 0 },
-    /* tex*/        {0, 1036, 1, 1, 1, 0 },
-    /* texgen*/     { -1, 0, 0, 0, 0, 0 },
-    /* texscale*/   {4, 1052, 4, 4, 4, 0 },
+    /* textureDims*/{ -1, 0, 0, 0, 0, 0 },
     /* vfmuniforms*/{ -1, 0, 0, 0, 0, 0 },
     /* vfuniforms*/ { -1, 0, 0, 0, 0, 0 },
 };
@@ -15205,8 +20217,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTG,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15216,8 +20239,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15227,8 +20250,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15238,8 +20261,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15249,8 +20283,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15260,8 +20294,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15271,8 +20305,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15282,8 +20316,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15293,8 +20327,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15304,8 +20338,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15315,8 +20349,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15326,8 +20360,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15337,8 +20371,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15348,8 +20382,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15359,8 +20393,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15370,8 +20404,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15381,8 +20415,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15392,8 +20426,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15403,8 +20437,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertex,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15414,8 +20448,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15425,8 +20459,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15436,8 +20470,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15447,8 +20481,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15458,8 +20492,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15469,8 +20503,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxform,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15480,8 +20514,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15491,8 +20525,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15502,8 +20536,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15513,8 +20547,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15524,8 +20558,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15535,8 +20569,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAc,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15546,8 +20580,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15557,8 +20591,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15568,8 +20602,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15579,8 +20613,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15590,8 +20624,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15601,8 +20635,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTG,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGTexDensity,
+    /* Uniforms */      Uniforms_3018454129,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15612,8 +20657,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15623,8 +20668,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15634,8 +20679,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaTexDensity,
+    /* Uniforms */      Uniforms_3018454129,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15645,8 +20701,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15656,8 +20712,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15667,8 +20723,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15678,8 +20734,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15689,8 +20745,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15700,8 +20756,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15711,8 +20767,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15722,8 +20778,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15733,8 +20789,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAc,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15744,8 +20800,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15755,8 +20811,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15766,8 +20822,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15777,8 +20833,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15788,8 +20844,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15799,8 +20855,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertex,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGVertexTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15810,8 +20877,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15821,8 +20888,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15832,8 +20899,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TexTGVertexEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15843,8 +20921,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15854,8 +20932,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15865,8 +20943,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15876,8 +20954,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15887,8 +20965,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15898,8 +20976,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15909,8 +20987,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15920,8 +20998,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15931,8 +21009,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15942,8 +21020,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15953,8 +21031,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15964,8 +21042,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15975,8 +21053,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15986,8 +21064,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -15997,8 +21075,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTG,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16008,8 +21097,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16019,8 +21108,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16030,8 +21119,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16041,8 +21141,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16052,8 +21152,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16063,8 +21163,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16074,8 +21174,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16085,8 +21185,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16096,8 +21196,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16107,8 +21207,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16118,8 +21218,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16129,8 +21229,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16140,8 +21240,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16151,8 +21251,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16162,8 +21262,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16173,8 +21273,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16184,8 +21284,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16195,8 +21295,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertex,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16206,8 +21306,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16217,8 +21317,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16228,8 +21328,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16239,8 +21339,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16250,8 +21350,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16261,8 +21361,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxform,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16272,8 +21372,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16283,8 +21383,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16294,8 +21394,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16305,8 +21405,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16316,8 +21416,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16327,8 +21427,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAc,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16338,8 +21438,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16349,8 +21449,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16360,8 +21460,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16371,8 +21471,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16382,8 +21482,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16393,8 +21493,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTG,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGTexDensity,
+    /* Uniforms */      Uniforms_3018454129,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16404,8 +21515,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16415,8 +21526,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16426,8 +21537,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaTexDensity,
+    /* Uniforms */      Uniforms_3018454129,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16437,8 +21559,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16448,8 +21570,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16459,8 +21581,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16470,8 +21592,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16481,8 +21603,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16492,8 +21614,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16503,8 +21625,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16514,8 +21636,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16525,8 +21647,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAc,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16536,8 +21658,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16547,8 +21669,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16558,8 +21680,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16569,8 +21691,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16580,8 +21702,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16591,8 +21713,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertex,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGVertexTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16602,8 +21735,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16613,8 +21746,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16624,8 +21757,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTexTGVertexEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16635,8 +21779,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16646,8 +21790,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16657,8 +21801,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16668,8 +21812,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16679,8 +21823,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16690,8 +21834,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16701,8 +21845,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16712,8 +21856,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16723,8 +21867,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16734,8 +21878,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16745,8 +21889,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16756,8 +21900,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16767,8 +21911,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlphaMul 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16778,8 +21922,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlphaInv 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16789,8 +21933,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTG,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16800,8 +21955,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16811,8 +21966,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16822,8 +21977,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16833,8 +21999,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16844,8 +22010,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16855,8 +22021,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16866,8 +22032,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16877,8 +22043,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16888,8 +22054,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16899,8 +22065,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16910,8 +22076,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16921,8 +22087,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16932,8 +22098,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16943,8 +22109,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16954,8 +22120,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16965,8 +22131,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16976,8 +22142,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16987,8 +22153,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertex,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -16998,8 +22164,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17009,8 +22175,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17020,8 +22186,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17031,8 +22197,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17042,8 +22208,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17053,8 +22219,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxform,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17064,8 +22230,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17075,8 +22241,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17086,8 +22252,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17097,8 +22263,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17108,8 +22274,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17119,8 +22285,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAc,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17130,8 +22296,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17141,8 +22307,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17152,8 +22318,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17163,8 +22329,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17174,8 +22340,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_2601942360,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2537398302,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17185,8 +22351,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTG =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTG,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGTexTGTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGTexDensity,
+    /* Uniforms */      Uniforms_3018454129,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17196,8 +22373,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17207,8 +22384,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17218,8 +22395,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGTexTGEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaTexDensity,
+    /* Uniforms */      Uniforms_3018454129,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17229,8 +22417,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17240,8 +22428,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17251,8 +22439,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxform,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17262,8 +22450,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17273,8 +22461,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17284,8 +22472,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17295,8 +22483,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlphaMul
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17306,8 +22494,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlphaInv
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17317,8 +22505,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAc,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17328,8 +22516,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17339,8 +22527,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17350,8 +22538,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlpha 
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17361,8 +22549,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlphaM
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17372,8 +22560,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlphaI
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17383,8 +22571,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertex =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertex,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGVertexTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGVertexTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17394,8 +22593,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17405,8 +22604,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17416,8 +22615,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTexTGVertexEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17427,8 +22637,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17438,8 +22648,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17449,8 +22659,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxform =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxform,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17460,8 +22670,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17471,8 +22681,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17482,8 +22692,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlpha =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17493,8 +22703,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlphaMu
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17504,8 +22714,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlphaIn
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17515,8 +22725,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAc =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAc,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17526,8 +22736,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17537,8 +22747,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17548,8 +22758,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlpha
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17559,8 +22769,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlpha
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17570,8 +22780,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlpha
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTexTGVertexCxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17581,8 +22791,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FSolid,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17592,8 +22802,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSolidMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FSolidMul,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17603,8 +22813,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSolidInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FSolidInv,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17614,8 +22824,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FText,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTextTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_TextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTextTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17625,8 +22846,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTextMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTextMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17636,8 +22857,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTextInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         0,
     /* pBinary */       pBinary_D3D9SM30_FTextInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17647,8 +22868,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FSolid,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17658,8 +22879,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchSolidMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FSolidMul,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17669,8 +22890,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchSolidInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FSolidInv,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17680,8 +22901,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FText,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTextTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTextTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17691,8 +22923,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTextMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTextMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17702,8 +22934,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchTextInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTextInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17713,8 +22945,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedSolid =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FSolid,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17724,8 +22956,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedSolidMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FSolidMul,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17735,8 +22967,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedSolidInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FSolidInv,
-    /* Uniforms */      Uniforms_2364729977,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5962203294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17746,8 +22978,19 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedText =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FText,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTextTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedTextTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FTextTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17757,8 +23000,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTextMul =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTextMul,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17768,8 +23011,8 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedTextInv =
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
     /* Flags */         Shader_Instanced,
     /* pBinary */       pBinary_D3D9SM30_FTextInv,
-    /* Uniforms */      Uniforms_5292135573,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17777,10 +23020,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUV =
 {
     /* Type */          ShaderDesc::ST_YUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUV,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVTexDensity,
+    /* Uniforms */      Uniforms_4368787141,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17788,10 +23042,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVMul =
 {
     /* Type */          ShaderDesc::ST_YUVMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17799,10 +23053,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVEAlphaTexDensity,
+    /* Uniforms */      Uniforms_4368787141,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17810,10 +23075,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17821,10 +23086,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxform =
 {
     /* Type */          ShaderDesc::ST_YUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxform,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17832,10 +23097,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17843,10 +23108,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVCxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17854,10 +23119,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17865,10 +23130,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformAc =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAc,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17876,10 +23141,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformAcMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17887,10 +23152,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17898,10 +23163,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVCxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVCxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17909,10 +23174,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVA =
 {
     /* Type */          ShaderDesc::ST_YUVA,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVA,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVATexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUVATexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVATexDensity,
+    /* Uniforms */      Uniforms_5254451294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17920,10 +23196,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVAMul =
 {
     /* Type */          ShaderDesc::ST_YUVAMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17931,10 +23207,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVAInv =
 {
     /* Type */          ShaderDesc::ST_YUVAInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17942,10 +23218,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVAEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVAEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVAEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUVAEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5254451294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17953,10 +23240,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVAEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVAEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17964,10 +23251,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVAEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_YUVAEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17975,10 +23262,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxform =
 {
     /* Type */          ShaderDesc::ST_YUVACxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxform,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17986,10 +23273,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -17997,10 +23284,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18008,10 +23295,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVACxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18019,10 +23306,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18030,10 +23317,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18041,10 +23328,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformAc =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAc,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18052,10 +23339,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformAcMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18063,10 +23350,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformAcInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18074,10 +23361,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18085,10 +23372,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18096,10 +23383,164 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_YUVACxformAcEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2 = 
+{
+    /* Type */          ShaderDesc::ST_YUY2,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2TexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUY2TexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2TexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2Mul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2Mul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2Mul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2EAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUY2EAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2EAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_YUY2EAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2EAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2EAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2Cxform = 
+{
+    /* Type */          ShaderDesc::ST_YUY2Cxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2Cxform,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformAc = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAc,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAc,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformAcMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAcMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformAcEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAcEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FYUY2CxformAcEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_YUY2CxformAcEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18107,10 +23548,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUV =
 {
     /* Type */          ShaderDesc::ST_BatchYUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUV,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVTexDensity,
+    /* Uniforms */      Uniforms_4368787141,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18118,10 +23570,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18129,10 +23581,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVEAlphaTexDensity,
+    /* Uniforms */      Uniforms_4368787141,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18140,10 +23603,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18151,10 +23614,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxform =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxform,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18162,10 +23625,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18173,10 +23636,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18184,10 +23647,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18195,10 +23658,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAc =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAc,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18206,10 +23669,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18217,10 +23680,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18228,10 +23691,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVCxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18239,10 +23702,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVA =
 {
     /* Type */          ShaderDesc::ST_BatchYUVA,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVA,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVATexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVATexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVATexDensity,
+    /* Uniforms */      Uniforms_5254451294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18250,10 +23724,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVAMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18261,10 +23735,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVAInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18272,10 +23746,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUVAEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5254451294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18283,10 +23768,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18294,10 +23779,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVAEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18305,10 +23790,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxform =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxform,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18316,10 +23801,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18327,10 +23812,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18338,10 +23823,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18349,10 +23834,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18360,10 +23845,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18371,10 +23856,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAc =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAc,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18382,10 +23867,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18393,10 +23878,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18404,10 +23889,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18415,10 +23900,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18426,10 +23911,164 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_BatchYUVACxformAcEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Batch,
+    /* Flags */         Shader_Batch | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2 = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2TexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2TexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2TexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2Mul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2Mul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2Mul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2EAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2EAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2EAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2EAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2EAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2EAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2Cxform = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2Cxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2Cxform,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAc = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAc,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAc,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAcMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAcMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAcEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAcEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAcEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_BatchYUY2CxformAcEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18437,10 +24076,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUV =
 {
     /* Type */          ShaderDesc::ST_InstancedYUV,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUV,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVTexDensity,
+    /* Uniforms */      Uniforms_4368787141,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18448,10 +24098,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18459,10 +24109,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlpha =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVEAlphaTexDensity,
+    /* Uniforms */      Uniforms_4368787141,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18470,10 +24131,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18481,10 +24142,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxform =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxform,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18492,10 +24153,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18503,10 +24164,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18514,10 +24175,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18525,10 +24186,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAc =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAc,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18536,10 +24197,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18547,10 +24208,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcEAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18558,10 +24219,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVCxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVCxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18569,10 +24230,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVA =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVA,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVA,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVATexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVATexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVATexDensity,
+    /* Uniforms */      Uniforms_5254451294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18580,10 +24252,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVAMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVAMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18591,10 +24263,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVAInv =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVAInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18602,10 +24274,21 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlpha =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVAEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUVAEAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaTexDensity,
+    /* Uniforms */      Uniforms_5254451294,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18613,10 +24296,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVAEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18624,10 +24307,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVAEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVAEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18635,10 +24318,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxform =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxform,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxform,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18646,10 +24329,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18657,10 +24340,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformInv =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18668,10 +24351,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlpha =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18679,10 +24362,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18690,10 +24373,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18701,10 +24384,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAc =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAc,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18712,10 +24395,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18723,10 +24406,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcInv =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformAcInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18734,10 +24417,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlpha,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18745,10 +24428,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlphaMul,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18756,10 +24439,164 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlphaInv =
 {
     /* Type */          ShaderDesc::ST_InstancedYUVACxformAcEAlphaInv,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_Instanced,
+    /* Flags */         Shader_Instanced | Shader_Video,
     /* pBinary */       pBinary_D3D9SM30_FYUVACxformAcEAlphaInv,
-    /* Uniforms */      Uniforms_5475920020,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6138785872,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2 = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2TexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2TexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2TexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2Mul = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2Mul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2Mul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2EAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2EAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2EAlphaTexDensity = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2EAlphaTexDensity,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video | Shader_Derivatives,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlphaTexDensity,
+    /* Uniforms */      Uniforms_5264443859,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2EAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2EAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2EAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2Cxform = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2Cxform,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2Cxform,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformMul = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAc = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformAc,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAc,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAcMul = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformAcMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAcEAlpha = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformAcEAlpha,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcEAlpha,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAcEAlphaMul = 
+{
+    /* Type */          ShaderDesc::ST_InstancedYUY2CxformAcEAlphaMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Instanced | Shader_Video,
+    /* pBinary */       pBinary_D3D9SM30_FYUY2CxformAcEAlphaMul,
+    /* Uniforms */      Uniforms_5919081762,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18767,10 +24604,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAc =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAc,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCMatrixAc,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18778,10 +24615,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcMul =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAcMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCMatrixAcMul,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18789,10 +24626,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcEAlpha =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAcEAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCMatrixAcEAlpha,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18800,10 +24637,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcEAlphaMul =
 {
     /* Type */          ShaderDesc::ST_TexTGCMatrixAcEAlphaMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FTexTGCMatrixAcEAlphaMul,
-    /* Uniforms */      Uniforms_2817570809,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_2511219955,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18811,10 +24648,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox1Blur =
 {
     /* Type */          ShaderDesc::ST_Box1Blur,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
     /* pBinary */       pBinary_D3D9SM30_FBox1Blur,
-    /* Uniforms */      Uniforms_5656300913,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4749493479,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18822,10 +24659,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox1BlurMul =
 {
     /* Type */          ShaderDesc::ST_Box1BlurMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
     /* pBinary */       pBinary_D3D9SM30_FBox1BlurMul,
-    /* Uniforms */      Uniforms_5656300913,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4749493479,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18833,10 +24670,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2Blur =
 {
     /* Type */          ShaderDesc::ST_Box2Blur,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
     /* pBinary */       pBinary_D3D9SM30_FBox2Blur,
-    /* Uniforms */      Uniforms_5656300913,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4749493479,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -18844,252 +24681,571 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2BlurMul =
 {
     /* Type */          ShaderDesc::ST_Box2BlurMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
     /* pBinary */       pBinary_D3D9SM30_FBox2BlurMul,
-    /* Uniforms */      Uniforms_5656300913,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4749493479,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2Shadow = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorOuterBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2Shadow,
+    /* Type */          ShaderDesc::ST_SColorOuterBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2Shadow,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorOuterBevel,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorOuterBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowMul,
+    /* Type */          ShaderDesc::ST_SColorOuterBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowMul,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorOuterBevelMul,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowKnockout = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorInnerShadow = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowKnockout,
+    /* Type */          ShaderDesc::ST_SColorInnerShadow,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowKnockout,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorInnerShadow,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowKnockoutMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorInnerShadowMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowKnockoutMul,
+    /* Type */          ShaderDesc::ST_SColorInnerShadowMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowKnockoutMul,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorInnerShadowMul,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadow = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorFullBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadow,
+    /* Type */          ShaderDesc::ST_SColorFullBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadow,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorFullBevel,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorFullBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowMul,
+    /* Type */          ShaderDesc::ST_SColorFullBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowMul,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorFullBevelMul,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowKnockout = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorHideBaseOuterBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowKnockout,
+    /* Type */          ShaderDesc::ST_SColorHideBaseOuterBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowKnockout,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorHideBaseOuterBevel,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowKnockoutMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorHideBaseOuterBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowKnockoutMul,
+    /* Type */          ShaderDesc::ST_SColorHideBaseOuterBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowKnockoutMul,
-    /* Uniforms */      Uniforms_2478189079,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorHideBaseOuterBevelMul,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2Shadowonly = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorHideBaseInnerShadow = 
 {
-    /* Type */          ShaderDesc::ST_Box2Shadowonly,
+    /* Type */          ShaderDesc::ST_SColorHideBaseInnerShadow,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2Shadowonly,
-    /* Uniforms */      Uniforms_2286958232,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorHideBaseInnerShadow,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowonlyMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorHideBaseInnerShadowMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowonlyMul,
+    /* Type */          ShaderDesc::ST_SColorHideBaseInnerShadowMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowonlyMul,
-    /* Uniforms */      Uniforms_2286958232,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorHideBaseInnerShadowMul,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlight = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorHideBaseFullBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowHighlight,
+    /* Type */          ShaderDesc::ST_SColorHideBaseFullBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowHighlight,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorHideBaseFullBevel,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlightMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColorHideBaseFullBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowHighlightMul,
+    /* Type */          ShaderDesc::ST_SColorHideBaseFullBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowHighlightMul,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColorHideBaseFullBevelMul,
+    /* Uniforms */      Uniforms_4956672183,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlightKnockout = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradOuterBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowHighlightKnockout,
+    /* Type */          ShaderDesc::ST_SGradOuterBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowHighlightKnockout,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradOuterBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlightKnockoutMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradOuterBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowHighlightKnockoutMul,
+    /* Type */          ShaderDesc::ST_SGradOuterBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowHighlightKnockoutMul,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradOuterBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlight = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradInnerBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowHighlight,
+    /* Type */          ShaderDesc::ST_SGradInnerBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowHighlight,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradInnerBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlightMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradInnerBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowHighlightMul,
+    /* Type */          ShaderDesc::ST_SGradInnerBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowHighlightMul,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradInnerBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlightKnockout = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradFullBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowHighlightKnockout,
+    /* Type */          ShaderDesc::ST_SGradFullBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowHighlightKnockout,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradFullBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlightKnockoutMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradFullBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2InnerShadowHighlightKnockoutMul,
+    /* Type */          ShaderDesc::ST_SGradFullBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2InnerShadowHighlightKnockoutMul,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradFullBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2FullShadowHighlight = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradHideBaseOuterBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2FullShadowHighlight,
+    /* Type */          ShaderDesc::ST_SGradHideBaseOuterBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2FullShadowHighlight,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradHideBaseOuterBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2FullShadowHighlightMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradHideBaseOuterBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2FullShadowHighlightMul,
+    /* Type */          ShaderDesc::ST_SGradHideBaseOuterBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2FullShadowHighlightMul,
-    /* Uniforms */      Uniforms_3893930098,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradHideBaseOuterBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowonlyHighlight = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradHideBaseInnerBevel = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowonlyHighlight,
+    /* Type */          ShaderDesc::ST_SGradHideBaseInnerBevel,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowonlyHighlight,
-    /* Uniforms */      Uniforms_6259487864,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradHideBaseInnerBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
-static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBox2ShadowonlyHighlightMul = 
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradHideBaseInnerBevelMul = 
 {
-    /* Type */          ShaderDesc::ST_Box2ShadowonlyHighlightMul,
+    /* Type */          ShaderDesc::ST_SGradHideBaseInnerBevelMul,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         Shader_DynamicLoop,
-    /* pBinary */       pBinary_D3D9SM30_FBox2ShadowonlyHighlightMul,
-    /* Uniforms */      Uniforms_6259487864,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradHideBaseInnerBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradHideBaseFullBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGradHideBaseFullBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradHideBaseFullBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGradHideBaseFullBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGradHideBaseFullBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGradHideBaseFullBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2OuterBevel = 
+{
+    /* Type */          ShaderDesc::ST_SColor2OuterBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2OuterBevel,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2OuterBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SColor2OuterBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2OuterBevelMul,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2InnerBevel = 
+{
+    /* Type */          ShaderDesc::ST_SColor2InnerBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2InnerBevel,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2InnerBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SColor2InnerBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2InnerBevelMul,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2FullBevel = 
+{
+    /* Type */          ShaderDesc::ST_SColor2FullBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2FullBevel,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2FullBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SColor2FullBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2FullBevelMul,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2HideBaseOuterBevel = 
+{
+    /* Type */          ShaderDesc::ST_SColor2HideBaseOuterBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2HideBaseOuterBevel,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2HideBaseOuterBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SColor2HideBaseOuterBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2HideBaseOuterBevelMul,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2HideBaseInnerBevel = 
+{
+    /* Type */          ShaderDesc::ST_SColor2HideBaseInnerBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2HideBaseInnerBevel,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2HideBaseInnerBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SColor2HideBaseInnerBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2HideBaseInnerBevelMul,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2HideBaseFullBevel = 
+{
+    /* Type */          ShaderDesc::ST_SColor2HideBaseFullBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2HideBaseFullBevel,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSColor2HideBaseFullBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SColor2HideBaseFullBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSColor2HideBaseFullBevelMul,
+    /* Uniforms */      Uniforms_4474371776,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2OuterBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2OuterBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2OuterBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2OuterBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2OuterBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2OuterBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2InnerBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2InnerBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2InnerBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2InnerBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2InnerBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2InnerBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2FullBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2FullBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2FullBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2FullBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2FullBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2FullBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseOuterBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2HideBaseOuterBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2HideBaseOuterBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseOuterBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2HideBaseOuterBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2HideBaseOuterBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseInnerBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2HideBaseInnerBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2HideBaseInnerBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseInnerBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2HideBaseInnerBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2HideBaseInnerBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseFullBevel = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2HideBaseFullBevel,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2HideBaseFullBevel,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseFullBevelMul = 
+{
+    /* Type */          ShaderDesc::ST_SGrad2HideBaseFullBevelMul,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch | Shader_DynamicLoop,
+    /* pBinary */       pBinary_D3D9SM30_FSGrad2HideBaseFullBevelMul,
+    /* Uniforms */      Uniforms_4589999521,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDisplacementMap = 
+{
+    /* Type */          ShaderDesc::ST_DisplacementMap,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FDisplacementMap,
+    /* Uniforms */      Uniforms_5285172964,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDisplacementMapDMIgnore = 
+{
+    /* Type */          ShaderDesc::ST_DisplacementMapDMIgnore,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FDisplacementMapDMIgnore,
+    /* Uniforms */      Uniforms_5285172964,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDisplacementMapDMColor = 
+{
+    /* Type */          ShaderDesc::ST_DisplacementMapDMColor,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FDisplacementMapDMColor,
+    /* Uniforms */      Uniforms_3935531125,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19097,10 +25253,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCopyPixels =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixels,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCopyPixels,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19108,10 +25264,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsMergeAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsMergeAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCopyPixelsMergeAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19119,10 +25275,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsNoDestAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsNoDestAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCopyPixelsNoDestAlpha,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19130,10 +25286,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlpha =
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCopyPixelsAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19141,10 +25297,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlphaMergeAlpha 
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlphaMergeAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCopyPixelsAlphaMergeAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19152,10 +25308,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlphaNoDestAlpha
 {
     /* Type */          ShaderDesc::ST_DrawableCopyPixelsAlphaNoDestAlpha,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCopyPixelsAlphaNoDestAlpha,
-    /* Uniforms */      Uniforms_5642581497,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_5215493381,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19163,10 +25319,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableMerge =
 {
     /* Type */          ShaderDesc::ST_DrawableMerge,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableMerge,
-    /* Uniforms */      Uniforms_3033064606,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_6217483699,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19174,10 +25330,10 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawableCompare =
 {
     /* Type */          ShaderDesc::ST_DrawableCompare,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawableCompare,
-    /* Uniforms */      Uniforms_4895524107,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_4536263616,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19185,10 +25341,76 @@ static FragShaderDesc ShaderDesc_FS_D3D9SM30_FDrawablePaletteMap =
 {
     /* Type */          ShaderDesc::ST_DrawablePaletteMap,
     /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
-    /* Flags */         0,
+    /* Flags */         Shader_Batch,
     /* pBinary */       pBinary_D3D9SM30_FDrawablePaletteMap,
-    /* Uniforms */      Uniforms_3820893743,
-    /* BatchUniforms */ BatchUniforms_6184305142,
+    /* Uniforms */      Uniforms_3905359981,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBlendLighten = 
+{
+    /* Type */          ShaderDesc::ST_BlendLighten,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FBlendLighten,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBlendDarken = 
+{
+    /* Type */          ShaderDesc::ST_BlendDarken,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FBlendDarken,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBlendOverlay = 
+{
+    /* Type */          ShaderDesc::ST_BlendOverlay,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FBlendOverlay,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBlendHardlight = 
+{
+    /* Type */          ShaderDesc::ST_BlendHardlight,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FBlendHardlight,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBlendDifference = 
+{
+    /* Type */          ShaderDesc::ST_BlendDifference,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FBlendDifference,
+    /* Uniforms */      Uniforms_2155251096,
+    /* BatchUniforms */ BatchUniforms_5922227411,
+    
+};
+
+static FragShaderDesc ShaderDesc_FS_D3D9SM30_FBlendLayer = 
+{
+    /* Type */          ShaderDesc::ST_BlendLayer,
+    /* Version */       ShaderDesc::ShaderVersion_D3D9SM30,
+    /* Flags */         Shader_Batch,
+    /* pBinary */       pBinary_D3D9SM30_FBlendLayer,
+    /* Uniforms */      Uniforms_3808699271,
+    /* BatchUniforms */ BatchUniforms_5922227411,
     
 };
 
@@ -19380,412 +25602,555 @@ const FragShaderDesc* FragShaderDesc::Descs[FSI_Count] = {
     &ShaderDesc_FS_D3D9SM20_FYUVACxformAcEAlpha,                 // 184
     &ShaderDesc_FS_D3D9SM20_FYUVACxformAcEAlphaMul,              // 185
     &ShaderDesc_FS_D3D9SM20_FYUVACxformAcEAlphaInv,              // 186
-    &ShaderDesc_FS_D3D9SM20_FBatchYUV,                           // 187
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVMul,                        // 188
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVEAlpha,                     // 189
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVEAlphaMul,                  // 190
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxform,                     // 191
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformMul,                  // 192
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformEAlpha,               // 193
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformEAlphaMul,            // 194
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAc,                   // 195
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcMul,                // 196
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcEAlpha,             // 197
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcEAlphaMul,          // 198
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVA,                          // 199
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVAMul,                       // 200
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVAInv,                       // 201
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlpha,                    // 202
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlphaMul,                 // 203
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlphaInv,                 // 204
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxform,                    // 205
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformMul,                 // 206
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformInv,                 // 207
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlpha,              // 208
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlphaMul,           // 209
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlphaInv,           // 210
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAc,                  // 211
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcMul,               // 212
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcInv,               // 213
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlpha,            // 214
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlphaMul,         // 215
-    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlphaInv,         // 216
-    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAc,                     // 217
-    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcMul,                  // 218
-    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcEAlpha,               // 219
-    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcEAlphaMul,            // 220
-    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixels,                 // 221
-    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsMergeAlpha,       // 222
-    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsNoDestAlpha,      // 223
-    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlpha,            // 224
-    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlphaMergeAlpha,  // 225
-    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlphaNoDestAlpha, // 226
-    &ShaderDesc_FS_D3D9SM20_FDrawableMerge,                      // 227
-    &ShaderDesc_FS_D3D9SM20_FDrawableCompare,                    // 228
-    &ShaderDesc_FS_D3D9SM20_FDrawablePaletteMap,                 // 229
-    &ShaderDesc_FS_D3D9SM30_FTexTG,                              // 230
-    &ShaderDesc_FS_D3D9SM30_FTexTGMul,                           // 231
-    &ShaderDesc_FS_D3D9SM30_FTexTGInv,                           // 232
-    &ShaderDesc_FS_D3D9SM30_FTexTGEAlpha,                        // 233
-    &ShaderDesc_FS_D3D9SM30_FTexTGEAlphaMul,                     // 234
-    &ShaderDesc_FS_D3D9SM30_FTexTGEAlphaInv,                     // 235
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxform,                        // 236
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformMul,                     // 237
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformInv,                     // 238
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlpha,                  // 239
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlphaMul,               // 240
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlphaInv,               // 241
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAc,                      // 242
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcMul,                   // 243
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcInv,                   // 244
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlpha,                // 245
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlphaMul,             // 246
-    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlphaInv,             // 247
-    &ShaderDesc_FS_D3D9SM30_FVertex,                             // 248
-    &ShaderDesc_FS_D3D9SM30_FVertexMul,                          // 249
-    &ShaderDesc_FS_D3D9SM30_FVertexInv,                          // 250
-    &ShaderDesc_FS_D3D9SM30_FVertexEAlpha,                       // 251
-    &ShaderDesc_FS_D3D9SM30_FVertexEAlphaMul,                    // 252
-    &ShaderDesc_FS_D3D9SM30_FVertexEAlphaInv,                    // 253
-    &ShaderDesc_FS_D3D9SM30_FVertexCxform,                       // 254
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformMul,                    // 255
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformInv,                    // 256
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformEAlpha,                 // 257
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformEAlphaMul,              // 258
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformEAlphaInv,              // 259
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformAc,                     // 260
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcMul,                  // 261
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcInv,                  // 262
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlpha,               // 263
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlphaMul,            // 264
-    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlphaInv,            // 265
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTG,                         // 266
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGMul,                      // 267
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGInv,                      // 268
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlpha,                   // 269
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaMul,                // 270
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaInv,                // 271
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxform,                   // 272
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformMul,                // 273
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformInv,                // 274
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlpha,             // 275
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlphaMul,          // 276
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlphaInv,          // 277
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAc,                 // 278
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcMul,              // 279
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcInv,              // 280
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlpha,           // 281
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul,        // 282
-    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv,        // 283
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertex,                        // 284
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexMul,                     // 285
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexInv,                     // 286
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlpha,                  // 287
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaMul,               // 288
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaInv,               // 289
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxform,                  // 290
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformMul,               // 291
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformInv,               // 292
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlpha,            // 293
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlphaMul,         // 294
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlphaInv,         // 295
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAc,                // 296
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcMul,             // 297
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcInv,             // 298
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlpha,          // 299
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlphaMul,       // 300
-    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlphaInv,       // 301
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTG,                         // 302
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGMul,                      // 303
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGInv,                      // 304
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlpha,                   // 305
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaMul,                // 306
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaInv,                // 307
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxform,                   // 308
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformMul,                // 309
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformInv,                // 310
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlpha,             // 311
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlphaMul,          // 312
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlphaInv,          // 313
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAc,                 // 314
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcMul,              // 315
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcInv,              // 316
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlpha,           // 317
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlphaMul,        // 318
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlphaInv,        // 319
-    &ShaderDesc_FS_D3D9SM30_FBatchVertex,                        // 320
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexMul,                     // 321
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexInv,                     // 322
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexEAlpha,                  // 323
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexEAlphaMul,               // 324
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexEAlphaInv,               // 325
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxform,                  // 326
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformMul,               // 327
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformInv,               // 328
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlpha,            // 329
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlphaMul,         // 330
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlphaInv,         // 331
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAc,                // 332
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcMul,             // 333
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcInv,             // 334
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlpha,          // 335
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlphaMul,       // 336
-    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlphaInv,       // 337
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTG,                    // 338
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGMul,                 // 339
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGInv,                 // 340
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlpha,              // 341
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaMul,           // 342
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaInv,           // 343
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxform,              // 344
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformMul,           // 345
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformInv,           // 346
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlpha,        // 347
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlphaMul,     // 348
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlphaInv,     // 349
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAc,            // 350
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcMul,         // 351
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcInv,         // 352
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlpha,      // 353
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlphaMul,   // 354
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlphaInv,   // 355
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertex,                   // 356
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexMul,                // 357
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexInv,                // 358
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlpha,             // 359
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaMul,          // 360
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaInv,          // 361
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxform,             // 362
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformMul,          // 363
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformInv,          // 364
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlpha,       // 365
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlphaMul,    // 366
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlphaInv,    // 367
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAc,           // 368
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcMul,        // 369
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcInv,        // 370
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlpha,     // 371
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlphaMul,  // 372
-    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlphaInv,  // 373
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTG,                     // 374
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGMul,                  // 375
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGInv,                  // 376
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlpha,               // 377
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaMul,            // 378
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaInv,            // 379
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxform,               // 380
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformMul,            // 381
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformInv,            // 382
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlpha,         // 383
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlphaMul,      // 384
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlphaInv,      // 385
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAc,             // 386
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcMul,          // 387
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcInv,          // 388
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlpha,       // 389
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlphaMul,    // 390
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlphaInv,    // 391
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertex,                    // 392
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexMul,                 // 393
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexInv,                 // 394
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlpha,              // 395
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlphaMul,           // 396
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlphaInv,           // 397
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxform,              // 398
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformMul,           // 399
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformInv,           // 400
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlpha,        // 401
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlphaMul,     // 402
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlphaInv,     // 403
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAc,            // 404
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcMul,         // 405
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcInv,         // 406
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlpha,      // 407
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlphaMul,   // 408
-    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlphaInv,   // 409
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTG,                // 410
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGMul,             // 411
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGInv,             // 412
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlpha,          // 413
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaMul,       // 414
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaInv,       // 415
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxform,          // 416
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformMul,       // 417
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformInv,       // 418
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlpha,    // 419
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlphaMul, // 420
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlphaInv, // 421
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAc,        // 422
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcMul,     // 423
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcInv,     // 424
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlpha,  // 425
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlphaMul, // 426
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlphaInv, // 427
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertex,               // 428
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexMul,            // 429
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexInv,            // 430
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlpha,         // 431
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaMul,      // 432
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaInv,      // 433
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxform,         // 434
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformMul,      // 435
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformInv,      // 436
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlpha,   // 437
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlphaMul, // 438
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlphaInv, // 439
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAc,       // 440
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcMul,    // 441
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcInv,    // 442
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlpha, // 443
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlphaMul, // 444
-    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlphaInv, // 445
-    &ShaderDesc_FS_D3D9SM30_FSolid,                              // 446
-    &ShaderDesc_FS_D3D9SM30_FSolidMul,                           // 447
-    &ShaderDesc_FS_D3D9SM30_FSolidInv,                           // 448
-    &ShaderDesc_FS_D3D9SM30_FText,                               // 449
-    &ShaderDesc_FS_D3D9SM30_FTextMul,                            // 450
-    &ShaderDesc_FS_D3D9SM30_FTextInv,                            // 451
-    &ShaderDesc_FS_D3D9SM30_FBatchSolid,                         // 452
-    &ShaderDesc_FS_D3D9SM30_FBatchSolidMul,                      // 453
-    &ShaderDesc_FS_D3D9SM30_FBatchSolidInv,                      // 454
-    &ShaderDesc_FS_D3D9SM30_FBatchText,                          // 455
-    &ShaderDesc_FS_D3D9SM30_FBatchTextMul,                       // 456
-    &ShaderDesc_FS_D3D9SM30_FBatchTextInv,                       // 457
-    &ShaderDesc_FS_D3D9SM30_FInstancedSolid,                     // 458
-    &ShaderDesc_FS_D3D9SM30_FInstancedSolidMul,                  // 459
-    &ShaderDesc_FS_D3D9SM30_FInstancedSolidInv,                  // 460
-    &ShaderDesc_FS_D3D9SM30_FInstancedText,                      // 461
-    &ShaderDesc_FS_D3D9SM30_FInstancedTextMul,                   // 462
-    &ShaderDesc_FS_D3D9SM30_FInstancedTextInv,                   // 463
-    &ShaderDesc_FS_D3D9SM30_FYUV,                                // 464
-    &ShaderDesc_FS_D3D9SM30_FYUVMul,                             // 465
-    &ShaderDesc_FS_D3D9SM30_FYUVEAlpha,                          // 466
-    &ShaderDesc_FS_D3D9SM30_FYUVEAlphaMul,                       // 467
-    &ShaderDesc_FS_D3D9SM30_FYUVCxform,                          // 468
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformMul,                       // 469
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformEAlpha,                    // 470
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformEAlphaMul,                 // 471
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformAc,                        // 472
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformAcMul,                     // 473
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformAcEAlpha,                  // 474
-    &ShaderDesc_FS_D3D9SM30_FYUVCxformAcEAlphaMul,               // 475
-    &ShaderDesc_FS_D3D9SM30_FYUVA,                               // 476
-    &ShaderDesc_FS_D3D9SM30_FYUVAMul,                            // 477
-    &ShaderDesc_FS_D3D9SM30_FYUVAInv,                            // 478
-    &ShaderDesc_FS_D3D9SM30_FYUVAEAlpha,                         // 479
-    &ShaderDesc_FS_D3D9SM30_FYUVAEAlphaMul,                      // 480
-    &ShaderDesc_FS_D3D9SM30_FYUVAEAlphaInv,                      // 481
-    &ShaderDesc_FS_D3D9SM30_FYUVACxform,                         // 482
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformMul,                      // 483
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformInv,                      // 484
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformEAlpha,                   // 485
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformEAlphaMul,                // 486
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformEAlphaInv,                // 487
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformAc,                       // 488
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcMul,                    // 489
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcInv,                    // 490
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlpha,                 // 491
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlphaMul,              // 492
-    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlphaInv,              // 493
-    &ShaderDesc_FS_D3D9SM30_FBatchYUV,                           // 494
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVMul,                        // 495
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVEAlpha,                     // 496
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVEAlphaMul,                  // 497
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxform,                     // 498
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformMul,                  // 499
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformEAlpha,               // 500
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformEAlphaMul,            // 501
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAc,                   // 502
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcMul,                // 503
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcEAlpha,             // 504
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcEAlphaMul,          // 505
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVA,                          // 506
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVAMul,                       // 507
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVAInv,                       // 508
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlpha,                    // 509
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaMul,                 // 510
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaInv,                 // 511
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxform,                    // 512
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformMul,                 // 513
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformInv,                 // 514
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlpha,              // 515
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlphaMul,           // 516
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlphaInv,           // 517
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAc,                  // 518
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcMul,               // 519
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcInv,               // 520
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlpha,            // 521
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlphaMul,         // 522
-    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlphaInv,         // 523
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUV,                       // 524
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVMul,                    // 525
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlpha,                 // 526
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlphaMul,              // 527
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxform,                 // 528
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformMul,              // 529
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformEAlpha,           // 530
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformEAlphaMul,        // 531
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAc,               // 532
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcMul,            // 533
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcEAlpha,         // 534
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcEAlphaMul,      // 535
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVA,                      // 536
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAMul,                   // 537
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAInv,                   // 538
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlpha,                // 539
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaMul,             // 540
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaInv,             // 541
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxform,                // 542
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformMul,             // 543
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformInv,             // 544
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlpha,          // 545
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlphaMul,       // 546
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlphaInv,       // 547
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAc,              // 548
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcMul,           // 549
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcInv,           // 550
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlpha,        // 551
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlphaMul,     // 552
-    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlphaInv,     // 553
-    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAc,                     // 554
-    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcMul,                  // 555
-    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcEAlpha,               // 556
-    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcEAlphaMul,            // 557
-    &ShaderDesc_FS_D3D9SM30_FBox1Blur,                           // 558
-    &ShaderDesc_FS_D3D9SM30_FBox1BlurMul,                        // 559
-    &ShaderDesc_FS_D3D9SM30_FBox2Blur,                           // 560
-    &ShaderDesc_FS_D3D9SM30_FBox2BlurMul,                        // 561
-    &ShaderDesc_FS_D3D9SM30_FBox2Shadow,                         // 562
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowMul,                      // 563
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowKnockout,                 // 564
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowKnockoutMul,              // 565
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadow,                    // 566
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowMul,                 // 567
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowKnockout,            // 568
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowKnockoutMul,         // 569
-    &ShaderDesc_FS_D3D9SM30_FBox2Shadowonly,                     // 570
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowonlyMul,                  // 571
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlight,                // 572
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlightMul,             // 573
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlightKnockout,        // 574
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowHighlightKnockoutMul,     // 575
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlight,           // 576
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlightMul,        // 577
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlightKnockout,   // 578
-    &ShaderDesc_FS_D3D9SM30_FBox2InnerShadowHighlightKnockoutMul, // 579
-    &ShaderDesc_FS_D3D9SM30_FBox2FullShadowHighlight,            // 580
-    &ShaderDesc_FS_D3D9SM30_FBox2FullShadowHighlightMul,         // 581
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowonlyHighlight,            // 582
-    &ShaderDesc_FS_D3D9SM30_FBox2ShadowonlyHighlightMul,         // 583
-    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixels,                 // 584
-    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsMergeAlpha,       // 585
-    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsNoDestAlpha,      // 586
-    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlpha,            // 587
-    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlphaMergeAlpha,  // 588
-    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlphaNoDestAlpha, // 589
-    &ShaderDesc_FS_D3D9SM30_FDrawableMerge,                      // 590
-    &ShaderDesc_FS_D3D9SM30_FDrawableCompare,                    // 591
-    &ShaderDesc_FS_D3D9SM30_FDrawablePaletteMap,                 // 592
+    &ShaderDesc_FS_D3D9SM20_FYUY2,                               // 187
+    &ShaderDesc_FS_D3D9SM20_FYUY2Mul,                            // 188
+    &ShaderDesc_FS_D3D9SM20_FYUY2EAlpha,                         // 189
+    &ShaderDesc_FS_D3D9SM20_FYUY2EAlphaMul,                      // 190
+    &ShaderDesc_FS_D3D9SM20_FYUY2Cxform,                         // 191
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformMul,                      // 192
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformEAlpha,                   // 193
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformEAlphaMul,                // 194
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformAc,                       // 195
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformAcMul,                    // 196
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformAcEAlpha,                 // 197
+    &ShaderDesc_FS_D3D9SM20_FYUY2CxformAcEAlphaMul,              // 198
+    &ShaderDesc_FS_D3D9SM20_FBatchYUV,                           // 199
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVMul,                        // 200
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVEAlpha,                     // 201
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVEAlphaMul,                  // 202
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxform,                     // 203
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformMul,                  // 204
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformEAlpha,               // 205
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformEAlphaMul,            // 206
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAc,                   // 207
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcMul,                // 208
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcEAlpha,             // 209
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVCxformAcEAlphaMul,          // 210
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVA,                          // 211
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVAMul,                       // 212
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVAInv,                       // 213
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlpha,                    // 214
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlphaMul,                 // 215
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVAEAlphaInv,                 // 216
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxform,                    // 217
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformMul,                 // 218
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformInv,                 // 219
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlpha,              // 220
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlphaMul,           // 221
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformEAlphaInv,           // 222
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAc,                  // 223
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcMul,               // 224
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcInv,               // 225
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlpha,            // 226
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlphaMul,         // 227
+    &ShaderDesc_FS_D3D9SM20_FBatchYUVACxformAcEAlphaInv,         // 228
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2,                          // 229
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2Mul,                       // 230
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2EAlpha,                    // 231
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2EAlphaMul,                 // 232
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2Cxform,                    // 233
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformMul,                 // 234
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformEAlpha,              // 235
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformEAlphaMul,           // 236
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAc,                  // 237
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAcMul,               // 238
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAcEAlpha,            // 239
+    &ShaderDesc_FS_D3D9SM20_FBatchYUY2CxformAcEAlphaMul,         // 240
+    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAc,                     // 241
+    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcMul,                  // 242
+    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcEAlpha,               // 243
+    &ShaderDesc_FS_D3D9SM20_FTexTGCMatrixAcEAlphaMul,            // 244
+    &ShaderDesc_FS_D3D9SM20_FDisplacementMap,                    // 245
+    &ShaderDesc_FS_D3D9SM20_FDisplacementMapDMIgnore,            // 246
+    &ShaderDesc_FS_D3D9SM20_FDisplacementMapDMColor,             // 247
+    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixels,                 // 248
+    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsMergeAlpha,       // 249
+    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsNoDestAlpha,      // 250
+    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlpha,            // 251
+    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlphaMergeAlpha,  // 252
+    &ShaderDesc_FS_D3D9SM20_FDrawableCopyPixelsAlphaNoDestAlpha, // 253
+    &ShaderDesc_FS_D3D9SM20_FDrawableMerge,                      // 254
+    &ShaderDesc_FS_D3D9SM20_FDrawableCompare,                    // 255
+    &ShaderDesc_FS_D3D9SM20_FDrawablePaletteMap,                 // 256
+    &ShaderDesc_FS_D3D9SM20_FBlendLighten,                       // 257
+    &ShaderDesc_FS_D3D9SM20_FBlendDarken,                        // 258
+    &ShaderDesc_FS_D3D9SM20_FBlendOverlay,                       // 259
+    &ShaderDesc_FS_D3D9SM20_FBlendHardlight,                     // 260
+    &ShaderDesc_FS_D3D9SM20_FBlendDifference,                    // 261
+    &ShaderDesc_FS_D3D9SM20_FBlendLayer,                         // 262
+    &ShaderDesc_FS_D3D9SM30_FTexTG,                              // 263
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexDensity,                    // 264
+    &ShaderDesc_FS_D3D9SM30_FTexTGMul,                           // 265
+    &ShaderDesc_FS_D3D9SM30_FTexTGInv,                           // 266
+    &ShaderDesc_FS_D3D9SM30_FTexTGEAlpha,                        // 267
+    &ShaderDesc_FS_D3D9SM30_FTexTGEAlphaTexDensity,              // 268
+    &ShaderDesc_FS_D3D9SM30_FTexTGEAlphaMul,                     // 269
+    &ShaderDesc_FS_D3D9SM30_FTexTGEAlphaInv,                     // 270
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxform,                        // 271
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformMul,                     // 272
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformInv,                     // 273
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlpha,                  // 274
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlphaMul,               // 275
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformEAlphaInv,               // 276
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAc,                      // 277
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcMul,                   // 278
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcInv,                   // 279
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlpha,                // 280
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlphaMul,             // 281
+    &ShaderDesc_FS_D3D9SM30_FTexTGCxformAcEAlphaInv,             // 282
+    &ShaderDesc_FS_D3D9SM30_FVertex,                             // 283
+    &ShaderDesc_FS_D3D9SM30_FVertexMul,                          // 284
+    &ShaderDesc_FS_D3D9SM30_FVertexInv,                          // 285
+    &ShaderDesc_FS_D3D9SM30_FVertexEAlpha,                       // 286
+    &ShaderDesc_FS_D3D9SM30_FVertexEAlphaMul,                    // 287
+    &ShaderDesc_FS_D3D9SM30_FVertexEAlphaInv,                    // 288
+    &ShaderDesc_FS_D3D9SM30_FVertexCxform,                       // 289
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformMul,                    // 290
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformInv,                    // 291
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformEAlpha,                 // 292
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformEAlphaMul,              // 293
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformEAlphaInv,              // 294
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformAc,                     // 295
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcMul,                  // 296
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcInv,                  // 297
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlpha,               // 298
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlphaMul,            // 299
+    &ShaderDesc_FS_D3D9SM30_FVertexCxformAcEAlphaInv,            // 300
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTG,                         // 301
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGTexDensity,               // 302
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGMul,                      // 303
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGInv,                      // 304
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlpha,                   // 305
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaTexDensity,         // 306
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaMul,                // 307
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGEAlphaInv,                // 308
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxform,                   // 309
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformMul,                // 310
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformInv,                // 311
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlpha,             // 312
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlphaMul,          // 313
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformEAlphaInv,          // 314
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAc,                 // 315
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcMul,              // 316
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcInv,              // 317
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlpha,           // 318
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlphaMul,        // 319
+    &ShaderDesc_FS_D3D9SM30_FTexTGTexTGCxformAcEAlphaInv,        // 320
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertex,                        // 321
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexTexDensity,              // 322
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexMul,                     // 323
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexInv,                     // 324
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlpha,                  // 325
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaTexDensity,        // 326
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaMul,               // 327
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexEAlphaInv,               // 328
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxform,                  // 329
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformMul,               // 330
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformInv,               // 331
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlpha,            // 332
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlphaMul,         // 333
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformEAlphaInv,         // 334
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAc,                // 335
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcMul,             // 336
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcInv,             // 337
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlpha,          // 338
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlphaMul,       // 339
+    &ShaderDesc_FS_D3D9SM30_FTexTGVertexCxformAcEAlphaInv,       // 340
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTG,                         // 341
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexDensity,               // 342
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGMul,                      // 343
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGInv,                      // 344
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlpha,                   // 345
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaTexDensity,         // 346
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaMul,                // 347
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGEAlphaInv,                // 348
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxform,                   // 349
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformMul,                // 350
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformInv,                // 351
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlpha,             // 352
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlphaMul,          // 353
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformEAlphaInv,          // 354
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAc,                 // 355
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcMul,              // 356
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcInv,              // 357
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlpha,           // 358
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlphaMul,        // 359
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGCxformAcEAlphaInv,        // 360
+    &ShaderDesc_FS_D3D9SM30_FBatchVertex,                        // 361
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexMul,                     // 362
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexInv,                     // 363
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexEAlpha,                  // 364
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexEAlphaMul,               // 365
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexEAlphaInv,               // 366
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxform,                  // 367
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformMul,               // 368
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformInv,               // 369
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlpha,            // 370
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlphaMul,         // 371
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformEAlphaInv,         // 372
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAc,                // 373
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcMul,             // 374
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcInv,             // 375
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlpha,          // 376
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlphaMul,       // 377
+    &ShaderDesc_FS_D3D9SM30_FBatchVertexCxformAcEAlphaInv,       // 378
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTG,                    // 379
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGTexDensity,          // 380
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGMul,                 // 381
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGInv,                 // 382
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlpha,              // 383
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaTexDensity,    // 384
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaMul,           // 385
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGEAlphaInv,           // 386
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxform,              // 387
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformMul,           // 388
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformInv,           // 389
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlpha,        // 390
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlphaMul,     // 391
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformEAlphaInv,     // 392
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAc,            // 393
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcMul,         // 394
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcInv,         // 395
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlpha,      // 396
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlphaMul,   // 397
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGTexTGCxformAcEAlphaInv,   // 398
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertex,                   // 399
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexTexDensity,         // 400
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexMul,                // 401
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexInv,                // 402
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlpha,             // 403
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaTexDensity,   // 404
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaMul,          // 405
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexEAlphaInv,          // 406
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxform,             // 407
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformMul,          // 408
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformInv,          // 409
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlpha,       // 410
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlphaMul,    // 411
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformEAlphaInv,    // 412
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAc,           // 413
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcMul,        // 414
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcInv,        // 415
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlpha,     // 416
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlphaMul,  // 417
+    &ShaderDesc_FS_D3D9SM30_FBatchTexTGVertexCxformAcEAlphaInv,  // 418
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTG,                     // 419
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexDensity,           // 420
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGMul,                  // 421
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGInv,                  // 422
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlpha,               // 423
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaTexDensity,     // 424
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaMul,            // 425
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGEAlphaInv,            // 426
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxform,               // 427
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformMul,            // 428
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformInv,            // 429
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlpha,         // 430
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlphaMul,      // 431
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformEAlphaInv,      // 432
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAc,             // 433
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcMul,          // 434
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcInv,          // 435
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlpha,       // 436
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlphaMul,    // 437
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGCxformAcEAlphaInv,    // 438
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertex,                    // 439
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexMul,                 // 440
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexInv,                 // 441
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlpha,              // 442
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlphaMul,           // 443
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexEAlphaInv,           // 444
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxform,              // 445
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformMul,           // 446
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformInv,           // 447
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlpha,        // 448
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlphaMul,     // 449
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformEAlphaInv,     // 450
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAc,            // 451
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcMul,         // 452
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcInv,         // 453
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlpha,      // 454
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlphaMul,   // 455
+    &ShaderDesc_FS_D3D9SM30_FInstancedVertexCxformAcEAlphaInv,   // 456
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTG,                // 457
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGTexDensity,      // 458
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGMul,             // 459
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGInv,             // 460
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlpha,          // 461
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaTexDensity, // 462
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaMul,       // 463
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGEAlphaInv,       // 464
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxform,          // 465
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformMul,       // 466
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformInv,       // 467
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlpha,    // 468
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlphaMul, // 469
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformEAlphaInv, // 470
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAc,        // 471
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcMul,     // 472
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcInv,     // 473
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlpha,  // 474
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlphaMul, // 475
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGTexTGCxformAcEAlphaInv, // 476
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertex,               // 477
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexTexDensity,     // 478
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexMul,            // 479
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexInv,            // 480
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlpha,         // 481
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaTexDensity, // 482
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaMul,      // 483
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexEAlphaInv,      // 484
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxform,         // 485
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformMul,      // 486
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformInv,      // 487
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlpha,   // 488
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlphaMul, // 489
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformEAlphaInv, // 490
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAc,       // 491
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcMul,    // 492
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcInv,    // 493
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlpha, // 494
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlphaMul, // 495
+    &ShaderDesc_FS_D3D9SM30_FInstancedTexTGVertexCxformAcEAlphaInv, // 496
+    &ShaderDesc_FS_D3D9SM30_FSolid,                              // 497
+    &ShaderDesc_FS_D3D9SM30_FSolidMul,                           // 498
+    &ShaderDesc_FS_D3D9SM30_FSolidInv,                           // 499
+    &ShaderDesc_FS_D3D9SM30_FText,                               // 500
+    &ShaderDesc_FS_D3D9SM30_FTextTexDensity,                     // 501
+    &ShaderDesc_FS_D3D9SM30_FTextMul,                            // 502
+    &ShaderDesc_FS_D3D9SM30_FTextInv,                            // 503
+    &ShaderDesc_FS_D3D9SM30_FBatchSolid,                         // 504
+    &ShaderDesc_FS_D3D9SM30_FBatchSolidMul,                      // 505
+    &ShaderDesc_FS_D3D9SM30_FBatchSolidInv,                      // 506
+    &ShaderDesc_FS_D3D9SM30_FBatchText,                          // 507
+    &ShaderDesc_FS_D3D9SM30_FBatchTextTexDensity,                // 508
+    &ShaderDesc_FS_D3D9SM30_FBatchTextMul,                       // 509
+    &ShaderDesc_FS_D3D9SM30_FBatchTextInv,                       // 510
+    &ShaderDesc_FS_D3D9SM30_FInstancedSolid,                     // 511
+    &ShaderDesc_FS_D3D9SM30_FInstancedSolidMul,                  // 512
+    &ShaderDesc_FS_D3D9SM30_FInstancedSolidInv,                  // 513
+    &ShaderDesc_FS_D3D9SM30_FInstancedText,                      // 514
+    &ShaderDesc_FS_D3D9SM30_FInstancedTextTexDensity,            // 515
+    &ShaderDesc_FS_D3D9SM30_FInstancedTextMul,                   // 516
+    &ShaderDesc_FS_D3D9SM30_FInstancedTextInv,                   // 517
+    &ShaderDesc_FS_D3D9SM30_FYUV,                                // 518
+    &ShaderDesc_FS_D3D9SM30_FYUVTexDensity,                      // 519
+    &ShaderDesc_FS_D3D9SM30_FYUVMul,                             // 520
+    &ShaderDesc_FS_D3D9SM30_FYUVEAlpha,                          // 521
+    &ShaderDesc_FS_D3D9SM30_FYUVEAlphaTexDensity,                // 522
+    &ShaderDesc_FS_D3D9SM30_FYUVEAlphaMul,                       // 523
+    &ShaderDesc_FS_D3D9SM30_FYUVCxform,                          // 524
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformMul,                       // 525
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformEAlpha,                    // 526
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformEAlphaMul,                 // 527
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformAc,                        // 528
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformAcMul,                     // 529
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformAcEAlpha,                  // 530
+    &ShaderDesc_FS_D3D9SM30_FYUVCxformAcEAlphaMul,               // 531
+    &ShaderDesc_FS_D3D9SM30_FYUVA,                               // 532
+    &ShaderDesc_FS_D3D9SM30_FYUVATexDensity,                     // 533
+    &ShaderDesc_FS_D3D9SM30_FYUVAMul,                            // 534
+    &ShaderDesc_FS_D3D9SM30_FYUVAInv,                            // 535
+    &ShaderDesc_FS_D3D9SM30_FYUVAEAlpha,                         // 536
+    &ShaderDesc_FS_D3D9SM30_FYUVAEAlphaTexDensity,               // 537
+    &ShaderDesc_FS_D3D9SM30_FYUVAEAlphaMul,                      // 538
+    &ShaderDesc_FS_D3D9SM30_FYUVAEAlphaInv,                      // 539
+    &ShaderDesc_FS_D3D9SM30_FYUVACxform,                         // 540
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformMul,                      // 541
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformInv,                      // 542
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformEAlpha,                   // 543
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformEAlphaMul,                // 544
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformEAlphaInv,                // 545
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformAc,                       // 546
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcMul,                    // 547
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcInv,                    // 548
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlpha,                 // 549
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlphaMul,              // 550
+    &ShaderDesc_FS_D3D9SM30_FYUVACxformAcEAlphaInv,              // 551
+    &ShaderDesc_FS_D3D9SM30_FYUY2,                               // 552
+    &ShaderDesc_FS_D3D9SM30_FYUY2TexDensity,                     // 553
+    &ShaderDesc_FS_D3D9SM30_FYUY2Mul,                            // 554
+    &ShaderDesc_FS_D3D9SM30_FYUY2EAlpha,                         // 555
+    &ShaderDesc_FS_D3D9SM30_FYUY2EAlphaTexDensity,               // 556
+    &ShaderDesc_FS_D3D9SM30_FYUY2EAlphaMul,                      // 557
+    &ShaderDesc_FS_D3D9SM30_FYUY2Cxform,                         // 558
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformMul,                      // 559
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformEAlpha,                   // 560
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformEAlphaMul,                // 561
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformAc,                       // 562
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformAcMul,                    // 563
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformAcEAlpha,                 // 564
+    &ShaderDesc_FS_D3D9SM30_FYUY2CxformAcEAlphaMul,              // 565
+    &ShaderDesc_FS_D3D9SM30_FBatchYUV,                           // 566
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVTexDensity,                 // 567
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVMul,                        // 568
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVEAlpha,                     // 569
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVEAlphaTexDensity,           // 570
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVEAlphaMul,                  // 571
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxform,                     // 572
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformMul,                  // 573
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformEAlpha,               // 574
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformEAlphaMul,            // 575
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAc,                   // 576
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcMul,                // 577
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcEAlpha,             // 578
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVCxformAcEAlphaMul,          // 579
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVA,                          // 580
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVATexDensity,                // 581
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVAMul,                       // 582
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVAInv,                       // 583
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlpha,                    // 584
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaTexDensity,          // 585
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaMul,                 // 586
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVAEAlphaInv,                 // 587
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxform,                    // 588
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformMul,                 // 589
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformInv,                 // 590
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlpha,              // 591
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlphaMul,           // 592
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformEAlphaInv,           // 593
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAc,                  // 594
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcMul,               // 595
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcInv,               // 596
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlpha,            // 597
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlphaMul,         // 598
+    &ShaderDesc_FS_D3D9SM30_FBatchYUVACxformAcEAlphaInv,         // 599
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2,                          // 600
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2TexDensity,                // 601
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2Mul,                       // 602
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2EAlpha,                    // 603
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2EAlphaTexDensity,          // 604
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2EAlphaMul,                 // 605
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2Cxform,                    // 606
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformMul,                 // 607
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformEAlpha,              // 608
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformEAlphaMul,           // 609
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAc,                  // 610
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAcMul,               // 611
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAcEAlpha,            // 612
+    &ShaderDesc_FS_D3D9SM30_FBatchYUY2CxformAcEAlphaMul,         // 613
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUV,                       // 614
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVTexDensity,             // 615
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVMul,                    // 616
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlpha,                 // 617
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlphaTexDensity,       // 618
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVEAlphaMul,              // 619
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxform,                 // 620
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformMul,              // 621
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformEAlpha,           // 622
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformEAlphaMul,        // 623
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAc,               // 624
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcMul,            // 625
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcEAlpha,         // 626
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVCxformAcEAlphaMul,      // 627
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVA,                      // 628
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVATexDensity,            // 629
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAMul,                   // 630
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAInv,                   // 631
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlpha,                // 632
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaTexDensity,      // 633
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaMul,             // 634
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVAEAlphaInv,             // 635
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxform,                // 636
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformMul,             // 637
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformInv,             // 638
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlpha,          // 639
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlphaMul,       // 640
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformEAlphaInv,       // 641
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAc,              // 642
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcMul,           // 643
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcInv,           // 644
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlpha,        // 645
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlphaMul,     // 646
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUVACxformAcEAlphaInv,     // 647
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2,                      // 648
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2TexDensity,            // 649
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2Mul,                   // 650
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2EAlpha,                // 651
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2EAlphaTexDensity,      // 652
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2EAlphaMul,             // 653
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2Cxform,                // 654
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformMul,             // 655
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformEAlpha,          // 656
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformEAlphaMul,       // 657
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAc,              // 658
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAcMul,           // 659
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAcEAlpha,        // 660
+    &ShaderDesc_FS_D3D9SM30_FInstancedYUY2CxformAcEAlphaMul,     // 661
+    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAc,                     // 662
+    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcMul,                  // 663
+    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcEAlpha,               // 664
+    &ShaderDesc_FS_D3D9SM30_FTexTGCMatrixAcEAlphaMul,            // 665
+    &ShaderDesc_FS_D3D9SM30_FBox1Blur,                           // 666
+    &ShaderDesc_FS_D3D9SM30_FBox1BlurMul,                        // 667
+    &ShaderDesc_FS_D3D9SM30_FBox2Blur,                           // 668
+    &ShaderDesc_FS_D3D9SM30_FBox2BlurMul,                        // 669
+    &ShaderDesc_FS_D3D9SM30_FSColorOuterBevel,                   // 670
+    &ShaderDesc_FS_D3D9SM30_FSColorOuterBevelMul,                // 671
+    &ShaderDesc_FS_D3D9SM30_FSColorInnerShadow,                  // 672
+    &ShaderDesc_FS_D3D9SM30_FSColorInnerShadowMul,               // 673
+    &ShaderDesc_FS_D3D9SM30_FSColorFullBevel,                    // 674
+    &ShaderDesc_FS_D3D9SM30_FSColorFullBevelMul,                 // 675
+    &ShaderDesc_FS_D3D9SM30_FSColorHideBaseOuterBevel,           // 676
+    &ShaderDesc_FS_D3D9SM30_FSColorHideBaseOuterBevelMul,        // 677
+    &ShaderDesc_FS_D3D9SM30_FSColorHideBaseInnerShadow,          // 678
+    &ShaderDesc_FS_D3D9SM30_FSColorHideBaseInnerShadowMul,       // 679
+    &ShaderDesc_FS_D3D9SM30_FSColorHideBaseFullBevel,            // 680
+    &ShaderDesc_FS_D3D9SM30_FSColorHideBaseFullBevelMul,         // 681
+    &ShaderDesc_FS_D3D9SM30_FSGradOuterBevel,                    // 682
+    &ShaderDesc_FS_D3D9SM30_FSGradOuterBevelMul,                 // 683
+    &ShaderDesc_FS_D3D9SM30_FSGradInnerBevel,                    // 684
+    &ShaderDesc_FS_D3D9SM30_FSGradInnerBevelMul,                 // 685
+    &ShaderDesc_FS_D3D9SM30_FSGradFullBevel,                     // 686
+    &ShaderDesc_FS_D3D9SM30_FSGradFullBevelMul,                  // 687
+    &ShaderDesc_FS_D3D9SM30_FSGradHideBaseOuterBevel,            // 688
+    &ShaderDesc_FS_D3D9SM30_FSGradHideBaseOuterBevelMul,         // 689
+    &ShaderDesc_FS_D3D9SM30_FSGradHideBaseInnerBevel,            // 690
+    &ShaderDesc_FS_D3D9SM30_FSGradHideBaseInnerBevelMul,         // 691
+    &ShaderDesc_FS_D3D9SM30_FSGradHideBaseFullBevel,             // 692
+    &ShaderDesc_FS_D3D9SM30_FSGradHideBaseFullBevelMul,          // 693
+    &ShaderDesc_FS_D3D9SM30_FSColor2OuterBevel,                  // 694
+    &ShaderDesc_FS_D3D9SM30_FSColor2OuterBevelMul,               // 695
+    &ShaderDesc_FS_D3D9SM30_FSColor2InnerBevel,                  // 696
+    &ShaderDesc_FS_D3D9SM30_FSColor2InnerBevelMul,               // 697
+    &ShaderDesc_FS_D3D9SM30_FSColor2FullBevel,                   // 698
+    &ShaderDesc_FS_D3D9SM30_FSColor2FullBevelMul,                // 699
+    &ShaderDesc_FS_D3D9SM30_FSColor2HideBaseOuterBevel,          // 700
+    &ShaderDesc_FS_D3D9SM30_FSColor2HideBaseOuterBevelMul,       // 701
+    &ShaderDesc_FS_D3D9SM30_FSColor2HideBaseInnerBevel,          // 702
+    &ShaderDesc_FS_D3D9SM30_FSColor2HideBaseInnerBevelMul,       // 703
+    &ShaderDesc_FS_D3D9SM30_FSColor2HideBaseFullBevel,           // 704
+    &ShaderDesc_FS_D3D9SM30_FSColor2HideBaseFullBevelMul,        // 705
+    &ShaderDesc_FS_D3D9SM30_FSGrad2OuterBevel,                   // 706
+    &ShaderDesc_FS_D3D9SM30_FSGrad2OuterBevelMul,                // 707
+    &ShaderDesc_FS_D3D9SM30_FSGrad2InnerBevel,                   // 708
+    &ShaderDesc_FS_D3D9SM30_FSGrad2InnerBevelMul,                // 709
+    &ShaderDesc_FS_D3D9SM30_FSGrad2FullBevel,                    // 710
+    &ShaderDesc_FS_D3D9SM30_FSGrad2FullBevelMul,                 // 711
+    &ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseOuterBevel,           // 712
+    &ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseOuterBevelMul,        // 713
+    &ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseInnerBevel,           // 714
+    &ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseInnerBevelMul,        // 715
+    &ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseFullBevel,            // 716
+    &ShaderDesc_FS_D3D9SM30_FSGrad2HideBaseFullBevelMul,         // 717
+    &ShaderDesc_FS_D3D9SM30_FDisplacementMap,                    // 718
+    &ShaderDesc_FS_D3D9SM30_FDisplacementMapDMIgnore,            // 719
+    &ShaderDesc_FS_D3D9SM30_FDisplacementMapDMColor,             // 720
+    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixels,                 // 721
+    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsMergeAlpha,       // 722
+    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsNoDestAlpha,      // 723
+    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlpha,            // 724
+    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlphaMergeAlpha,  // 725
+    &ShaderDesc_FS_D3D9SM30_FDrawableCopyPixelsAlphaNoDestAlpha, // 726
+    &ShaderDesc_FS_D3D9SM30_FDrawableMerge,                      // 727
+    &ShaderDesc_FS_D3D9SM30_FDrawableCompare,                    // 728
+    &ShaderDesc_FS_D3D9SM30_FDrawablePaletteMap,                 // 729
+    &ShaderDesc_FS_D3D9SM30_FBlendLighten,                       // 730
+    &ShaderDesc_FS_D3D9SM30_FBlendDarken,                        // 731
+    &ShaderDesc_FS_D3D9SM30_FBlendOverlay,                       // 732
+    &ShaderDesc_FS_D3D9SM30_FBlendHardlight,                     // 733
+    &ShaderDesc_FS_D3D9SM30_FBlendDifference,                    // 734
+    &ShaderDesc_FS_D3D9SM30_FBlendLayer,                         // 735
 };
 
 const FragShaderDesc* FragShaderDesc::GetDesc(ShaderDesc::ShaderType shader, ShaderDesc::ShaderVersion ver)

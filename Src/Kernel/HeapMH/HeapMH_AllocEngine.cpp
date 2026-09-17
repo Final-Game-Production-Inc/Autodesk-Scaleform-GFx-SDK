@@ -53,10 +53,11 @@ PageMH* AllocEngineMH::allocPageUnlocked(bool* limHandlerOK)
 {
     if (Limit && Footprint + PageMH::PageSize > Limit && pLimHandler)
     {
+        ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
         *limHandlerOK = 
             ((MemoryHeap::LimitHandler*)pLimHandler)->
                 OnExceedLimit(pHeap, Footprint + PageMH::PageSize - Limit);
-        return 0;
+        --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
     }
 
     *limHandlerOK = false;
@@ -81,10 +82,11 @@ PageMH* AllocEngineMH::allocPageLocked(bool* limHandlerOK)
     if (Limit && Footprint + PageMH::PageSize > Limit && pLimHandler)
     {
         LockSafe::TmpUnlocker unlocker(GlobalRootMH->GetLock());
+        ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
         *limHandlerOK = 
             ((MemoryHeap::LimitHandler*)pLimHandler)->
                 OnExceedLimit(pHeap, Footprint + PageMH::PageSize - Limit);
-        return 0;
+        --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
     }
 
     *limHandlerOK = false;
@@ -251,12 +253,12 @@ void AllocEngineMH::Free(void* ptr, bool globalLocked)
     {
         if (globalLocked)
         {
-            LockSafe::Locker rl(GlobalRootMH->GetLock());
             NodeMH* node = GlobalRootMH->FindNodeInGlobalTree((UByte*)ptr);
             Free(node, ptr, true);
         }
         else
         {
+            LockSafe::Locker rl(GlobalRootMH->GetLock());
             NodeMH* node = GlobalRootMH->FindNodeInGlobalTree((UByte*)ptr);
             Free(node, ptr, false);
         }
@@ -322,10 +324,11 @@ void* AllocEngineMH::allocDirect(UPInt size, UPInt alignSize, bool* limHandlerOK
     if (Limit && Footprint + size + nodeSize > Limit && pLimHandler)
     {
         LockSafe::TmpUnlocker unlocker(GlobalRootMH->GetLock());
+        ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
         *limHandlerOK = 
             ((MemoryHeap::LimitHandler*)pLimHandler)->
                 OnExceedLimit(pHeap, Footprint + size + nodeSize - Limit);
-        return 0;
+        --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
     }
 
     *limHandlerOK = false;
@@ -414,16 +417,16 @@ void* AllocEngineMH::Alloc(UPInt size, UPInt alignSize, PageInfoMH* info, bool g
             size = alignSize;
 
         size = (size + sizeof(void*)-1) & ~UPInt(sizeof(void*)-1);
-        void* ptr = 0;
+        void* innerptr = 0;
         {
             if (globalLocked)
             {
                 bool limHandlerOK = false;
                 do
                 {
-                    ptr = allocDirect(size, alignSize, &limHandlerOK, info);
-                    if (ptr)
-                        return ptr;
+                    innerptr = allocDirect(size, alignSize, &limHandlerOK, info);
+                    if (innerptr)
+                        return innerptr;
                 }
                 while(limHandlerOK);
             }
@@ -433,9 +436,9 @@ void* AllocEngineMH::Alloc(UPInt size, UPInt alignSize, PageInfoMH* info, bool g
                 bool limHandlerOK = false;
                 do
                 {
-                    ptr = allocDirect(size, alignSize, &limHandlerOK, info);
-                    if (ptr)
-                        return ptr;
+                    innerptr = allocDirect(size, alignSize, &limHandlerOK, info);
+                    if (innerptr)
+                        return innerptr;
                 }
                 while(limHandlerOK);
             }
@@ -485,14 +488,18 @@ void* AllocEngineMH::reallocInNodeNoLock(NodeMH* node, void* oldPtr, UPInt newSi
     newSize += nodeSize;
     if (newSize > oldSize)
     {
-        while (Limit && Footprint + newSize - oldSize > Limit && pLimHandler)
+        if (Limit && Footprint + newSize - oldSize > Limit && pLimHandler)
         {
             LockSafe::TmpUnlocker unlocker(GlobalRootMH->GetLock());
-            bool limHandlerOK = 
-                ((MemoryHeap::LimitHandler*)pLimHandler)->
-                    OnExceedLimit(pHeap, Footprint + newSize - oldSize - Limit);
-            if (!limHandlerOK)
-                return 0;
+            // We CAN'T perform full OnExceedLimit from realloc:
+            // full OnExceedLimit may cause the 'node' to become invalid (by freeing
+            // or reallocating the very same memory block). Therefore, all what we 
+            // can do is to increment LimHandler.AllocCount, thus, it will just 
+            // schedule the collection and won't do collection right away.
+            ++((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
+            ((MemoryHeap::LimitHandler*)pLimHandler)->
+                OnExceedLimit(pHeap, Footprint + newSize - oldSize - Limit);
+            --((MemoryHeap::LimitHandler*)pLimHandler)->AllocCount;
         }
     }
     GlobalRootMH->RemoveFromGlobalTree(node);
@@ -500,15 +507,15 @@ void* AllocEngineMH::reallocInNodeNoLock(NodeMH* node, void* oldPtr, UPInt newSi
     if (newPtr)
     {
         SF_ASSERT((UPInt(newPtr) & (oldAlign-1)) == 0);
-        NodeMH* node = 
+        NodeMH* nodemh = 
             GlobalRootMH->AddToGlobalTree((UByte*)newPtr, newSize-nodeSize, oldAlign, pHeap);
 #ifdef SF_MEMORY_ENABLE_DEBUG_INFO
         newInfo->DebugHeaders[0] = newInfo->DebugHeaders[1] = 0;
-        newInfo->DebugHeaders[2] = &(node->DebugHeader);
+        newInfo->DebugHeaders[2] = &(nodemh->DebugHeader);
 #endif
         newInfo->UsableSize = newSize-nodeSize;
         newInfo->Page = 0;
-        newInfo->Node = node;
+        newInfo->Node = nodemh;
 
         Footprint -= oldSize;
         Footprint += newSize;

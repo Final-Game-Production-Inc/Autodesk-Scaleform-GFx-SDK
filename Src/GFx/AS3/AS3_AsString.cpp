@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -1221,7 +1222,7 @@ void OutputSlotName(const VM& vm, FlashUI& ui, int index, Abc::Code::OpCode opco
         const SlotInfo& si = tr.GetSlotInfo(AbsoluteIndex(SlotIndex(index), tr));
 
         ui.Output(FlashUI::Output_Action, " // ");
-        ui.Output(FlashUI::Output_Action, si.GetName().ToCStr());
+        ui.Output(FlashUI::Output_Action, si.GetQualifiedName().ToCStr());
 #else
         const ASString name = tr.GetSlotName(AbsoluteIndex(SlotIndex(index), tr));
 
@@ -1239,7 +1240,7 @@ void OutputGlobalSlotName(const VM& vm, FlashUI& ui, int index)
     const SlotInfo& si = tr.GetSlotInfo(AbsoluteIndex(SlotIndex(index), tr));
 
     ui.Output(FlashUI::Output_Action, " // ");
-    ui.Output(FlashUI::Output_Action, si.GetName().ToCStr());
+    ui.Output(FlashUI::Output_Action, si.GetQualifiedName().ToCStr());
 #else
     const ASString name = tr.GetSlotName(AbsoluteIndex(SlotIndex(index), tr));
 
@@ -1262,7 +1263,7 @@ void OutputAbsSlotName(const VM& vm, FlashUI& ui, int index, Abc::Code::OpCode o
         const SlotInfo& si = tr.GetSlotInfo(AbsoluteIndex(index - 1));
 
         ui.Output(FlashUI::Output_Action, " // ");
-        ui.Output(FlashUI::Output_Action, si.GetName().ToCStr());
+        ui.Output(FlashUI::Output_Action, si.GetQualifiedName().ToCStr());
 #else
         const ASString name = tr.GetSlotName(AbsoluteIndex(SlotIndex(index), tr));
 

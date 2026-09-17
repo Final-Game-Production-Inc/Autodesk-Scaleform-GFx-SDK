@@ -7,6 +7,7 @@ Created     :   Jun, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,6 +29,17 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "AS3_Obj_Display_GradientType.cpp"
 #include "AS3_Obj_Display_Graphics.cpp"
 #include "AS3_Obj_Display_IBitmapDrawable.cpp"
+#include "AS3_Obj_Display_IGraphicsFill.cpp"
+#include "AS3_Obj_Display_IGraphicsPath.cpp"
+#include "AS3_Obj_Display_IGraphicsData.cpp"
+#include "AS3_Obj_Display_GraphicsBitmapFill.cpp"
+#include "AS3_Obj_Display_GraphicsEndFill.cpp"
+#include "AS3_Obj_Display_GraphicsGradientFill.cpp"
+#include "AS3_Obj_Display_GraphicsPath.cpp"
+#include "AS3_Obj_Display_GraphicsPathCommand.cpp"
+#include "AS3_Obj_Display_GraphicsPathWinding.cpp"
+#include "AS3_Obj_Display_GraphicsSolidFill.cpp"
+#include "AS3_Obj_Display_GraphicsStroke.cpp"
 #include "AS3_Obj_Display_InteractiveObject.cpp"
 #include "AS3_Obj_Display_InterpolationMethod.cpp"
 #include "AS3_Obj_Display_JointStyle.cpp"

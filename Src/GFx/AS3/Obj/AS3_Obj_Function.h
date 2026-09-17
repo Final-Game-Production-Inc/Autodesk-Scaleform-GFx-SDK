@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -139,8 +140,7 @@ namespace Instances
     private:
         Function(
             InstanceTraits::Function& tr,
-            const ScopeStackType& ss,
-            const Value& _this
+            const ScopeStackType& ss
             SF_DEBUG_ARG(const ASString& name)
             );
             
@@ -190,7 +190,6 @@ namespace Instances
     private:
         // We keep a copy of the scope stack ...
         ScopeStackType StoredScopeStack;
-        const Value This;
         SF_DEBUG_CODE(const ASString Name;)
     };
 
@@ -273,6 +272,10 @@ namespace InstanceTraits
     class Thunk : public CTraits
     {
     public:
+        // This doesn't look correct.
+        typedef Thunk InstanceType;
+
+    public:
         Thunk(VM& vm);
 
     public:
@@ -285,6 +288,7 @@ namespace InstanceTraits
         static void lengthGet(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
 
     private:
+        static const TypeInfo* tit[5];
         static const ThunkInfo f[3];
     };
 
@@ -293,6 +297,10 @@ namespace InstanceTraits
     // but we cannot do anything about this.
     class MethodInd : public CTraits
     {
+    public:
+        // Doesn't exist.
+        // typedef Instances::??? InstanceType;
+
     public:
         MethodInd(VM& vm);
 
@@ -306,6 +314,7 @@ namespace InstanceTraits
         static void lengthGet(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
 
     private:
+        static const TypeInfo* tit[5];
         static const ThunkInfo f[3];
     };
 
@@ -314,6 +323,10 @@ namespace InstanceTraits
     // but we cannot do anything about this.
     class VTableInd : public CTraits
     {
+    public:
+        // Doesn't exist.
+        // typedef Instances::??? InstanceType;
+
     public:
         VTableInd(VM& vm);
 
@@ -328,6 +341,7 @@ namespace InstanceTraits
         static void lengthGet(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
 
     private:
+        static const TypeInfo* tit[5];
         static const ThunkInfo f[3];
     };
 
@@ -338,6 +352,9 @@ namespace InstanceTraits
     class ThunkFunction : public CTraits
     {
     public:
+        typedef Instances::ThunkFunction InstanceType;
+
+    public:
         ThunkFunction(VM& vm);
 
     public:
@@ -345,6 +362,7 @@ namespace InstanceTraits
         ASString GetThunkName(const Value& _this) const;
 
     private:
+        static const TypeInfo* tit[1];
         static const ThunkInfo f[1];
     };
 
@@ -354,6 +372,10 @@ namespace InstanceTraits
         friend class Classes::Function; // Because of Function(VM& vm, Class& c).
         friend class ClassTraits::Function; // Because of Function(VM& vm, Class& c).
         friend class AS3::VM; // Because of Function(VM& vm, Class& c).
+
+    public:
+        // This is questionable.
+        typedef Instances::Function InstanceType;
 
     public:
         Function(
@@ -405,6 +427,7 @@ namespace InstanceTraits
         }
 
     private:
+        static const TypeInfo* tit[5];
         static const ThunkInfo f[3];
 
         const Abc::MiInd MethodInfoInd; // MethodInd is required to build a proper object's name.
@@ -421,7 +444,13 @@ namespace ClassTraits
     class Function : public Traits
     {
     public:
+        typedef Classes::Function ClassType;
+        typedef InstanceTraits::Function InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
+
+    public:
         Function(VM& vm, const ClassInfo& ci);
+        static Pickable<Traits> MakeClassTraits(VM& vm);
 
     public:
         virtual void ForEachChild_GC(Collector* prcc, RefCountBaseGC<Mem_Stat>::GcOp op) const;
@@ -499,23 +528,6 @@ namespace Classes
             Instances::fl::GlobalObjectScript& gos
             ) const;
 
-        // It can be an instance of a function or a method closure.
-        // MakeInstance2 is used with virtual table only.
-        Pickable<Instances::Function> MakeInstance2(
-            VMAbcFile& file, 
-            const UInt32 method_ind, 
-            const Value& _this, 
-            const ScopeStackType& ss, 
-            Instances::fl::GlobalObjectScript& gos 
-            SF_DEBUG_ARG(const ASString& name)
-            ) const;
-
-        // Create a MethodClosure from a Function.
-        Pickable<Instances::Function> MakeInstance2(
-            const Instances::Function& f, 
-            const Value& _this
-            ) const;
-
         Pickable<Instances::ThunkFunction> MakeThunkFunction(
             const ThunkInfo& thunk 
             SF_DEBUG_ARG(const Traits& ot)
@@ -539,6 +551,7 @@ namespace Classes
         }
 
     private:
+        static const TypeInfo* tit[6];
         static const ThunkInfo f[4];
     };
     

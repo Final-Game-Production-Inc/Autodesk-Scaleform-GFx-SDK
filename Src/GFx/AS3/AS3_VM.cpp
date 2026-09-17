@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -23,6 +24,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_MsgFormat.h" 
 #include "Kernel/SF_Debug.h" 
 
+#ifdef GFX_ENABLE_XML
+    #include "Obj/AS3_Obj_XMLList.h"
+#endif
 #include "Obj/AS3_Obj_Function.h"
 #include "Obj/AS3_Obj_Activation.h"
 #include "Obj/AS3_Obj_Catch.h"
@@ -54,9 +58,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Obj/AS3_Obj_UninitializedError.h"
 #include "Obj/AS3_Obj_ArgumentError.h"
 #include "Obj/AS3_Obj_Global.h"
+#include "Obj/AS3_Obj_Domain.h"
 #include "Obj/Errors/AS3_Obj_Errors_MemoryError.h"
 #include "Obj/System/AS3_Obj_System_ApplicationDomain.h"
-#include "Obj/System/AS3_Obj_System_Domain.h"
+#include "Obj/Utils/AS3_Obj_Utils_ByteArray.h"
 
 // Define SF_TRACE_FILE_LOADING if you want to trace file loading/unloading process.
 // #define SF_TRACE_FILE_LOADING
@@ -205,13 +210,25 @@ namespace Scaleform { namespace GFx { namespace AS3
         2006,
         2007,
         2008,
+        2012,
         2015,
         2024,
         2025,
         2027,
         2030,
         2058,
+
         2077,
+
+        2088,
+        2089,
+        2090,
+        2091,
+        2092,
+        2093,
+        2105,
+        2106,
+        2107,
 
         2108,
         2109,
@@ -360,18 +377,29 @@ namespace Scaleform { namespace GFx { namespace AS3
         /* 2006,133*/ "The supplied index is out of bounds.",
         /* 2007,134*/ "Parameter {0} must be non-null.",
         /* 2008,135*/ "Parameter {0} must be one of the accepted values.",
-        /* 2015,136*/ "Argument error: {0}.",
-        /* 2024,137*/ "An object cannot be added as a child of itself.",
-        /* 2025,138*/ "The supplied {0} must be a child of the caller.",
-        /* 2027,139*/ "{0} must be non negative.",
-        /* 2030,140*/ "End of file was encountered.",
-        /* 2058,141*/ "There was an error decompressing the data.",
-        /* 2077,142*/ "Illegal operation: {0}.",
+        /* 2012,136*/ "{0} class cannot be instantiated.",
+        /* 2015,137*/ "Argument error: {0}.",
+        /* 2024,138*/ "An object cannot be added as a child of itself.",
+        /* 2025,139*/ "The supplied {0} must be a child of the caller.",
+        /* 2027,140*/ "{0} must be non negative.",
+        /* 2030,141*/ "End of file was encountered.",
+        /* 2058,142*/ "There was an error decompressing the data.",
+        /* 2077,143*/ "Illegal operation: {0}.",
 
-        /* 2108,143*/ "Scene {0} was not found.",
-        /* 2109,144*/ "Frame label {0} was not found in scene {1}.",
+        /* 2088,144*/ "The Proxy class does not implement getProperty. It must be overridden by a subclass.",
+        /* 2089,145*/ "The Proxy class does not implement setProperty. It must be overridden by a subclass.",
+        /* 2090,146*/ "The Proxy class does not implement callProperty. It must be overridden by a subclass.",
+        /* 2091,147*/ "The Proxy class does not implement hasProperty. It must be overridden by a subclass.",
+        /* 2092,148*/ "The Proxy class does not implement deleteProperty. It must be overridden by a subclass.",
+        /* 2093,149*/ "The Proxy class does not implement getDescendants. It must be overridden by a subclass.",
+        /* 2105,150*/ "The Proxy class does not implement nextNameIndex. It must be overridden by a subclass.",
+        /* 2106,151*/ "The Proxy class does not implement nextName. It must be overridden by a subclass.",
+        /* 2107,152*/ "The Proxy class does not implement nextValue. It must be overridden by a subclass.",
 
-        /* 2136,145*/ "The SWF file {0} contains invalid data.",
+        /* 2108,153*/ "Scene {0} was not found.",
+        /* 2109,154*/ "Frame label {0} was not found in scene {1}.",
+
+        /* 2136,155*/ "The SWF file {0} contains invalid data.",
     };
 
     const char* GetErrorMsg(const int ind)
@@ -413,7 +441,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 VMFile::VMFile(VM& vm, VMAppDomain& appDomain)
     : GASRefCountBase(&vm.GetGC())
     , VMRef(vm)
-    , AppDomain(appDomain)
+    , AppDomain(&appDomain)
 {
     // String with index zero is empty.
     IntStrings.PushBack(vm.GetStringManager().GetEmptyStringNode());
@@ -447,6 +475,7 @@ void VMFile::ForEachChild_GC(Collector* prcc, GcOp op) const
         for (UPInt i = 0; i < size; ++i)
             AS3::ForEachChild_GC<ClassTraits::Traits, Mem_Stat>(prcc, LoadedClasses[i], op SF_DEBUG_ARG(*this));
     }
+    AS3::ForEachChild_GC<VMAppDomain, Mem_Stat>(prcc, AppDomain, op SF_DEBUG_ARG(*this));
 }
 
 Instances::fl::Namespace& VMFile::GetInternedNamespace(const Abc::Multiname& mn)
@@ -515,57 +544,13 @@ InstanceTraits::Traits& VMFile::GetActivationInstanceTraits(const Abc::MbiInd mb
     return **ptr;
 }
 
-void VMFile::UnregisterUserDefinedClassTraits()
-{
-#ifdef SF_TRACE_FILE_LOADING
-    VM& vm = GetVM();
-    FlashUI& ui = vm.GetUI();
-    ui.Output(FlashUI::Output_Action, "\nFile ");
-    ui.Output(FlashUI::Output_Action, File->GetSource().ToCStr());
-    ui.Output(FlashUI::Output_Action, " will be completely unregistered.\n");
-#endif
-
-    const UPInt size = LoadedClasses.GetSize();
-    for (UPInt i = 0; i < size; ++i)
-    {
-        ClassTraits::Traits& ctr = *LoadedClasses[i];
-
-        if (ctr.IsValid())
-        {
-            // Fast way.
-            InstanceTraits::Traits& itr = ctr.GetInstanceTraits();
-            const ASString str_name = itr.GetName();
-            const Instances::fl::Namespace& ns = itr.GetNamespace();
-
-#ifdef SF_TRACE_FILE_LOADING
-            ui.Output(FlashUI::Output_Action, "Unregistering class ");
-            if (!ns.GetUri().IsEmpty())
-            {
-                ui.Output(FlashUI::Output_Action, ns.GetUri().ToCStr());
-                ui.Output(FlashUI::Output_Action, "::");
-            }
-            ui.Output(FlashUI::Output_Action, str_name.ToCStr());
-            ui.Output(FlashUI::Output_Action, "\n");
-#endif
-
-            RemoveClassTrait(str_name, ns);
-        }
-        else
-        {
-            // Slow way.
-            RemoveClassTraitValue(&ctr);
-        }
-    }
-
-    LoadedClasses.Clear();
-}
-
 void VMFile::Clear()
 {
     IntNamespaces.Clear();
     IntNamespaceSets.Clear();
     IntStrings.Clear();
     ActivationTraitsCache.Clear();
+    ASStringNodeSet.Clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -590,26 +575,35 @@ VMAbcFile::VMAbcFile(
     // We HAVE TO resize OpCodeArray and Exceptions here because we need to use
     // reference to an element. (It will be invalidated during resizing of Array)
     const UPInt size = file->GetMethodBodyTable().GetSize();
-    OpCodeArray.Resize(size);
-    Exceptions.Resize(size);
+    MethodInfoArray.Resize(size);
 
     vm.AddVMAbcFileWeak(this);
 }
 
 VMAbcFile::~VMAbcFile()
 {
-    SF_DEBUG_MESSAGE2(GFX_UNLOAD_TRACE_ENABLED, "~VMAbcFile %s %p\n", File->GetName().ToCStr(), this);
-    GetVM().RemoveVMAbcFileWeak(this);
-    if (GetAppDomain().IsEmpty())
+    VM& vm = GetVM();
+
+    VM::AliasClassType::Iterator ait;
+
+    for (TAliasClass::ConstIterator it = AliasClass.Begin(); !it.IsEnd(); ++it)
     {
-        GetVM().RemoveAppDomain(GetAppDomain());
+        ait = vm.AliasClass.Find(*it);
+
+        if (ait.IsEnd())
+            continue;
+
+        vm.AliasClass.Remove(*it);
+        vm.ClassAlias.Remove(ait->Second);
     }
+
+    // SF_DEBUG_MESSAGE2(GFX_UNLOAD_TRACE_ENABLED, "~VMAbcFile %s %p\n", File->GetName().ToCStr(), this);
+    vm.RemoveVMAbcFileWeak(this);
 }
 
 void VMAbcFile::Finalize_GC()
 {
-    SF_DEBUG_MESSAGE2(GFX_UNLOAD_TRACE_ENABLED, "VMAbcFile::Finalize %s %p\n", 
-        File->GetName().ToCStr(), this);
+    // SF_DEBUG_MESSAGE2(GFX_UNLOAD_TRACE_ENABLED, "VMAbcFile::Finalize %s %p\n", File->GetName().ToCStr(), this);
     UnRegister();
 }
 
@@ -670,7 +664,7 @@ Pickable<InstanceTraits::Traits> VMAbcFile::MakeActivationInstanceTraits(const A
 
 ASString VMAbcFile::MakeInternedString(UPInt strIndex) const
 {
-    const StringDataPtr& str = GetAbcFile().GetConstPool().GetString(AbsoluteIndex(strIndex));
+    const StringDataPtr str = GetAbcFile().GetConstPool().GetString(AbsoluteIndex(strIndex));
     // !!! This should be CreateConstString().
     return GetVM().GetStringManager().CreateString(str.ToCStr(), str.GetSize());
 }
@@ -728,7 +722,8 @@ bool VMAbcFile::RegisterUserDefinedClassTraits()
     // 2) duplicate identical scripts from other files.
 
     // Register uninitialized traits,
-    for (UPInt i = 0; i < classes.GetSize(); ++i)
+    const UPInt csize = classes.GetSize();
+    for (UPInt i = 0; i < csize; ++i)
     {
         const Abc::ClassInfo& class_info = classes.Get(i);
         const Abc::Multiname& name = class_info.GetName(GetConstPool());
@@ -806,13 +801,13 @@ bool VMAbcFile::RegisterUserDefinedClassTraits()
         }
     }
 
-    if (numOfClasses == 0 && classes.GetSize() != 0)
+    if (numOfClasses == 0 && csize != 0)
         return false;
 
     bool uninitialize = false;
 
     // Initialize uninitialized traits,
-    for (UPInt i = 0; i < classes.GetSize(); ++i)
+    for (UPInt i = 0; i < csize; ++i)
     {
         const Abc::ClassInfo& class_info = classes.Get(i);
         const Abc::Multiname& name = class_info.GetName(GetConstPool());
@@ -871,7 +866,52 @@ bool VMAbcFile::RegisterUserDefinedClassTraits()
         return false;
     }
 
-    return (classes.GetSize() == 0 || (classes.GetSize() != 0 && numOfClasses != 0));
+    return (csize == 0 || (csize != 0 && numOfClasses != 0));
+}
+
+void VMAbcFile::UnregisterUserDefinedClassTraits()
+{
+#ifdef SF_TRACE_FILE_LOADING
+    VM& vm = GetVM();
+    FlashUI& ui = vm.GetUI();
+    ui.Output(FlashUI::Output_Action, "\nFile ");
+    ui.Output(FlashUI::Output_Action, File->GetSource().ToCStr());
+    ui.Output(FlashUI::Output_Action, " will be completely unregistered.\n");
+#endif
+
+    const UPInt size = GetNumOfLoadedClasses();
+    for (UPInt i = 0; i < size; ++i)
+    {
+        ClassTraits::Traits& ctr = *GetLoadedClass(i);
+
+        if (ctr.IsValid())
+        {
+            // Fast way.
+            InstanceTraits::Traits& itr = ctr.GetInstanceTraits();
+            const ASString str_name = itr.GetName();
+            const Instances::fl::Namespace& ns = itr.GetNamespace();
+
+#ifdef SF_TRACE_FILE_LOADING
+            ui.Output(FlashUI::Output_Action, "Unregistering class ");
+            if (!ns.GetUri().IsEmpty())
+            {
+                ui.Output(FlashUI::Output_Action, ns.GetUri().ToCStr());
+                ui.Output(FlashUI::Output_Action, "::");
+            }
+            ui.Output(FlashUI::Output_Action, str_name.ToCStr());
+            ui.Output(FlashUI::Output_Action, "\n");
+#endif
+
+            RemoveClassTrait(str_name, ns);
+        }
+        else
+        {
+            // Slow way.
+            RemoveClassTraitValue(&ctr);
+        }
+    }
+
+    ClearLoadedClasses();
 }
 
 bool VMAbcFile::RegisterScrips(bool to_execute)
@@ -944,12 +984,7 @@ void VMAbcFile::UnRegister()
     UnregisterUserDefinedClassTraits();
 
     // Destroy generated opcode because it holds pointers to objects.
-    const UPInt size = OpCodeArray.GetSize();
-    for (UPInt i = 0; i < size; ++i)
-        OpCodeArray[i].Clear();
-
-    // !!! DO NOT clear  OpCodeArray because it can be used again.
-    OpCodeArray.Clear();
+    MethodInfoArray.Clear();
 
 #ifdef SF_AS3_ENABLE_GETABSOBJECT
     // Clear AbsObjects because there is no optimized opcode any more.
@@ -972,22 +1007,28 @@ void VMAbcFile::UnRegister()
     // ??? Children should not be cleared.
     Children.Clear();
     FunctionTraitsCache.Clear();
-    Exceptions.Clear();
     VMFile::Clear();
+
+    if (GetAppDomain().IsEmpty())
+    {
+        bool removed = GetVM().RemoveAppDomain(GetAppDomain());
+        SF_UNUSED(removed);
+    }
 }
 
-const Abc::TOpCode& VMAbcFile::GetOpCode(Abc::MbiInd ind, const CallFrame& cf)
+const Abc::TOpCode& VMAbcFile::GetOpCode(const CallFrame& cf)
 {
-    SF_ASSERT(ind.IsValid() && static_cast<UPInt>(ind.Get()) < OpCodeArray.GetSize());
+    VM& vm = GetVM();
+    const Abc::MbiInd ind = cf.GetMethodBodyInd();
+    SF_ASSERT(ind.IsValid() && static_cast<UPInt>(ind.Get()) < MethodInfoArray.GetSize());
+    MethodInfo& mi = MethodInfoArray[ind.Get()];
 
-    if (OpCodeArray[ind.Get()].GetSize() == 0)
+    if (mi.OpCode.IsEmpty())
     {
-        VM& vm = GetVM();
         Tracer tracer(
             vm.GetMemoryHeap(), 
             cf, 
-            OpCodeArray[ind.Get()], 
-            Exceptions[ind.Get()]
+            mi
             SF_AOTC_ARG(pIC)
             SF_AOTC2_ARG(pIC)
         );
@@ -996,7 +1037,20 @@ const Abc::TOpCode& VMAbcFile::GetOpCode(Abc::MbiInd ind, const CallFrame& cf)
             tracer.EmitCode();
     }
 
-    return OpCodeArray[ind.Get()];
+#ifdef SF_AS3_EMIT_DEF_ARGS
+    if (!cf.OpStackIsAllocated)
+    {
+        VM::OpStackType& stack = vm.OpStack;
+
+        // !!! We need this PLUS ONE at this time because return and returnvoid
+        // put result on method's stack.
+        stack.Reserve(static_cast<UInt16>(mi.MaxOpStackSize + 1));
+
+        cf.OpStackIsAllocated = true;
+    }
+#endif
+
+    return mi.OpCode;
 }
 
 Value VMAbcFile::GetDetailValue(const Abc::ValueDetail& d)
@@ -1015,13 +1069,7 @@ Value VMAbcFile::GetDetailValue(const Abc::ValueDetail& d)
         case Abc::CONSTANT_Double:
             return Value(MakeValueNumber(GetConstPool().GetDouble(value_ind)));
         case Abc::CONSTANT_Utf8:
-            {
-                const StringDataPtr str = GetConstPool().GetString(AbsoluteIndex(value_ind));
-                return Value(
-                    GetVM().GetStringManager().CreateString(
-                    str.ToCStr(), str.GetSize()
-                    ));
-            }
+            return Value(GetInternedString(value_ind));
         case Abc::CONSTANT_True:
             return Value(true);
         case Abc::CONSTANT_False:
@@ -1159,12 +1207,6 @@ void XMLSupport::DescribeType(VM& vm, SPtr<Instances::fl::XML>& result, const Va
     SF_UNUSED3(vm, result, value);
 }
 
-CheckResult XMLSupport::GetDescendants(Value& v, const Multiname& mn) const
-{
-    SF_UNUSED2(v, mn);
-    return false;
-}
-
 const ClassTraits::Traits* XMLSupport::GetClassTraitsXML() const
 {
     return NULL;
@@ -1296,7 +1338,7 @@ CheckResult GetVectorInd(const Multiname& prop_name, UInt32& ind)
             Value::Number n;
             const Value::Number num = name.AsNumber();
 
-            if (num >= 0 && ::modf(num, &n) == 0.0 && num <= SF_MAX_UINT32)
+            if (num >= 0 && ::modf(num, reinterpret_cast<double*>(&n)) == 0.0 && num <= SF_MAX_UINT32)
             {
                 ind = static_cast<UInt32>(num);
                 result = true;
@@ -1358,12 +1400,18 @@ CheckResult GetStrNumber(ASStringNode* sn, Value::Number& result)
 ///////////////////////////////////////////////////////////////////////////
 CallFrame::CallFrame(MemoryHeap* heap)
 : DiscardResult(false)
+#ifdef SF_AS3_EMIT_DEF_ARGS
+, OpStackIsAllocated(false)
+#endif
 #ifndef SF_AS3_ENABLE_CALLFRAME_CACHE
 , ACopy(false)
 #endif
 SF_DEBUG_ARG(RegisteredFunction(false))
 , ScopeStackBaseInd(0)
 , CP(0)
+#ifdef GFX_AS3_TRACE
+, OCPtr(NULL)
+#endif
 , pRegisterFile(NULL)
 , pHeap(heap)
 , pFile(NULL)
@@ -1399,10 +1447,16 @@ CallFrame::~CallFrame()
 
 CallFrame::CallFrame(const CallFrame& other)
 : DiscardResult(other.DiscardResult)
-, ACopy(true)
+#ifdef SF_AS3_EMIT_DEF_ARGS
+, OpStackIsAllocated(other.OpStackIsAllocated)
+#endif
+, ACopy(true) // ACopy must be set to true unconditionally.
 SF_DEBUG_ARG(RegisteredFunction(other.RegisteredFunction))
 , ScopeStackBaseInd(other.ScopeStackBaseInd)
 , CP(other.CP)
+#ifdef GFX_AS3_TRACE
+, OCPtr(other.OCPtr)
+#endif
 , pRegisterFile(other.pRegisterFile)
 , pHeap(other.pHeap)
 , pFile(other.pFile)
@@ -1442,7 +1496,9 @@ CallFrame::~CallFrame()
         GetVM().SetDefXMLNamespace(GetDefXMLNamespace());
 #endif
 
+#ifdef SF_BUILD_DEBUG
         SF_ASSERT(stack.IsValid());
+#endif
     }
 }
 
@@ -1451,10 +1507,16 @@ CallFrame& CallFrame::operator =(const CallFrame& other)
     if (this != &other)
     {
         DiscardResult = other.DiscardResult;
+#ifdef SF_AS3_EMIT_DEF_ARGS
+        OpStackIsAllocated = other.OpStackIsAllocated;
+#endif
         ACopy = true;
         SF_DEBUG_CODE(RegisteredFunction = other.RegisteredFunction;)
         ScopeStackBaseInd = other.ScopeStackBaseInd;
         CP = other.CP;
+#ifdef GFX_AS3_TRACE
+        OCPtr = other.OCPtr;
+#endif
         pRegisterFile = other.pRegisterFile;
         pHeap = other.pHeap;
         pFile = other.pFile;
@@ -1478,7 +1540,9 @@ CallFrame& CallFrame::operator =(const CallFrame& other)
         Invoker = other.Invoker;
     }
 
+#ifdef SF_BUILD_DEBUG
     SF_ASSERT(GetVM().OpStack.IsValid());
+#endif
 
     return *this;
 }
@@ -1506,17 +1570,18 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
     // the remaining values are either the values provided by default value declarations (optional arguments)
     // or the value undefined.
     
+    VM& vm = GetVM();
     for(unsigned i = 0; i < param_count; ++i)
     {
         // Coerce to the argument's type ...
 
         // Resolve multiname ...
         const Abc::Multiname& mn = mi.GetParamType(GetFile().GetConstPool(), i);
-        const ClassTraits::Traits* to = GetVM().Resolve2ClassTraits(GetFile(), mn);
+        const ClassTraits::Traits* to = vm.Resolve2ClassTraits(GetFile(), mn);
 
         if (to == NULL)
         {
-            return GetVM().ThrowReferenceError(VM::Error(VM::eClassNotFoundError, GetVM()
+            return vm.ThrowReferenceError(VM::Error(VM::eClassNotFoundError, vm
                 SF_DEBUG_ARG(mn.GetName(GetFile().GetConstPool()))
                 ));
         }
@@ -1528,7 +1593,7 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
             if (!to->Coerce(argv[i], result))
             {
                 // A TypeError is thrown if value cannot be coerced to the specified type.
-                return GetVM().ThrowTypeError(VM::Error(VM::eCheckTypeFailedError, GetVM()
+                return vm.ThrowTypeError(VM::Error(VM::eCheckTypeFailedError, vm
                     SF_DEBUG_ARG(argv[i])
                     SF_DEBUG_ARG(to->GetName().ToCStr())
                     ));
@@ -1541,15 +1606,15 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
                 if (!to->Coerce(GetFile().GetDetailValue(mi.GetOptionalParam(i - first_opt_param_num)), result))
                 {
                     // A TypeError is thrown if value cannot be coerced to the specified type.
-                    return GetVM().ThrowTypeError(VM::Error(VM::eCheckTypeFailedError, GetVM()
+                    return vm.ThrowTypeError(VM::Error(VM::eCheckTypeFailedError, vm
                         SF_DEBUG_ARG(GetFile().GetDetailValue(mi.GetOptionalParam(i - first_opt_param_num)))
                         SF_DEBUG_ARG(to->GetName().ToCStr())
                         ));
                 }
             }
-            else if (to != &GetVM().GetClassTraitsClassClass())
+            else if (to != &vm.GetClassTraitsClassClass())
             {
-                return GetVM().ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, GetVM()
+                return vm.ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, vm
                     SF_DEBUG_ARG(Name->pData)
                     SF_DEBUG_ARG(static_cast<int>(first_opt_param_num))
                     SF_DEBUG_ARG(static_cast<int>(param_count))
@@ -1567,7 +1632,7 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
         // If NEED_REST is set in method_info.flags, the method_info.param_count+1 register is set up to
         // reference an array that holds the superfluous arguments.
 
-        Pickable<Instances::fl::Array> arr = GetVM().MakeArray();
+        Pickable<Instances::fl::Array> arr = vm.MakeArray();
         // Store arr ASAP to prevent problems with GC in case of exception.
         SetRegister(reg++, arr);
 
@@ -1581,7 +1646,7 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
         // the "arguments" object, whereas ECMA-262 requires a plain Object.)
 
         // "arguments" is a regular Array. There is no an explicit "arguments" class.
-        Pickable<Instances::fl::Array> arr = GetVM().MakeArray();
+        Pickable<Instances::fl::Array> arr = vm.MakeArray();
         // Store arr ASAP to prevent problems with GC in case of exception.
         SetRegister(reg++, arr);
 
@@ -1617,7 +1682,7 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
                 // Code below is not correct.
                 // We shouldn't create a MethodClosure for a Function.
                 // Make a method closure by storing "this".
-                callee = GetVM().GetClassFunction().MakeInstance2(Invoker, _this);
+                callee = vm.GetClassFunction().MakeInstance2(Invoker, _this);
 #else
                 callee = Invoker;
 #endif
@@ -1627,7 +1692,7 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
             }
 
             arr->AddDynamicSlotValuePair(
-                GetVM().GetStringManager().CreateConstString("callee"), 
+                vm.GetStringManager().CreateConstString("callee"), 
                 callee
                 );
         }
@@ -1636,8 +1701,14 @@ void CallFrame::SetupRegisters(const Abc::MethodInfo& mi, const Value& _this, un
 
 void CallFrame::ClearOpStack()
 {
-    VM::OpStackType& stack = GetVM().OpStack;
-    stack.PopReserved(PrevInitialStackPos);
+    // At the end OpStack should contain zero values in case of 
+    // DiscardResult == true and one value otherwise. Not normalized stack
+    // occurs in case of try {...} finally { return value; }
+
+    VM& vm = GetVM();
+    VM::OpStackType& stack = vm.OpStack;
+
+    stack.PopReserved(PrevInitialStackPos, !DiscardResult && !vm.IsException());
 }
 
 #ifdef SF_AS3_ENABLE_CALLFRAME_CACHE
@@ -1708,6 +1779,7 @@ Instances::fl::GlobalObjectScript* CallFrame::GetGlobalObject() const
 #endif
 }
 
+///////////////////////////////////////////////////////////////////////////
 #ifdef SF_ENABLE_APP_DOMAIN
 bool VMAppDomain::Enabled = true;
 #else
@@ -1715,8 +1787,9 @@ bool VMAppDomain::Enabled = false;
 #endif
 
 VMAppDomain::VMAppDomain(VM& vm, VMAppDomain* parentDomain) 
-: ParentDomain(NULL)
-, ClassTraitsSet(vm.GetMemoryHeap())
+    : GASRefCountBase(&vm.GetGC())
+    , ParentDomain(NULL)
+    , ClassTraitsSet(vm.GetMemoryHeap())
 {
     if (parentDomain != NULL)
         parentDomain->AddChild(*this);
@@ -1724,33 +1797,20 @@ VMAppDomain::VMAppDomain(VM& vm, VMAppDomain* parentDomain)
 
 VMAppDomain::~VMAppDomain()
 {
-    if (ParentDomain != NULL)
-    {
-        for (UPInt i = 0; i < ParentDomain->ChildDomains.GetSize(); ++i)
-        {
-            VMAppDomain* childDomain = ParentDomain->ChildDomains[i];
-            if (childDomain == this)
-            {
-                ParentDomain->ChildDomains.RemoveAt(i);
-                break;
-            }
-        }
-    }
-    for (UPInt i = 0; i < ChildDomains.GetSize(); ++i)
-    {
-        VMAppDomain* childDomain = ChildDomains[i];
-        childDomain->ParentDomain = NULL;
-        delete childDomain;
-    }
 }
+
 void VMAppDomain::AddChild(VMAppDomain& childDomain)
 {
+    SF_ASSERT(IsEnabled());  // Should not be adding children if App Domain is not enabled
     ChildDomains.PushBack(&childDomain);
     childDomain.ParentDomain = this;
 }
-VMAppDomain& VMAppDomain::AddNewChild(VM& vm)
+SPtr<VMAppDomain> VMAppDomain::AddNewChild(VM& vm)
 {
-    return *SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_VM_Mem) VMAppDomain(vm, this);
+    if (IsEnabled())
+        return MakePickable(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_VM_Mem) VMAppDomain(vm, this));
+    else
+        return this;
 }
 
 VMAppDomain* VMAppDomain::GetParent() const
@@ -1760,17 +1820,16 @@ VMAppDomain* VMAppDomain::GetParent() const
 
 bool VMAppDomain::RemoveChild(VMAppDomain& childDomain)
 {
-    if (this == &childDomain)
-    {
-        delete this;
-        return true;
-    }
     for (UPInt i = 0; i < ChildDomains.GetSize(); ++i)
     {
-        if (ChildDomains[i]->RemoveChild(childDomain))
+        if (ChildDomains[i] == &childDomain)
         {
+            ChildDomains.RemoveAt(i);
             return true;
         }
+
+        if (ChildDomains[i]->RemoveChild(childDomain))
+            return true;
     }
     return false;
 }
@@ -1779,14 +1838,14 @@ bool VMAppDomain::RemoveChild(VMAppDomain& childDomain)
 ClassTraits::Traits** VMAppDomain::GetClassTrait(const ASString& name, const Instances::fl::Namespace& ns)
 {
     ClassTraits::Traits** classTrait = NULL;
+
+    // Search from Root to Child. ???
     if (ParentDomain != NULL)
-    {
         classTrait = ParentDomain->GetClassTrait(name, ns);
-    }
+
     if (classTrait == NULL)
-    {
         classTrait = ClassTraitsSet.Get(name, ns);
-    }
+
     return classTrait;
 }
 
@@ -1798,14 +1857,14 @@ ClassTraits::Traits** VMAppDomain::GetClassTraitNoParent(const ASString& name, c
 ClassTraits::Traits** VMAppDomain::GetClassTrait(const Multiname& mn)
 {
     ClassTraits::Traits** classTrait = NULL;
+
+    // Search from Root to Child. ???
     if (ParentDomain != NULL)
-    {
         classTrait = ParentDomain->GetClassTrait(mn);
-    }
+
     if (classTrait == NULL)
-    {
         classTrait = ClassTraitsSet.Get(mn);
-    }
+
     return classTrait;
 }
 
@@ -1833,34 +1892,34 @@ void VMAppDomain::GetMultinames(Array<SPtr<const Instances::fl::Namespace> >& mu
 {
     ClassTraitsSet.GetMultinames(multinames);
     for (UPInt i = 0; i < ChildDomains.GetSize(); ++i)
-    {
         ChildDomains[i]->GetMultinames(multinames);
-    }
 }
 
 bool VMAppDomain::IsEmpty() const
 {
     if (!ClassTraitsSet.IsEmpty())
-    {
         return false;
-    }
+
     if (!ChildDomains.IsEmpty())
-    {
         return false;
-    }
+
     return true;
 }
 
+void VMAppDomain::ForEachChild_GC(Collector* prcc, GcOp op) const
+{
+    for (UPInt i = 0; i < ChildDomains.GetSize(); ++i)
+        ChildDomains[i]->ForEachChild_GC(prcc, op);
+}
 
 ///////////////////////////////////////////////////////////////////////////
-VM::VM(FlashUI& _ui, FileLoader& loader, StringManager& sm, ASRefCountCollector& gc SF_AOTC_ARG(AOT::InfoCollector* ic) SF_AOTC2_ARG(AOT::InfoCollector* ic))
+VM::VM(FlashUI& _ui, StringManager& sm, ASRefCountCollector& gc SF_AOTC_ARG(AOT::InfoCollector* ic) SF_AOTC2_ARG(AOT::InfoCollector* ic))
 : Initialized(false)
 , InDestructor(false)
 , LoadingAbcFile(false)
 , StringManagerRef(sm)
 , GC(gc)
 , UI(_ui)
-, Loader(loader)
 , InInitializer(0)
 , MHeap(Memory::GetHeapByAddress(&GetSelf()))
 , XMLSupport_(Pickable<XMLSupport>(SF_HEAP_NEW(GetMemoryHeap()) XMLSupport(GetSelf())))
@@ -1875,33 +1934,34 @@ VM::VM(FlashUI& _ui, FileLoader& loader, StringManager& sm, ASRefCountCollector&
 #ifdef SF_AMP_SERVER
 , ActiveLineTimestamp(0)
 #endif
-, SystemDomain(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_VM_Mem) VMAppDomain(GetSelf(), NULL))
-, CurrentDomain(VMAppDomain::IsEnabled() ? SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_VM_Mem) VMAppDomain(GetSelf(), SystemDomain) : SystemDomain)
+, SystemDomain(MakePickable(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_VM_Mem) VMAppDomain(GetSelf(), NULL)))
+, CurrentDomain(VMAppDomain::IsEnabled() ? MakePickable(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_VM_Mem) VMAppDomain(GetSelf(), SystemDomain)) : SystemDomain)
 
 , PublicNamespace(MakePickable(SF_HEAP_NEW(GetMemoryHeap()) Instances::fl::Namespace(GetSelf(), Abc::NS_Public, "")))
 , AS3Namespace(MakePickable(SF_HEAP_NEW(GetMemoryHeap()) Instances::fl::Namespace(GetSelf(), Abc::NS_Public, NS_AS3)))
 , VectorNamespace(MakePickable(SF_HEAP_NEW(GetMemoryHeap()) Instances::fl::Namespace(GetSelf(), Abc::NS_Public, NS_Vector)))
+, ProxyNamespace(MakePickable(SF_HEAP_NEW(GetMemoryHeap()) Instances::fl::Namespace(GetSelf(), Abc::NS_Public, NS_flash_proxy)))
 , XMLNamespace(MakePickable(SF_HEAP_NEW(GetMemoryHeap()) Instances::fl::Namespace(GetSelf(), Abc::NS_Public, NS_XML)))
 
 , TraitsClassClass(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::ClassClass(GetSelf())))
-, TraitsObject(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::Object(GetSelf())))
-, TraitsNamespace(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::Namespace(GetSelf())))
-, TraitsFunction(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::Function(GetSelf(), AS3::fl::FunctionCI)))
-, TraitsBoolean(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::Boolean(GetSelf())))
-, TraitsNumber(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::Number(GetSelf())))
-, TraitsInt(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::int_(GetSelf())))
-, TraitsUint(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::uint(GetSelf())))
-, TraitsString(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::String(GetSelf())))
-, TraitsArray(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::Array(GetSelf())))
-, TraitsQName(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::QName(GetSelf())))
-, TraitsCatch(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl::Catch(GetSelf())))
-, TraitsVector(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_vec::Vector(GetSelf())))
-, TraitsVector_int(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_vec::Vector_int(GetSelf())))
-, TraitsVector_uint(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_vec::Vector_uint(GetSelf())))
-, TraitsVector_Number(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_vec::Vector_double(GetSelf())))
-, TraitsVector_String(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_vec::Vector_String(GetSelf())))
-, TraitsApplicationDomain(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_system::ApplicationDomain(GetSelf())))
-, TraitsDomain(PrepareClassTraits(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_CTraits_Mem) ClassTraits::fl_system::Domain(GetSelf())))
+, TraitsObject(PrepareClassTraits(static_cast<ClassTraits::fl::Object*>(ClassTraits::fl::Object::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsNamespace(PrepareClassTraits(static_cast<ClassTraits::fl::Namespace*>(ClassTraits::fl::Namespace::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsFunction(PrepareClassTraits(static_cast<ClassTraits::Function*>(ClassTraits::Function::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsBoolean(PrepareClassTraits(static_cast<ClassTraits::fl::Boolean*>(ClassTraits::fl::Boolean::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsNumber(PrepareClassTraits(static_cast<ClassTraits::fl::Number*>(ClassTraits::fl::Number::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsInt(PrepareClassTraits(static_cast<ClassTraits::fl::int_*>(ClassTraits::fl::int_::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsUint(PrepareClassTraits(static_cast<ClassTraits::fl::uint*>(ClassTraits::fl::uint::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsString(PrepareClassTraits(static_cast<ClassTraits::fl::String*>(ClassTraits::fl::String::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsArray(PrepareClassTraits(static_cast<ClassTraits::fl::Array*>(ClassTraits::fl::Array::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsQName(PrepareClassTraits(static_cast<ClassTraits::fl::QName*>(ClassTraits::fl::QName::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsCatch(PrepareClassTraits(static_cast<ClassTraits::fl::Catch*>(ClassTraits::fl::Catch::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsVector(PrepareClassTraits(static_cast<ClassTraits::fl_vec::Vector*>(ClassTraits::fl_vec::Vector::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsVector_int(PrepareClassTraits(static_cast<ClassTraits::fl_vec::Vector_int*>(ClassTraits::fl_vec::Vector_int::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsVector_uint(PrepareClassTraits(static_cast<ClassTraits::fl_vec::Vector_uint*>(ClassTraits::fl_vec::Vector_uint::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsVector_Number(PrepareClassTraits(static_cast<ClassTraits::fl_vec::Vector_double*>(ClassTraits::fl_vec::Vector_double::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsVector_String(PrepareClassTraits(static_cast<ClassTraits::fl_vec::Vector_String*>(ClassTraits::fl_vec::Vector_String::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsApplicationDomain(PrepareClassTraits(static_cast<ClassTraits::fl_system::ApplicationDomain*>(ClassTraits::fl_system::ApplicationDomain::MakeClassTraits(GetSelf()).GetPtr())))
+, TraitsDomain(PrepareClassTraits(static_cast<ClassTraits::fl::Domain*>(ClassTraits::fl::Domain::MakeClassTraits(GetSelf()).GetPtr())))
 
 , TraitsNull(MakePickable(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_ITraits_Mem) InstanceTraits::Anonimous(GetSelf())))
 , TraitsVoid(MakePickable(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_ITraits_Mem) InstanceTraits::Void(GetSelf())))
@@ -1911,6 +1971,7 @@ VM::VM(FlashUI& _ui, FileLoader& loader, StringManager& sm, ASRefCountCollector&
 , TraitaGlobalObject(MakePickable(SF_HEAP_NEW_ID(GetMemoryHeap(), StatMV_VM_ITraits_Mem) InstanceTraits::fl::GlobalObject(GetSelf())))
 , GlobalObject(MakePickable(new(Memory::AllocInHeap(GetMemoryHeap(), sizeof(Instances::fl::GlobalObjectCPP))) Instances::fl::GlobalObjectCPP(GetSelf(), *TraitaGlobalObject)))
 , GlobalObjectValue(GlobalObject)
+, TraitsByteArray(PrepareClassTraits(static_cast<ClassTraits::fl_utils::ByteArray*>(ClassTraits::fl_utils::ByteArray::MakeClassTraits(GetSelf()).GetPtr())))
 SF_AOTC_ARG(pIC(ic))
 SF_AOTC2_ARG(pIC(ic))
 {
@@ -1923,15 +1984,6 @@ SF_AOTC2_ARG(pIC(ic))
     Initialized = true;
 
     GlobalObjects.PushBack(GlobalObject.GetPtr());
-
-    const UPInt n = Loader.GetSize();
-    for (UPInt i = 0; i < n; ++i)
-    {
-        const Ptr<Abc::File>& file = Loader.GetFile(i);
-
-        // Execute the last one.
-        LoadFile(file, GetCurrentAppDomain(), i == (n - 1));
-    }
 
     // Delayed initialization to prevent circular dependencies.
     {
@@ -1990,6 +2042,9 @@ SF_AOTC2_ARG(pIC(ic))
     ctr = TraitsArray;
     SystemDomain->AddClassTrait(ctr->GetName(), ns, ctr);
 
+    ctr = TraitsByteArray;
+    SystemDomain->AddClassTrait(ctr->GetName(), ns, ctr);
+
 #ifdef GFX_ENABLE_XML
     ctr = TraitsQName;
     SystemDomain->AddClassTrait(ctr->GetName(), ns, ctr);
@@ -2001,7 +2056,6 @@ SF_AOTC2_ARG(pIC(ic))
     SystemDomain->AddClassTrait(ctr->GetName(), ns, ctr);
 #endif
 #endif
-
 }
 
 VM::~VM()
@@ -2012,8 +2066,6 @@ VM::~VM()
     // Because of dependencies.
     //ClassClass->ReleasePrototype();
     UnregisterAllAbcFiles();
-
-    delete SystemDomain;
 }
 
 VMAppDomain& VM::GetFrameAppDomain() const
@@ -2031,7 +2083,6 @@ bool VM::RemoveAppDomain(VMAppDomain& appDomain)
     }
     return false;
 }
-
 
 void VM::UnregisterAllAbcFiles()
 {
@@ -2131,6 +2182,12 @@ Pickable<Instances::fl::Array> VM::MakeArray() const
     return itr.MakeInstance(itr);
 }
 
+Pickable<Instances::fl_utils::ByteArray> VM::MakeByteArray() const
+{
+    InstanceTraits::fl_utils::ByteArray& itr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetClassTraitsByteArray().GetInstanceTraits());
+    return itr.MakeInstance(itr);
+}
+
 ASString VM::AsString(const Value& value)
 {
     StringManager& sm = GetStringManager();
@@ -2187,7 +2244,7 @@ const ClassTraits::Traits* VM::Resolve2ClassTraits(const ASString& name, const I
         result = r;
 
         if (result)
-            SystemDomain->AddClassTrait(name, ns, r);
+            GetSystemAppDomain().AddClassTrait(name, ns, r);
     }
 
     return result;
@@ -2210,7 +2267,7 @@ const ClassTraits::Traits* VM::Resolve2ClassTraits(const Multiname& mn, VMAppDom
         result = r;
 
         if (result)
-            SystemDomain->AddClassTrait(name, mn.GetNamespace(), r);
+            GetSystemAppDomain().AddClassTrait(name, mn.GetNamespace(), r);
     }
 
     return result;
@@ -2258,21 +2315,30 @@ const ClassTraits::Traits* VM::Resolve2ClassTraits(VMFile& file, const Abc::Mult
 
         if (elem_ctr)
         {
-            if (elem_ctr == &GetClassTraitsSInt())
-                ctr = &GetClassTraitsVectorSInt();
-            else if (elem_ctr == &GetClassTraitsUInt())
-                ctr = &GetClassTraitsVectorUInt();
-            else if (elem_ctr == &GetClassTraitsNumber())
-                ctr = &GetClassTraitsVectorNumber();
-            else if (elem_ctr == &GetClassTraitsString())
-                ctr = &GetClassTraitsVectorString();
-            //else
-            // Condition below should be removed at some point. 
-            else if (elem_ctr->IsValid())
+            const BuiltinTraitsType tt = elem_ctr->GetTraitsType();
+            switch (tt)
             {
-                const ClassTraits::Traits& vctr = static_cast<const Classes::fl_vec::Vector&>(ctr->GetInstanceTraits().GetClass()).Resolve2Vector(*elem_ctr, &file);
+            case Traits_SInt:
+                ctr = &GetClassTraitsVectorSInt();
+                break;
+            case Traits_UInt:
+                ctr = &GetClassTraitsVectorUInt();
+                break;
+            case Traits_Number:
+                ctr = &GetClassTraitsVectorNumber();
+                break;
+            case Traits_String:
+                ctr = &GetClassTraitsVectorString();
+                break;
+            default:
+                // Condition below should be removed at some point. 
+                if (elem_ctr->IsValid())
+                {
+                    const ClassTraits::Traits& vctr = static_cast<const Classes::fl_vec::Vector&>(ctr->GetInstanceTraits().GetClass()).Resolve2Vector(*elem_ctr);
 
-                ctr = &vctr;
+                    ctr = &vctr;
+                }
+                break;
             }
         }
     }
@@ -2280,14 +2346,14 @@ const ClassTraits::Traits* VM::Resolve2ClassTraits(VMFile& file, const Abc::Mult
     return ctr;
 }
 
-const ClassTraits::Traits* VM::Resolve2ClassTraits(const TypeInfo& ti, VMAppDomain& appDomain)
+const ClassTraits::Traits* VM::Resolve2ClassTraits(const TypeInfo& ti)
 {
     StringManager& sm = GetStringManager();
     const ASString name = sm.CreateConstString(ti.Name);
     const ASString ns_name = sm.CreateConstString(ti.PkgName);
     SPtr<Instances::fl::Namespace> ns = MakeInternedNamespace(Abc::NS_Public, ns_name);
 
-    return Resolve2ClassTraits(name, *ns, appDomain);
+    return Resolve2ClassTraits(name, *ns, GetSystemAppDomain());
 }
 
 void VM::UnregisterGlobalObject(Instances::fl::GlobalObject& go)
@@ -2303,6 +2369,67 @@ void VM::UnregisterGlobalObject(Instances::fl::GlobalObject& go)
             break;
         }
     }
+}
+
+void VM::SetClassAlias(const ASString& alias, Class& cl)
+{
+    Class* result = NULL;
+
+    if (AliasClass.Get(alias, &result))
+    {
+        if (result == &cl)
+            // The same class.
+            return;
+
+        // Unregister old class with file.
+        {
+            VMAbcFile* file = result->GetTraits().GetFilePtr();
+
+            if (file)
+                // Register with file.
+                file->AliasClass.Remove(alias);
+        }
+
+        ClassAlias.Remove(result);
+
+        // Register new class.
+        {
+            VMAbcFile* file = cl.GetTraits().GetFilePtr();
+
+            if (file)
+                // Register with file.
+                file->AliasClass.Add(alias);
+
+            AliasClass.Set(alias, &cl);
+            ClassAlias.Set(&cl, alias);
+        }
+    }
+    else
+    {
+        VMAbcFile* file = cl.GetTraits().GetFilePtr();
+
+        if (file)
+            // Register with file.
+            file->AliasClass.Add(alias);
+
+        AliasClass.Add(alias, &cl);
+        ClassAlias.Set(&cl, alias);
+    }
+}
+
+Class* VM::GetClassByAlias(const ASString& alias) const
+{
+    Class* result = NULL;
+    AliasClass.Get(alias, &result);
+    return result;
+}
+
+ASString VM::GetAliasByClass(Class& cl) const
+{
+    ASString result = GetStringManager().CreateEmptyString();
+
+    ClassAlias.Get(&cl, &result);
+    return result;
 }
 
 bool VM::IsOfType(const Value& v, const char* type_name, VMAppDomain& appDomain)
@@ -2365,12 +2492,11 @@ bool VM::IsOfType(const Value& v, const ClassTraits::Traits& ctr) const
         // Number is final.
         return tt == Traits_Number || IsObject(ctr);
     case Value::kString:
-        if (v.GetStringNode())
+        if (v.GetStringNode() == NULL)
+            return false;
+        else
             // String is final.
             return tt == Traits_String || IsObject(ctr);
-        else
-            return false;
-
     case Value::kObject:
         if (v.GetObject() == NULL)
             return false;
@@ -2381,12 +2507,10 @@ bool VM::IsOfType(const Value& v, const ClassTraits::Traits& ctr) const
     case Value::kThunkClosure:        
     case Value::kVTableIndClosure:        
         return GetClassTraits(v).IsOfType(ctr);
-
     case Value::kClass:
         if (v.GetObject() == NULL)
             return false;
         return v.GetObject()->GetTraits().GetClass().GetClassTraits().IsOfType(ctr);
-
     default:
         SF_ASSERT(false);
         break;
@@ -3210,6 +3334,12 @@ void VM::exec_constructprop(VMFile& file, const Abc::Multiname& mn, UInt32 arg_c
             SF_DEBUG_ARG(args.ArgMN.GetName())
             ));
 
+        // Sometimes people try to call operator new on regular functions. It happens.
+        if (!Value::IsObject(kind))
+            return ThrowReferenceError(VM::Error(VM::eUndefinedVarError, *this
+            SF_DEBUG_ARG(args.ArgMN.GetName())
+            ));
+
         // TODO:
         // !!! Look up for a "Construct" property ...
         //A TypeError is thrown if object does not implement the [[Construct]] property.
@@ -3234,13 +3364,25 @@ void VM::exec_getdescendants(VMFile& file, const Abc::Multiname& mn)
 #ifdef GFX_ENABLE_XML
     // Read arguments ...
     ReadMnObjectRef args(file, mn);
-    
+
     if (IsException())
         return;
 
     const XMLSupport& xmls = GetXMLSupport();
 
-    if (!xmls.GetDescendants(args.ArgObject, args.ArgMN))
+    if (!xmls.IsEnabled())
+        return ThrowVerifyError(VM::Error(VM::eNotImplementedError, *this SF_DEBUG_ARG("getdescendants")));
+
+    if (args.ArgObject.IsObject() && args.ArgObject.GetObject())
+    {
+        Object* obj = args.ArgObject.GetObject();
+        InstanceTraits::fl::XMLList& itr = static_cast<InstanceTraits::fl::XMLList&>(*xmls.GetITraitsXMLList());
+        Pickable<Instances::fl::XMLList> list = itr.MakeInstance(itr);
+        // Assign Pickable immediately to prevent memory leaks.
+        args.ArgObject = list;
+        obj->GetDescendants(*list, args.ArgMN);
+    }
+    else
     {
         // PopBack() because we haven't remove Object from stack.
         OpStack.PopBack();
@@ -3251,7 +3393,8 @@ void VM::exec_getdescendants(VMFile& file, const Abc::Multiname& mn)
             ));
     }
 #else
-    SF_UNUSED1(mn);
+    SF_UNUSED2(file, mn);
+    ThrowVerifyError(VM::Error(VM::eNotImplementedError, *this SF_DEBUG_ARG("getdescendants")));
 #endif
 }
 
@@ -3495,13 +3638,15 @@ void VM::exec_deleteproperty(VMFile& file, const Abc::Multiname& mn)
     // removed from object and true is pushed onto the stack.
     bool result = false;
 
+#ifdef GFX_ENABLE_XML
     if (GetXMLSupport().IsEnabled() && IsXMLListObject(args.ArgMN.GetName()))
     {
         return ThrowTypeError(VM::Error(VM::eDeleteTypeError, *this
             SF_DEBUG_ARG(GetValueTraits(args.ArgMN.GetName()).GetName().ToCStr())
             ));
-    }
-    else if (args.ArgObject.IsPrimitive())
+    } else
+#endif 
+    if (args.ArgObject.IsPrimitive())
     {
         // We want to bypass a thunk here.
         // This logic seems to be Tamarin-specific.
@@ -3606,7 +3751,7 @@ void VM::exec_coerce(VMFile& file, const Abc::Multiname& mn)
     // No exceptions at this point.
     
     // The type specified by the multiname is resolved, and value is coerced to that type. The
-    // resulting value is pushed onto the stack. If any of value’s base classes, or implemented
+    // resulting value is pushed onto the stack. If any of valueï¿½s base classes, or implemented
     // interfaces matches the type specified by the multiname, then the conversion succeeds and the
     // result is pushed onto the stack.
     
@@ -4104,7 +4249,7 @@ void VM::exec_applytype(UInt32 arg_count)
     if (!args.ArgObject.IsClass())
         return ThrowTypeError(VM::Error(eTypeAppOfNonParamType, *this));
 
-    args.ArgObject = &args.ArgObject.AsClass().ApplyTypeArgs(args.GetCallArgsNum(), args.GetCallArgs());
+    args.ArgObject = &args.ArgObject.AsClass().ApplyTypeArgs(args.GetCallArgsNum(), args.GetCallArgs()).GetInstanceTraits().GetClass();
 }
 
 void VM::ExecuteInternalUnsafe(const Value& func, const Value& _this, Value& result, unsigned argc, const Value* argv, bool result_on_stack)
@@ -4182,9 +4327,9 @@ void VM::ExecuteInternalUnsafe(const Value& func, const Value& _this, Value& res
         {
             SIMD::IS::PrefetchObj(&func.AsThunk());
             const ThunkInfo& thunk = func.AsThunk();
-            const Value _this(func.GetClosure());
+            const Value _thisValue(func.GetClosure());
 
-            ExecuteThunkUnsafe(thunk, _this, result, argc, argv, result_on_stack);
+            ExecuteThunkUnsafe(thunk, _thisValue, result, argc, argv, result_on_stack);
         }
         break;
     case Value::kVTableInd:
@@ -4217,13 +4362,13 @@ void VM::ExecuteInternalUnsafe(const Value& func, const Value& _this, Value& res
             const SInt32 ind = func.GetVTableInd();
             const Value& real_func = vt.GetRaw(AbsoluteIndex(ind));
             SIMD::IS::PrefetchObj(&real_func);
-            const Value _this(func.GetClosure());
+            const Value _thisValue(func.GetClosure());
 
             // VTable stores MethodInd or Thunk.
             if (real_func.GetKind() == Value::kMethodInd)
             {
                 // MethodInd.
-                ExecuteMethodIndUnsafe(func, real_func, _this, result, argc, argv, result_on_stack SF_DEBUG_ARG(ind));
+                ExecuteMethodIndUnsafe(func, real_func, _thisValue, result, argc, argv, result_on_stack SF_DEBUG_ARG(ind));
             }
             else
             {
@@ -4232,7 +4377,7 @@ void VM::ExecuteInternalUnsafe(const Value& func, const Value& _this, Value& res
                 SIMD::IS::PrefetchObj(&real_func.AsThunk());
                 const ThunkInfo& thunk = real_func.AsThunk();
 
-                ExecuteThunkUnsafe(thunk, _this, result, argc, argv, result_on_stack);
+                ExecuteThunkUnsafe(thunk, _thisValue, result, argc, argv, result_on_stack);
             }
         }
         break;
@@ -4318,17 +4463,109 @@ SF_INLINE
 void VM::ExecuteThunkUnsafe(const ThunkInfo& thunk, const Value& _this, Value& result, unsigned argc, const Value* argv, bool result_on_stack)
 {
     // Check number of arguments.
-    const unsigned max_arg_num = thunk.GetMaxArgNum();
-    // max_arg_num == SF_AS3_VARARGNUM means "variable number of arguments".
-    if (max_arg_num != SF_AS3_VARARGNUM && (argc > max_arg_num || argc < thunk.GetMinArgNum()))
-        return ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, *this SF_DEBUG_ARG(thunk.Name) SF_DEBUG_ARG(thunk.GetMinArgNum()) SF_DEBUG_ARG(thunk.GetMaxArgNum()) SF_DEBUG_ARG(argc)));
+    const unsigned max_arg_num = static_cast<unsigned>(thunk.GetMaxArgNum());
+    // thunk.HasEllipsis() means "variable number of arguments", but we still may specify max_arg_num (class Date).
+    // In this case we may pass any number of arguments, but only max_arg_num arguments will be handled by a method.
+    if (argc < static_cast<unsigned>(thunk.GetMinArgNum()) || (!thunk.HasEllipsis() && argc > max_arg_num))
+        return ThrowArgumentError(
+            VM::Error(
+                VM::eWrongArgumentCountError, 
+                *this
+                SF_DEBUG_ARG(thunk.Name)
+                SF_DEBUG_ARG(static_cast<int>(thunk.GetMinArgNum()))
+                SF_DEBUG_ARG(static_cast<int>(thunk.GetMaxArgNum()))
+                SF_DEBUG_ARG(argc)
+                )
+            );
 
 #ifdef SF_FPE_ENABLE
     FPEGuard fpe_guard;
 #endif
 
-    // Run method.
+#ifdef SF_AS3_EMIT_DEF_ARGS
+    if (thunk.HasEllipsis() || argc >= max_arg_num)
+        // All arguments are in place.
+        // Run method.
+        (*thunk.Method)(thunk, *this, _this, result, argc, argv);
+    else
+    {
+        ValueArrayDH args(GetMemoryHeap());
+        args.Reserve(max_arg_num);
+        UPInt i = 0;
+
+        // Move existing values.
+        for (; i < argc; ++i)
+            args.PushBack(argv[i]);
+
+        const UPInt first_opt_param_num = max_arg_num - thunk.GetDefArgNum();
+
+        // Generic default value.
+        for (; i < first_opt_param_num; ++i)
+        {
+            // ArgType[0] is type of return value.
+            const TypeInfo* arg_type = thunk.ArgType[i + 1];
+
+            if (arg_type == NULL)
+                args.PushBack(Value::GetUndefined());
+            else if (arg_type->IsBoolean())
+                args.PushBack(Value(false));
+            else if (arg_type->IsInt())
+                args.PushBack(Value(SInt32(0)));
+            else if (arg_type->IsUInt())
+                args.PushBack(Value(UInt32(0)));
+            else if (arg_type->IsString())
+                args.PushBack(Value(GetStringManager().CreateEmptyString()));
+            else if (arg_type->IsNumber())
+                args.PushBack(Value(NumberUtil::NaN()));
+            else
+                args.PushBack(Value((Object*)NULL));
+        }
+
+        // Stored default value.
+        for (; i < max_arg_num; ++i)
+        {
+            const Abc::ConstValue& cv = thunk.DefArgValue[i - first_opt_param_num];
+            const Abc::ValueKind k = cv.GetKind();
+
+            switch (k)
+            {
+            case Abc::CONSTANT_Undefined:
+                args.PushBack(Value::GetUndefined());
+                break;
+            case Abc::CONSTANT_Utf8:
+                args.PushBack(Value(GetStringManager().CreateConstString(Instances::fl::GlobalObjectCPP::Strings[cv.GetIndex()])));
+                break;
+            case Abc::CONSTANT_Int:
+                args.PushBack(Value(Instances::fl::GlobalObjectCPP::Ints[cv.GetIndex()]));
+                break;
+            case Abc::CONSTANT_UInt:
+                args.PushBack(Value(Instances::fl::GlobalObjectCPP::UInts[cv.GetIndex()]));
+                break;
+            case Abc::CONSTANT_Double:
+                args.PushBack(Value(Instances::fl::GlobalObjectCPP::Numbers[cv.GetIndex()]));
+                break;
+            case Abc::CONSTANT_True:
+                args.PushBack(Value(true));
+                break;
+            case Abc::CONSTANT_False:
+                args.PushBack(Value(false));
+                break;
+            case Abc::CONSTANT_Null:
+                args.PushBack(Value((Object*)NULL));
+                break;
+            default:
+                break;
+            }
+        }
+
+        // Finally run method.
+        (*thunk.Method)(thunk, *this, _this, result, max_arg_num, &args[0]);
+    }
+#else
+
     (*thunk.Method)(thunk, *this, _this, result, argc, argv);
+
+#endif
 
     // C++. We need to handle exceptions ...
     if (result_on_stack && !IsException())
@@ -4550,11 +4787,6 @@ SPtr<VMAbcFile> VM::LoadFile(const Ptr<Abc::File>& file, VMAppDomain& appDomain,
     return NULL;
 }
 
-void VM::AddFile(Ptr<Abc::File>& file)
-{
-    Loader.AddFile(file);
-}
-
 Class* VM::GetClass(const StringDataPtr& gname, VMAppDomain& appDomain)
 {
     Class* _class = NULL;
@@ -4575,7 +4807,7 @@ Class* VM::GetClass(const StringDataPtr& gname, VMAppDomain& appDomain)
                 if (subtype_class)
                 {
                     const Value subtype_value(subtype_class);
-                    _class = &GetClassVector().ApplyTypeArgs(1, &subtype_value);
+                    _class = &GetClassVector().ApplyTypeArgs(1, &subtype_value).GetInstanceTraits().GetClass();
                 }
             }
         }
@@ -4620,17 +4852,28 @@ bool VM::GetClassUnsafe(const StringDataPtr& gname, VMAppDomain& appDomain, Valu
     return false;
 }
 
-bool VM::Construct(const char* gname, VMAppDomain& appDomain, Value& result, unsigned argc, const Value* argv, bool extCall)
+bool VM::Construct(Class& cl, Value& result, unsigned argc, const Value* argv, bool extCall)
 {
     const UPInt original_stack_size = CallStack.GetSize();
 
+    // Create instance.
+    cl.Construct(result, argc, argv, extCall);
+
+    if (IsException())
+        return false;
+
+    return CallStack.GetSize() > original_stack_size;
+}
+
+bool VM::Construct(const char* gname, VMAppDomain& appDomain, Value& result, unsigned argc, const Value* argv, bool extCall)
+{
     // Get class.
     Value value;
     // !!! GetClass() MAY NOT be used here because of initialization on demand.
     if (!GetClassUnsafe(gname, appDomain, value))
         return false;
 
-    //A TypeError is thrown if object does not implement the [[Construct]] property.
+    // A TypeError is thrown if object does not implement the [[Construct]] property.
 
     if (value.IsNullOrUndefined())
     {
@@ -4639,12 +4882,7 @@ bool VM::Construct(const char* gname, VMAppDomain& appDomain, Value& result, uns
     }
 
     // Create instance.
-    value.GetObject()->Construct(result, argc, argv, extCall);
-
-    if (IsException())
-        return false;
-
-    return CallStack.GetSize() > original_stack_size;
+    return Construct(value.AsClass(), result, argc, argv, extCall);
 }
 
 // Private helper to ConstructBuiltinObject
@@ -4901,108 +5139,6 @@ Instances::fl::GlobalObjectScript* VM::GetGlobalObject() const
     return NULL;
 }
 
-bool VM::IsFixedNumType(const InstanceTraits::Traits& tr) const
-{
-    const InstanceTraits::Traits* p = &tr;
-    bool result = false;
-
-    if (p == &GetITraitsSInt())
-        result = true;
-    else if (p == &GetITraitsUInt())
-        result = true;
-
-    return result;
-}
-
-bool VM::IsFixedNumType(const ClassTraits::Traits& tr) const
-{
-    const ClassTraits::Traits* p = &tr;
-    bool result = false;
-
-    if (p == &GetClassTraitsSInt())
-        result = true;
-    else if (p == &GetClassTraitsUInt())
-        result = true;
-
-    return result;
-}
-
-bool VM::IsFixedNumType(const Traits& tr) const
-{
-    bool result = false;
-
-    if (tr.IsInstanceTraits())
-        result = IsFixedNumType(static_cast<const InstanceTraits::Traits&>(tr));
-    else
-        result = IsFixedNumType(static_cast<const ClassTraits::Traits&>(tr));
-
-    return result;
-}
-
-bool VM::IsNumericType(const InstanceTraits::Traits& tr) const
-{
-    return IsFixedNumType(tr) || &tr == &GetITraitsNumber();
-}
-
-bool VM::IsNumericType(const ClassTraits::Traits& tr) const
-{
-    return IsFixedNumType(tr) || &tr == &GetClassTraitsNumber();
-}
-
-bool VM::IsNumericType(const Traits& tr) const
-{
-    bool result = false;
-
-    if (tr.IsInstanceTraits())
-        result = IsNumericType(static_cast<const InstanceTraits::Traits&>(tr));
-    else
-        result = IsNumericType(static_cast<const ClassTraits::Traits&>(tr));
-
-    return result;
-}
-
-bool VM::IsPrimitiveType(const InstanceTraits::Traits& tr) const
-{
-    const InstanceTraits::Traits* p = &tr;
-    bool result = false;
-
-    if (p == &GetITraitsBoolean())
-        result = true;
-    else if (p == &GetITraitsString())
-        result = true;
-    else if (IsNumericType(tr))
-        result = true;
-
-    return result;
-}
-
-bool VM::IsPrimitiveType(const ClassTraits::Traits& tr) const
-{
-    const ClassTraits::Traits* p = &tr;
-    bool result = false;
-
-    if (p == &GetClassTraitsBoolean())
-        result = true;
-    else if (p == &GetClassTraitsString())
-        result = true;
-    else if (IsNumericType(tr))
-        result = true;
-
-    return result;
-}
-
-bool VM::IsPrimitiveType(const Traits& tr) const
-{
-    bool result = false;
-
-    if (tr.IsInstanceTraits())
-        result = IsPrimitiveType(static_cast<const InstanceTraits::Traits&>(tr));
-    else
-        result = IsPrimitiveType(static_cast<const ClassTraits::Traits&>(tr));
-
-    return result;
-}
-
 bool VM::IsVMCachedType(const InstanceTraits::Traits& tr) const
 {
     const InstanceTraits::Traits* p = &tr;
@@ -5019,6 +5155,8 @@ bool VM::IsVMCachedType(const InstanceTraits::Traits& tr) const
     else if (p == &GetITraitsFunction())
         result = true;
     else if (p == &GetITraitsArray())
+        result = true;
+    else if (p == &GetITraitsByteArray())
         result = true;
     else if (p == &GetITraitsVectorSInt())
         result = true;
@@ -5060,6 +5198,8 @@ bool VM::IsVMCachedType(const ClassTraits::Traits& tr) const
     else if (p == &GetClassTraitsFunction())
         result = true;
     else if (p == &GetClassTraitsArray())
+        result = true;
+    else if (p == &GetClassTraitsByteArray())
         result = true;
     else if (p == &GetClassTraitsVectorSInt())
         result = true;
@@ -5140,13 +5280,12 @@ Value VM::GetDefaultValue(VMAbcFile& file, const Abc::Multiname& mn)
 
 InstanceTraits::Traits& VM::GetFunctReturnType(const ThunkInfo& thunk, VMAppDomain& appDomain)
 {
-    const TypeInfo* rt = thunk.ResultType;
+    const TypeInfo* rt = thunk.GetResultType();
 
     if (rt)
     {
         StringManager& sm = GetStringManager();
         const ASString name = sm.CreateConstString(rt->GetName());
-        // const Instances::fl::Namespace& ns = GetInternedNamespace(Abc::NS_Public, rt->GetPkgName());
         const SPtr<Instances::fl::Namespace> ns = MakeInternedNamespace(Abc::NS_Public, rt->GetPkgName());
 
         const ClassTraits::Traits* ctr = Resolve2ClassTraits(name, *ns, appDomain);
@@ -5252,6 +5391,28 @@ bool VM::CheckObject(const Value& v)
     {
         ThrowTypeError(VM::Error(v.IsNull() ? VM::eConvertNullToObjectError : VM::eConvertUndefinedToObjectError, *this));
         result = false;
+    }
+
+    return result;
+}
+
+CheckResult VM::ConstructBuiltinValue(Value& v, const TypeInfo& ti, unsigned argc, const Value* argv)
+{
+    bool result = false;
+    const ClassTraits::Traits* ctr = Resolve2ClassTraits(
+        GetStringManager().CreateConstString(ti.GetName()),
+        //GetPublicNamespace()
+        GetInternedNamespace(Abc::NS_Public, ti.GetPkgName()), 
+        GetCurrentAppDomain()
+        );
+
+    if (ctr)
+    {
+        InstanceTraits::Traits& itr = ctr->GetInstanceTraits();
+
+        itr.MakeObject(v, itr);
+        v.GetObject()->AS3Constructor(argc, argv);
+        result = true;
     }
 
     return result;
@@ -5574,6 +5735,16 @@ Classes::fl::Array& VM::GetClassArray() const
 InstanceTraits::Traits& VM::GetITraitsArray() const
 {
     return GetClassTraitsArray().GetInstanceTraits();
+}
+
+Classes::fl_utils::ByteArray& VM::GetClassByteArray() const
+{
+    return (Classes::fl_utils::ByteArray&)GetClassTraitsByteArray().GetInstanceTraits().GetClass();
+}
+
+InstanceTraits::Traits& VM::GetITraitsByteArray() const
+{
+    return GetClassTraitsByteArray().GetInstanceTraits();
 }
 
 Classes::fl::QName& VM::GetClassQName() const
@@ -5974,16 +6145,8 @@ CheckResult SetProperty(VM& vm, const Value& _this, const Multiname& prop_name, 
     }
     */
 
-    if (_this.IsObject())
-    {
-        Object* obj = _this.GetObject();
-        SF_ASSERT(obj);
-        const Traits& tr = obj->GetTraits();
-        const BuiltinTraitsType tt = tr.GetTraitsType();
-
-        if (tr.IsArrayLike() || ((tt == Traits_XML || tt == Traits_XMLList) && tr.IsInstanceTraits()))
-            return _this.GetObject()->SetProperty(prop_name, value);
-    }
+    if (_this.IsObject() && _this.GetObject())
+        return _this.GetObject()->SetProperty(prop_name, value);
 
     // Find a property.
     // Find + Set shouldn't mutate a prototype object.
@@ -5993,18 +6156,6 @@ CheckResult SetProperty(VM& vm, const Value& _this, const Multiname& prop_name, 
 
     if (prop)
         return prop.SetSlotValue(vm, value);
-    else if (_this.IsObject())
-    {
-        Object& obj = *_this.GetObject();
-
-        // Dynamic properties can only be assigned to public namespace.
-        // TBD: Add Multiname::AsValidDynamicName()?. Empty names shouldn't be allowed...
-        if (obj.IsDynamic() && prop_name.ContainsNamespace(vm.GetPublicNamespace()))
-        {
-            obj.AddDynamicSlotValuePair(prop_name.GetName(), value);
-            return true;
-        }
-    }
 
     // A ReferenceError is thrown if the property is unresolved and obj is not dynamic.
     vm.ThrowReferenceError(VM::Error(VM::eWriteSealedError, vm
@@ -6025,22 +6176,8 @@ CheckResult GetPropertyUnsafe(VM& vm, const Value& _this, const Multiname& prop_
     }
     */
 
-#if 0
-    const Traits& tr = vm.GetValueTraits(_this);
-    if (tr.IsArrayLike())
+    if (_this.IsObject() && _this.GetObject())
         return _this.GetObject()->GetProperty(prop_name, value);
-#else
-    if (_this.IsObject())
-    {
-        Object* obj = _this.GetObject();
-        SF_ASSERT(obj);
-        const Traits& tr = obj->GetTraits();
-        const BuiltinTraitsType tt = tr.GetTraitsType();
-
-        if (tr.IsArrayLike() || ((tt == Traits_XML || tt == Traits_XMLList) && tr.IsInstanceTraits()))
-            return obj->GetProperty(prop_name, value);
-    }
-#endif
 
     // Find a property.
     PropRef prop;
@@ -6139,23 +6276,12 @@ FPEGuard::FPEGuard()
 {
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360)
 #if defined(SF_MSVC_SAFESTRING)
-    unsigned c;
-    _controlfp_s(&c, _DN_FLUSH, _MCW_DN); // flush abnormal results and operands to zero
-
-    // Reset any pending exceptions
-    _fpreset();
-
-    // Disable all exceptions and store previous state.
+    // Enable hardware exceptions and store previous state.
     _controlfp_s(&State, _EM_INEXACT | _EM_UNDERFLOW | _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID, _MCW_EM);
 #else
-    _controlfp(_DN_FLUSH, _MCW_DN); // flush abnormal results and operands to zero
-
-    // Reset any pending exceptions
-    _fpreset();
-
-    // Get current state.
+    // Store previous state.
     State = _controlfp(0, 0);
-    // Disable all exceptions and store previous state.
+    // Enable hardware exceptions.
     _controlfp(_EM_INEXACT | _EM_UNDERFLOW | _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID, _MCW_EM);
 #endif
 #endif
@@ -6166,25 +6292,20 @@ FPEGuard::~FPEGuard()
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360)
 #if defined(SF_MSVC_SAFESTRING)
     unsigned c;
-    _controlfp_s(&c, _DN_FLUSH, _MCW_DN); // flush abnormal results and operands to zero
 
-    // Reset any pending exceptions
-    _fpreset();
-
-    // Disable all exceptions and store previous state.
-    _controlfp_s(&c, State, _MCW_EM);
+    // Restore previous state.
+#if defined(SF_OS_XBOX360) || defined(_DURANGO)
+    _controlfp_s(&c, State, _MCW_DN | _MCW_EM | _MCW_RC);
 #else
-    _controlfp(_DN_FLUSH, _MCW_DN); // flush abnormal results and operands to zero
+    _controlfp_s(&c, State, _MCW_DN | _MCW_EM | _MCW_IC | _MCW_RC | _MCW_PC);
+#endif
 
-    // Reset any pending exceptions
-    _fpreset();
-
-    // Disable all exceptions and store previous state.
-    _controlfp(State, _MCW_EM);
+#else
+    // Restore previous state.
+    _controlfp(State, _MCW_DN | _MCW_EM | _MCW_IC | _MCW_RC | _MCW_PC);
 #endif
 #endif
 }
-
 #endif
 
 #if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
@@ -6204,7 +6325,7 @@ namespace Impl
 {
     void CoerceInternal(VM& vm, const TypeInfo& ti, Value& to, const Value& from)
     {
-        const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(ti, vm.GetFrameAppDomain());
+        const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(ti);
 
         if (ctr && ctr->Coerce(from, to))
             return;

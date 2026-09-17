@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -219,32 +220,46 @@ template <> const TFunc_Classes_ExternalInterface_call::TMethod TFunc_Classes_Ex
 
 namespace ClassTraits { namespace fl_external
 {
-    const ThunkInfo ExternalInterface::ti[ExternalInterface::ThunkInfoNum] = {
-        {TFunc_Classes_ExternalInterface_availableGet::Func, &AS3::fl::BooleanTI, "available", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_ExternalInterface_marshallExceptionsGet::Func, &AS3::fl::BooleanTI, "marshallExceptions", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_ExternalInterface_marshallExceptionsSet::Func, NULL, "marshallExceptions", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_ExternalInterface_objectIDGet::Func, &AS3::fl::StringTI, "objectID", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_ExternalInterface_addCallback::Func, NULL, "addCallback", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_ExternalInterface_call::Func, NULL, "call", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+    // const UInt16 ExternalInterface::tito[ExternalInterface::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 5, 8, 
+    // };
+    const TypeInfo* ExternalInterface::tit[10] = {
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::FunctionTI, 
+        NULL, &AS3::fl::StringTI, 
     };
-    ExternalInterface::ExternalInterface(VM& vm)
-    : Traits(vm, AS3::fl_external::ExternalInterfaceCI)
+    const ThunkInfo ExternalInterface::ti[ExternalInterface::ThunkInfoNum] = {
+        {TFunc_Classes_ExternalInterface_availableGet::Func, &ExternalInterface::tit[0], "available", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_ExternalInterface_marshallExceptionsGet::Func, &ExternalInterface::tit[1], "marshallExceptions", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_ExternalInterface_marshallExceptionsSet::Func, &ExternalInterface::tit[2], "marshallExceptions", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_ExternalInterface_objectIDGet::Func, &ExternalInterface::tit[4], "objectID", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_ExternalInterface_addCallback::Func, &ExternalInterface::tit[5], "addCallback", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_ExternalInterface_call::Func, &ExternalInterface::tit[8], "call", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+    };
+
+    ExternalInterface::ExternalInterface(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::ExternalInterface::ExternalInterface()"
 //##protect##"ClassTraits::ExternalInterface::ExternalInterface()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_external::ExternalInterfaceCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_external::ExternalInterface(*this));
 
     }
 
     Pickable<Traits> ExternalInterface::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) ExternalInterface(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) ExternalInterface(vm, AS3::fl_external::ExternalInterfaceCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_external::ExternalInterfaceCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -255,6 +270,11 @@ namespace fl_external
 {
     const TypeInfo ExternalInterfaceTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_external::ExternalInterface::InstanceType),
+        ClassTraits::fl_external::ExternalInterface::ThunkInfoNum,
+        0,
+        0,
+        0,
         "ExternalInterface", "flash.external", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -262,10 +282,6 @@ namespace fl_external
     const ClassInfo ExternalInterfaceCI = {
         &ExternalInterfaceTI,
         ClassTraits::fl_external::ExternalInterface::MakeClassTraits,
-        ClassTraits::fl_external::ExternalInterface::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_external::ExternalInterface::ti,
         NULL,
         NULL,

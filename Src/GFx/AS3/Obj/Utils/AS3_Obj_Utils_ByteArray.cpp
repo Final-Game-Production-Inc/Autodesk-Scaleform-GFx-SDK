@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,6 +23,20 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifdef SF_ENABLE_ZLIB
 #include <zlib.h>
 #endif
+#include "Kernel/SF_WString.h"
+#include "Kernel/SF_SysFile.h"
+#include "../Vec/AS3_Obj_Vec_Vector.h"
+#include "../Vec/AS3_Obj_Vec_Vector_int.h"
+#include "../Vec/AS3_Obj_Vec_Vector_uint.h"
+#include "../Vec/AS3_Obj_Vec_Vector_double.h"
+#include "../Vec/AS3_Obj_Vec_Vector_object.h"
+#include "../Vec/AS3_Obj_Vec_Vector_String.h"
+#include "../AS3_Obj_Date.h"
+#ifdef GFX_ENABLE_XML
+#include "../AS3_Obj_XML.h"
+#endif
+#include "AS3_Obj_Utils_Dictionary.h"
+#include "AS3_Obj_Utils_IExternalizable.h"
 //##protect##"includes"
 
 
@@ -98,13 +113,30 @@ ZStream::~ZStream()
     SF_UNUSED1(error);
 }
 #endif // SF_ENABLE_ZLIB
-//##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
+enum AMF3DataType
 {
+    undefined_marker = 0x00,
+    null_marker = 0x01,
+    false_marker = 0x02,
+    true_marker = 0x03,
+    integer_marker = 0x04,
+    double_marker = 0x05,
+    string_marker = 0x06,
+    xml_doc_marker = 0x07,
+    date_marker = 0x08,
+    array_marker = 0x09,
+    object_marker = 0x0A,
+    xml_marker = 0x0B,
+    byte_array_marker = 0x0C,
+    vector_int_marker = 0x0D,
+    vector_uint_marker = 0x0E,
+    vector_double_marker = 0x0F,
+    vector_object_marker = 0x10,
+    dictionary_marker = 0x11,
+};
 
-} // namespace Impl
+//##protect##"methods"
 typedef ThunkFunc0<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_bytesAvailableGet, UInt32> TFunc_Instances_ByteArray_bytesAvailableGet;
 typedef ThunkFunc0<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_endianGet, ASString> TFunc_Instances_ByteArray_endianGet;
 typedef ThunkFunc1<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_endianSet, const Value, const ASString&> TFunc_Instances_ByteArray_endianSet;
@@ -146,6 +178,7 @@ typedef ThunkFunc1<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArra
 typedef ThunkFunc1<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_writeUnsignedInt, const Value, UInt32> TFunc_Instances_ByteArray_writeUnsignedInt;
 typedef ThunkFunc1<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_writeUTF, const Value, const ASString&> TFunc_Instances_ByteArray_writeUTF;
 typedef ThunkFunc1<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_writeUTFBytes, const Value, const Value&> TFunc_Instances_ByteArray_writeUTFBytes;
+typedef ThunkFunc1<Instances::fl_utils::ByteArray, Instances::fl_utils::ByteArray::mid_writeFile, const Value, const ASString&> TFunc_Instances_ByteArray_writeFile;
 
 template <> const TFunc_Instances_ByteArray_bytesAvailableGet::TMethod TFunc_Instances_ByteArray_bytesAvailableGet::Method = &Instances::fl_utils::ByteArray::bytesAvailableGet;
 template <> const TFunc_Instances_ByteArray_endianGet::TMethod TFunc_Instances_ByteArray_endianGet::Method = &Instances::fl_utils::ByteArray::endianGet;
@@ -188,6 +221,7 @@ template <> const TFunc_Instances_ByteArray_writeShort::TMethod TFunc_Instances_
 template <> const TFunc_Instances_ByteArray_writeUnsignedInt::TMethod TFunc_Instances_ByteArray_writeUnsignedInt::Method = &Instances::fl_utils::ByteArray::writeUnsignedInt;
 template <> const TFunc_Instances_ByteArray_writeUTF::TMethod TFunc_Instances_ByteArray_writeUTF::Method = &Instances::fl_utils::ByteArray::writeUTF;
 template <> const TFunc_Instances_ByteArray_writeUTFBytes::TMethod TFunc_Instances_ByteArray_writeUTFBytes::Method = &Instances::fl_utils::ByteArray::writeUTFBytes;
+template <> const TFunc_Instances_ByteArray_writeFile::TMethod TFunc_Instances_ByteArray_writeFile::Method = &Instances::fl_utils::ByteArray::writeFile;
 
 namespace Instances { namespace fl_utils
 {
@@ -453,8 +487,74 @@ namespace Instances { namespace fl_utils
     void ByteArray::readObject(Value& result)
     {
 //##protect##"instance::ByteArray::readObject()"
-        SF_UNUSED1(result);
-        NOT_IMPLEMENTED("ByteArray::readObject()");
+        VM& vm = GetVM();
+        UInt32 dt_num;
+
+        readUnsignedByte(dt_num);
+        if (vm.IsException())
+            return;
+
+        const AMF3DataType dt = static_cast<AMF3DataType>(dt_num);
+        switch (dt)
+        {
+        case undefined_marker:
+            result.SetUndefined();
+            break;
+        case null_marker:
+            result.SetNull();
+            break;
+        case false_marker:
+            result.SetBool(false);
+            break;
+        case true_marker:
+            result.SetBool(true);
+            break;
+        case integer_marker:
+            result.SetSInt32((static_cast<SInt32>(ReadUInt29() << 3) >> 3));
+            break;
+        case double_marker:
+            result.SetNumber(DeserializeDouble());
+            break;
+        case string_marker:
+            result.Assign(DeserializeStr());
+            break;
+        case xml_doc_marker:
+            // We do not support package flash.xml.
+            SF_ASSERT(false);
+            break;
+        case date_marker:
+            result.Assign(DeserializeDate());
+            break;
+        case array_marker:
+            result.Assign(DeserializeArray());
+            break;
+        case object_marker:
+            DeserializeObjDefault(result);
+            break;
+        case xml_marker:
+#ifdef GFX_ENABLE_XML
+            result = DeserializeXML();
+#endif
+            break;
+        case byte_array_marker:
+            DeserializeByteArray(result);
+            break;
+        case vector_int_marker:
+            result = DeserializeVector_int();
+            break;
+        case vector_uint_marker:
+            result = DeserializeVector_uint();
+            break;
+        case vector_double_marker:
+            result = DeserializeVector_double();
+            break;
+        case vector_object_marker:
+            DeserializeVector_object(result);
+            break;
+        case dictionary_marker:
+            result = DeserializeDictionary();
+            break;
+        }
 //##protect##"instance::ByteArray::readObject()"
     }
     void ByteArray::readShort(SInt32& result)
@@ -685,8 +785,110 @@ namespace Instances { namespace fl_utils
     void ByteArray::writeObject(const Value& result, const Value& object)
     {
 //##protect##"instance::ByteArray::writeObject()"
-        SF_UNUSED2(result, object);
-        NOT_IMPLEMENTED("ByteArray::writeObject()");
+        SF_UNUSED1(result);
+
+        UInt8 marker;
+        const Value::KindType k = object.GetKind();
+        switch (k)
+        {
+        case Value::kUndefined:
+            marker = undefined_marker;
+            Write(marker);
+            break;
+        case Value::kBoolean:
+            if (object.AsBool())
+                marker = true_marker;
+            else
+                marker = false_marker;
+            Write(marker);
+            break;
+        case Value::kInt:
+            {
+                SInt32 v = object.AsInt();
+                if (((v << 3) >> 3) == v)
+                {
+                    marker = integer_marker;
+                    Write(marker);
+                    WriteUInt29(object.AsInt() & 0x1fffffff);
+                }
+                else
+                {
+                    marker = double_marker;
+                    Write(marker);
+                    SerializeDouble(static_cast<Value::Number>(v));
+                }
+            }
+            break;
+        case Value::kUInt:
+            {
+                SInt32 v = object.AsUInt();
+                if (((v << 3) >> 3) == v)
+                {
+                    marker = integer_marker;
+                    Write(marker);
+                    WriteUInt29(object.AsInt() & 0x1fffffff);
+                }
+                else
+                {
+                    marker = double_marker;
+                    Write(marker);
+                    SerializeDouble(static_cast<Value::Number>(v));
+                }
+            }
+            break;
+        case Value::kNumber:
+            marker = double_marker;
+            Write(marker);
+            SerializeDouble(object.AsNumber());
+            break;
+        case Value::kThunk:
+        case Value::kMethodInd:
+        case Value::kVTableInd:
+        case Value::kInstanceTraits:
+        case Value::kClassTraits:
+            SF_ASSERT(false);
+            GetVM().ThrowArgumentError(VM::Error(VM::eInvalidArgumentError, GetVM() SF_DEBUG_ARG("object")));
+            break;
+#if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
+        case Value::kSNodeIT:
+        case Value::kSNodeCT:
+            SF_ASSERT(false);
+            GetVM().ThrowArgumentError(VM::Error(VM::eInvalidArgumentError, GetVM() SF_DEBUG_ARG("object")));
+            break;
+#endif
+        case Value::kString:
+            marker = string_marker;
+            Write(marker);
+            SerializeStr(object.AsString());
+            break;
+        case Value::kNamespace:
+            marker = object_marker;
+            if (object.GetNamespace() == NULL)
+                return Write(static_cast<UInt8>(null_marker));
+            Write(marker);
+            break;
+        case Value::kObject:
+            if (object.GetObject() == NULL)
+                return Write(static_cast<UInt8>(null_marker));
+            SerializeObj(*object.GetObject());
+            break;
+        case Value::kClass:
+            marker = object_marker;
+            if (object.GetObject() == NULL)
+                marker = null_marker;
+            break;
+        case Value::kFunction:
+            // Don't serialize functions
+            marker = undefined_marker;
+            Write(marker);
+            break;
+        case Value::kThunkFunction:
+        case Value::kThunkClosure:
+        case Value::kVTableIndClosure:
+            SF_ASSERT(false);
+            GetVM().ThrowArgumentError(VM::Error(VM::eInvalidArgumentError, GetVM() SF_DEBUG_ARG("object")));
+            break;
+        }
 //##protect##"instance::ByteArray::writeObject()"
     }
     void ByteArray::writeShort(const Value& result, SInt32 value)
@@ -736,6 +938,29 @@ namespace Instances { namespace fl_utils
             Write((void*)str.ToCStr(), str.GetSize());
         }
 //##protect##"instance::ByteArray::writeUTFBytes()"
+    }
+    void ByteArray::writeFile(const Value& result, const ASString& filename)
+    {
+//##protect##"instance::ByteArray::writeFile()"
+        SF_UNUSED1(result);
+        VM& vm = GetVM();
+
+        if (filename.IsNull())
+            return GetVM().ThrowTypeError(VM::Error(VM::eNullArgumentError, vm SF_DEBUG_ARG("filename")));
+
+        SysFile file;
+        if (file.Create(String(filename.ToCStr(), filename.GetSize())))
+        {
+            UInt32 num;
+
+            num = file.Write(static_cast<UByte*>(GetDataPtr()), GetLength());
+            if (num == GetLength())
+                // Everything is OK.
+                return;
+        }
+
+        vm.ThrowError(VM::Error(VM::eFileWriteError, vm SF_DEBUG_ARG(filename)));
+//##protect##"instance::ByteArray::writeFile()"
     }
 
 //##protect##"instance$methods"
@@ -902,6 +1127,16 @@ namespace Instances { namespace fl_utils
             Position = Length;
     }
 
+    UInt8 ByteArray::ReadU8()
+    {
+        UInt8 v;
+
+        if (!Read(&v, sizeof(v)))
+            return v;
+
+        return v;
+    }
+
     UInt16 ByteArray::ReadU16()
     {
         UInt16 v;
@@ -1007,63 +1242,1380 @@ namespace Instances { namespace fl_utils
     {
         value.SetSInt32(static_cast<SInt8>(Get(ind.Get())));
     }
+
+    bool ByteArray::HasProperty(const Multiname& prop_name, bool check_prototype)
+    {
+        UInt32 ind;
+        if (GetArrayInd(prop_name, ind))
+            return ind < GetLength();
+
+        // Not an Array index. Let us treat it as a regular object.
+        return Instances::fl::Object::HasProperty(prop_name, check_prototype);
+    }
+
+    void ByteArray::WriteUInt29(UInt32 v)
+    {
+        // Represent smaller integers with fewer bytes using the most
+        // significant bit of each byte. The worst case uses 32-bits
+        // to represent a 29-bit number, which is what we would have
+        // done with no compression.
+
+        // 0x00000000 - 0x0000007F : 0xxxxxxx
+        // 0x00000080 - 0x00003FFF : 1xxxxxxx 0xxxxxxx
+        // 0x00004000 - 0x001FFFFF : 1xxxxxxx 1xxxxxxx 0xxxxxxx
+        // 0x00200000 - 0x3FFFFFFF : 1xxxxxxx 1xxxxxxx 1xxxxxxx xxxxxxxx
+        // 0x40000000 - 0xFFFFFFFF : throw range exception
+
+        if (v < 0x80)
+        {
+            // 0x00000000 - 0x0000007F : 0xxxxxxx
+            Write((UInt8)v);
+        } else if (v < 0x4000)
+        {
+            // 0x00000080 - 0x00003FFF : 1xxxxxxx 0xxxxxxx
+            Write((UInt8)(((v >> 7) & 0x7F) | 0x80));
+            Write((UInt8)(v & 0x7F));
+        } else if (v < 0x200000)
+        {
+            // 0x00004000 - 0x001FFFFF : 1xxxxxxx 1xxxxxxx 0xxxxxxx
+            Write((UInt8)(((v >> 14) & 0x7F) | 0x80));
+            Write((UInt8)(((v >>  7) & 0x7F) | 0x80));
+            Write((UInt8)(v & 0x7F));
+        } else if (v < 0x40000000)
+        {
+            // 0x00200000 - 0x3FFFFFFF : 1xxxxxxx 1xxxxxxx 1xxxxxxx xxxxxxxx
+            Write((UInt8)(((v >> 22) & 0x7F) | 0x80));
+            Write((UInt8)(((v >> 15) & 0x7F) | 0x80));
+            Write((UInt8)(((v >>  8) & 0x7F) | 0x80));
+            Write((UInt8)(v & 0xFF));
+        } else
+            // 0x40000000 - 0xFFFFFFFF : throw range exception
+            GetVM().ThrowRangeError(VM::Error(VM::eInvalidRangeError, GetVM()));
+    }
+
+    UInt32 ByteArray::ReadUInt29()
+    {
+        // Represent smaller integers with fewer bytes using the most
+        // significant bit of each byte. The worst case uses 32-bits
+        // to represent a 29-bit number, which is what we would have
+        // done with no compression.
+
+        // 0x00000000 - 0x0000007F : 0xxxxxxx
+        // 0x00000080 - 0x00003FFF : 1xxxxxxx 0xxxxxxx
+        // 0x00004000 - 0x001FFFFF : 1xxxxxxx 1xxxxxxx 0xxxxxxx
+        // 0x00200000 - 0x3FFFFFFF : 1xxxxxxx 1xxxxxxx 1xxxxxxx xxxxxxxx
+        // 0x40000000 - 0xFFFFFFFF : throw range exception
+
+        UInt32 result = 0;
+        UInt8 byte;
+
+        if (!Read(&byte, sizeof(byte)))
+            return result;
+
+        if (byte < 128)
+            return byte;
+
+        result = (byte & 0x7F) << 7;
+        if (!Read(&byte, sizeof(byte)))
+            return result;
+
+        if (byte < 128)
+            return (result | byte);
+
+        result = (result | (byte & 0x7F)) << 7;
+        if (!Read(&byte, sizeof(byte)))
+            return result;
+
+        if (byte < 128)
+            return (result | byte);
+
+        result = (result | (byte & 0x7F)) << 8;
+        if (!Read(&byte, sizeof(byte)))
+            return result;
+
+        return (result | byte);
+    }
+
+    inline void SwapWords(UInt64& value)
+    {
+#if (SF_BYTE_ORDER == SF_LITTLE_ENDIAN)
+        union {
+            UInt64 v;
+            UInt32 w[2];
+        };
+        v = value;
+        UInt32 tmp = w[0];
+        w[0] = w[1];
+        w[1] = tmp;
+        value = v;
+#else
+        SF_UNUSED1(value);
+#endif
+    }
+
+    void ByteArray::SerializeUInt32(UInt32 v)
+    {
+        union {
+            UInt8 b[4];
+            UInt32 u;
+        };
+
+        u = Alg::ByteUtil::SystemToBE(v);
+        Write(b, 4);
+    }
+
+    UInt32 ByteArray::DeserializeUInt32()
+    {
+        union {
+            UInt8 b[4];
+            UInt32 u;
+        };
+
+        if (!Read(b, 4))
+            return 0;
+
+        return Alg::ByteUtil::BEToSystem(u);
+    }
+
+    void ByteArray::SerializeDouble(Value::Number v)
+    {
+        union {
+            UInt8 b[8];
+            UInt64 u;
+            double d;
+        };
+
+        d = v;
+#if 0
+        SwapWords(u);
+#endif
+        u = Alg::ByteUtil::SystemToBE(u);
+        Write(b, 8);
+    }
+
+    Value::Number ByteArray::DeserializeDouble()
+    {
+        union {
+            UInt8 b[8];
+            UInt64 u;
+            double d;
+        };
+
+        if (!Read(b, 8))
+            return 0.0;
+#if 0
+        SwapWords(u);
+#endif
+        u = Alg::ByteUtil::BEToSystem(u);
+
+        return d;
+    }
+
+    void ByteArray::SerializeStr(const ASString& v)
+    {
+        if (v.IsEmpty())
+            return WriteRef(1);
+
+        const SInt32 ref = FindInStrTable(v);
+
+        if (ref < 0)
+        {
+            // Not found.
+            UInt32 len = v.GetSize();
+
+            AddToStrTable(v);
+
+            WriteRef((len << 1) | 1);
+            Write(v.ToCStr(), len);
+        }
+        else
+            // Found.
+            WriteRef(ref << 1);
+    }
+
+    ASString ByteArray::DeserializeStr()
+    {
+        StringManager& sm = GetStringManager();
+        ASString result = sm.CreateEmptyString();
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference
+            StringListGet(result, ref >> 1);
+            return result;
+        }
+
+        // Read the string in
+        UInt32 len = (ref >> 1);
+
+        if (len == 0)
+            // SerializeStr() special cases the empty string to avoid creating a reference.
+            return result;
+
+        if (!ReadUTFBytes(result, len))
+            return result;
+
+        StringListAdd(result);
+
+        return result;
+    }
+
+    void ByteArray::SerializeObj(AS3::Object& v)
+    {
+        const Traits& tr = v.GetTraits();
+
+        if (tr.IsInstanceTraits())
+        {
+            BuiltinTraitsType tt = tr.GetTraitsType();
+
+            switch (tt)
+            {
+            case Traits_Array:
+                return SerializeArray(static_cast<fl::Array&>(v));
+            case Traits_ByteArray:
+                return SerializeByteArray(static_cast<ByteArray&>(v));
+            case Traits_Date:
+                return SerializeDate(static_cast<fl::Date&>(v));
+            case Traits_Function:
+                // We do not serialize functions.
+                SF_ASSERT(false);
+                return;
+            case Traits_Dictionary:
+                return SerializeDictionary(static_cast<Dictionary&>(v));
+            case Traits_Vector_int:
+                return SerializeVector_int(static_cast<fl_vec::Vector_int&>(v));
+            case Traits_Vector_uint:
+                return SerializeVector_uint(static_cast<fl_vec::Vector_uint&>(v));
+            case Traits_Vector_double:
+                return SerializeVector_double(static_cast<fl_vec::Vector_double&>(v));
+            case Traits_Vector_String:
+                return SerializeVector_String(static_cast<fl_vec::Vector_String&>(v));
+            case Traits_Vector_object:
+                return SerializeVector_object(static_cast<fl_vec::Vector_object&>(v));
+            case Traits_XML:
+#ifdef GFX_ENABLE_XML
+                return SerializeXML(static_cast<fl::XML&>(v));
+#endif
+            default:
+                break;
+            }
+        }
+
+        // Fallback.
+        SerializeObjDefault(v);
+    }
+
+    bool IsSerialazable(const SlotInfo& si)
+    {
+        return si.IsReadWrite() && si.GetNamespace().IsVMPublic();
+    }
+
+    struct BASlotFunctCalc : public Slots::SlotFunct
+    {
+        BASlotFunctCalc() : result(0) {}
+
+        virtual void operator()(const SlotInfo& si)
+        {
+            if (IsSerialazable(si))
+                ++result;
+        }
+
+        UInt32 GetResult() const { return result; }
+
+    private:
+        UInt32 result;
+    };
+
+    struct BASlotFunctSrlzFixedName : public Slots::SlotFunct
+    {
+        BASlotFunctSrlzFixedName(ByteArray& ba) : BA(ba) {}
+
+        virtual void operator()(const SlotInfo& si)
+        {
+            if (IsSerialazable(si))
+            {
+                const ASString name = si.GetName();
+                BA.SerializeStr(name);
+            }
+        }
+
+    private:
+        BASlotFunctSrlzFixedName& operator =(const BASlotFunctSrlzFixedName&);
+
+    private:
+        ByteArray& BA;
+    };
+
+    struct BASlotFunctSrlzFixedValue : public Slots::SlotFunct
+    {
+        BASlotFunctSrlzFixedValue(ByteArray& ba, AS3::Object* obj) : BA(ba), Obj(obj) {}
+
+        virtual void operator()(const SlotInfo& si)
+        {
+            if (IsSerialazable(si))
+            {
+                Value V;
+                if (!si.GetSlotValueUnsafe(V, Obj))
+                    // Exception.
+                    return;
+
+                BA.writeObject(V);
+            }
+        }
+
+    private:
+        BASlotFunctSrlzFixedValue& operator =(const BASlotFunctSrlzFixedValue&);
+
+    private:
+        ByteArray& BA;
+        AS3::Object* Obj;
+    };
+
+    UInt32 CalcSealedPropNum(const AS3::Traits& tr)
+    {
+        BASlotFunctCalc f;
+        tr.ForEachSlot(f);
+        return f.GetResult();
+    }
+
+    void ByteArray::SerializeObjDefault(AS3::Object& v)
+    {
+        // object-marker (U29O-ref | (U29O-traits-ext class-name *(U8)) | U29O-traits-ref | 
+        // (U29O-traits class-name *(UTF-8-vr))) *(value-type) *(dynamic-member)))
+
+        const UInt8 marker = object_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        VM& vm = GetVM();
+        InstanceTraits::fl_utils::ByteArray& ba_itr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetTraits());
+
+        // Traits.
+        // Note that for U29O-traits-ext, after the class-name follows an 
+        // indeterminable number of bytes as *(U8). This represents the 
+        // completely custom serialization of "externalizable" types. The 
+        // client and server have an agreement as to how to read in this information.
+        Traits& tr = v.GetTraits();
+        SF_ASSERT(tr.IsInstanceTraits());
+        InstanceTraits::Traits& itr = static_cast<InstanceTraits::Traits&>(tr);
+        ref = FindInTraitsTable(&itr);
+        UInt32 sealedPropNum = CalcSealedPropNum(tr);
+        const bool isDynamic = tr.IsDynamic();
+        // Object implements IExternalizable.
+        const bool externalizable = itr.IsOfType(ba_itr.GetTraitsIExternalizable());
+
+        if (ref >= 0)
+        {
+            // U29O-traits-ref
+            // The first (low) bit is a flag with value 1. The second bit is a flag
+            // (representing whether a trait reference follows) with value 0 to
+            // imply that this objects traits are being sent by reference. The remaining
+            // 1 to 27 significant bits are used to encode a trait reference index (an integer).
+            WriteRef((ref << 2) | 1);
+        }
+        else
+        {
+            // U29O-traits class-name *(UTF-8-vr)
+
+            // 1. U29O-traits
+            // The first (low) bit is a flag with value 1. The second bit is a flag with
+            // value 1. The third bit is a flag with value 0. The fourth bit is a flag
+            // specifying whether the type is dynamic. A value of 0 implies not
+            // dynamic, a value of 1 implies dynamic. Dynamic types may have a set of name
+            // value pairs for dynamic members after the sealed member section. The
+            // remaining 1 to 25 significant bits are used to encode the number of sealed
+            // traits member names that follow after the class name (an integer).
+            WriteRef(3 | (externalizable ? 4 : 0) | (isDynamic ? 8 : 0) | (sealedPropNum << 4));
+
+            // 2. class-name
+            {
+                Class& cl = tr.GetClass();
+                const ASString alias = vm.GetAliasByClass(cl);
+                SerializeStr(alias);
+            }
+
+            // 3. *(UTF-8-vr)
+            // Write names of sealed properties.
+            BASlotFunctSrlzFixedName f(*this);
+            tr.ForEachSlot(f);
+        }
+
+        // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/IExternalizable.html
+        if (externalizable)
+        {
+            // Call writeExternal().
+            Value r;
+            Multiname name(vm.GetPublicNamespace(), vm.GetStringManager().CreateConstString("writeExternal"));
+            Value argv[1] = {Value(this)};
+
+            if (!v.ExecutePropertyUnsafe(name, r, 1, argv))
+                return;
+        }
+        else
+        {
+            // an instance of the class will be serialized using the default 
+            // mechanism of public members only. As a result, private, internal, 
+            // and protected members of a class will not be available.
+
+            // For each sealed property in the class info, write out its value.
+            BASlotFunctSrlzFixedValue f(*this, &v);
+            tr.ForEachSlot(f);
+
+            if (isDynamic)
+            {
+                // !!! We do not support flash.net.IDynamicPropertyWriter at this time. !!!
+
+                const Object::DynAttrsType* da = v.GetDynamicAttrs();
+                SF_ASSERT(da);
+
+                Object::DynAttrsType::ConstIterator it = da->Begin();
+                for (; !it.IsEnd(); ++it)
+                {
+                    const Value& value = it->Second;
+
+                    if (value.IsFunction())
+                        // We do not serialize functions.
+                        continue;
+
+                    const ASString& name = it->First.GetName();
+
+                    if (name.IsEmpty())
+                        // Empty string is sentinel for end-of-data, so we CANNOT serialize it.
+                        continue;
+
+                    SerializeStr(name);
+                    writeObject(value);
+                }
+
+                // Write out the empty string as a terminator
+                SerializeStr(GetStringManager().CreateEmptyString());
+            }
+        }
+    }
+
+    void ByteArray::DeserializeObjDefault(Value& result)
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            if (ObjectListGet(r, ref >> 1))
+                result.Assign(r);
+            return;
+        }
+
+        VM& vm = GetVM();
+
+        // Read Traits.
+        Class* cl = NULL;
+        bool externalizable = false;
+        UInt32 sealedPropNum = 0;
+        bool isDynamic = false;
+        ArrayDH<ASString> prop_names(vm.GetMemoryHeap());
+
+        if ((ref & 3) == 1)
+        {
+            InstanceTraits::Traits* itr = NULL;
+            TraitsListGet(itr, ref >> 2);
+
+            cl = &itr->GetClass();
+            InstanceTraits::fl_utils::ByteArray& ba_itr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetTraits());
+            // Object implements IExternalizable.
+            externalizable = itr->IsOfType(ba_itr.GetTraitsIExternalizable());
+            sealedPropNum = 0;
+            isDynamic = itr->IsDynamic();
+
+            // Collect names of sealed properties.
+            AS3::Traits::CIterator it = itr->Begin();
+
+            for (; !it.IsEnd(); ++it)
+            {
+                const SlotInfo& si = it.GetSlotInfo();
+
+                if (!IsSerialazable(si))
+                    continue;
+
+                prop_names.PushBack(si.GetQualifiedName());
+                ++sealedPropNum;
+            }
+        }
+        else
+        {
+            // U29O-traits class-name *(UTF-8-vr)
+
+            // 1. U29O-traits
+            externalizable = (ref & 4) != 0;
+            isDynamic = (ref & 8) != 0;
+            sealedPropNum = (ref >> 4);
+
+            // 2. class-name
+            const ASString name = DeserializeStr();
+
+            if (!name.IsEmpty())
+                cl = vm.GetClassByAlias(name);
+
+            if (cl == NULL)
+                cl = &vm.GetClassObject();
+
+            // 3. *(UTF-8-vr)
+            // Read sealed property names.
+            prop_names.Reserve(sealedPropNum);
+            for (UInt32 i = 0; i < sealedPropNum; ++i)
+                prop_names.PushBack(DeserializeStr());
+        }
+
+        // Create an object.
+        SF_ASSERT(cl);
+        if (vm.Construct(*cl, result))
+            vm.ExecuteCode();
+
+        if (IsException()) 
+            return;
+
+        AS3::Object* obj = result.GetObject();
+        ObjectListAdd(obj);
+
+        // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/IExternalizable.html
+        if (externalizable)
+        {
+            // Call readExternal().
+            Value r;
+            Multiname name(vm.GetPublicNamespace(), vm.GetStringManager().CreateConstString("readExternal"));
+            Value argv[1] = {Value(this)};
+
+            if (!obj->ExecutePropertyUnsafe(name, r, 1, argv))
+                // Exception.
+                return;
+        }
+        else
+        {
+            Value value;
+
+            // For each sealed property in the class info, write out its value.
+            for (UInt32 i = 0; i < sealedPropNum; ++i)
+            {
+                const Multiname mn(vm.GetPublicNamespace(), prop_names[i]);
+
+                readObject(value);
+                if (!obj->SetProperty(mn, value))
+                    // Exception.
+                    return;
+            }
+
+            if (isDynamic)
+            {
+                while (true)
+                {
+                    const ASString name = DeserializeStr();
+                    if (name.IsEmpty())
+                        break;
+
+                    readObject(value);
+                    obj->AddDynamicSlotValuePair(name, value);
+                }
+            }
+        }
+    }
+
+    class SerializeArrSparse : public Impl::ArrayFunc
+    {
+    public:
+        SerializeArrSparse(const fl::Array& a, ByteArray& ba)
+            : SM(a.GetStringManager())
+            , A(a)
+            , BA(ba)
+        {
+        }
+
+    public:
+        virtual void operator()(UInt32 ind, const Value& v)
+        {
+            if (v.IsFunction())
+                // We do not serialize functions.
+                // Just skip it.
+                return;
+
+            Scaleform::LongFormatter f(ind);
+            f.Convert();
+            const StringDataPtr r = f.GetResult();
+
+            BA.SerializeStr(SM.CreateString(r.ToCStr(), r.GetSize()));
+            BA.writeObject(v);
+        }
+
+    private:
+        SerializeArrSparse& operator =(const SerializeArrSparse&);
+
+    private:
+        StringManager& SM;
+        const fl::Array& A;
+        ByteArray& BA;
+    };
+
+    class SerializeArrDense : public Impl::ArrayFunc
+    {
+    public:
+        SerializeArrDense(const fl::Array& a, ByteArray& ba)
+            : A(a)
+            , BA(ba)
+        {
+        }
+
+    public:
+        virtual void operator()(UInt32 ind, const Value& v)
+        {
+            SF_UNUSED1(ind);
+
+            if (v.IsFunction())
+                // We do not serialize functions.
+                return BA.Write(static_cast<UInt8>(undefined_marker));
+
+            BA.writeObject(v);
+        }
+
+    private:
+        SerializeArrDense& operator =(const SerializeArrDense&);
+
+    private:
+        const fl::Array& A;
+        ByteArray& BA;
+    };
+
+    void ByteArray::SerializeArray(fl::Array& v)
+    {
+        const UInt8 marker = array_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        // AMF considers Arrays in two parts, the dense portion and the 
+        // associative portion. The binary representation of the associative
+        // portion consists of name/value pairs (potentially none) terminated
+        // by an empty string. The binary representation of the dense portion
+        // is the size of the dense portion (potentially zero) followed by
+        // an ordered list of values (potentially none). The order these are
+        // written in AMF is first the size of the dense portion, an empty
+        // string terminated list of name/value pairs, followed by size values.
+
+        // 1. first the size of the dense portion.
+        // The first (low) bit is a flag with value 1. The remaining 1 to 28
+        // significant bits are used to encode the count of the dense portion
+        // of the Array.
+        const ValueArrayDH& dense = v.GetContiguousPart();
+        const UPInt dsize = dense.GetSize();
+
+        // Size of dense part.
+        WriteRef((static_cast<UInt32>(dsize) << 1) | 1);
+
+        // 2. list of name/value pairs.
+        if (v.IsSparse())
+        {
+            // We have sparse part.
+            SerializeArrSparse s(v, *this);
+            v.ForEachSparse(s);
+        }
+
+        // 3. an empty string terminated list of name/value pairs.
+        SerializeStr(GetStringManager().CreateEmptyString());
+
+        // 4. followed by size values.
+        if (dsize > 0)
+        {
+            // We have dense part.
+            SerializeArrDense s(v, *this);
+            v.ForEachDense(s);
+        }
+    }
+
+    SPtr<fl::Array> ByteArray::DeserializeArray()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl::Array*>(r);
+        }
+
+        VM& vm = GetVM();
+        const UInt32 denseLen = (ref >> 1);
+
+        Pickable<Instances::fl::Array> result = vm.MakeArray();
+        ObjectListAdd(result.GetPtr());
+
+        // Read sparse part. It is terminated by an empty string.
+        Value value;
+        char* strTail;
+        unsigned long ind;
+
+        while (true)
+        {
+            const ASString name = DeserializeStr();
+            if (name.IsEmpty())
+                // End of sparse part.
+                break;
+
+            readObject(value);
+            ind = SFstrtoul(name.ToCStr(), &strTail, 10);
+            result->Set(ind, value);
+        }
+
+        // Read dense part.
+        for (UInt32 i = 0; i < denseLen; ++i)
+        {
+            readObject(value);
+            result->Set(i, value);
+        }
+
+        return result;
+    }
+
+    void ByteArray::SerializeByteArray(ByteArray& v)
+    {
+        const UInt8 marker = byte_array_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        const UInt32 len = v.GetLength();
+
+        WriteRef((len << 1) | 1);
+        Write(v.GetDataPtr(), len);
+    }
+
+    void ByteArray::DeserializeByteArray(Value& result)
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            if (ObjectListGet(r, ref >> 1))
+                result = r;
+            return;
+        }
+
+        VM& vm = GetVM();
+        Pickable<ByteArray> r = vm.MakeByteArray();
+        ObjectListAdd(r.GetPtr());
+        result = r;
+
+        const UInt32 len = ref >> 1;
+        r->Resize(len);
+        Read(r->GetDataPtr(), len).DoNotCheck();
+    }
+
+    void ByteArray::SerializeDate(fl::Date& v)
+    {
+        const UInt8 marker = date_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        // The first (low) bit is a flag with value 1. The remaining bits
+        // are not used.
+        WriteRef(1);
+
+        // !!! DO NOT call writeDouble() here.
+        SerializeDouble(const_cast<fl::Date&>(v).AS3valueOf());
+    }
+
+    SPtr<fl::Date> ByteArray::DeserializeDate()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl::Date*>(r);
+        }
+
+        VM& vm = GetVM();
+        InstanceTraits::fl_utils::ByteArray& tr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetTraits());
+
+        if (tr.DateTR == NULL)
+        {
+            const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(AS3::fl::DateTI);
+            SF_ASSERT(ctr);
+            tr.DateTR = &static_cast<InstanceTraits::fl::Date&>(ctr->GetInstanceTraits());
+        }
+
+        Pickable<Instances::fl::Date> result = tr.DateTR->MakeInstance(*tr.DateTR);
+        ObjectListAdd(result.GetPtr());
+        result->SetDate(DeserializeDouble());
+
+        return result;
+    }
+
+    void ByteArray::SerializeDictionary(fl_utils::Dictionary& v)
+    {
+        const UInt8 marker = dictionary_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+            
+        // The first (low) bit is a flag with value 1. The remaining 1 to 28
+        // significant bits are used to encode the number of entries;
+        const UPInt size = v.GetSize();
+        WriteRef((static_cast<UInt32>(size) << 1) | 1);
+        Write(v.IsWeakKeys());
+
+        const ValueContainerType& c = v.GetContainer();
+        ValueContainerType::ConstIterator it = c.Begin();
+        for (; !it.IsEnd(); ++it)
+        {
+            writeObject(it->First);
+            writeObject(it->Second);
+        }
+    }
+
+    SPtr<fl_utils::Dictionary> ByteArray::DeserializeDictionary()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl_utils::Dictionary*>(r);
+        }
+
+        VM& vm = GetVM();
+        InstanceTraits::fl_utils::ByteArray& tr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetTraits());
+
+        if (tr.DictionaryTR == NULL)
+        {
+            const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(AS3::fl_utils::DictionaryTI);
+            SF_ASSERT(ctr);
+            tr.DictionaryTR = &static_cast<InstanceTraits::fl_utils::Dictionary&>(ctr->GetInstanceTraits());
+        }
+
+        const UInt32 len = ref >> 1;
+        const bool weakKeys = (ReadU8() != 0);
+        Pickable<Instances::fl_utils::Dictionary> result = tr.DictionaryTR->MakeInstance(*tr.DictionaryTR, weakKeys);
+        ObjectListAdd(result.GetPtr());
+
+        Value name;
+        Value value;
+
+        for (UInt32 i = 0; i < len; ++i)
+        {
+            readObject(name);
+            readObject(value);
+            result->AddDynamicSlotValuePair(name, value);
+        }
+
+        return result;
+    }
+
+#ifdef GFX_ENABLE_XML
+    void ByteArray::SerializeXML(fl::XML& v)
+    {
+        const UInt8 marker = xml_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        const ASString str = const_cast<fl::XML&>(v).AS3toXMLString();
+        const UInt32 size = static_cast<UInt32>(str.GetSize());
+
+        // !!! DO NOT call SerializeStr(str) here.
+        WriteRef((size << 1) | 1);
+        Write(str.ToCStr(), size);
+    }
+
+    SPtr<fl::XML> ByteArray::DeserializeXML()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl::XML*>(r);
+        }
+
+        VM& vm = GetVM();
+        InstanceTraits::fl_utils::ByteArray& tr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetTraits());
+
+        if (tr.XMLTR == NULL)
+        {
+            const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(AS3::fl::XMLTI);
+            SF_ASSERT(ctr);
+            tr.XMLTR = &static_cast<InstanceTraits::fl::XML&>(ctr->GetInstanceTraits());
+        }
+
+        const UInt32 len = (ref >> 1);
+
+        // !!! Do not call DeserializeStr() here !!!
+        StringBuffer buf;
+
+        buf.Resize(len);
+        if (!Read((void*)buf.ToCStr(), len))
+            // Exception.
+            return NULL;
+
+        const ASString str = GetStringManager().CreateString(buf.ToCStr(), len);
+        Pickable<Instances::fl::XML> result = tr.XMLTR->MakeInstance(*tr.XMLTR, str);
+
+        ObjectListAdd(result.GetPtr());
+
+        return result;
+    }
+#endif
+
+    void ByteArray::SerializeVector_int(fl_vec::Vector_int& v)
+    {
+        const UInt8 marker = vector_int_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        // Non-const version of v.
+        fl_vec::Vector_int& ncv = const_cast<fl_vec::Vector_int&>(v);
+        const UInt32 size = ncv.lengthGet();
+
+        WriteRef((size << 1) | 1);
+        Write(ncv.fixedGet());
+
+        const VectorBase<SInt32>& base = v.GetArray();
+        for (UInt32 i = 0; i < size; ++i)
+            SerializeUInt32(base.Get(i));
+    }
+
+    SPtr<fl_vec::Vector_int> ByteArray::DeserializeVector_int()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl_vec::Vector_int*>(r);
+        }
+
+        VM& vm = GetVM();
+        const UInt32 len = ref >> 1;
+        const bool isFixed = (ReadU8() != 0);
+
+        InstanceTraits::fl_vec::Vector_int& itr = static_cast<InstanceTraits::fl_vec::Vector_int&>(vm.GetITraitsVectorSInt());
+        Pickable<Instances::fl_vec::Vector_int> result = itr.MakeInstance(itr, len, isFixed);
+        ObjectListAdd(result.GetPtr());
+
+        for (UInt32 i = 0; i < len; ++i)
+            result->SetUnsafe(i, DeserializeUInt32());
+
+        return result;
+    }
+
+    void ByteArray::SerializeVector_uint(fl_vec::Vector_uint& v)
+    {
+        const UInt8 marker = vector_uint_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        const UInt32 size = v.lengthGet();
+
+        WriteRef((size << 1) | 1);
+
+        // Non-const version of v.
+        fl_vec::Vector_uint& ncv = const_cast<fl_vec::Vector_uint&>(v);
+        Write(ncv.fixedGet());
+
+        const VectorBase<UInt32>& base = v.GetArray();
+        for (UInt32 i = 0; i < size; ++i)
+            SerializeUInt32(base.Get(i));
+    }
+
+    SPtr<fl_vec::Vector_uint> ByteArray::DeserializeVector_uint()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl_vec::Vector_uint*>(r);
+        }
+
+        VM& vm = GetVM();
+        const UInt32 len = ref >> 1;
+        const bool isFixed = (ReadU8() != 0);
+
+        InstanceTraits::fl_vec::Vector_uint& itr = static_cast<InstanceTraits::fl_vec::Vector_uint&>(vm.GetITraitsVectorUInt());
+        Pickable<Instances::fl_vec::Vector_uint> result = itr.MakeInstance(itr, len, isFixed);
+        ObjectListAdd(result.GetPtr());
+
+        for (UInt32 i = 0; i < len; ++i)
+            result->SetUnsafe(i, DeserializeUInt32());
+
+        return result;
+    }
+
+    void ByteArray::SerializeVector_double(fl_vec::Vector_double& v)
+    {
+        const UInt8 marker = vector_double_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        // Non-const version of v.
+        fl_vec::Vector_double& ncv = const_cast<fl_vec::Vector_double&>(v);
+        const UInt32 size = ncv.lengthGet();
+
+        WriteRef((size << 1) | 1);
+        Write(ncv.fixedGet());
+
+        const VectorBase<double>& base = v.GetArray();
+        for (UInt32 i = 0; i < size; ++i)
+            SerializeDouble(base.Get(i));
+    }
+
+    SPtr<fl_vec::Vector_double> ByteArray::DeserializeVector_double()
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            ObjectListGet(r, ref >> 1).DoNotCheck();
+            return static_cast<fl_vec::Vector_double*>(r);
+        }
+
+        VM& vm = GetVM();
+        const UInt32 len = ref >> 1;
+        const bool isFixed = (ReadU8() != 0);
+
+        InstanceTraits::fl_vec::Vector_double& itr = static_cast<InstanceTraits::fl_vec::Vector_double&>(vm.GetITraitsVectorNumber());
+        Pickable<Instances::fl_vec::Vector_double> result = itr.MakeInstance(itr, len, isFixed);
+        ObjectListAdd(result.GetPtr());
+
+        for (UInt32 i = 0; i < len; ++i)
+            result->SetUnsafe(i, DeserializeDouble());
+
+        return result;
+    }
+
+    void ByteArray::SerializeVector_object(fl_vec::Vector_object& v)
+    {
+        const UInt8 marker = vector_object_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        const UInt32 size = v.lengthGet();
+        WriteRef((size << 1) | 1);
+
+        // Non-const version of v.
+        fl_vec::Vector_object& ncv = const_cast<fl_vec::Vector_object&>(v);
+        Write(ncv.fixedGet());
+
+        // Type name.
+        SerializeStr(v.GetEnclosedClassTraits().GetName());
+
+        const VectorBase<Value>& base = v.GetArray();
+        for (UInt32 i = 0; i < size; ++i)
+            writeObject(base.Get(i));
+    }
+
+    void ByteArray::DeserializeVector_object(Value& result)
+    {
+        UInt32 ref = ReadRef();
+
+        if ((ref & 1) == 0)
+        {
+            // This is a reference.
+            AS3::Object* r = NULL;
+            if (ObjectListGet(r, ref >> 1))
+                result = r;
+            return;
+        }
+
+        VM& vm = GetVM();
+        const UInt32 len = ref >> 1;
+        const bool isFixed = (ReadU8() != 0);
+        const ASString enclTypeName = DeserializeStr();
+
+        if (enclTypeName == "String")
+        {
+            InstanceTraits::fl_vec::Vector_String& itr = static_cast<InstanceTraits::fl_vec::Vector_String&>(vm.GetITraitsVectorString());
+            Pickable<Instances::fl_vec::Vector_String> r = itr.MakeInstance(itr, len, isFixed);
+            ObjectListAdd(r.GetPtr());
+
+            for (UInt32 i = 0; i < len; ++i)
+                r->SetUnsafe(i, DeserializeStr());
+
+            return;
+        }
+
+        const Multiname mn(vm, StringDataPtr(enclTypeName.ToCStr(), enclTypeName.GetSize()));
+        const ClassTraits::Traits* elem_type = vm.Resolve2ClassTraits(mn, vm.GetFrameAppDomain());
+
+        if (elem_type == NULL)
+            // Exception. Unknown type.
+            return;
+
+        const ClassTraits::Traits& ctr = vm.GetClassVector().Resolve2Vector(*elem_type);
+        InstanceTraits::fl_vec::Vector_object& itr = static_cast<InstanceTraits::fl_vec::Vector_object&>(ctr.GetInstanceTraits());
+        Pickable<fl_vec::Vector_object> r = itr.MakeInstance(itr, len, isFixed);
+        ObjectListAdd(r.GetPtr());
+        result = r;
+
+        Value value;
+        for (UInt32 i = 0; i < len; ++i)
+        {
+            readObject(value);
+            r->SetUnsafe(i, value);
+        }
+    }
+
+    void ByteArray::SerializeVector_String(fl_vec::Vector_String& v)
+    {
+        // Serialize String as Object.
+        const UInt8 marker = vector_object_marker;
+        Write(marker);
+        SInt32 ref = FindInObjTable(&v);
+
+        if (ref >= 0)
+            return WriteRef(ref << 1);
+
+        AddToObjTable(&v);
+
+        // Non-const version of v.
+        fl_vec::Vector_String& ncv = const_cast<fl_vec::Vector_String&>(v);
+        const UInt32 size = ncv.lengthGet();
+
+        WriteRef((size << 1) | 1);
+        Write(ncv.fixedGet());
+
+        // Type name.
+        SerializeStr(v.GetEnclosedClassTraits().GetName());
+
+        const VectorBase<Ptr<ASStringNode> >& base = v.GetArray();
+        for (UInt32 i = 0; i < size; ++i)
+            SerializeStr(ASString(base.Get(i)));
+    }
+
+    void ByteArray::StringListGet(ASString& result, UInt32 ref) const
+    {
+        VM& vm = GetVM();
+
+        if (ref >= StringList.GetSize())
+            return vm.ThrowRangeError(VM::Error(VM::eInvalidRangeError, vm));
+
+        result = StringList[ref];
+    }
+
+    CheckResult ByteArray::ObjectListGet(AS3::Object*& result, UInt32 ref) const
+    {
+        VM& vm = GetVM();
+
+        if (ref >= ObjectList.GetSize())
+        {
+            vm.ThrowRangeError(VM::Error(VM::eInvalidRangeError, vm));
+            return false;
+        }
+
+        result = ObjectList[ref];
+        return true;
+    }
+
+    void ByteArray::TraitsListGet(InstanceTraits::Traits*& result, UInt32 ref) const
+    {
+        VM& vm = GetVM();
+
+        if (ref >= TraitsList.GetSize())
+            return vm.ThrowRangeError(VM::Error(VM::eInvalidRangeError, vm));
+
+        result = TraitsList[ref];
+    }
+
+    void ByteArray::ForEachChild_GC(Collector* prcc, GcOp op) const
+    {
+        fl::Object::ForEachChild_GC(prcc, op);
+
+        UPInt size;
+
+        size = ObjectList.GetSize();
+        for (UPInt i = 0; i < size; ++i)
+            AS3::ForEachChild_GC(prcc, ObjectList[i], op SF_DEBUG_ARG(*this));
+
+        size = TraitsList.GetSize();
+        for (UPInt i = 0; i < size; ++i)
+            AS3::ForEachChild_GC(prcc, TraitsList[i], op SF_DEBUG_ARG(*this));
+
+        ObjectTable.ForEachChild_GC(prcc, op SF_DEBUG_ARG(*this));
+        TraitsTable.ForEachChild_GC(prcc, op SF_DEBUG_ARG(*this));
+    }
+
 //##protect##"instance$methods"
 
 }} // namespace Instances
 
 namespace InstanceTraits { namespace fl_utils
 {
+    // const UInt16 ByteArray::tito[ByteArray::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 15, 16, 17, 18, 19, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 37, 38, 39, 41, 43, 47, 49, 51, 53, 56, 58, 60, 62, 64, 66, 
+    // };
+    const TypeInfo* ByteArray::tit[68] = {
+        &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, 
+        NULL, 
+        NULL, 
+        NULL, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl_utils::ByteArrayTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, &AS3::fl::uintTI, &AS3::fl::StringTI, 
+        NULL, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl_utils::ByteArrayTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::StringTI, 
+        NULL, NULL, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, NULL, 
+        NULL, &AS3::fl::StringTI, 
+    };
     const ThunkInfo ByteArray::ti[ByteArray::ThunkInfoNum] = {
-        {TFunc_Instances_ByteArray_bytesAvailableGet::Func, &AS3::fl::uintTI, "bytesAvailable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_ByteArray_endianGet::Func, &AS3::fl::StringTI, "endian", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_ByteArray_endianSet::Func, NULL, "endian", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_ByteArray_lengthGet::Func, &AS3::fl::uintTI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_ByteArray_lengthSet::Func, NULL, "length", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_ByteArray_objectEncodingGet::Func, &AS3::fl::uintTI, "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_ByteArray_objectEncodingSet::Func, NULL, "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_ByteArray_positionGet::Func, &AS3::fl::uintTI, "position", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_ByteArray_positionSet::Func, NULL, "position", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_ByteArray_clear::Func, NULL, "clear", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_compress::Func, NULL, "compress", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {ThunkInfo::EmptyFunc, NULL, "deflate", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "inflate", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readBoolean::Func, &AS3::fl::BooleanTI, "readBoolean", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readByte::Func, &AS3::fl::int_TI, "readByte", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readBytes::Func, NULL, "readBytes", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_ByteArray_readDouble::Func, &AS3::fl::NumberTI, "readDouble", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readFloat::Func, &AS3::fl::NumberTI, "readFloat", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readInt::Func, &AS3::fl::int_TI, "readInt", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readMultiByte::Func, &AS3::fl::StringTI, "readMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_ByteArray_readObject::Func, NULL, "readObject", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readShort::Func, &AS3::fl::int_TI, "readShort", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readUnsignedByte::Func, &AS3::fl::uintTI, "readUnsignedByte", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readUnsignedInt::Func, &AS3::fl::uintTI, "readUnsignedInt", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readUnsignedShort::Func, &AS3::fl::uintTI, "readUnsignedShort", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readUTF::Func, &AS3::fl::StringTI, "readUTF", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_readUTFBytes::Func, &AS3::fl::StringTI, "readUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_ByteArray_uncompress::Func, NULL, "uncompress", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_ByteArray_writeBoolean::Func, NULL, "writeBoolean", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeByte::Func, NULL, "writeByte", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeBytes::Func, NULL, "writeBytes", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_ByteArray_writeDouble::Func, NULL, "writeDouble", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeFloat::Func, NULL, "writeFloat", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeInt::Func, NULL, "writeInt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeMultiByte::Func, NULL, "writeMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_ByteArray_writeObject::Func, NULL, "writeObject", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeShort::Func, NULL, "writeShort", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeUnsignedInt::Func, NULL, "writeUnsignedInt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeUTF::Func, NULL, "writeUTF", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_ByteArray_writeUTFBytes::Func, NULL, "writeUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_ByteArray_bytesAvailableGet::Func, &ByteArray::tit[0], "bytesAvailable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_endianGet::Func, &ByteArray::tit[1], "endian", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_endianSet::Func, &ByteArray::tit[2], "endian", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_lengthGet::Func, &ByteArray::tit[4], "length", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_lengthSet::Func, &ByteArray::tit[5], "length", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_objectEncodingGet::Func, &ByteArray::tit[7], "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_objectEncodingSet::Func, &ByteArray::tit[8], "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_positionGet::Func, &ByteArray::tit[10], "position", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_positionSet::Func, &ByteArray::tit[11], "position", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_clear::Func, &ByteArray::tit[13], "clear", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_compress::Func, &ByteArray::tit[14], "compress", NULL, Abc::NS_Public, CT_Method, 0, 1, 1, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ByteArray::tit[15], "deflate", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &ByteArray::tit[16], "inflate", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readBoolean::Func, &ByteArray::tit[17], "readBoolean", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readByte::Func, &ByteArray::tit[18], "readByte", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readBytes::Func, &ByteArray::tit[19], "readBytes", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readDouble::Func, &ByteArray::tit[23], "readDouble", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readFloat::Func, &ByteArray::tit[24], "readFloat", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readInt::Func, &ByteArray::tit[25], "readInt", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readMultiByte::Func, &ByteArray::tit[26], "readMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readObject::Func, &ByteArray::tit[29], "readObject", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readShort::Func, &ByteArray::tit[30], "readShort", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readUnsignedByte::Func, &ByteArray::tit[31], "readUnsignedByte", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readUnsignedInt::Func, &ByteArray::tit[32], "readUnsignedInt", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readUnsignedShort::Func, &ByteArray::tit[33], "readUnsignedShort", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readUTF::Func, &ByteArray::tit[34], "readUTF", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_readUTFBytes::Func, &ByteArray::tit[35], "readUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_toString::Func, &ByteArray::tit[37], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_uncompress::Func, &ByteArray::tit[38], "uncompress", NULL, Abc::NS_Public, CT_Method, 0, 1, 1, 0, NULL},
+        {TFunc_Instances_ByteArray_writeBoolean::Func, &ByteArray::tit[39], "writeBoolean", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeByte::Func, &ByteArray::tit[41], "writeByte", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeBytes::Func, &ByteArray::tit[43], "writeBytes", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeDouble::Func, &ByteArray::tit[47], "writeDouble", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeFloat::Func, &ByteArray::tit[49], "writeFloat", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeInt::Func, &ByteArray::tit[51], "writeInt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeMultiByte::Func, &ByteArray::tit[53], "writeMultiByte", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeObject::Func, &ByteArray::tit[56], "writeObject", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeShort::Func, &ByteArray::tit[58], "writeShort", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeUnsignedInt::Func, &ByteArray::tit[60], "writeUnsignedInt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeUTF::Func, &ByteArray::tit[62], "writeUTF", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeUTFBytes::Func, &ByteArray::tit[64], "writeUTFBytes", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_ByteArray_writeFile::Func, &ByteArray::tit[66], "writeFile", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     ByteArray::ByteArray(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::ByteArray::ByteArray()"
         SetArrayLike();
+        SetTraitsType(Traits_ByteArray);
+
+        DateTR = NULL;
+#ifdef GFX_ENABLE_XML
+        XMLTR = NULL;
+#endif
+        DictionaryTR = NULL;
+        IExternalizableTR = NULL;
+        VecObjectTR = NULL;
 //##protect##"InstanceTraits::ByteArray::ByteArray()"
-        SetMemSize(sizeof(Instances::fl_utils::ByteArray));
 
     }
 
@@ -1073,6 +2625,18 @@ namespace InstanceTraits { namespace fl_utils
     }
 
 //##protect##"instance_traits$methods"
+    InstanceTraits::Traits& ByteArray::GetTraitsIExternalizable()
+    {
+        if (IExternalizableTR == NULL)
+        {
+            VM& vm = GetVM();
+            const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(AS3::fl_utils::IExternalizableTI);
+            SF_ASSERT(ctr);
+            IExternalizableTR = &ctr->GetInstanceTraits();
+        }
+
+        return *IExternalizableTR;
+    }
 //##protect##"instance_traits$methods"
 
 }} // namespace InstanceTraits
@@ -1103,6 +2667,51 @@ namespace Classes { namespace fl_utils
         result = DefEncoding;
 //##protect##"class_::ByteArray::defaultObjectEncodingGet()"
     }
+    void ByteArray::readFile(SPtr<Instances::fl_utils::ByteArray>& result, const ASString& filename)
+    {
+//##protect##"class_::ByteArray::readFile()"
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("class_::ByteArray::readFile()");
+        VM& vm = GetVM();
+
+        if (filename.IsNull())
+            return GetVM().ThrowTypeError(VM::Error(VM::eNullArgumentError, vm SF_DEBUG_ARG("filename")));
+
+        SysFile file;
+        if (file.Open(
+            String(filename.ToCStr(), filename.GetSize()),
+            FileConstants::Open_Read | FileConstants::Open_Buffered),
+            FileConstants::Mode_Read
+            )
+        {
+            const SInt64 size = file.LGetLength();
+
+            if (size >= SF_MAX_SINT)
+                return vm.ThrowRangeError(VM::Error(VM::eOutOfRangeError, vm 
+                    SF_DEBUG_ARG(static_cast<int>(size))
+                    SF_DEBUG_ARG(SF_MAX_SINT)
+                    ));
+
+            InstanceTraits::fl_utils::ByteArray& itr = static_cast<InstanceTraits::fl_utils::ByteArray&>(GetInstanceTraits());
+            result = itr.MakeInstance(itr);
+            UByte buff[1024];
+            int read_left = static_cast<int>(size);
+            int read_num;
+
+            while (read_left)
+            {
+                read_num = Alg::Min<int>(read_left, sizeof(buff));
+                file.Read(buff, read_num);
+                result->Write(buff, read_num);
+                read_left -= read_num;
+            }
+
+            result->Position = 0;
+        }
+        else
+            vm.ThrowError(VM::Error(VM::eFileOpenError, vm SF_DEBUG_ARG(filename)));
+//##protect##"class_::ByteArray::readFile()"
+    }
 //##protect##"class_$methods"
 //##protect##"class_$methods"
 
@@ -1110,34 +2719,50 @@ namespace Classes { namespace fl_utils
 
 typedef ThunkFunc1<Classes::fl_utils::ByteArray, Classes::fl_utils::ByteArray::mid_defaultObjectEncodingSet, const Value, UInt32> TFunc_Classes_ByteArray_defaultObjectEncodingSet;
 typedef ThunkFunc0<Classes::fl_utils::ByteArray, Classes::fl_utils::ByteArray::mid_defaultObjectEncodingGet, UInt32> TFunc_Classes_ByteArray_defaultObjectEncodingGet;
+typedef ThunkFunc1<Classes::fl_utils::ByteArray, Classes::fl_utils::ByteArray::mid_readFile, SPtr<Instances::fl_utils::ByteArray>, const ASString&> TFunc_Classes_ByteArray_readFile;
 
 template <> const TFunc_Classes_ByteArray_defaultObjectEncodingSet::TMethod TFunc_Classes_ByteArray_defaultObjectEncodingSet::Method = &Classes::fl_utils::ByteArray::defaultObjectEncodingSet;
 template <> const TFunc_Classes_ByteArray_defaultObjectEncodingGet::TMethod TFunc_Classes_ByteArray_defaultObjectEncodingGet::Method = &Classes::fl_utils::ByteArray::defaultObjectEncodingGet;
+template <> const TFunc_Classes_ByteArray_readFile::TMethod TFunc_Classes_ByteArray_readFile::Method = &Classes::fl_utils::ByteArray::readFile;
 
 namespace ClassTraits { namespace fl_utils
 {
-    const ThunkInfo ByteArray::ti[ByteArray::ThunkInfoNum] = {
-        {TFunc_Classes_ByteArray_defaultObjectEncodingSet::Func, NULL, "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_ByteArray_defaultObjectEncodingGet::Func, &AS3::fl::uintTI, "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0},
+    // const UInt16 ByteArray::tito[ByteArray::ThunkInfoNum] = {
+    //    0, 2, 3, 
+    // };
+    const TypeInfo* ByteArray::tit[5] = {
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl_utils::ByteArrayTI, &AS3::fl::StringTI, 
     };
-    ByteArray::ByteArray(VM& vm)
-    : Traits(vm, AS3::fl_utils::ByteArrayCI)
+    const ThunkInfo ByteArray::ti[ByteArray::ThunkInfoNum] = {
+        {TFunc_Classes_ByteArray_defaultObjectEncodingSet::Func, &ByteArray::tit[0], "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_ByteArray_defaultObjectEncodingGet::Func, &ByteArray::tit[2], "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_ByteArray_readFile::Func, &ByteArray::tit[3], "readFile", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+    };
+
+    ByteArray::ByteArray(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::ByteArray::ByteArray()"
+        SetArrayLike();
+        SetTraitsType(Traits_ByteArray);
 //##protect##"ClassTraits::ByteArray::ByteArray()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_utils::ByteArray(vm, AS3::fl_utils::ByteArrayCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_utils::ByteArray(*this));
 
     }
 
     Pickable<Traits> ByteArray::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) ByteArray(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) ByteArray(vm, AS3::fl_utils::ByteArrayCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_utils::ByteArrayCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1154,6 +2779,11 @@ namespace fl_utils
 
     const TypeInfo ByteArrayTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_utils::ByteArray::InstanceType),
+        ClassTraits::fl_utils::ByteArray::ThunkInfoNum,
+        0,
+        InstanceTraits::fl_utils::ByteArray::ThunkInfoNum,
+        0,
         "ByteArray", "flash.utils", &fl::ObjectTI,
         ByteArrayImplements
     };
@@ -1161,10 +2791,6 @@ namespace fl_utils
     const ClassInfo ByteArrayCI = {
         &ByteArrayTI,
         ClassTraits::fl_utils::ByteArray::MakeClassTraits,
-        ClassTraits::fl_utils::ByteArray::ThunkInfoNum,
-        0,
-        InstanceTraits::fl_utils::ByteArray::ThunkInfoNum,
-        0,
         ClassTraits::fl_utils::ByteArray::ti,
         NULL,
         InstanceTraits::fl_utils::ByteArray::ti,

@@ -6,6 +6,7 @@ Created     :   6/21/2007
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -80,8 +81,9 @@ ExternalFontWinAPI::ExternalFontWinAPI(FontProviderWinAPI *pprovider,
     SFstrcpy(&Name[0], SFstrlen(name) + 1, name);
    
     // Font name is encoded as UTF8, so unpack.
-    NameW.Resize(UTF8Util::GetLength(name) + 1);
-    UTF8Util::DecodeString(&NameW[0], name);
+    UPInt bufLen = UTF8Util::GetLength(name) + 1;
+    NameW.Resize(bufLen);
+    UTF8Util::DecodeStringSafe(&NameW[0], bufLen, name);
 
     LOGFONTW lf;
     if (::StringCchCopyW((LPWSTR)&lf.lfFaceName, sizeof(lf.lfFaceName)/sizeof(lf.lfFaceName[0]), &NameW[0]) != S_OK)

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,12 +30,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_text::Font, Instances::fl_text::Font::mid_fontNameGet, Value> TFunc_Instances_Font_fontNameGet;
 typedef ThunkFunc0<Instances::fl_text::Font, Instances::fl_text::Font::mid_fontStyleGet, Value> TFunc_Instances_Font_fontStyleGet;
 typedef ThunkFunc0<Instances::fl_text::Font, Instances::fl_text::Font::mid_fontTypeGet, Value> TFunc_Instances_Font_fontTypeGet;
@@ -188,19 +183,27 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
+    // const UInt16 Font::tito[Font::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 
+    // };
+    const TypeInfo* Font::tit[5] = {
+        NULL, 
+        NULL, 
+        NULL, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+    };
     const ThunkInfo Font::ti[Font::ThunkInfoNum] = {
-        {TFunc_Instances_Font_fontNameGet::Func, NULL, "fontName", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Font_fontStyleGet::Func, NULL, "fontStyle", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Font_fontTypeGet::Func, NULL, "fontType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Font_hasGlyphs::Func, &AS3::fl::BooleanTI, "hasGlyphs", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_Font_fontNameGet::Func, &Font::tit[0], "fontName", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Font_fontStyleGet::Func, &Font::tit[1], "fontStyle", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Font_fontTypeGet::Func, &Font::tit[2], "fontType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Font_hasGlyphs::Func, &Font::tit[3], "hasGlyphs", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     Font::Font(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Font::Font()"
 //##protect##"InstanceTraits::Font::Font()"
-        SetMemSize(sizeof(Instances::fl_text::Font));
 
     }
 
@@ -371,28 +374,38 @@ template <> const TFunc_Classes_Font_registerFont::TMethod TFunc_Classes_Font_re
 
 namespace ClassTraits { namespace fl_text
 {
-    const ThunkInfo Font::ti[Font::ThunkInfoNum] = {
-        {TFunc_Classes_Font_enumerateFonts::Func, &AS3::fl::ArrayTI, "enumerateFonts", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Classes_Font_registerFont::Func, NULL, "registerFont", NULL, Abc::NS_Public, CT_Method, 1, 1},
+    // const UInt16 Font::tito[Font::ThunkInfoNum] = {
+    //    0, 2, 
+    // };
+    const TypeInfo* Font::tit[4] = {
+        &AS3::fl::ArrayTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::ClassTI, 
     };
-    Font::Font(VM& vm)
-    : Traits(vm, AS3::fl_text::FontCI)
+    const ThunkInfo Font::ti[Font::ThunkInfoNum] = {
+        {TFunc_Classes_Font_enumerateFonts::Func, &Font::tit[0], "enumerateFonts", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Classes_Font_registerFont::Func, &Font::tit[2], "registerFont", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+    };
+
+    Font::Font(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Font::Font()"
 //##protect##"ClassTraits::Font::Font()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_text::Font(vm, AS3::fl_text::FontCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_text::Font(*this));
 
     }
 
     Pickable<Traits> Font::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Font(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Font(vm, AS3::fl_text::FontCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_text::FontCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -403,6 +416,11 @@ namespace fl_text
 {
     const TypeInfo FontTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_text::Font::InstanceType),
+        ClassTraits::fl_text::Font::ThunkInfoNum,
+        0,
+        InstanceTraits::fl_text::Font::ThunkInfoNum,
+        0,
         "Font", "flash.text", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -410,10 +428,6 @@ namespace fl_text
     const ClassInfo FontCI = {
         &FontTI,
         ClassTraits::fl_text::Font::MakeClassTraits,
-        ClassTraits::fl_text::Font::ThunkInfoNum,
-        0,
-        InstanceTraits::fl_text::Font::ThunkInfoNum,
-        0,
         ClassTraits::fl_text::Font::ti,
         NULL,
         InstanceTraits::fl_text::Font::ti,

@@ -6,6 +6,7 @@ Created     :   2005-2006
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -49,7 +50,7 @@ public:
 
 
 //------------------------------------------------------------------------
-struct MorphShapeData : public RefCountBase<MorphShapeData, Stat_Default_Mem>
+struct MorphShapeData : public RefCountBase<MorphShapeData, StatRender_TreeCache_Mem>
 {
     typedef ArrayLH_POD<UByte> ContainerType;
 
@@ -94,12 +95,7 @@ public:
     {}
 
     ShapeMeshProvider(ShapeDataInterface* shape, ShapeDataInterface* shapeMorph = 0);
-
-
-    ~ShapeMeshProvider()
-    {
-        SF_AMP_CODE(clearStrokeCount();)
-    }
+    virtual ~ShapeMeshProvider();
 
     void AttachShape(ShapeDataInterface* shape, ShapeDataInterface* shapeMorph = 0);
 

@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov, Andrew Reise
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -16,60 +17,32 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef FX_PlayerSWFtoTextureD3D9_H
 #define FX_PlayerSWFtoTextureD3D9_H
 
-#include "../Common/FxPlayerAppBase.h"
-#include "Render/D3D9/D3D9_HAL.h"
-#include "d3dx9math.h"
+#include "FxPlayerSWFToTexture.h"
+#include <d3d9.h>
 
-
-
-class   SWFToTextureD3D9App : public FxPlayerAppBase, public HALNotify
+// The D3D9-platform specific application class.  Note that we derive from HALNotify, because
+// we want to be notified of the device reset events.
+class   FxPlayerSWFToTextureAppD3D9 : public FxPlayerSWFToTextureApp, public HALNotify
 {
 public:
-    SWFToTextureD3D9App() 
-    {
-        LastRotationTick = 0;
-        MeshRotationX = -30;
-        MeshRotationZ = -30;
-        RTWidth = 1024;
-        RTHeight = 1024;
-    }
+    virtual void    InitGraphicsResources();
 
+    // Overridden from HALNotify
+    virtual void             OnHALEvent(HALNotifyType type);
 
-    virtual bool            OnInit(Platform::ViewConfig& config);
+protected:
+    void            RenderMovieTextureToQuad();
 
-    bool            SetupRTTexture();
-    void            SetupMatrices();
-    void            RenderMovie();
-    void            RenderMovieTexture();
+    // Helper functions
+    bool                     CreateRenderTextureBuffers();
 
-    enum TrackingState
-    {
-        None,
-        Zooming,
-        Moving,
-        Tilting,
-        Centering,
-    };
-
-    Ptr<IDirect3DTextureX>  pRenderTexture;
-    Ptr<IDirect3DSurfaceX>  pStencilSurface;
-    Ptr<IDirect3DVertexBufferX>     pCubeVertexBuffer;
-
-    D3D9::HAL*              pPlatformHAL; 
-    IDirect3DDeviceX*       pDevice;
-
-    TrackingState           TextureTilt;
-
-    int                     RTWidth, RTHeight;
-    float                   MeshRotationX;
-    float                   MeshRotationZ;
-    UInt64                  LastRotationTick;
-    float                   InvMV[16];
-    float                   Proj[16], InvProj[16];
-    bool                    CubeWireframe;
-
-    Ptr<MovieDef>   pBGDef;
-    Ptr<Movie>  pBG;
+    Ptr<IDirect3DDevice9>               pDevice;            // The Direct3D device.
+    Ptr<IDirect3DTexture9>              pRenderTexture;     // The render texture.
+    Ptr<IDirect3DSurface9>              pStencilSurface;    // The depth/stencil surface used when rendering the rendered texture.
+    Ptr<IDirect3DVertexBuffer9>         pQuadVertexBuffer;  // The vertex buffer, containing the quad mesh data.
+    Ptr<IDirect3DVertexDeclaration9>    pVertexDecl;        // The vertex format declaration.
+    Ptr<IDirect3DVertexShader9>         pVertexShader;      // The vertex shader.
+    Ptr<IDirect3DPixelShader9>          pPixelShader;       // The fragment (pixel) shader.
 };
 
 

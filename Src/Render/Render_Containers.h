@@ -7,6 +7,7 @@ Created     :   2005-2007
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -1379,7 +1380,10 @@ public:
         unsigned i;
         for (i = 0; i < words; ++i)
         {
-            register UInt32 w = pData[i];
+			// Delete Resiger Words, To Support C++ 17 compilers that do not support it.
+            // If Wanna To Go C++ 14 And Lower, Add Regiser Word Back Here,
+            // Example: Resiger Uint 32 w = pData[i];
+            UInt32 w = pData[i];
             w = ((w & 0xAAAAAAAA) >>  1) + (w & 0x55555555);
             w = ((w & 0xCCCCCCCC) >>  2) + (w & 0x33333333);
             w = ((w & 0xF0F0F0F0) >>  4) + (w & 0x0F0F0F0F);

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -110,7 +111,7 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
-    class AsyncErrorEvent : public CTraits
+    class AsyncErrorEvent : public fl_events::ErrorEvent
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -138,6 +139,8 @@ namespace InstanceTraits { namespace fl_events
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[2];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -150,7 +153,7 @@ namespace InstanceTraits { namespace fl_events
     
 namespace ClassTraits { namespace fl_events
 {
-    class AsyncErrorEvent : public Traits
+    class AsyncErrorEvent : public fl_events::ErrorEvent
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -158,9 +161,11 @@ namespace ClassTraits { namespace fl_events
 #endif
     public:
         typedef Classes::fl_events::AsyncErrorEvent ClassType;
+        typedef InstanceTraits::fl_events::AsyncErrorEvent InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        AsyncErrorEvent(VM& vm);
+        AsyncErrorEvent(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 1 };
         static const MemberInfo mi[MemberInfoNum];

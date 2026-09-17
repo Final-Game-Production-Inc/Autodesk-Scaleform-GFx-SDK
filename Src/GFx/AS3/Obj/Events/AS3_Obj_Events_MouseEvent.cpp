@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,12 +30,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::MouseEvent, Instances::fl_events::MouseEvent::mid_altKeyGet, bool> TFunc_Instances_MouseEvent_altKeyGet;
 typedef ThunkFunc1<Instances::fl_events::MouseEvent, Instances::fl_events::MouseEvent::mid_altKeySet, const Value, bool> TFunc_Instances_MouseEvent_altKeySet;
 typedef ThunkFunc0<Instances::fl_events::MouseEvent, Instances::fl_events::MouseEvent::mid_buttonDownGet, bool> TFunc_Instances_MouseEvent_buttonDownGet;
@@ -362,6 +357,12 @@ namespace Instances { namespace fl_events
     void MouseEvent::AS3Constructor(unsigned argc, const Value* argv)
     {
         Event::AS3Constructor(argc, argv);
+
+        if (argc < 2)
+        {
+            // default Bubbles property is true for MouseEvent, unlike for Event
+            Bubbles = true;
+        }
         if (argc >= 4)
         {
             Value::Number v;
@@ -456,41 +457,71 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 MouseEvent::tito[MouseEvent::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 26, 28, 29, 31, 32, 33, 34, 35, 
+    // };
+    const TypeInfo* MouseEvent::tit[36] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_display::InteractiveObjectTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+    };
     const ThunkInfo MouseEvent::ti[MouseEvent::ThunkInfoNum] = {
-        {TFunc_Instances_MouseEvent_altKeyGet::Func, &AS3::fl::BooleanTI, "altKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_altKeySet::Func, NULL, "altKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_buttonDownGet::Func, &AS3::fl::BooleanTI, "buttonDown", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_buttonDownSet::Func, NULL, "buttonDown", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_clickCountGet::Func, &AS3::fl::int_TI, "clickCount", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_commandKeyGet::Func, &AS3::fl::BooleanTI, "commandKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_commandKeySet::Func, NULL, "commandKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_controlKeyGet::Func, &AS3::fl::BooleanTI, "controlKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_controlKeySet::Func, NULL, "controlKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_ctrlKeyGet::Func, &AS3::fl::BooleanTI, "ctrlKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_ctrlKeySet::Func, NULL, "ctrlKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_deltaGet::Func, &AS3::fl::int_TI, "delta", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_deltaSet::Func, NULL, "delta", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_localXGet::Func, &AS3::fl::NumberTI, "localX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_localXSet::Func, NULL, "localX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_localYGet::Func, &AS3::fl::NumberTI, "localY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_localYSet::Func, NULL, "localY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_relatedObjectGet::Func, &AS3::fl_display::InteractiveObjectTI, "relatedObject", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_relatedObjectSet::Func, NULL, "relatedObject", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_shiftKeyGet::Func, &AS3::fl::BooleanTI, "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_shiftKeySet::Func, NULL, "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_MouseEvent_stageXGet::Func, &AS3::fl::NumberTI, "stageX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_stageYGet::Func, &AS3::fl::NumberTI, "stageY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_MouseEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MouseEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_MouseEvent_updateAfterEvent::Func, NULL, "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_MouseEvent_altKeyGet::Func, &MouseEvent::tit[0], "altKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_altKeySet::Func, &MouseEvent::tit[1], "altKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_buttonDownGet::Func, &MouseEvent::tit[3], "buttonDown", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_buttonDownSet::Func, &MouseEvent::tit[4], "buttonDown", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_clickCountGet::Func, &MouseEvent::tit[6], "clickCount", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_commandKeyGet::Func, &MouseEvent::tit[7], "commandKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_commandKeySet::Func, &MouseEvent::tit[8], "commandKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_controlKeyGet::Func, &MouseEvent::tit[10], "controlKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_controlKeySet::Func, &MouseEvent::tit[11], "controlKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_ctrlKeyGet::Func, &MouseEvent::tit[13], "ctrlKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_ctrlKeySet::Func, &MouseEvent::tit[14], "ctrlKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_deltaGet::Func, &MouseEvent::tit[16], "delta", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_deltaSet::Func, &MouseEvent::tit[17], "delta", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_localXGet::Func, &MouseEvent::tit[19], "localX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_localXSet::Func, &MouseEvent::tit[20], "localX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_localYGet::Func, &MouseEvent::tit[22], "localY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_localYSet::Func, &MouseEvent::tit[23], "localY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_relatedObjectGet::Func, &MouseEvent::tit[25], "relatedObject", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_relatedObjectSet::Func, &MouseEvent::tit[26], "relatedObject", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_shiftKeyGet::Func, &MouseEvent::tit[28], "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_shiftKeySet::Func, &MouseEvent::tit[29], "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_stageXGet::Func, &MouseEvent::tit[31], "stageX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_stageYGet::Func, &MouseEvent::tit[32], "stageY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_clone::Func, &MouseEvent::tit[33], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_toString::Func, &MouseEvent::tit[34], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_MouseEvent_updateAfterEvent::Func, &MouseEvent::tit[35], "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     MouseEvent::MouseEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::MouseEvent::MouseEvent()"
 //##protect##"InstanceTraits::MouseEvent::MouseEvent()"
-        SetMemSize(sizeof(Instances::fl_events::MouseEvent));
 
     }
 
@@ -557,24 +588,27 @@ namespace ClassTraits { namespace fl_events
         {"ROLL_OVER", NULL, OFFSETOF(Classes::fl_events::MouseEvent, ROLL_OVER), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    MouseEvent::MouseEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::MouseEventCI)
+
+    MouseEvent::MouseEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::MouseEvent::MouseEvent()"
 //##protect##"ClassTraits::MouseEvent::MouseEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::MouseEvent(vm, AS3::fl_events::MouseEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::MouseEvent(*this));
 
     }
 
     Pickable<Traits> MouseEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) MouseEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) MouseEvent(vm, AS3::fl_events::MouseEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::MouseEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -585,6 +619,11 @@ namespace fl_events
 {
     const TypeInfo MouseEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::MouseEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::MouseEvent::MemberInfoNum,
+        InstanceTraits::fl_events::MouseEvent::ThunkInfoNum,
+        0,
         "MouseEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -592,10 +631,6 @@ namespace fl_events
     const ClassInfo MouseEventCI = {
         &MouseEventTI,
         ClassTraits::fl_events::MouseEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::MouseEvent::MemberInfoNum,
-        InstanceTraits::fl_events::MouseEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::MouseEvent::mi,
         InstanceTraits::fl_events::MouseEvent::ti,

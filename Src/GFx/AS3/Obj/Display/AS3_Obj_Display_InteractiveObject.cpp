@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_display::InteractiveObject, Instances::fl_display::InteractiveObject::mid_contextMenuGet, SPtr<Instances::fl::Object> > TFunc_Instances_InteractiveObject_contextMenuGet;
 typedef ThunkFunc1<Instances::fl_display::InteractiveObject, Instances::fl_display::InteractiveObject::mid_contextMenuSet, const Value, const Value&> TFunc_Instances_InteractiveObject_contextMenuSet;
 typedef ThunkFunc0<Instances::fl_display::InteractiveObject, Instances::fl_display::InteractiveObject::mid_doubleClickEnabledGet, bool> TFunc_Instances_InteractiveObject_doubleClickEnabledGet;
@@ -209,28 +204,44 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 InteractiveObject::tito[InteractiveObject::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 
+    // };
+    const TypeInfo* InteractiveObject::tit[18] = {
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, 
+        NULL, NULL, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+    };
     const ThunkInfo InteractiveObject::ti[InteractiveObject::ThunkInfoNum] = {
-        {TFunc_Instances_InteractiveObject_contextMenuGet::Func, &AS3::fl::ObjectTI, "contextMenu", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_InteractiveObject_contextMenuSet::Func, NULL, "contextMenu", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_InteractiveObject_doubleClickEnabledGet::Func, &AS3::fl::BooleanTI, "doubleClickEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_InteractiveObject_doubleClickEnabledSet::Func, NULL, "doubleClickEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_InteractiveObject_focusRectGet::Func, NULL, "focusRect", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_InteractiveObject_focusRectSet::Func, NULL, "focusRect", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_InteractiveObject_mouseEnabledGet::Func, &AS3::fl::BooleanTI, "mouseEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_InteractiveObject_mouseEnabledSet::Func, NULL, "mouseEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_InteractiveObject_tabEnabledGet::Func, &AS3::fl::BooleanTI, "tabEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_InteractiveObject_tabEnabledSet::Func, NULL, "tabEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_InteractiveObject_tabIndexGet::Func, &AS3::fl::int_TI, "tabIndex", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_InteractiveObject_tabIndexSet::Func, NULL, "tabIndex", NULL, Abc::NS_Public, CT_Set, 1, 1},
+        {TFunc_Instances_InteractiveObject_contextMenuGet::Func, &InteractiveObject::tit[0], "contextMenu", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_contextMenuSet::Func, &InteractiveObject::tit[1], "contextMenu", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_doubleClickEnabledGet::Func, &InteractiveObject::tit[3], "doubleClickEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_doubleClickEnabledSet::Func, &InteractiveObject::tit[4], "doubleClickEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_focusRectGet::Func, &InteractiveObject::tit[6], "focusRect", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_focusRectSet::Func, &InteractiveObject::tit[7], "focusRect", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_mouseEnabledGet::Func, &InteractiveObject::tit[9], "mouseEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_mouseEnabledSet::Func, &InteractiveObject::tit[10], "mouseEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_tabEnabledGet::Func, &InteractiveObject::tit[12], "tabEnabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_tabEnabledSet::Func, &InteractiveObject::tit[13], "tabEnabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_tabIndexGet::Func, &InteractiveObject::tit[15], "tabIndex", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_InteractiveObject_tabIndexSet::Func, &InteractiveObject::tit[16], "tabIndex", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
     };
 
     InteractiveObject::InteractiveObject(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::DisplayObject(vm, ci)
     {
 //##protect##"InstanceTraits::InteractiveObject::InteractiveObject()"
         SetTraitsType(Traits_InteractiveObject);
 //##protect##"InstanceTraits::InteractiveObject::InteractiveObject()"
-        SetMemSize(sizeof(Instances::fl_display::InteractiveObject));
 
     }
 
@@ -247,25 +258,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    InteractiveObject::InteractiveObject(VM& vm)
-    : Traits(vm, AS3::fl_display::InteractiveObjectCI)
+
+    InteractiveObject::InteractiveObject(VM& vm, const ClassInfo& ci)
+    : fl_display::DisplayObject(vm, ci)
     {
 //##protect##"ClassTraits::InteractiveObject::InteractiveObject()"
         SetTraitsType(Traits_InteractiveObject);
 //##protect##"ClassTraits::InteractiveObject::InteractiveObject()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::InteractiveObject(vm, AS3::fl_display::InteractiveObjectCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> InteractiveObject::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) InteractiveObject(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) InteractiveObject(vm, AS3::fl_display::InteractiveObjectCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::InteractiveObjectCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -276,6 +290,11 @@ namespace fl_display
 {
     const TypeInfo InteractiveObjectTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::InteractiveObject::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::InteractiveObject::ThunkInfoNum,
+        0,
         "InteractiveObject", "flash.display", &fl_display::DisplayObjectTI,
         TypeInfo::None
     };
@@ -283,10 +302,6 @@ namespace fl_display
     const ClassInfo InteractiveObjectCI = {
         &InteractiveObjectTI,
         ClassTraits::fl_display::InteractiveObject::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::InteractiveObject::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::InteractiveObject::ti,

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::StageOrientationEvent, Instances::fl_events::StageOrientationEvent::mid_afterOrientationGet, ASString> TFunc_Instances_StageOrientationEvent_afterOrientationGet;
 typedef ThunkFunc0<Instances::fl_events::StageOrientationEvent, Instances::fl_events::StageOrientationEvent::mid_beforeOrientationGet, ASString> TFunc_Instances_StageOrientationEvent_beforeOrientationGet;
 typedef ThunkFunc0<Instances::fl_events::StageOrientationEvent, Instances::fl_events::StageOrientationEvent::mid_clone, SPtr<Instances::fl_events::Event> > TFunc_Instances_StageOrientationEvent_clone;
@@ -153,19 +148,27 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 StageOrientationEvent::tito[StageOrientationEvent::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 
+    // };
+    const TypeInfo* StageOrientationEvent::tit[4] = {
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo StageOrientationEvent::ti[StageOrientationEvent::ThunkInfoNum] = {
-        {TFunc_Instances_StageOrientationEvent_afterOrientationGet::Func, &AS3::fl::StringTI, "afterOrientation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_StageOrientationEvent_beforeOrientationGet::Func, &AS3::fl::StringTI, "beforeOrientation", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_StageOrientationEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_StageOrientationEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_StageOrientationEvent_afterOrientationGet::Func, &StageOrientationEvent::tit[0], "afterOrientation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_StageOrientationEvent_beforeOrientationGet::Func, &StageOrientationEvent::tit[1], "beforeOrientation", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_StageOrientationEvent_clone::Func, &StageOrientationEvent::tit[2], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_StageOrientationEvent_toString::Func, &StageOrientationEvent::tit[3], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     StageOrientationEvent::StageOrientationEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::StageOrientationEvent::StageOrientationEvent()"
 //##protect##"InstanceTraits::StageOrientationEvent::StageOrientationEvent()"
-        SetMemSize(sizeof(Instances::fl_events::StageOrientationEvent));
 
     }
 
@@ -202,24 +205,27 @@ namespace ClassTraits { namespace fl_events
         {"ORIENTATION_CHANGING", NULL, OFFSETOF(Classes::fl_events::StageOrientationEvent, ORIENTATION_CHANGING), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    StageOrientationEvent::StageOrientationEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::StageOrientationEventCI)
+
+    StageOrientationEvent::StageOrientationEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::StageOrientationEvent::StageOrientationEvent()"
 //##protect##"ClassTraits::StageOrientationEvent::StageOrientationEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::StageOrientationEvent(vm, AS3::fl_events::StageOrientationEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::StageOrientationEvent(*this));
 
     }
 
     Pickable<Traits> StageOrientationEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) StageOrientationEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) StageOrientationEvent(vm, AS3::fl_events::StageOrientationEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::StageOrientationEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -230,6 +236,11 @@ namespace fl_events
 {
     const TypeInfo StageOrientationEventTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_events::StageOrientationEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::StageOrientationEvent::MemberInfoNum,
+        InstanceTraits::fl_events::StageOrientationEvent::ThunkInfoNum,
+        0,
         "StageOrientationEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -237,10 +248,6 @@ namespace fl_events
     const ClassInfo StageOrientationEventCI = {
         &StageOrientationEventTI,
         ClassTraits::fl_events::StageOrientationEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::StageOrientationEvent::MemberInfoNum,
-        InstanceTraits::fl_events::StageOrientationEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::StageOrientationEvent::mi,
         InstanceTraits::fl_events::StageOrientationEvent::ti,

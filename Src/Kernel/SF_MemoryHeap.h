@@ -7,6 +7,7 @@ Created     :   October 1, 2008
 Authors     :   Michael Antonov, Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -248,6 +249,8 @@ public:
     //--------------------------------------------------------------------
     struct LimitHandler
     {
+        LimitHandler():AllocCount(0) {}
+
     	virtual ~LimitHandler() {}
         // The handler that is called when the limit is reached. The handler
         // can try to free memory of at least "overLimit" size in summary 
@@ -262,6 +265,10 @@ public:
         // The function is called when the segment is freeing. It allows the
         // application algorithm to decrease the limit when necessary.
         virtual void OnFreeSegment(MemoryHeap* heap, UPInt freeingSize) = 0;
+
+        bool IsInsideAlloc() const { return AllocCount != 0; }
+
+        int AllocCount;
     };
 
     //--------------------------------------------------------------------

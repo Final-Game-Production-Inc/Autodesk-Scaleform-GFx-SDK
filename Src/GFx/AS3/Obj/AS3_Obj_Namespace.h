@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -193,7 +194,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class Namespace : public CTraits
+    class Namespace : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -216,6 +217,8 @@ namespace InstanceTraits { namespace fl
         static void toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv);
         enum { ThunkInfoNum = 4 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[4];
 //##protect##"instance_traits$methods"
         ~Namespace();
 
@@ -243,7 +246,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class Namespace : public Traits
+    class Namespace : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -251,9 +254,11 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::Namespace ClassType;
+        typedef InstanceTraits::fl::Namespace InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Namespace(VM& vm);
+        Namespace(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
         virtual bool Coerce(const Value& value, Value& result) const;
@@ -283,6 +288,8 @@ namespace Classes { namespace fl
         virtual void InitPrototype(AS3::Object& obj) const;
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[2];
        
     private:
         SelfType& GetSelf()

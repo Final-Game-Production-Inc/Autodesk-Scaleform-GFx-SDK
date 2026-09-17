@@ -6,6 +6,7 @@ Created     :   2009-2010
 Authors     :   Maxim Shemanarev, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -45,7 +46,7 @@ TreeText::NodeData::~NodeData()
 
 bool TreeText::NodeData::PropagateUp(Entry* entry) const
 {        
-    RectF    bounds, parentBounds;
+    RectF    bounds, parentBounds, orgBounds;
 
     if (pDocView)
     {
@@ -69,6 +70,7 @@ bool TreeText::NodeData::PropagateUp(Entry* entry) const
         bounds = pLayout->GetBounds();
 
         // Must apply any filters to the bounds before it is transformed into parent space.
+        orgBounds = bounds;
         expandByFilterBounds(&bounds, false );
         if (!Is3D())
             M2D().EncloseTransform(&parentBounds, bounds);
@@ -83,6 +85,7 @@ bool TreeText::NodeData::PropagateUp(Entry* entry) const
 
         d->AproxLocalBounds = bounds;
         d->AproxParentBounds = parentBounds;
+        d->updateOriginalBoundState(orgBounds);
         return IsVisible();
     }
     return false;   
@@ -357,6 +360,21 @@ void TreeText::SetFontStyle(FontStyle fontStyle, UPInt startPos, UPInt endPos)
             fmt.SetItalic(true);
             break;
         }
+        data->pDocView->SetTextFormat(fmt, startPos, endPos);
+        UpdateDefaultTextFormat(data->pDocView, fmt);
+    }
+    else
+        ; // What to do here??? @TODO
+    NotifyLayoutChanged();
+}
+
+void TreeText::SetLetterSpacing(float letterSpacing, UPInt startPos, UPInt endPos)
+{
+    const NodeData* data = GetReadOnlyData();
+    if (data->pDocView) 
+    {
+        Text::TextFormat fmt(data->pDocView->GetHeap());
+        fmt.SetLetterSpacing(letterSpacing);
         data->pDocView->SetTextFormat(fmt, startPos, endPos);
         UpdateDefaultTextFormat(data->pDocView, fmt);
     }

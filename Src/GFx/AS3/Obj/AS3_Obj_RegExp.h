@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,13 +23,35 @@ otherwise accompanies this software in either electronic or hard copy form.
 //##protect##"includes"
 #ifdef SF_ENABLE_PCRE
 #define PCRE_STATIC 1
-#include "pcre.h"
+#include "pcre2.h"
 #endif
 //##protect##"includes"
 
 
 namespace Scaleform { namespace GFx { namespace AS3 
 {
+
+    // 替代 pcre2_utf_to_uc：校验单个 UTF-8 字符合法性，返回其字节长度（失败返回 PCRE2 错误码）
+    // 参数：
+    //   code_point: 输出解析后的 Unicode 码点（传 NULL 则不输出）
+    //   s:          待校验的 UTF-8 字符起始指针
+    //   max_len:    剩余可读取的字节数（防止越界）
+    // 返回值：
+    //   成功：返回该 UTF-8 字符的字节长度（1~4）
+    //   失败：返回 PCRE2_ERROR_UTF8_ERR1 ~ PCRE2_ERROR_UTF8_ERR23 等错误码
+    extern int pcre2_utf8_char_check(uint32_t* code_point, PCRE2_SPTR8 s, PCRE2_SIZE max_len);
+
+    // 替代 pcre2_utf_strlen：统计 UTF-8 字符串的「字符数」（非字节数）
+    // 参数：
+    //   s:        待统计的 UTF-8 字符串（PCRE2_SPTR8 对应 const uint8_t*）
+    //   length:   字节长度（PCRE2_UNSET 表示字符串以 0 终止）
+    //   error:    输出错误码（NULL 则忽略，失败时返回 PCRE2 UTF8 错误码）
+    // 返回值：
+    //   成功：UTF-8 字符数
+    //   失败：PCRE2_UNSET
+    extern PCRE2_SIZE pcre2_utf8_strlen(PCRE2_SPTR8 s, PCRE2_SIZE length, int* error);
+
+
 // Forward declaration.
 namespace fl
 {
@@ -200,9 +223,10 @@ namespace Instances { namespace fl
 //##protect##"instance$data"
 #ifdef SF_ENABLE_PCRE
         static const UInt32 OUTPUT_VECTOR_SIZE  = 99;   // Output 32 matches (32+1)*3
-        static const UInt32 MATCH_BUFFER_SIZE   = 1024; // 1K for match
 
-        pcre*   CompRegExp;     // Compiled regexp pattern
+        pcre2_code*   CompRegExp;     // Compiled regexp pattern
+        pcre2_match_data* MatchData; // Pcre2 In
+
         SInt32  MatchOffset;    // Last match offset
         SInt32  MatchLength;    // Last match length
 
@@ -219,7 +243,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class RegExp : public CTraits
+    class RegExp : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -245,6 +269,8 @@ namespace InstanceTraits { namespace fl
 
         enum { ThunkInfoNum = 10 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[13];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -257,7 +283,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class RegExp : public Traits
+    class RegExp : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -265,9 +291,11 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::RegExp ClassType;
+        typedef InstanceTraits::fl::RegExp InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        RegExp(VM& vm);
+        RegExp(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

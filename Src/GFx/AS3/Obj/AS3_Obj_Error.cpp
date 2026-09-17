@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl::Error, Instances::fl::Error::mid_errorIDGet, SInt32> TFunc_Instances_Error_errorIDGet;
 typedef ThunkFunc0<Instances::fl::Error, Instances::fl::Error::mid_getStackTrace, ASString> TFunc_Instances_Error_getStackTrace;
 
@@ -132,9 +127,16 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 Error::tito[Error::ThunkInfoNum] = {
+    //    0, 1, 
+    // };
+    const TypeInfo* Error::tit[2] = {
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Error::ti[Error::ThunkInfoNum] = {
-        {TFunc_Instances_Error_errorIDGet::Func, &AS3::fl::int_TI, "errorID", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Error_getStackTrace::Func, &AS3::fl::StringTI, "getStackTrace", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_Error_errorIDGet::Func, &Error::tit[0], "errorID", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Error_getStackTrace::Func, &Error::tit[1], "getStackTrace", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
     const MemberInfo Error::mi[Error::MemberInfoNum] = {
         {"message", NULL, OFFSETOF(Instances::fl::Error, message), Abc::NS_Public, SlotInfo::BT_String, 0},
@@ -143,11 +145,10 @@ namespace InstanceTraits { namespace fl
 
 
     Error::Error(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Error::Error()"
 //##protect##"InstanceTraits::Error::Error()"
-        SetMemSize(sizeof(Instances::fl::Error));
 
     }
 
@@ -163,8 +164,14 @@ namespace InstanceTraits { namespace fl
 
 namespace Classes { namespace fl
 {
+    // const UInt16 Error::tito[Error::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* Error::tit[1] = {
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Error::ti[Error::ThunkInfoNum] = {
-        {TFunc_Instances_Error_toStringProto::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_Error_toStringProto::Func, &Error::tit[0], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Error::Error(ClassTraits::Traits& t)
@@ -221,28 +228,38 @@ template <> const TFunc_Classes_Error_throwError::TMethod TFunc_Classes_Error_th
 
 namespace ClassTraits { namespace fl
 {
-    const ThunkInfo Error::ti[Error::ThunkInfoNum] = {
-        {TFunc_Classes_Error_getErrorMessage::Func, &AS3::fl::StringTI, "getErrorMessage", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Error_throwError::Func, NULL, "throwError", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+    // const UInt16 Error::tito[Error::ThunkInfoNum] = {
+    //    0, 2, 
+    // };
+    const TypeInfo* Error::tit[5] = {
+        &AS3::fl::StringTI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::ClassTI, &AS3::fl::uintTI, 
     };
-    Error::Error(VM& vm)
-    : Traits(vm, AS3::fl::ErrorCI)
+    const ThunkInfo Error::ti[Error::ThunkInfoNum] = {
+        {TFunc_Classes_Error_getErrorMessage::Func, &Error::tit[0], "getErrorMessage", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Error_throwError::Func, &Error::tit[2], "throwError", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+    };
+
+    Error::Error(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Error::Error()"
 //##protect##"ClassTraits::Error::Error()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Error(vm, AS3::fl::ErrorCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::Error(*this));
 
     }
 
     Pickable<Traits> Error::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Error(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Error(vm, AS3::fl::ErrorCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::ErrorCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -253,6 +270,11 @@ namespace fl
 {
     const TypeInfo ErrorTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject,
+        sizeof(ClassTraits::fl::Error::InstanceType),
+        ClassTraits::fl::Error::ThunkInfoNum,
+        0,
+        InstanceTraits::fl::Error::ThunkInfoNum,
+        InstanceTraits::fl::Error::MemberInfoNum,
         "Error", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -260,10 +282,6 @@ namespace fl
     const ClassInfo ErrorCI = {
         &ErrorTI,
         ClassTraits::fl::Error::MakeClassTraits,
-        ClassTraits::fl::Error::ThunkInfoNum,
-        0,
-        InstanceTraits::fl::Error::ThunkInfoNum,
-        InstanceTraits::fl::Error::MemberInfoNum,
         ClassTraits::fl::Error::ti,
         NULL,
         InstanceTraits::fl::Error::ti,

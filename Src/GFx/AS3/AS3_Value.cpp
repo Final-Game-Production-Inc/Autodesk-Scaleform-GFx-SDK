@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,9 +30,9 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 namespace Impl
 {
-    bool ConvertTO(VM& vm, Value& to, const Value& from, VMAppDomain& appDomain, const TypeInfo& ti)
+    bool ConvertTO(VM& vm, Value& to, const Value& from, const TypeInfo& ti)
     {
-        const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(ti, appDomain);
+        const ClassTraits::Traits* ctr = vm.Resolve2ClassTraits(ti);
 
         if (ctr == NULL)
         {
@@ -548,7 +549,7 @@ CheckResult Value::Convert2NumberInternal(Number& result, KindType kind) const
             2. Call ToNumber(Result(1)).
             3. Return Result(2).
             */
-            if (!Convert2PrimitiveValueUnsafe(v, hintNumber))
+            if (!Convert2PrimitiveValueUnsafeHintNumber(v))
                 return false;
 
             if (!v.Convert2Number(result))
@@ -683,7 +684,7 @@ CheckResult Value::Convert2Int32(SInt32& result) const
             // Not null.
             Value v;
 
-            if (!Convert2PrimitiveValueUnsafe(v))
+            if (!Convert2PrimitiveValueUnsafeHintNumber(v))
                 return false;
 
             if (!v.Convert2Int32(result))
@@ -740,7 +741,7 @@ CheckResult Value::Convert2UInt32(UInt32& result) const
         {
             Value v;
 
-            if (!Convert2PrimitiveValueUnsafe(v))
+            if (!Convert2PrimitiveValueUnsafeHintNumber(v))
                 return false;
 
             if (!v.Convert2UInt32(result))
@@ -758,8 +759,8 @@ CheckResult Value::Convert2UInt32(UInt32& result) const
 UPInt SF_ECMA_dtostr(char* buffer, int bufflen, Double val)
 {   
     // Use fast code path for integers.
-    int intVal = (int)val;
-    if (val == (Double)intVal)
+    int intVal = static_cast<int>(val);
+    if (val == intVal)
     {
         SFitoa(intVal, buffer, bufflen, 10);
         return SFstrlen(buffer);
@@ -818,7 +819,7 @@ UPInt SF_ECMA_dtostr(char* buffer, int bufflen, Double val)
         }
     }
 
-    const int nc1 = (int)SFsprintf(temp, sizeof(temp), format, val);
+    const int nc1 = (int)SFsprintf(temp, sizeof(temp), format, static_cast<double>(val));
 
     // Get rid of a trailing number.
     {
@@ -989,7 +990,7 @@ CheckResult Value::Convert2String(ASString& result) const
     case kNumber:
         {
             char  buffer[40];
-            UPInt length = SF_ECMA_dtostr(buffer, sizeof(buffer), value.VNumber);
+            UPInt length = SF_ECMA_dtostr(buffer, sizeof(buffer), value);
             result.AssignNode(sm->CreateStringNode(buffer, length));
         }      
         break;
@@ -1012,12 +1013,12 @@ CheckResult Value::Convert2String(ASString& result) const
             Call ToString(Result(1)).
             Return Result(2).
             */
-            if (!Convert2PrimitiveValueUnsafe(v, hintString))
+            if (!Convert2PrimitiveValueUnsafe(*sm, v, hintString))
                 return false;
 
             if (!v.IsPrimitive())
             {
-                VM& vm = v.GetObject()->GetVM();
+                VM& vm = GetObject()->GetVM();
 
                 vm.ThrowTypeError(VM::Error(VM::eConvertToPrimitiveError, vm
                     SF_DEBUG_ARG(vm.GetValueTraits(v).GetName().ToCStr())
@@ -1081,7 +1082,7 @@ CheckResult Value::Convert2String(StringBuffer& result) const
     case kNumber:
         {
             char  buffer[40];
-            UPInt length = SF_ECMA_dtostr(buffer, sizeof(buffer), value.VNumber);
+            UPInt length = SF_ECMA_dtostr(buffer, sizeof(buffer), value);
             result.AppendString(buffer, length);
         }      
         break;
@@ -1104,7 +1105,7 @@ CheckResult Value::Convert2String(StringBuffer& result) const
             Call ToString(Result(1)).
             Return Result(2).
             */
-            if (!Convert2PrimitiveValueUnsafe(v, hintString))
+            if (!Convert2PrimitiveValueUnsafe(*GetObject()->GetVM().GetStringManager().GetStringManager(), v, hintString))
                 return false;
 
             if (!v.Convert2String(result))
@@ -1400,10 +1401,10 @@ CheckResult AbstractLessThan(Boolean3& result, const Value& l, const Value& r)
     Value _1;
     Value _2;
 
-    if (!l.Convert2PrimitiveValueUnsafe(_1, Value::hintNumber))
+    if (!l.Convert2PrimitiveValueUnsafeHintNumber(_1))
         return false;
 
-    if (!r.Convert2PrimitiveValueUnsafe(_2, Value::hintNumber))
+    if (!r.Convert2PrimitiveValueUnsafeHintNumber(_2))
         return false;
 
     Value::KindType _1k = _1.GetKind();
@@ -1460,7 +1461,7 @@ bool StrictEqual(const Value& x, const Value& y)
     {
         if (x.IsNumeric() && y.IsNumeric())
         {
-            if (x.IsUInt())
+            if (x.IsUIntStrict())
             {
                 switch (y.GetKind())
                 {
@@ -1475,7 +1476,7 @@ bool StrictEqual(const Value& x, const Value& y)
                     break;
                 }
             }
-            else if(x.IsInt())
+            else if(x.IsIntStrict())
             {
                 switch (y.GetKind())
                 {
@@ -1618,7 +1619,7 @@ bool IsXMLListObject(Object* obj)
 CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
 {
 #ifdef GFX_ENABLE_XML
-    // See E4X 11.5.1.
+    // See ECMA-357 11.5.1.
     // Step 1
     if (IsXMLListObject(l))
     {
@@ -1640,6 +1641,16 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
     Value::KindType lk = l.GetKind();
     Value::KindType rk = r.GetKind();
 
+    // Normalize kObject, kClass, kFunction, and kThunkFunction.
+    // They all get converted to kObject.
+    {
+        if (l.IsObject())
+            lk = Value::kObject;
+
+        if (r.IsObject())
+            rk = Value::kObject;
+    }
+
     if (lk == rk)
     {
         switch(lk)
@@ -1648,19 +1659,7 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
             result = true;
             return true;
         case Value::kNumber:
-            if (l.IsNaN() || r.IsNaN())
-            {
-                result = false;
-                return true;
-            }
-
-            if (l.AsNumber() == r.AsNumber())
-            {
-                result = true;
-                return true;
-            }
-
-            result = false;
+            result = l.AsNumber() == r.AsNumber();
             return true;
         case Value::kString:
             result = l.AsStringNode() == r.AsStringNode();
@@ -1717,7 +1716,7 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
 #ifdef GFX_ENABLE_XML
         if (result == false)
         {
-            //  E4X 11.5.1.
+            //  ECMA-357 11.5.1.
             //  3.a.
             if (IsXMLObject(l) && IsXMLObject(r))
             {
@@ -1729,7 +1728,7 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
 
                 return xmls.EqualsXML(result, lxml, rxml);
             }
-            //  E4X 11.5.1.
+            //  ECMA-357 11.5.1.
             //  3.b.
             else if (IsQNameObject(l) && IsQNameObject(r))
             {
@@ -1743,22 +1742,64 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
             }
         }
 #endif
-
-        return true;
     }
     else
     {
-        // Combination: Undefined + Null (E4X 11.5.1 steps 5 and 6)
+#ifdef GFX_ENABLE_XML
+        // XML (ECMA-357 11.5.1 step 4)
+        if (IsXMLObject(l))
         {
-            if ((Value::IsUndefined(lk) && r.IsNull()) ||
-                (Value::IsUndefined(rk) && l.IsNull()))
+            Object* obj = l.GetObject();
+            const XMLSupport& xmls = obj->GetVM().GetXMLSupport();
+            Instances::fl::XML& lxml = static_cast<Instances::fl::XML&>(*obj);
+            bool stop = true;
+
+            if (!xmls.EqualsXML(stop, result, lxml, r))
+                // Exception
+                return false;
+
+            if (stop)
+                return true;
+        }
+        else if (IsXMLObject(r))
+        {
+            Object* obj = r.GetObject();
+            const XMLSupport& xmls = obj->GetVM().GetXMLSupport();
+            Instances::fl::XML& rxml = static_cast<Instances::fl::XML&>(*obj);
+            bool stop = true;
+
+            if (!xmls.EqualsXML(stop, result, rxml, l))
+                // Exception
+                return false;
+
+            if (stop)
+                return true;
+        }
+#endif
+
+        const bool r_IsNull = r.IsNull();
+        const bool l_IsNull = l.IsNull();
+
+        // Combination: Undefined + Null (ECMA-357 11.5.1 steps 5 and 6)
+        // (ECMA-262 11.9.3 steps 2 and 3)
+        // Actually, this is a more generic case.
+        // Combination: Undefined + Object
+        {
+            if (Value::IsUndefined(lk) && Value::IsObject(rk))
             {
-                result = true;
+                result = r_IsNull;
+                return true;
+            }
+
+            if (Value::IsObject(lk) && Value::IsUndefined(rk))
+            {
+                result = l_IsNull;
                 return true;
             }
         }
 
-        // Combination: Number + String (E4X 11.5.1 steps 7 and 8)
+        // Combination: Number + String (ECMA-357 11.5.1 steps 7 and 8)
+        // (ECMA-262 11.9.3 steps 4 and 5)
         {
             if (Value::IsNumber(lk) && Value::IsString(rk))
             {
@@ -1783,145 +1824,11 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
             }
         }
 
-#ifdef GFX_ENABLE_XML
-        // XML (E4X 11.5.1 step 4)
-        if (IsXMLObject(l))
+        // Combination: Boolean/int/uint + something else.
+        // (ECMA-262 11.9.3 steps 6 and 7)
+        // Also handles kInt and kUInt.
         {
-            Object* obj = l.GetObject();
-            const XMLSupport& xmls = obj->GetVM().GetXMLSupport();
-            Instances::fl::XML& lxml = static_cast<Instances::fl::XML&>(*obj);
-            bool stop = true;
-
-            if (!xmls.EqualsXML(stop, result, lxml, r))
-                // Exception
-                return false;
-
-            if (stop)
-                return true;
-
-//             if (lxml.HasSimpleContent())
-//             {
-//                 StringBuffer lbuf(Memory::GetHeapByAddress(l.GetObject()));
-//                 StringManager& sm = lxml.GetStringManager();
-//                 ASString rstr = sm.CreateEmptyString();
-// 
-//                 lxml.ToString(lbuf, 0);
-//                 if (!r.Convert2String(rstr))
-//                     return false;
-// 
-//                 result = strncmp(lbuf.ToCStr(), rstr.ToCStr(), rstr.GetSize()) == 0;
-//                 return true;
-//             }
-        }
-        else if (IsXMLObject(r))
-        {
-            Object* obj = r.GetObject();
-            const XMLSupport& xmls = obj->GetVM().GetXMLSupport();
-            Instances::fl::XML& rxml = static_cast<Instances::fl::XML&>(*obj);
-            bool stop = true;
-
-            if (!xmls.EqualsXML(stop, result, rxml, l))
-                // Exception
-                return false;
-
-            if (stop)
-                return true;
-
-//             Instances::fl::XML& rxml = static_cast<Instances::fl::XML&>(*r.GetObject());
-//             if (rxml.HasSimpleContent())
-//             {
-//                 StringBuffer rbuf(Memory::GetHeapByAddress(r.GetObject()));
-//                 StringManager& sm = rxml.GetStringManager();
-//                 ASString lstr = sm.CreateEmptyString();
-// 
-//                 rxml.ToString(rbuf, 0);
-//                 if (!l.Convert2String(lstr))
-//                     return false;
-// 
-//                 result = strncmp(rbuf.ToCStr(), lstr.ToCStr(), lstr.GetSize()) == 0;
-//                 return true;
-//             }
-        }
-#endif
-
-        // Combination: Undefined + Object
-        // !!! NOT IN standard. May not work correctly.
-        {
-            if (Value::IsUndefined(lk) && Value::IsObject(rk))
-            {
-                result = r.IsNull();
-                return true;
-            }
-
-            if (Value::IsObject(lk) && Value::IsUndefined(rk))
-            {
-                result = l.IsNull();
-                return true;
-            }
-        }
-
-        // Combination: Number/String + Object
-        {
-            if ((Value::IsString(lk) || Value::IsNumber(lk)) && Value::IsObject(rk))
-            {
-                if (r.IsNull())
-                {
-                    result = false;
-                    return true;
-                }
-
-                Value v;
-                if (!r.Convert2PrimitiveValueUnsafe(v))
-                    // Exception.
-                    return false;
-
-                return AbstractEqual(result, l, v);
-            }
-
-            if (Value::IsObject(lk) && (Value::IsString(rk) || Value::IsNumber(rk)))
-            {
-                if (l.IsNull())
-                {
-                    result = false;
-                    return true;
-                }
-
-                Value v;
-                if (!l.Convert2PrimitiveValueUnsafe(v))
-                    // Exception.
-                    return false;
-
-                return AbstractEqual(result, v, r);
-            }
-        }
-
-        switch (lk)
-        {
-        case Value::kThunk:
-        case Value::kMethodInd:
-        case Value::kThunkClosure:
-        case Value::kVTableIndClosure:
-            result = false;
-            return true;
-        default:
-            break;
-        }
-
-        switch (rk)
-        {
-        case Value::kThunk:
-        case Value::kMethodInd:
-        case Value::kThunkClosure:
-        case Value::kVTableIndClosure:
-            result = false;
-            return true;
-        default:
-            break;
-        }
-
-        // Combination: Not Number
-        {
-            if (!Value::IsNumber(lk))
+            if (Value::IsBool(lk) || Value::IsInt(lk))
             {
                 Value::Number v;
                 if (!l.Convert2NumberInline(v))
@@ -1930,7 +1837,7 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
                 return AbstractEqual(result, Value(v), r);
             }
 
-            if (!Value::IsNumber(rk))
+            if (Value::IsBool(rk) || Value::IsInt(rk))
             {
                 Value::Number v;
                 if (!r.Convert2NumberInline(v))
@@ -1939,6 +1846,45 @@ CheckResult AbstractEqual(bool& result, const Value& l, const Value& r)
                 return AbstractEqual(result, l, Value(v));
             }
         }
+
+        // Combination: Number/String + Object
+        // (ECMA-262 11.9.3 steps 8 and 9)
+        {
+            if ((Value::IsString(lk) || Value::IsNumber(lk)) && Value::IsObject(rk))
+            {
+                if (r_IsNull)
+                {
+                    result = false;
+                    return true;
+                }
+
+                Value v;
+                if (!r.Convert2PrimitiveValueUnsafe(*r.GetObject()->GetStringManager().GetStringManager(), v))
+                    // Exception.
+                    return false;
+
+                return AbstractEqual(result, l, v);
+            }
+
+            if (Value::IsObject(lk) && (Value::IsString(rk) || Value::IsNumber(rk)))
+            {
+                if (l_IsNull)
+                {
+                    result = false;
+                    return true;
+                }
+
+                Value v;
+                if (!l.Convert2PrimitiveValueUnsafe(*l.GetObject()->GetStringManager().GetStringManager(), v))
+                    // Exception.
+                    return false;
+
+                return AbstractEqual(result, v, r);
+            }
+        }
+
+        // (ECMA-262 11.9.3 step 10)
+        result = false;
     }
 
     // No exceptions so far.

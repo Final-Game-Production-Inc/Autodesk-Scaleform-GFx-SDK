@@ -32,6 +32,11 @@ namespace fl_gfx
     extern const TypeInfo DisplayObjectExTI;
     extern const ClassInfo DisplayObjectExCI;
 } // namespace fl_gfx
+namespace fl_display
+{
+    extern const TypeInfo DisplayObjectTI;
+    extern const ClassInfo DisplayObjectCI;
+} // namespace fl_display
 namespace fl
 {
     extern const TypeInfo BooleanTI;
@@ -62,7 +67,7 @@ namespace Classes { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class DisplayObjectEx : public Traits
+    class DisplayObjectEx : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -70,12 +75,16 @@ namespace ClassTraits { namespace fl_gfx
 #endif
     public:
         typedef Classes::fl_gfx::DisplayObjectEx ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        DisplayObjectEx(VM& vm);
+        DisplayObjectEx(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
-        enum { ThunkInfoNum = 6 };
+        enum { ThunkInfoNum = 8 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[20];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 
@@ -118,6 +127,10 @@ namespace Classes { namespace fl_gfx
             mid_getRendererString, 
             mid_setRendererFloat, 
             mid_getRendererFloat, 
+
+			// Scaleform 4.5.32 Update
+            mid_setInvertedMask,
+            mid_getInvertedMask
         };
         void disableBatching(const Value& result, Instances::fl_display::DisplayObject* o, bool b);
         void isBatchingDisabled(bool& result, Instances::fl_display::DisplayObject* o);
@@ -125,6 +138,10 @@ namespace Classes { namespace fl_gfx
         void getRendererString(ASString& result, Instances::fl_display::DisplayObject* o);
         void setRendererFloat(const Value& result, Instances::fl_display::DisplayObject* o, Value::Number f);
         void getRendererFloat(Value::Number& result, Instances::fl_display::DisplayObject* o);
+
+        // Scaleform 4.5.32 Update
+        void setInvertedMask(const Value& result, Instances::fl_display::DisplayObject* o, bool b);
+        void getInvertedMask(bool& result, Instances::fl_display::DisplayObject* o);
 
         // C++ friendly wrappers for AS3 methods.
         void disableBatching(Instances::fl_display::DisplayObject* o, bool b)
@@ -155,6 +172,18 @@ namespace Classes { namespace fl_gfx
         {
             Value::Number result;
             getRendererFloat(result, o);
+            return result;
+        }
+
+        // 4.5.32 Adding
+        void setInvertedMask(Instances::fl_display::DisplayObject* o, bool b)
+        {
+            disableBatching(Value::GetUndefined(), o, b);
+        }
+        bool getInvertedMask(Instances::fl_display::DisplayObject* o)
+        {
+            bool result;
+            getInvertedMask(result, o);
             return result;
         }
 

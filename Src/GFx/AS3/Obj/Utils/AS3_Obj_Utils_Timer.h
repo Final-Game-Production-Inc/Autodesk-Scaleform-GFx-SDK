@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -175,7 +176,7 @@ namespace Instances { namespace fl_utils
 
 namespace InstanceTraits { namespace fl_utils
 {
-    class Timer : public CTraits
+    class Timer : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -201,6 +202,8 @@ namespace InstanceTraits { namespace fl_utils
 
         enum { ThunkInfoNum = 9 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[11];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -213,17 +216,19 @@ namespace InstanceTraits { namespace fl_utils
     
 namespace ClassTraits { namespace fl_utils
 {
-    class Timer : public Traits
+    class Timer : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Timer"; }
 #endif
     public:
-        typedef Classes::fl_utils::Timer ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_utils::Timer InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Timer(VM& vm);
+        Timer(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

@@ -7,6 +7,7 @@ Created     :   Noveber, 2008
 Authors     :   Michael Antonov, Dmitry Polenur, Maxim Didenko, 
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -17,7 +18,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef INC_FXHUD_H
 #define INC_FXHUD_H
 
-#include "../Common/FxPlayerAppBase.h"
 #include "GFx_Kernel.h"
 #include "GFx_Render.h"
 
@@ -65,7 +65,8 @@ public:
     void Clear();
 
     void SetViewport(const SF::Render::Viewport& viewDesc);
-    //void SetRenderer(Render::Renderer* pren);	
+    void SetStickMode(const int stickMode);
+    //void SetRenderer(Render::Renderer* pren); 
     void  Update();
 
     void SetHUDText(String text, bool bNeedsInit);
@@ -84,21 +85,21 @@ private:
     //Ptr<Movie>              pMovie;
     Render::Viewport            mViewport;
     FxHUDDataProvider*          pDataProvider;
-	Render::Context             RenderContext;
+    Render::Context             RenderContext;
 
 #ifdef GFX_ENABLE_DRAWTEXT
-    Ptr<GFx::DrawTextManager>	pDrawTextManager;
-    Ptr<GFx::DrawText>			pHUDText, pMsgText;
+    Ptr<GFx::DrawTextManager>   pDrawTextManager;
+    Ptr<GFx::DrawText>          pHUDText, pMsgText;
 #ifdef FXPLAYER_LOGO    
-    Ptr<GFx::DrawText>			pLogoText;
+    Ptr<GFx::DrawText>          pLogoText;
 #endif
 #endif // GFC_NO_DRAWTEXT_SUPPORT
 
-    Info                    CurrentTab;
-    Info					LastTab; // Used to to restore tab after reopening HUD
+    Info                        CurrentTab;
+    Info                        LastTab; // Used to to restore tab after reopening HUD
 
-    static const unsigned		HUD_TEXT_X = 4;
-    static const unsigned		HUD_TEXT_Y = 4;
+    static const unsigned       HUD_TEXT_X = 4;
+    static const unsigned       HUD_TEXT_Y = 4;
 };
 
 
@@ -136,15 +137,17 @@ public:
 
 public:
     void SetMovie(Movie* pmovie);
-	bool isMovieLoaded()  const {return pMovie ? 1 : 0;}
+    bool isMovieLoaded()  const {return pMovie ? 1 : 0;}
 
     void UpdateRendererStats();
     void UpdatePerformanceStats(bool resetOnly);
-	void UpdatePerformanceStats(UInt64 advanceT, UInt64 displayT, float avgFps);
+    void UpdatePerformanceStats(UInt64 advanceT, UInt64 displayT, float avgFps);
 
     FxRenderThread* GetRenderThread() const { return pRenderer; }
-	void SetRenderThread(FxRenderThread* pt) {pRenderer = pt;}
+    void SetRenderThread(FxRenderThread* pt) {pRenderer = pt;}
 
+    void SetStickMode(const int stickMode) { StickMode = stickMode; }
+    
     void GetHUDStrings(FxHUD::Info, String* phudString, String* pmsgString);
     bool SaveStatistics(const String& filename, bool xmlFormat, MemoryHeap::MemReportType reportType = MemoryHeap::MemReportHeapDetailed);
     void PrintStatistics(bool xmlFormat, MemoryHeap::MemReportType reportType = MemoryHeap::MemReportHeapDetailed);
@@ -162,7 +165,7 @@ private:
         unsigned    Primitives;
         unsigned    Masks;
         unsigned    Filters;
-		unsigned    Meshes;
+        unsigned    Meshes;
 
         RenderStats()       { Clear();}
         void    Clear()     { Triangles = 0; Lines = 0; Primitives = 0; Masks = 0; Filters = 0; Meshes = 0;}
@@ -193,6 +196,9 @@ private:
     RenderStats             LastRenderStats; 
     PerformanceStats        LastPerformanceStats;
     Render::MeshCache::Stats LastMeshCacheStats;
+
+    int                             StickMode;
+    static const char*              PadStickStrings[];
 
     void                    GetPerformanceString(StringBuffer& report, bool xmlFormat);
 };

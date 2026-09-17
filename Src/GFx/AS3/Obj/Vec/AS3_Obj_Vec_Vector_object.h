@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -40,6 +41,14 @@ namespace fl
     extern const ClassInfo BooleanCI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
+    extern const TypeInfo FunctionTI;
+    extern const ClassInfo FunctionCI;
+    extern const TypeInfo ObjectTI;
+    extern const ClassInfo ObjectCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
+    extern const TypeInfo NumberTI;
+    extern const ClassInfo NumberCI;
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
 } // namespace fl
@@ -96,6 +105,8 @@ namespace Instances { namespace fl_vec
         typedef Value ValueType;
 #endif
 
+        Vector_object(InstanceTraits::Traits& t, UInt32 length, bool fixed);
+
         void Append(const SelfType& other) { V.Append(other.V); }
         void Append(unsigned argc, const Value* const argv) { V.Append(argc, argv, GetEnclosedClassTraits()); }
         void Append(const Instances::fl::Array& arr) { V.Append(arr, GetEnclosedClassTraits()); }
@@ -113,6 +124,7 @@ namespace Instances { namespace fl_vec
 
         const ClassTraits::Traits& GetEnclosedClassTraits() const;
         const ArrayBase& GetArrayBase() const { return V; }
+        const VectorBase<ValueType>& GetArray() const { return V; }
 
     public:
         virtual void AS3Constructor(unsigned argc, const Value* argv);
@@ -122,6 +134,7 @@ namespace Instances { namespace fl_vec
         AbsoluteIndex GetNextArrayIndex(AbsoluteIndex ind) const { return V.GetNextArrayIndex(ind); }
         void GetNextValue(Value& value, GlobalSlotIndex ind) const { V.GetNextValue(value, ind); }
 
+        void SetUnsafe(UInt32 ind, const ValueType& v) { V.SetUnsafeT(ind, v); }
         CheckResult Set(UInt32 ind, const Value& v, const ClassTraits::Traits& tr) { return V.Set(ind, v, tr); }
         void Get(UInt32 ind, Value& v) const { V.Get(ind, v); }
         CheckResult RemoveAt(UInt32 ind) { return V.RemoveAt(ind); }
@@ -134,6 +147,7 @@ namespace Instances { namespace fl_vec
         virtual CheckResult GetProperty(const Multiname& prop_name, Value& value);
         virtual void GetDynamicProperty(AbsoluteIndex ind, Value& value);
         virtual CheckResult DeleteProperty(const Multiname& prop_name);
+        virtual bool HasProperty(const Multiname& prop_name, bool check_prototype);
 
 //##protect##"instance$methods"
 
@@ -183,7 +197,7 @@ namespace Instances { namespace fl_vec
         void AS3reverse(SPtr<Instances::fl_vec::Vector_object>& result);
         void AS3shift(Value& result);
         void AS3slice(Value& result, unsigned argc, const Value* const argv);
-        void AS3sort(Value& result, unsigned argc, const Value* const argv);
+        void AS3sort(SPtr<Instances::fl_vec::Vector_object>& result, const Value& comparefn);
         void AS3splice(Value& result, unsigned argc, const Value* const argv);
         void AS3indexOf(SInt32& result, const Value& value, SInt32 from = 0);
         void AS3lastIndexOf(SInt32& result, const Value& value, SInt32 from = 0x7fffffff);
@@ -273,6 +287,12 @@ namespace Instances { namespace fl_vec
             AS3shift(result);
             return result;
         }
+        SPtr<Instances::fl_vec::Vector_object> AS3sort(const Value& comparefn)
+        {
+            SPtr<Instances::fl_vec::Vector_object> result;
+            AS3sort(result, comparefn);
+            return result;
+        }
         SInt32 AS3indexOf(const Value& value, SInt32 from = 0)
         {
             SInt32 result;
@@ -322,7 +342,14 @@ namespace InstanceTraits { namespace fl_vec
 
         enum { ThunkInfoNum = 23 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[43];
+        static const Abc::ConstValue dva[2];
 //##protect##"instance_traits$methods"
+        static Pickable<Instances::fl_vec::Vector_object> MakeInstance(Vector_object& t, UInt32 length, bool fixed)
+        {
+            return Pickable<Instances::fl_vec::Vector_object>(new(t.Alloc()) Instances::fl_vec::Vector_object(t, length, fixed));
+        }
 //##protect##"instance_traits$methods"
 
 //##protect##"instance_traits$data"
@@ -334,7 +361,7 @@ namespace InstanceTraits { namespace fl_vec
     
 namespace ClassTraits { namespace fl_vec
 {
-    class Vector_object : public Traits
+    class Vector_object : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -342,9 +369,11 @@ namespace ClassTraits { namespace fl_vec
 #endif
     public:
         typedef Classes::fl_vec::Vector_object ClassType;
+        typedef InstanceTraits::fl_vec::Vector_object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Vector_object(VM& vm);
+        Vector_object(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
         Vector_object(VM& vm, const ASString& n, const ClassTraits::Traits& ect);

@@ -6,6 +6,7 @@ Created     :   March 13, 2008
 Authors     :   Michael Antonov, Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -179,6 +180,7 @@ FxPlayerTiny::FxPlayerTiny(int argc, char *argv[])
     hInstance       = 0;
     hDC             = 0;
     hGLRC           = 0;
+    pCommandQueue   = 0;
 
     Wireframe       = 0; 
     ControlKeyDown  = 0;
@@ -272,15 +274,8 @@ int FxPlayerTiny::Run()
 	Ptr<FontProviderWin32> fontProvider = *new FontProviderWin32(::GetDC(0));
 	loader.SetFontProvider(fontProvider);
 
-    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry();
-#ifdef SF_ENABLE_LIBJPEG
-    pimgReg->AddHandler(&SF::Render::JPEG::FileReader::Instance);
-#endif
-#ifdef SF_ENABLE_LIBPNG
-    pimgReg->AddHandler(&SF::Render::PNG::FileReader::Instance);
-#endif
-    pimgReg->AddHandler(&SF::Render::TGA::FileReader::Instance);
-    pimgReg->AddHandler(&SF::Render::DDS::FileReader::Instance);
+    // Image file handling registry (PNG, etc).
+    Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry(GFx::ImageFileHandlerRegistry::AddDefaultHandlers);
     loader.SetImageFileHandlerRegistry(pimgReg);
 
 	Ptr<ASSupport> pAS2Support = *new GFx::AS2Support();
@@ -293,7 +288,7 @@ int FxPlayerTiny::Run()
     pCommandQueue = queue;
 
     // Create renderer.
-	pRenderHAL = *new Render::GL::HAL;
+	pRenderHAL = *new Render::GL::HAL(pCommandQueue);
 	if (!(pRenderer = *new Render::Renderer2D(pRenderHAL.GetPtr())))
 		return 1;
 
@@ -303,7 +298,7 @@ int FxPlayerTiny::Run()
 
     // Configure renderer in "Dependent mode", honoring externally
     // configured device settings.
-    if (!pRenderHAL->InitHAL(GL::HALInitParams()))
+    if (!pRenderHAL->InitHAL(GL::HALInitParams(0, Scaleform::GetCurrentThreadId())))
         return 1;
 
     // Set renderer on loader so that it is also applied to all children.
@@ -545,18 +540,18 @@ bool FxPlayerTiny::SetupWindow(const String& name)
     RECT r = { 100,100, 100 + Width, 100 + Height };
     ::AdjustWindowRect(&r, WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU, 0);
 
-    HWND hWnd = CreateWindow(pWndClassName, name.ToCStr(),
+    HWND hiWnd = CreateWindow(pWndClassName, name.ToCStr(),
         WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU,
         r.left, r.top, r.right-r.left, r.bottom - r.top,
         GetDesktopWindow(), NULL, wc.hInstance, (LPVOID) this );
-    if (!hWnd)
+    if (!hiWnd)
     {
         MessageBox(NULL,"Unable to create window", "Error", MB_OK | MB_ICONEXCLAMATION);      
         return 0;
     }
 
     // get a device context
-    hDC = GetDC(hWnd);
+    hDC = GetDC(hiWnd);
     if (!hDC)
     {
         MessageBox(NULL,"Unable to create device context", "Error", MB_OK | MB_ICONEXCLAMATION);      

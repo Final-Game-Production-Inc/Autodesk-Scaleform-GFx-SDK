@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,34 +29,56 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_media
 {
+    // const UInt16 Camera_tito[19] = {
+    //    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 23, 26, 
+    // };
+    const TypeInfo* Camera_tit[29] = {
+        &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::NumberTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+    };
+    const Abc::ConstValue Camera_dva[2] = {
+        {Abc::CONSTANT_True, 0}, 
+        {Abc::CONSTANT_Int, 3}, 
+    };
     const ThunkInfo Camera_ti[19] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "activityLevel", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "bandwidth", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "currentFPS", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::NumberTI, "fps", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "index", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "keyFrameInterval", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "loopback", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "motionLevel", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "motionTimeout", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::BooleanTI, "muted", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "name", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "quality", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::int_TI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, NULL, "setKeyFrameInterval", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "setLoopback", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {ThunkInfo::EmptyFunc, NULL, "setMode", NULL, Abc::NS_Public, CT_Method, 3, 4},
-        {ThunkInfo::EmptyFunc, NULL, "setMotionLevel", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {ThunkInfo::EmptyFunc, NULL, "setQuality", NULL, Abc::NS_Public, CT_Method, 2, 2},
+        {ThunkInfo::EmptyFunc, &Camera_tit[0], "activityLevel", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[1], "bandwidth", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[2], "currentFPS", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[3], "fps", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[4], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[5], "index", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[6], "keyFrameInterval", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[7], "loopback", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[8], "motionLevel", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[9], "motionTimeout", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[10], "muted", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[11], "name", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[12], "quality", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[13], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[14], "setKeyFrameInterval", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[16], "setLoopback", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &Camera_tit[18], "setMode", NULL, Abc::NS_Public, CT_Method, 3, 4, 0, 1, &Camera_dva[0]},
+        {ThunkInfo::EmptyFunc, &Camera_tit[23], "setMotionLevel", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 1, &Camera_dva[1]},
+        {ThunkInfo::EmptyFunc, &Camera_tit[26], "setQuality", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -76,27 +99,39 @@ namespace Classes { namespace fl_media
 
 namespace ClassTraits { namespace fl_media
 {
-    const ThunkInfo Camera_ti[1] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl_media::CameraTI, "getCamera", NULL, Abc::NS_Public, CT_Method, 0, 1},
+    // const UInt16 Camera_tito[1] = {
+    //    0, 
+    // };
+    const TypeInfo* Camera_tit[2] = {
+        &AS3::fl_media::CameraTI, &AS3::fl::StringTI, 
     };
-    Camera::Camera(VM& vm)
-    : Traits(vm, AS3::fl_media::CameraCI)
+    const Abc::ConstValue Camera_dva[1] = {
+        {Abc::CONSTANT_Null, 0}, 
+    };
+    const ThunkInfo Camera_ti[1] = {
+        {ThunkInfo::EmptyFunc, &Camera_tit[0], "getCamera", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 1, &Camera_dva[0]},
+    };
+
+    Camera::Camera(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::Camera::Camera()"
 //##protect##"ClassTraits::Camera::Camera()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::EventDispatcher(vm, AS3::fl_media::CameraCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_media::Camera(*this));
 
     }
 
     Pickable<Traits> Camera::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Camera(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Camera(vm, AS3::fl_media::CameraCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_media::CameraCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -107,6 +142,11 @@ namespace fl_media
 {
     const TypeInfo CameraTI = {
         TypeInfo::CompileTime | TypeInfo::Final | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_media::Camera::InstanceType),
+        1,
+        0,
+        19,
+        0,
         "Camera", "flash.media", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -114,10 +154,6 @@ namespace fl_media
     const ClassInfo CameraCI = {
         &CameraTI,
         ClassTraits::fl_media::Camera::MakeClassTraits,
-        1,
-        0,
-        19,
-        0,
         ClassTraits::fl_media::Camera_ti,
         NULL,
         InstanceTraits::fl_media::Camera_ti,

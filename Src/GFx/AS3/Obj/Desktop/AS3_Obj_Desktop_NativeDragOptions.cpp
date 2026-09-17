@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_desktop
 {
@@ -56,8 +51,14 @@ namespace Instances { namespace fl_desktop
 
 namespace InstanceTraits { namespace fl_desktop
 {
+    // const UInt16 NativeDragOptions::tito[NativeDragOptions::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* NativeDragOptions::tit[1] = {
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo NativeDragOptions::ti[NativeDragOptions::ThunkInfoNum] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &NativeDragOptions::tit[0], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
     const MemberInfo NativeDragOptions::mi[NativeDragOptions::MemberInfoNum] = {
         {"allowCopy", NULL, OFFSETOF(Instances::fl_desktop::NativeDragOptions, allowCopy), Abc::NS_Public, SlotInfo::BT_Boolean, 0},
@@ -67,11 +68,10 @@ namespace InstanceTraits { namespace fl_desktop
 
 
     NativeDragOptions::NativeDragOptions(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::NativeDragOptions::NativeDragOptions()"
 //##protect##"InstanceTraits::NativeDragOptions::NativeDragOptions()"
-        SetMemSize(sizeof(Instances::fl_desktop::NativeDragOptions));
 
     }
 
@@ -88,24 +88,27 @@ namespace InstanceTraits { namespace fl_desktop
 
 namespace ClassTraits { namespace fl_desktop
 {
-    NativeDragOptions::NativeDragOptions(VM& vm)
-    : Traits(vm, AS3::fl_desktop::NativeDragOptionsCI)
+
+    NativeDragOptions::NativeDragOptions(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::NativeDragOptions::NativeDragOptions()"
 //##protect##"ClassTraits::NativeDragOptions::NativeDragOptions()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_desktop::NativeDragOptions(vm, AS3::fl_desktop::NativeDragOptionsCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> NativeDragOptions::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) NativeDragOptions(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) NativeDragOptions(vm, AS3::fl_desktop::NativeDragOptionsCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_desktop::NativeDragOptionsCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -116,6 +119,11 @@ namespace fl_desktop
 {
     const TypeInfo NativeDragOptionsTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_desktop::NativeDragOptions::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_desktop::NativeDragOptions::ThunkInfoNum,
+        InstanceTraits::fl_desktop::NativeDragOptions::MemberInfoNum,
         "NativeDragOptions", "flash.desktop", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -123,10 +131,6 @@ namespace fl_desktop
     const ClassInfo NativeDragOptionsCI = {
         &NativeDragOptionsTI,
         ClassTraits::fl_desktop::NativeDragOptions::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_desktop::NativeDragOptions::ThunkInfoNum,
-        InstanceTraits::fl_desktop::NativeDragOptions::MemberInfoNum,
         NULL,
         NULL,
         InstanceTraits::fl_desktop::NativeDragOptions::ti,

@@ -6,6 +6,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,6 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/D3D9/D3D9_Texture.h"
 #include "Render/D3D9/D3D9_Shader.h"    // ShaderManager
 #include "Render/Render_ShaderHAL.h"    // Must be included after platform specific shader includes.
+#include "Render/Render_Profiler.h"
 
 #include <d3d9.h>
 
@@ -35,9 +37,6 @@ enum HALConfigFlags
     // - assumes that Direct3D is already in scene by the time BeginDisplay/EndDisplay are called
     // - allows user to manage their own begin/end scene calls 
     HALConfig_NoSceneCalls          = 0x00000001,
-
-    // Use D3DUSAGE_DYNAMIC updaeable textures for compatibility with some broken drivers
-    HALConfig_UseDynamicTex         = 0x00000004,
 
     // Use static buffers in the mesh cache. This has no visible impact, however, it may
     // have performance implications. Rendering from static buffers generally has faster 
@@ -72,11 +71,27 @@ struct HALInitParams : public Render::HALInitParams
     TextureManager* GetTextureManager() const       { return (TextureManager*) pTextureManager.GetPtr(); }
 };
 
-
-
-class HAL : public Render::ShaderHAL<ShaderManager, ShaderInterface>
+// D3D9 MatrixState overrides GetFullViewportMatrix to deal with 1/2 pixel center offset.
+class MatrixState : public Render::MatrixState
 {
 public:
+    MatrixState(Render::HAL* phal) : Render::MatrixState(phal) { }
+    MatrixState() : Render::MatrixState() { }
+    virtual Matrix2F&   GetFullViewportMatrix(const Size<int>& rtSize)
+    {
+        ModifiedFullViewportMVP = FullViewportMVP;
+        ModifiedFullViewportMVP.Tx() -= 1.0f/rtSize.Width;   // D3D9 1/2 pixel center offset
+        ModifiedFullViewportMVP.Ty() += 1.0f/rtSize.Height;
+        return ModifiedFullViewportMVP;
+    }
+protected:
+    mutable Matrix2F ModifiedFullViewportMVP;
+};
+
+class HAL: public Render::ShaderHAL<ShaderManager, ShaderInterface>
+{
+public:
+    typedef Render::ShaderHAL<ShaderManager, ShaderInterface> BaseHAL;
 
     // Direct3D Device we are using.
     IDirect3DDeviceX*        pDevice;
@@ -85,6 +100,7 @@ public:
     D3DPRESENT_PARAMETERS    PresentParams;
 
     MeshCache                Cache;
+    RenderSync               RSync;
 
     Ptr<TextureManager>      pTextureManager;
     
@@ -96,7 +112,7 @@ public:
 
 public:    
     
-    HAL(ThreadCommandQueue* commandQueue = 0);
+    HAL(ThreadCommandQueue* commandQueue);
     virtual ~HAL();
     
     // *** HAL Initialization / Shutdown Logic
@@ -122,72 +138,31 @@ public:
     // values of VP, ViewRect and ViewportValid.
     virtual void        updateViewport();
 
-
-    virtual void        DrawProcessedPrimitive(Primitive* pprimitive,
-                                               PrimitiveBatch* pstart, PrimitiveBatch *pend);
-
-    virtual void        DrawProcessedComplexMeshes(ComplexMesh* p,
-                                                   const StrideArray<HMatrix>& matrices);
     
     // Stream Source modification
+    virtual UPInt       setVertexArray(PrimitiveBatch* pbatch, Render::MeshCacheItem* pmesh);
+    virtual UPInt       setVertexArray(const ComplexMesh::FillRecord& fr, unsigned formatIndex, Render::MeshCacheItem* pmesh);
+    virtual void        setLinearStreamSource(PrimitiveBatch::BatchType type);
+    virtual void        setInstancedStreamSource(UPInt instanceCount, UPInt verticesPerInstance);
 
-    inline void         setLinearStreamSource(PrimitiveBatch::BatchType type)
-    {
-        if (PrevBatchType >= PrimitiveBatch::DP_Instanced)
-        {
-            pDevice->SetStreamSource(1, NULL, 0, 0);
-            pDevice->SetStreamSourceFreq(0, 1);
-            pDevice->SetStreamSourceFreq(1, 1);
-        }
-        PrevBatchType = type;
-    }
-
-    inline void         setInstancedStreamSource(unsigned instanceCount)
-    {
-        SF_ASSERT(SManager.HasInstancingSupport());
-        if (PrevBatchType != PrimitiveBatch::DP_Instanced)
-        {
-            pDevice->SetStreamSource(1, Cache.pInstancingVertexBuffer.GetPtr(),
-                                     0, sizeof(Render_InstanceData));
-            pDevice->SetStreamSourceFreq(1, (UINT) D3DSTREAMSOURCE_INSTANCEDATA | 1);
-            PrevBatchType = PrimitiveBatch::DP_Instanced;
-        }                
-        pDevice->SetStreamSourceFreq(0, D3DSTREAMSOURCE_INDEXEDDATA | instanceCount);
-    }
-
+    // *** Rasterization
+    virtual void        applyRasterModeImpl(RasterModeType mode);
 
     // *** Mask Support
     // This flag indicates whether we've checked for stencil after BeginDisplay or not.
-    bool            StencilChecked;
-    // This flag is stencil is available, after check.
-    bool            StencilAvailable;
-    bool            MultiBitStencil;
-    bool            DepthBufferAvailable;    
     // Increment op we need for stencil.
     D3DSTENCILOP    StencilOpInc;    
 
-    virtual void    PushMask_BeginSubmit(MaskPrimitive* primitive);
-    virtual void    EndMaskSubmit();
-    virtual void    PopMask();
-
-    virtual void    beginMaskDisplay()
-    {
-        SF_ASSERT(MaskStackTop == 0);
-        StencilChecked  = 0;
-        StencilAvailable= 0;
-        MultiBitStencil = 0;
-        DepthBufferAvailable = 0;
-        HALState &= ~HS_DrawingMask;
-    }
-
-    bool    checkMaskBufferCaps();
+    virtual void    applyDepthStencilMode(DepthStencilMode mode, unsigned stencilRef);
+    virtual bool    checkDepthStencilBufferCaps();
 
     // Background clear helper, expects viewport coordinates.
-    virtual void        clearSolidRectangle(const Rect<int>& r, Color color);
+    virtual void     clearSolidRectangle(const Rect<int>& r, Color color, bool blend);
 
 
     // *** BlendMode
     virtual void        applyBlendModeImpl(BlendMode mode, bool sourceAc = false, bool forceAc = false);
+    virtual void        applyBlendModeEnableImpl(bool enabled);
 
 
 
@@ -203,17 +178,13 @@ public:
     virtual RenderTarget*   CreateRenderTarget(Render::Texture* texture, bool needsStencil);
     virtual RenderTarget*   CreateTempRenderTarget(const ImageSize& size, bool needsStencil);
     virtual bool            SetRenderTarget(RenderTarget* target, bool setState = 1);
-    virtual void            PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags=0);
+    virtual void            PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags=0, Color clearColor=0);
     virtual void            PopRenderTarget(unsigned flags = 0);
     
     virtual bool            createDefaultRenderBuffer();
 
-    // *** Filters
-    virtual void            PushFilters(FilterPrimitive* primitive);
-    virtual void            drawUncachedFilter(const FilterStackEntry& e);
-    virtual void            drawCachedFilter(FilterPrimitive* primitive);
-
     virtual class MeshCache&       GetMeshCache()        { return Cache; }
+    virtual Render::RenderSync*    GetRenderSync()       { return &RSync; }
         
     virtual void    MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFormat,
                                     const VertexFormat** single,
@@ -227,13 +198,16 @@ protected:
 
     virtual void        setBatchUnitSquareVertexStream();
     virtual void        drawPrimitive(unsigned indexCount, unsigned meshCount);
-    void                drawIndexedPrimitive( unsigned indexCount, unsigned vertexCount, unsigned meshCount, UPInt indexOffset, unsigned vertexBaseIndex);
-    void                drawIndexedInstanced( unsigned indexCount, unsigned vertexCount, unsigned meshCount, UPInt indexOffset, unsigned vertexBaseIndex);
+    virtual void        drawIndexedPrimitive( unsigned indexCount, unsigned vertexCount, unsigned meshCount, UPInt indexOffset, UPInt vertexBaseIndex);
+    virtual void        drawIndexedInstanced( unsigned indexCount, unsigned vertexCount, unsigned meshCount, UPInt indexOffset, UPInt vertexBaseIndex);
 
     // Returns whether the profile can render any of the filters contained in the FilterPrimitive.
     // If a profile does not support dynamic looping (Cap_NoDynamicLoops), no blur/shadow type filters
     // can be rendered, in which case this may return false, however, ColorMatrix filters can still be rendered.
     bool                shouldRenderFilters(const FilterPrimitive* prim) const;
+
+    // Creates the D3D9-specific MatrixState object.
+    virtual void        initMatrices();
 
     // Simply sets a quad vertex buffer and draws.
     virtual void        drawScreenQuad();
@@ -241,6 +215,20 @@ protected:
     // *** Events
     virtual Render::RenderEvent& GetEvent(EventType eventType);
 };
+
+// If profile modes are required, use this class instead of HAL itself. If SF_RENDERER_PROFILE is not
+// defined, profile modes will be disabled (by switching this class to be the HAL class).
+#if defined(SF_RENDERER_PROFILE)
+class ProfilerHAL : public Render::ProfilerHAL<HAL>
+{
+public:
+    ProfilerHAL(ThreadCommandQueue* commandQueue) : Render::ProfilerHAL<HAL>(commandQueue)
+    {
+    }
+};
+#else
+typedef HAL ProfilerHAL;
+#endif
 
 //--------------------------------------------------------------------
 // RenderTargetData, used for both RenderTargets and DepthStencilSurface implementations.

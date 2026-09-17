@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -37,14 +38,16 @@ namespace fl
 {
     extern const TypeInfo int_TI;
     extern const ClassInfo int_CI;
-    extern const TypeInfo BooleanTI;
-    extern const ClassInfo BooleanCI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
+    extern const TypeInfo BooleanTI;
+    extern const ClassInfo BooleanCI;
     extern const TypeInfo ArrayTI;
     extern const ClassInfo ArrayCI;
     extern const TypeInfo NumberTI;
     extern const ClassInfo NumberCI;
+    extern const TypeInfo uintTI;
+    extern const ClassInfo uintCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_text
@@ -118,7 +121,7 @@ namespace Instances { namespace fl_text
         void getSelectedText(ASString& result, bool includeLineEndings = false);
         void getText(ASString& result, SInt32 beginIndex, SInt32 endIndex, bool includeLineEndings = false);
         void getTextRunInfo(SPtr<Instances::fl::Array>& result, SInt32 beginIndex, SInt32 endIndex);
-        void hitTestTextNearPos(Value::Number& result, Value::Number x, Value::Number y, Value::Number maxDistance = 0);
+        void hitTestTextNearPos(Value::Number& result, Value::Number x, Value::Number y, Value::Number maxDistance = 0.0);
         void setSelectColor(const Value& result, UInt32 hexColor = 0xFFFF00);
         void setSelected(const Value& result, SInt32 beginIndex, SInt32 endIndex, bool select);
 
@@ -154,7 +157,7 @@ namespace Instances { namespace fl_text
             return result;
         }
         SPtr<Instances::fl::Array> getTextRunInfo(SInt32 beginIndex, SInt32 endIndex);
-        Value::Number hitTestTextNearPos(Value::Number x, Value::Number y, Value::Number maxDistance = 0)
+        Value::Number hitTestTextNearPos(Value::Number x, Value::Number y, Value::Number maxDistance = 0.0)
         {
             Value::Number result;
             hitTestTextNearPos(result, x, y, maxDistance);
@@ -181,7 +184,7 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
-    class TextSnapshot : public CTraits
+    class TextSnapshot : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -207,6 +210,9 @@ namespace InstanceTraits { namespace fl_text
 
         enum { ThunkInfoNum = 9 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[27];
+        static const Abc::ConstValue dva[2];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -219,17 +225,19 @@ namespace InstanceTraits { namespace fl_text
     
 namespace ClassTraits { namespace fl_text
 {
-    class TextSnapshot : public Traits
+    class TextSnapshot : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::TextSnapshot"; }
 #endif
     public:
-        typedef Classes::fl_text::TextSnapshot ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_text::TextSnapshot InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        TextSnapshot(VM& vm);
+        TextSnapshot(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -278,39 +279,64 @@ namespace ClassTraits { namespace fl_gfx
         {"EDGEAA_DISABLE", NULL, OFFSETOF(Classes::fl_gfx::Extensions, EDGEAA_DISABLE), Abc::NS_Public, SlotInfo::BT_UInt, 1},
     };
 
-    const ThunkInfo Extensions::ti[Extensions::ThunkInfoNum] = {
-        {TFunc_Classes_Extensions_enabledSet::Func, NULL, "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_Extensions_enabledGet::Func, &AS3::fl::BooleanTI, "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Extensions_noInvisibleAdvanceSet::Func, NULL, "noInvisibleAdvance", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_Extensions_noInvisibleAdvanceGet::Func, &AS3::fl::BooleanTI, "noInvisibleAdvance", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Extensions_getTopMostEntity::Func, &AS3::fl_display::DisplayObjectTI, "getTopMostEntity", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Classes_Extensions_getMouseTopMostEntity::Func, &AS3::fl_display::DisplayObjectTI, "getMouseTopMostEntity", NULL, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Classes_Extensions_setMouseCursorType::Func, NULL, "setMouseCursorType", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Classes_Extensions_getMouseCursorType::Func, &AS3::fl::StringTI, "getMouseCursorType", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Classes_Extensions_getEdgeAAMode::Func, &AS3::fl::uintTI, "getEdgeAAMode", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Extensions_setEdgeAAMode::Func, NULL, "setEdgeAAMode", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_Extensions_numControllersGet::Func, &AS3::fl::uintTI, "numControllers", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Extensions_visibleRectGet::Func, &AS3::fl_geom::RectangleTI, "visibleRect", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_Extensions_isScaleformGet::Func, &AS3::fl::BooleanTI, "isScaleform", NULL, Abc::NS_Public, CT_Get, 0, 0},
+    // const UInt16 Extensions::tito[Extensions::ThunkInfoNum] = {
+    //    0, 2, 3, 5, 6, 10, 13, 16, 18, 20, 23, 24, 25, 
+    // };
+    const TypeInfo* Extensions::tit[26] = {
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::BooleanTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::BooleanTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, 
     };
-    Extensions::Extensions(VM& vm)
-    : Traits(vm, AS3::fl_gfx::ExtensionsCI)
+    const Abc::ConstValue Extensions::dva[3] = {
+        {Abc::CONSTANT_True, 0}, 
+        {Abc::CONSTANT_True, 0}, {Abc::CONSTANT_UInt, 0}, 
+    };
+    const ThunkInfo Extensions::ti[Extensions::ThunkInfoNum] = {
+        {TFunc_Classes_Extensions_enabledSet::Func, &Extensions::tit[0], "enabled", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Extensions_enabledGet::Func, &Extensions::tit[2], "enabled", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Extensions_noInvisibleAdvanceSet::Func, &Extensions::tit[3], "noInvisibleAdvance", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Extensions_noInvisibleAdvanceGet::Func, &Extensions::tit[5], "noInvisibleAdvance", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Extensions_getTopMostEntity::Func, &Extensions::tit[6], "getTopMostEntity", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 1, &Extensions::dva[0]},
+        {TFunc_Classes_Extensions_getMouseTopMostEntity::Func, &Extensions::tit[10], "getMouseTopMostEntity", NULL, Abc::NS_Public, CT_Method, 0, 2, 0, 2, &Extensions::dva[1]},
+        {TFunc_Classes_Extensions_setMouseCursorType::Func, &Extensions::tit[13], "setMouseCursorType", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Classes_Extensions_getMouseCursorType::Func, &Extensions::tit[16], "getMouseCursorType", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Classes_Extensions_getEdgeAAMode::Func, &Extensions::tit[18], "getEdgeAAMode", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Extensions_setEdgeAAMode::Func, &Extensions::tit[20], "setEdgeAAMode", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_Extensions_numControllersGet::Func, &Extensions::tit[23], "numControllers", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Extensions_visibleRectGet::Func, &Extensions::tit[24], "visibleRect", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_Extensions_isScaleformGet::Func, &Extensions::tit[25], "isScaleform", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+    };
+
+    Extensions::Extensions(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Extensions::Extensions()"
 //##protect##"ClassTraits::Extensions::Extensions()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_gfx::ExtensionsCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::Extensions(*this));
 
     }
 
     Pickable<Traits> Extensions::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Extensions(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Extensions(vm, AS3::fl_gfx::ExtensionsCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::ExtensionsCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -321,6 +347,11 @@ namespace fl_gfx
 {
     const TypeInfo ExtensionsTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::Extensions::InstanceType),
+        ClassTraits::fl_gfx::Extensions::ThunkInfoNum,
+        ClassTraits::fl_gfx::Extensions::MemberInfoNum,
+        0,
+        0,
         "Extensions", "scaleform.gfx", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -328,10 +359,6 @@ namespace fl_gfx
     const ClassInfo ExtensionsCI = {
         &ExtensionsTI,
         ClassTraits::fl_gfx::Extensions::MakeClassTraits,
-        ClassTraits::fl_gfx::Extensions::ThunkInfoNum,
-        ClassTraits::fl_gfx::Extensions::MemberInfoNum,
-        0,
-        0,
         ClassTraits::fl_gfx::Extensions::ti,
         ClassTraits::fl_gfx::Extensions::mi,
         NULL,

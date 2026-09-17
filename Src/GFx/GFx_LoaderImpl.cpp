@@ -6,6 +6,7 @@ Created     :   June 30, 2005
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -40,7 +41,7 @@ dependencies instead of reloading only modified files. This is not a very effici
 The solution for this problem could be to hold a list of {MovieDefImpl,timestamp} objects
 for each MovieDataDef in the Resource lib. When this list is retrieved from Resource Lib
 we would take its last item and then go over all imports in a MovieDataDef find theirs
-MovieDefImpl in that item’s ImportedMovieSource vector and check if any of imported movies
+MovieDefImpl in that item's ImportedMovieSource vector and check if any of imported movies
 is changed. If no changes are found we return this last MovieDefImpl to the user. If we 
 find a change we will need to create a new MovieDefImpl for a given MovieDataDef add it
 to the list that we got from the Resource Lib and return this new object to the user. 
@@ -156,7 +157,9 @@ bool    SWFProcessInfo::Initialize(File *pin, LogState *plog, ZlibSupportBase* z
     {
         // ERROR
         if (plog)
-            plog->LogError("Loader read failed - file does not start with a SWF header");
+            plog->LogError("Loader read failed - file does not start with a SWF/USM header\n \
+                [Warning!] CRIWARE SDK Will Removed In Scaleform 5.0, Will Change To FFMpeg, \n \
+                FINAL VIDEO, And A SelectaVision HDRVIDEOS Persensation.");
         return 0;
     }
     if (((header >> 16) & 0xFF) == 'X')
@@ -317,7 +320,7 @@ LoaderImpl::LoaderImpl(ResourceLib* plib, bool debugHeap)
 //         pStateBag->SetFontCacheManager(
 //             Ptr<FontCacheManager>(*new FontCacheManager(true, DebugHeap)));
 
-        pStateBag->SetTextClipboard(Ptr<TextClipboard>(*new TextClipboard));
+        pStateBag->SetClipboard(Ptr<Clipboard>(*new Clipboard));
         pStateBag->SetTextKeyMap(Ptr<TextKeyMap>(*(new TextKeyMap)->InitWindowsKeyMap()));
     }
 }
@@ -425,12 +428,27 @@ bool    LoaderImpl::GetMovieInfo(const char *pfilename, MovieInfo *pinfo,
     }
     else
     {
-        // Open the file; this will automatically do the logging on error.
-        Ptr<File> pin = *pls->OpenFile(fileName.ToCStr());
+        Ptr<File> pin;
+        if (URLBuilder::IsProtocol(fileName))
+        {
+#ifdef SF_ENABLE_HTTP_LOADING
+            Array<UByte>* bytes = ReadProtocolFile(pfilename);
+            if (bytes != NULL && !bytes->IsEmpty())
+            {
+                pin = *SF_NEW MemoryFile(pfilename, bytes->GetDataPtr(), (int)bytes->GetSize());
+            }
+#endif
+        }
+        else
+        {
+            // Open the file; this will automatically do the logging on error.
+            pin = *pls->OpenFile(fileName.ToCStr());
+        }
+
         if (!pin)
             return 0;
 
-        // Open and real file header, failing if it doesn't match.
+        // Open and read file header, failing if it doesn't match.
         SWFProcessInfo pi(Memory::GetGlobalHeap());
         if (!pi.Initialize(pin, pls->GetLogState(), pls->GetZlibSupport(), pls->pParseControl))
             return 0;
@@ -660,10 +678,6 @@ public:
     bool    LoadingSucceeded() const   { return pImageRes.GetPtr() != 0; }
 };  
 
-
-
-
-
 // Static: The actual creation function; called from CreateMovie.
 MovieDefImpl* LoaderImpl::CreateMovie_LoadState(LoadStates* pls,
                                                 const URLBuilder::LocationInfo& loc,
@@ -673,7 +687,6 @@ MovieDefImpl* LoaderImpl::CreateMovie_LoadState(LoadStates* pls,
     // Translate the filename.
     String fileName;
     pls->BuildURL(&fileName, loc);
-
 
     // *** Check Library and Initiate Loading
 
@@ -718,9 +731,23 @@ MovieDefImpl* LoaderImpl::CreateMovie_LoadState(LoadStates* pls,
 
     if ((rs = pls->GetLib()->BindResourceKey(&bh, fileDataKey)) ==
         ResourceLib::RS_NeedsResolve)
-    {        
-        // Open the file; this will automatically do the logging on error.
-        pin = *pls->OpenFile(fileName.ToCStr(), loadConstants);
+    {
+        if (URLBuilder::IsProtocol(fileName))
+        {
+#ifdef SF_ENABLE_HTTP_LOADING
+            Array<UByte>* bytes = pls->pLoaderImpl->ReadProtocolFile(fileName);
+            if (bytes != NULL && !bytes->IsEmpty())
+            {
+                pin = *SF_NEW MemoryFile(fileName, bytes->GetDataPtr(), (int)bytes->GetSize());
+            }
+#endif
+        }
+        else
+        {
+            // Open the file; this will automatically do the logging on error.
+            pin = *pls->OpenFile(fileName.ToCStr(), loadConstants);
+        }
+
         if (!pin) 
         {
             // TBD: Shouldn't we transfer this OpenFile's error message to our 
@@ -769,6 +796,7 @@ MovieDefImpl* LoaderImpl::CreateMovie_LoadState(LoadStates* pls,
         case Loader::File_ETC:
         case Loader::File_SIF:
         case Loader::File_GXT:
+        case Loader::File_KTX:
             // If image file format loading is enabled proceed to do so.
             if (loadConstants & Loader::LoadImageFiles)
             {
@@ -1166,6 +1194,32 @@ MovieDefImpl* LoaderImpl::CreateMovie_LoadState(LoadStates* pls,
     return BindMovieAndWait(pm, pbp, pls, loadConstants, ploadStack);
 }
 
+#ifdef SF_ENABLE_HTTP_LOADING
+Array<UByte>* LoaderImpl::ReadProtocolFile(const String& filename)
+{
+    Ptr<HttpFileCache>* cachedFile = HttpFilesOpened.Get(filename);
+    if (cachedFile != NULL)
+    {
+        return &(*cachedFile)->HttpFileBytes;
+    }
+
+    HttpFileCache* newFile = SF_HEAP_AUTO_NEW(this) HttpFileCache();
+    if (!URLBuilder::SendURLRequest(&newFile->HttpFileBytes, filename))
+    {
+        newFile->Release();
+        return NULL;
+    }
+    HttpFilesOpened.Add(filename, *newFile);
+    return &newFile->HttpFileBytes;
+}
+#endif
+
+#ifdef SF_ENABLE_HTTP_LOADING
+void LoaderImpl::LoadingDone(const char* filename)
+{
+    HttpFilesOpened.Remove(filename);
+}
+#endif
 
 
 MovieDefImpl* LoaderImpl::BindMovieAndWait(MovieDefImpl* pm, MovieBindProcess* pbp,
@@ -1245,7 +1299,6 @@ MovieDefImpl* LoaderImpl::BindMovieAndWait(MovieDefImpl* pm, MovieBindProcess* p
     }
     return pm;
 }
-
 
 // Looks up or registers MovieDefImpl, separated so that both versions 
 // of loading can share implementation. Fills is pbindProcess pointer if
@@ -1376,6 +1429,8 @@ LoaderImpl::FileFormat2RenderImageFile(FileTypeConstants::FileFormatType format)
         return Render::ImageFile_GXT;
     case Loader::File_PVR:
         return Render::ImageFile_PVR;
+    case Loader::File_KTX:
+        return Render::ImageFile_KTX;
     case Loader::File_HDR:
     case Loader::File_BMP:
     case Loader::File_DIB:
@@ -1475,7 +1530,10 @@ Loader::FileFormatType LoaderImpl::DetectFileFormat(File *pfile)
         if ((buffer[1] == 'P') && (buffer[2] == 'N') && (buffer[3] == 'G'))
             format = Loader::File_PNG;
         break;
-
+    case 0xAB:
+        if ((buffer[1] == 'K') && (buffer[2] == 'T') && (buffer[3] == 'X'))
+            format = Loader::File_KTX;
+        break;
     case 'G':
         if ((buffer[1] == 'I') && (buffer[2] == 'F') && (buffer[3] == '8'))
             format = Loader::File_GIF;
@@ -1653,7 +1711,7 @@ bool Translator::OnWordWrapping(LineFormatDesc* pdesc)
         return false;
     if ((WWMode & (WWT_Asian | WWT_NoHangulWrap | WWT_Prohibition)) && pdesc->NumCharsInLine > 0)
     {
-        UPInt wordWrapPos = WordWrapHelper::FindWordWrapPos
+        UPInt wordWrapPos = Text::WordWrapHelper::FindWordWrapPos
             (WWMode, 
             pdesc->ProposedWordWrapPoint, 
             pdesc->pParaText, pdesc->ParaTextLen, 
@@ -1683,7 +1741,7 @@ bool Translator::OnWordWrapping(LineFormatDesc* pdesc)
             pdesc->ProposedWordWrapPoint : 0;
         for (; hyphenPos > endingHyphenPos; --hyphenPos)
         {
-            if (WordWrapHelper::IsVowel(pstr[hyphenPos - 1]))
+            if (Text::WordWrapHelper::IsVowel(pstr[hyphenPos - 1]))
             {
                 // check if we have enough space for putting dash symbol
                 // we need to summarize all widths up to hyphenPos + pdesc->DashSymbolWidth
@@ -1734,9 +1792,81 @@ void Translator::TranslateInfo::SetResult(const char* presultTextUTF8, UPInt res
 
     int nchars = (int)UTF8Util::GetLength(presultTextUTF8);
     pResult->Resize(nchars + 1);
-    UTF8Util::DecodeString(pResult->GetBuffer(), presultTextUTF8, resultUTF8Len);
+    UTF8Util::DecodeStringSafe(pResult->GetBuffer(), nchars + 1, presultTextUTF8, resultUTF8Len);
 
     Flags |= TranslateInfo::Flag_Translated;
+}
+
+bool Translator::OnBidirectionalText(const wchar_t* text, UPInt textLen, wchar_t* newText, 
+                                     unsigned* indexMap, bool* mirrorBits)
+{
+#ifndef GFX_ENABLE_BIDIRECTIONAL_TEXT
+    SF_UNUSED5(text, textLen, newText, indexMap, mirrorBits);
+    return false;
+#else
+    bool retv = false;
+    int prevR2L = false;
+    for (UPInt i = 0, j = textLen - 1; i < textLen; )
+    {
+        SF_ASSERT(int(j) >= 0);
+        int r2l = SFisRightToLeft(text[i]);
+        retv = r2l || retv;
+        int neut = SFisDirNeutral(text[i]);
+        int nextR2L = r2l;
+        if (i + 1 < textLen)
+            nextR2L = SFisRightToLeft(text[i + 1]);
+        if (r2l || neut)
+        {
+            if ((prevR2L || nextR2L) && neut)
+            {
+                switch(text[i])
+                {
+                case '(': newText[j] = ')'; break;
+                case ')': newText[j] = '('; break;
+                case '[': newText[j] = ']'; break;
+                case ']': newText[j] = '['; break;
+                case '<': newText[j] = '>'; break;
+                case '>': newText[j] = '<'; break;
+                case '{': newText[j] = '}'; break;
+                case '}': newText[j] = '{'; break;
+                default:
+                    newText[j] = text[i];
+                }
+            }
+            else
+                newText[j] = text[i];
+            indexMap[j] = (unsigned)i;
+            mirrorBits[j] = false;
+            --j; ++i;
+        }
+        else 
+        {
+            // copy non-right-to-left text as is
+            UPInt lrTxtLen = 1;
+			UPInt trailingNeutrals = 0;
+            for(UPInt k = i+1; k < textLen && !SFisRightToLeft(text[k]); ++k, ++lrTxtLen)
+			{
+				if (SFisDirNeutral(text[k]))
+					++trailingNeutrals;
+				else
+					trailingNeutrals = 0;
+			}
+			lrTxtLen -= trailingNeutrals;
+            for(UPInt jj = j - lrTxtLen + 1; jj <= j; ++jj, ++i)
+            {
+                SF_ASSERT(int(jj) >= 0);
+                SF_ASSERT(i < textLen);
+                newText[jj] = text[i];
+                indexMap[jj] = (unsigned)i;
+                mirrorBits[jj] = false;
+            }
+            j -= lrTxtLen;
+        }
+        if (!neut)
+            prevR2L = r2l;
+    }
+    return retv;
+#endif // GFX_ENABLE_BIDIRECTIONAL_TEXT
 }
 
 }} // Scaleform::GFx

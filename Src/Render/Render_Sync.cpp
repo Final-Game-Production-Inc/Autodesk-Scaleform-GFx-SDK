@@ -7,6 +7,7 @@ Created     :   Oct 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -108,6 +109,7 @@ RenderSync::~RenderSync()
 
 void RenderSync::BeginFrame()
 {
+    WithinFrame = true;
     FenceFrame* frame = FenceFrameAlloc.Alloc();
     frame->RSContext = this;
     FenceFrames.PushBack(frame);
@@ -155,11 +157,13 @@ bool RenderSync::EndFrame()
             passFrame = passFrame->pNext;
         }
     }
+    WithinFrame = false;
     return true;
 }
 
 Fence* RenderSync::InsertFence()
 {
+    SF_DEBUG_ASSERT(WithinFrame, "RenderSync::InsertFence - not within fence frame.");
     if (FenceFrames.IsEmpty())
         return 0;
     UInt64 apiHandle = SetFence();

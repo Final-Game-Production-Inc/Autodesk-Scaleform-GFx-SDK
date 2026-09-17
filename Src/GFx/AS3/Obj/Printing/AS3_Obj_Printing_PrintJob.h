@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,6 +31,8 @@ namespace fl_printing
 {
     extern const TypeInfo PrintJobTI;
     extern const ClassInfo PrintJobCI;
+    extern const TypeInfo PrintJobOptionsTI;
+    extern const ClassInfo PrintJobOptionsCI;
 } // namespace fl_printing
 namespace fl
 {
@@ -40,6 +43,16 @@ namespace fl
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
 } // namespace fl
+namespace fl_display
+{
+    extern const TypeInfo SpriteTI;
+    extern const ClassInfo SpriteCI;
+} // namespace fl_display
+namespace fl_geom
+{
+    extern const TypeInfo RectangleTI;
+    extern const ClassInfo RectangleCI;
+} // namespace fl_geom
 
 namespace ClassTraits { namespace fl_printing
 {
@@ -76,17 +89,19 @@ namespace Instances
     
 namespace ClassTraits { namespace fl_printing
 {
-    class PrintJob : public Traits
+    class PrintJob : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::PrintJob"; }
 #endif
     public:
-        typedef Classes::fl_printing::PrintJob ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_events::EventDispatcher InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        PrintJob(VM& vm);
+        PrintJob(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

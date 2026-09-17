@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -230,6 +231,10 @@ namespace Instances { namespace fl_display
             mid_hitTestPoint, 
             mid_localToGlobal, 
             mid_local3DToGlobal, 
+            mid_backgroundAlphaGet, 
+            mid_backgroundAlphaSet, 
+            mid_mouseEnableGet, 
+            mid_mouseEnableSet, 
         };
         void accessibilityPropertiesGet(SPtr<Instances::fl_accessibility::AccessibilityProperties>& result);
         void accessibilityPropertiesSet(const Value& result, Instances::fl_accessibility::AccessibilityProperties* value);
@@ -293,6 +298,10 @@ namespace Instances { namespace fl_display
         void hitTestPoint(bool& result, Value::Number x, Value::Number y, bool shapeFlag = false);
         void localToGlobal(SPtr<Instances::fl_geom::Point>& result, Instances::fl_geom::Point* point);
         void local3DToGlobal(SPtr<Instances::fl_geom::Point>& result, Instances::fl_geom::Vector3D* point);
+        void backgroundAlphaGet(Value::Number& result);
+        void backgroundAlphaSet(const Value& result, Value::Number value);
+        void mouseEnableGet(bool& result);
+        void mouseEnableSet(const Value& result, bool value);
 
         // C++ friendly wrappers for AS3 methods.
         SPtr<Instances::fl_accessibility::AccessibilityProperties> accessibilityPropertiesGet();
@@ -562,7 +571,7 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
-    class DisplayObject : public CTraits
+    class DisplayObject : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -586,8 +595,10 @@ namespace InstanceTraits { namespace fl_display
 
         virtual void MakeObject(Value& result, Traits& t);
 
-        enum { ThunkInfoNum = 62 };
+        enum { ThunkInfoNum = 66 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[102];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -600,17 +611,19 @@ namespace InstanceTraits { namespace fl_display
     
 namespace ClassTraits { namespace fl_display
 {
-    class DisplayObject : public Traits
+    class DisplayObject : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::DisplayObject"; }
 #endif
     public:
-        typedef Classes::fl_display::DisplayObject ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::DisplayObject InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        DisplayObject(VM& vm);
+        DisplayObject(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

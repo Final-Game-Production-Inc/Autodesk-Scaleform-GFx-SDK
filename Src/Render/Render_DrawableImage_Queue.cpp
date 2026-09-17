@@ -7,6 +7,7 @@ Created     :   January 2012
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -26,7 +27,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 // If this is not defined, DI commands will only execute on the CPU (unless they have no CPU implementations)
 #define SF_DRAWABLEIMAGE_GPU_ENABLE
 #if !defined(SF_DRAWABLEIMAGE_CPU_ENABLE) && !defined(SF_DRAWABLEIMAGE_GPU_ENABLE)
-    #error Can't disable both CPU and GPU DrawableImage commands
+    #error "Can't disable both CPU and GPU DrawableImage commands"
 #endif
 
 
@@ -64,6 +65,61 @@ unsigned DICommand::GetRenderCaps() const
     return gpuCaps | cpuCaps;
 }
 
+bool DICommand::ExecuteSWOnAddCommand(DrawableImage* i) const
+{
+    unsigned       caps = GetRenderCaps();
+
+    // If the command does not have CPU capability, then it cannot be executed here.
+    if ((caps & DICommand::RC_CPU) == 0)
+        return false;
+
+    // To execute on the main thread, this image, and all its sources must currently be mapped, with no
+    // pending commands to be executed. If they are not mapped, it will be executed on the render thread 
+    // (while the advance thread waits). If no GPU commands are executed before another 'return' command 
+    // is executed, the image should remain mapped, and it will be executed on the main thread (next time).
+    DISourceImages sources;
+    unsigned       imageCount = GetSourceImages(&sources);
+
+    // Note: Lock must occur here, if there is an operation executing on the render thread, it may try to unmap
+    // the image, which it shouldn't be able to do, if we are going to execute a command on it assuming it is mapped.
+    Lock::Locker lock(&i->pQueue->QueueLock);
+
+    // Optimization: because DICommand store smart pointers to their DrawableImages, we can use its refcount
+    // to determine whether it's referenced by a command already in the queue. DrawableImages should have two
+    // references, one from the BitmapData that owns them, and a second from this DICommand.
+    if (!i->isMapped() || i->GetRefCount() > 2)
+        return false;
+
+    for (unsigned src = 0; src < DISourceImages::MaximumSources; ++src)
+    {
+        if (sources[src] != 0)
+        {
+            if (sources[src]->GetImageType() == Image::Type_DrawableImage)
+            {
+                DrawableImage* disource = reinterpret_cast<DrawableImage*>(sources[src]);
+                if (!disource->isMapped() || disource->GetRefCount() > 2)
+                    return false;
+            }
+        }
+    }
+
+
+    // We can now safely execute the command, there should be no outstanding operations on the destination
+    // image, because they can only be added by the Advance thread, which is where execution is currently
+    // taking place.
+    DICommandContext context(i->GetContext()->GetQueue());
+    bool executed = executeSWHelper(context, i, sources, imageCount);
+    SF_UNUSED(executed); // release warning.
+    SF_DEBUG_ASSERT(executed, "Expected DrawableImage with return value to be executed immediately.");
+
+    // If this command modifies the target BitmapData, add it to the modified list.
+    if ((caps & DICommand::RC_CPU_NoModify) == 0)
+        i->addToCPUModifiedList();
+
+    // Return true, as this command cannot be queued anyhow, because it should return a value.
+    return true;
+}
+
 // RenderThread execution function; does proper map/unmap and dispatches
 // to either ExecuteHW or ExecuteSW. 
 void DICommand::ExecuteRT(DICommandContext& context) const
@@ -78,7 +134,8 @@ void DICommand::ExecuteRT(DICommandContext& context) const
         DISourceImages images;
         unsigned       imageCount = GetSourceImages(&images);
 
-        if (!pImage->isMapped() && !pImage->mapTextureRT(false))
+        
+        if (!pImage->isMapped() && !pImage->mapTextureRT((GetRenderCaps() & RC_CPU_NoModify) != 0))
         {
             SF_DEBUG_WARNING(1, "Render::DICommand::ExecuteRT - map destination failed");
             return;
@@ -152,55 +209,29 @@ bool DICommand::executeHWHelper(DICommandContext& context, DrawableImage* i) con
 
 DICommandQueue::DICommandQueue(DrawableImageContext* dicontext)
 : pRTCommands(0),
-  pDIContext(dicontext),
   pCPUModifiedImageList(0),
   pGPUModifiedImageList(0),
   pRTCommandQueue(dicontext->GetQueue()),
   ExecuteCmd(*SF_NEW ExecuteCommand(getThis())),
   CaptureFrameId(0), FreePageCount(0), AllocPageCount(0)
 {
-
-    SF_DEBUG_ASSERT(pDIContext, "Must supply DrawableImageContext in DICommandQueue.");
-    pDIContext->AddCaptureNotify(this);
 }
 
 DICommandQueue::~DICommandQueue()
 {   
-    // Artificially increase the RefCount, OnShutdown may AddRef and then release this object,
-    // thus causing its destructor to be called twice. 
-    RefCount = 2;
-
     // Unmap any currently mapped textures in OnShutdown.
     OnShutdown();
 
+    Lock::Locker lock(&QueueLock);
     SF_ASSERT(Queues[DIQueue_Active].IsEmpty());
     SF_ASSERT(Queues[DIQueue_Captured].IsEmpty());
     SF_ASSERT(Queues[DIQueue_Displaying].IsEmpty());
 
-    // Free any pages in free list..
+    // Free any pages in free list.
     while(!Queues[DIQueue_Free].IsEmpty())
     {
         DIQueuePage* page = Queues[DIQueue_Free].GetFirst();
         page->RemoveNode();
-        delete page;
-    }
-    RefCount = 0;
-}
-
-void DICommandQueue::DiscardCommands()
-{
-    DICommandContext context;
-    DICommandSet cmdSet(this);
-
-    // Push the commands into the RTCommand list.
-    popCommandSet(&cmdSet, DICommand_All);
-    while(!cmdSet.QueueList.IsEmpty())
-    {
-        DIQueuePage* page = cmdSet.QueueList.GetFirst();
-        page->RemoveNode();
-        DICommand* cmd = page->getFirst();
-        while (cmd)
-            cmd = page->destroyAndGetNext(cmd);
         delete page;
     }
 }
@@ -272,6 +303,25 @@ void DICommandQueue::freePage(DIQueuePage* page)
     }
 }
 
+
+void DICommandQueue::lockCommandSetAndWait( DICommandSet** pcommands )
+{
+    CommandSetMutex.DoLock();
+    while(*pcommands)
+        CommandSetWC.Wait(&CommandSetMutex);
+}
+
+void DICommandQueue::unlockCommandSet()
+{
+    CommandSetMutex.Unlock();
+}
+
+void DICommandQueue::notifyCommandSetFinished( DICommandSet** pcommands )
+{
+    Mutex::Locker mlock(&CommandSetMutex);
+    *pcommands = 0;
+    CommandSetWC.NotifyAll();
+}
 
 void DICommandQueue::updateCPUModifiedImagesRT()
 {
@@ -346,13 +396,8 @@ void DICommandQueue::OnNextCapture(ContextImpl::RenderNotify* pnotify)
 
 void DICommandQueue::OnShutdown()
 {
-    pDIContext->RemoveCaptureNotify(this);
-
     // Ensure that there are no modified images on shutdown.
     SF_DEBUG_ASSERT(pCPUModifiedImageList == 0 && pGPUModifiedImageList == 0, "Expected no modified images after shutdown.");
-
-    ImageList.Clear();
-    pDIContext.Clear();
 }
 
 void DICommandQueue::ExecuteNextCapture(ContextImpl::RenderNotify* pnotify)
@@ -387,6 +432,40 @@ void DICommandQueue::ExecuteNextCapture(ContextImpl::RenderNotify* pnotify)
         Mutex::Locker mlock(&CommandSetMutex);
         pRTCommands = 0;
         CommandSetWC.NotifyAll();
+    }
+}
+
+void DICommandQueue::ExecuteCommandsAndWait()
+{
+    // ExecuteCmd/Queue may not be reference counted by the ThreadCommandQueue, so protect them
+    // against its deletion until after it executes here by adding extra refs.
+    AddRef();
+    ExecuteCmd->AddRef();
+
+    pRTCommandQueue->PushThreadCommand(ExecuteCmd);
+    ExecuteCmd->WaitDoneAndReset();
+}
+
+// This function discards any commands currently queue (eg. without executing them). This is used when
+// a DrawableImageContext is being shutdown, and is unable to wait. 
+void DICommandQueue::DiscardCommands()
+{
+    DICommandContext context;
+    DICommandSet cmdSet(this);
+
+    // Push the commands into the RTCommand list.
+    popCommandSet(&cmdSet, DICommand_All);
+    while(!cmdSet.QueueList.IsEmpty())
+    {
+        DIQueuePage* page = cmdSet.QueueList.GetFirst();
+        page->RemoveNode();
+        DICommand* cmd = page->getFirst();
+        while (cmd)
+        {
+            cmd->ExecuteDiscard();
+            cmd = page->destroyAndGetNext(cmd);
+        }
+        delete page;
     }
 }
 
@@ -483,13 +562,13 @@ void DICommandSet::ExecuteCommandsRT(DICommandContext& context)
 
         // Execute & destroy all commands in the page.
         DICommand* cmd = page->getFirst();           
-        DrawableImage* drawableTarget = 0;
+        Ptr<DrawableImage> drawableTarget = 0;
         bool targetOnStack = false;
 
         while(cmd)
         {
             // We have not rendered a DrawableImage yet. Do Scene/Display setup via HAL.
-            DrawableImage* nextDrawableTarget = cmd->pImage.GetPtr();
+            Ptr<DrawableImage> nextDrawableTarget = cmd->pImage.GetPtr();
             unsigned caps = cmd->GetRenderCaps();
 
             // If we're changing targets, choose based on the GPU preference flag. Otherwise,
@@ -602,11 +681,11 @@ void DICommandSet::ExecuteCommandsRT(DICommandContext& context)
 
     QueueList.Clear();
 
-    sceneManager.CloseScene();
-
     // Once finished with commands, copy modified results between staging and render targets.
     pQueue->updateCPUModifiedImagesRT();
     pQueue->updateGPUModifiedImagesRT();
+
+    sceneManager.CloseScene();
 }
 
 }}; // namespace Scaleform::Render

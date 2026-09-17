@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,6 +19,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "AS3_Obj_Object.h"
 #include "AS3_Obj_XML.h"
 #include "Net/AS3_Obj_Net_URLRequest.h"
+#include "../AS3_VM.h" // This include is required by the WiiU compiler.
 
 namespace Scaleform { namespace GFx { namespace AS3 
 {
@@ -205,6 +207,16 @@ namespace Instances { namespace fl
     public:
         // AS3 API ...
 
+//##markup##"obj_global_h$ConstPool"
+//##begin##"obj_global_h$ConstPool"
+
+        static SInt32 Ints[5];
+        static UInt32 UInts[8];
+        static Value::Number Numbers[9];
+        static const char* Strings[12];
+
+//##end##"obj_global_h$ConstPool"
+
 //##markup##"obj_global_h$package_methods"
 //##begin##"obj_global_h$package_methods"
         void decodeURI(ASString& result, const ASString& uri);
@@ -273,6 +285,18 @@ namespace Instances { namespace fl
         void navigateToURL(Instances::fl_net::URLRequest* request, const ASString& window)
         {
             navigateToURL(Value::GetUndefined(), request, window);
+        }
+        void getClassByAlias(SPtr<Class>& result, const ASString& aliasName);
+        SPtr<Class> getClassByAlias(const ASString& aliasName)
+        {
+            SPtr<Class> result;
+            getClassByAlias(result, aliasName);
+            return result;
+        }
+        void registerClassAlias(const Value& result, const ASString& aliasName, Class* classObject);
+        void registerClassAlias(const ASString& aliasName, Class* classObject)
+        {
+            registerClassAlias(Value::GetUndefined(), aliasName, classObject);
         }
         void fscommand(Value& result, unsigned argc, const Value* const argv);
         void clearInterval(const Value& result, UInt32 id);
@@ -417,6 +441,9 @@ namespace InstanceTraits { namespace fl
     class GlobalObject : public CTraits
     {
     public:
+        typedef Instances::fl::GlobalObject InstanceType;
+
+    public:
         GlobalObject(VM& vm);
 
     public:
@@ -435,6 +462,9 @@ namespace InstanceTraits { namespace fl
     class GlobalObjectScript : public GlobalObject
     {
     public:
+        typedef Instances::fl::GlobalObjectScript InstanceType;
+
+    public:
         GlobalObjectScript(
             VMAbcFile& file,
             VM& vm, 
@@ -445,7 +475,10 @@ namespace InstanceTraits { namespace fl
         virtual void ForEachChild_GC(Collector* prcc, RefCountBaseGC<Mem_Stat>::GcOp op) const;
         virtual unsigned GetFixedMemSize() const;
         virtual VMAbcFile* GetFilePtr() const;
-        virtual VMAppDomain& GetAppDomain() const;
+        VMAppDomain& GetAppDomain() const
+        {
+            return GetFile().GetAppDomain();
+        }
 
         Pickable<Instances::fl::GlobalObjectScript> MakeInstance();
 

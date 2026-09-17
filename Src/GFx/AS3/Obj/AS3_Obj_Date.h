@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -33,6 +34,8 @@ namespace fl
     extern const ClassInfo DateCI;
     extern const TypeInfo NumberTI;
     extern const ClassInfo NumberCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
 } // namespace fl
@@ -88,10 +91,10 @@ namespace Instances { namespace fl
 
         void UpdateLocal();
         void UpdateGMT();
-        void SetDate(SInt64 val);
 
     public:
         Double  LocalTime() const { return TimeValue + GetLocalTZA(); }
+        void SetDate(Double val) { TimeValue = val; }
 
 //##protect##"instance$methods"
 
@@ -605,11 +608,11 @@ namespace Instances { namespace fl
             MsPerMinute     = MsPerSecond * SecondsPerMinute,
             MsPerHour       = MsPerMinute * MinutesPerHour
         };
-        static Double   DayOfTime(Double time)     { return floor(time / (Double)MsPerDay); }
+        static Double   DayOfTime(Double time) { return floor(time / Double(MsPerDay)); }
         static Double   TimeWithinDay(Double time) 
         { 
-            Double result = fmod(time, (Double)MsPerDay);
-            return result < 0 ? result + (Double)MsPerDay : result;
+            Double result = fmod(time, double(MsPerDay));
+            return result < 0 ? result + Double(MsPerDay) : result;
         }
         static int      WeekDay(Double time);
 
@@ -617,7 +620,7 @@ namespace Instances { namespace fl
         static bool     IsLeapYear(int year);
         static int      DaysInYear(int year)       { return IsLeapYear(year) ? 366 : 365; }
         static Double   DayFromYear(Double year);
-        static Double   TimeFromYear(Double year)  { return DayFromYear(year) * MsPerDay; }
+        static Double   TimeFromYear(Double year) { return DayFromYear(year) * Double(MsPerDay); }
         static Double   YearFromTime(Double time);
         //static bool     IsLeapYear
 
@@ -632,7 +635,7 @@ namespace Instances { namespace fl
 
         static Double   MakeTime(Double hour, Double minute, Double sec, Double ms);
         static Double   MakeDay(Double year, Double month, Double date);
-        static Double   MakeDate(Double day, Double time) { return day * MsPerDay + time; }
+        static Double   MakeDate(Double day, Double time) { return day * Double(MsPerDay) + time; }
         static Double   TimeClip(Double time);
 
         static Double   HourFromTime(Double time);
@@ -765,7 +768,7 @@ namespace Instances { namespace fl
 
 namespace InstanceTraits { namespace fl
 {
-    class Date : public CTraits
+    class Date : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -791,6 +794,8 @@ namespace InstanceTraits { namespace fl
 
         enum { ThunkInfoNum = 74 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[90];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -803,7 +808,7 @@ namespace InstanceTraits { namespace fl
     
 namespace ClassTraits { namespace fl
 {
-    class Date : public Traits
+    class Date : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -811,12 +816,17 @@ namespace ClassTraits { namespace fl
 #endif
     public:
         typedef Classes::fl::Date ClassType;
+        typedef InstanceTraits::fl::Date InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Date(VM& vm);
+        Date(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[10];
+        static const Abc::ConstValue dva[6];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

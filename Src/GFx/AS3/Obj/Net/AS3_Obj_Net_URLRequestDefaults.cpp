@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,21 +29,26 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_net
 {
+    // const UInt16 URLRequestDefaults_tito[6] = {
+    //    0, 2, 4, 6, 8, 10, 
+    // };
+    const TypeInfo* URLRequestDefaults_tit[12] = {
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::StringTI, 
+    };
     const ThunkInfo URLRequestDefaults_ti[6] = {
-        {ThunkInfo::EmptyFunc, NULL, "authenticate", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "cacheResponse", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "followRedirects", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "manageCookies", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "useCache", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {ThunkInfo::EmptyFunc, NULL, "userAgent", NULL, Abc::NS_Public, CT_Set, 1, 1},
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[0], "authenticate", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[2], "cacheResponse", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[4], "followRedirects", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[6], "manageCookies", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[8], "useCache", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[10], "userAgent", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -63,27 +69,36 @@ namespace Classes { namespace fl_net
 
 namespace ClassTraits { namespace fl_net
 {
-    const ThunkInfo URLRequestDefaults_ti[1] = {
-        {ThunkInfo::EmptyFunc, NULL, "setLoginCredentialsForHost", NULL, Abc::NS_Public, CT_Method, 3, 3},
+    // const UInt16 URLRequestDefaults_tito[1] = {
+    //    0, 
+    // };
+    const TypeInfo* URLRequestDefaults_tit[4] = {
+        NULL, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::StringTI, 
     };
-    URLRequestDefaults::URLRequestDefaults(VM& vm)
-    : Traits(vm, AS3::fl_net::URLRequestDefaultsCI)
+    const ThunkInfo URLRequestDefaults_ti[1] = {
+        {ThunkInfo::EmptyFunc, &URLRequestDefaults_tit[0], "setLoginCredentialsForHost", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+    };
+
+    URLRequestDefaults::URLRequestDefaults(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::URLRequestDefaults::URLRequestDefaults()"
 //##protect##"ClassTraits::URLRequestDefaults::URLRequestDefaults()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_net::URLRequestDefaultsCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_net::URLRequestDefaults(*this));
 
     }
 
     Pickable<Traits> URLRequestDefaults::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) URLRequestDefaults(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) URLRequestDefaults(vm, AS3::fl_net::URLRequestDefaultsCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_net::URLRequestDefaultsCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -94,6 +109,11 @@ namespace fl_net
 {
     const TypeInfo URLRequestDefaultsTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_net::URLRequestDefaults::InstanceType),
+        1,
+        0,
+        6,
+        0,
         "URLRequestDefaults", "flash.net", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -101,10 +121,6 @@ namespace fl_net
     const ClassInfo URLRequestDefaultsCI = {
         &URLRequestDefaultsTI,
         ClassTraits::fl_net::URLRequestDefaults::MakeClassTraits,
-        1,
-        0,
-        6,
-        0,
         ClassTraits::fl_net::URLRequestDefaults_ti,
         NULL,
         InstanceTraits::fl_net::URLRequestDefaults_ti,

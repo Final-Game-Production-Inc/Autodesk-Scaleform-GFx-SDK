@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -94,6 +95,7 @@ private:
 
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -134,6 +136,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_display::BitmapData, Instances::fl_display::BitmapData::mid_heightGet, SInt32> TFunc_Instances_BitmapData_heightGet;
 typedef ThunkFunc0<Instances::fl_display::BitmapData, Instances::fl_display::BitmapData::mid_rectGet, SPtr<Instances::fl_geom::Rectangle> > TFunc_Instances_BitmapData_rectGet;
 typedef ThunkFunc0<Instances::fl_display::BitmapData, Instances::fl_display::BitmapData::mid_transparentGet, bool> TFunc_Instances_BitmapData_transparentGet;
@@ -211,7 +215,7 @@ namespace Instances { namespace fl_display
     BitmapData::BitmapData(InstanceTraits::Traits& t)
     : Instances::fl::Object(t)
 //##protect##"instance::BitmapData::BitmapData()$data"
-    , Width(0), Height(0), Transparent(true), Dirty(false)
+    , Width(0), Height(0), Transparent(true), ClearColor(0)
 //##protect##"instance::BitmapData::BitmapData()$data"
     {
 //##protect##"instance::BitmapData::BitmapData()$code"
@@ -221,9 +225,6 @@ namespace Instances { namespace fl_display
     void BitmapData::heightGet(SInt32& result)
     {
 //##protect##"instance::BitmapData::heightGet()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         SF_UNUSED1(result);
         if (pImage)
             result = pImage->GetRect().Height();
@@ -234,9 +235,6 @@ namespace Instances { namespace fl_display
     void BitmapData::rectGet(SPtr<Instances::fl_geom::Rectangle>& result)
     {
 //##protect##"instance::BitmapData::rectGet()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         Value argv[4];
         argv[0].SetNumber(Alg::IRound(0));
         argv[1].SetNumber(Alg::IRound(0));
@@ -249,10 +247,9 @@ namespace Instances { namespace fl_display
     void BitmapData::transparentGet(bool& result)
     {
 //##protect##"instance::BitmapData::transparentGet()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
         result = image->IsTransparent();
 //##protect##"instance::BitmapData::transparentGet()"
     }
@@ -260,19 +257,16 @@ namespace Instances { namespace fl_display
     {
 //##protect##"instance::BitmapData::widthGet()"
         SF_UNUSED1(result);
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
-        result = pImage->GetRect().Width();
+        if (pImage)
+            result = pImage->GetRect().Width();
+        else
+            result = (SInt32)Width;
 //##protect##"instance::BitmapData::widthGet()"
     }
     void BitmapData::applyFilter(const Value& result, Instances::fl_display::BitmapData* sourceBitmapData, Instances::fl_geom::Rectangle* sourceRect, Instances::fl_geom::Point* destPoint, Instances::fl_filters::BitmapFilter* filter)
     {
 //##protect##"instance::BitmapData::applyFilter()"
         SF_UNUSED(result);
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !sourceBitmapData)
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("sourceBitmapData")));
 
@@ -286,6 +280,9 @@ namespace Instances { namespace fl_display
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("filter")));
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         DrawableImage* srcImage = getDrawableImageFromBitmapData(sourceBitmapData);
         Rect<SInt32>   rect = RectangleToRect(*sourceRect);
         Render::Point<SInt32> pt = PointToPoint(*destPoint);
@@ -342,25 +339,13 @@ namespace Instances { namespace fl_display
     void BitmapData::clone(SPtr<Instances::fl_display::BitmapData>& result)
     {
 //##protect##"instance::BitmapData::clone()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         InstanceTraits::fl_display::BitmapData& itr = static_cast<InstanceTraits::fl_display::BitmapData&>(GetInstanceTraits());
         result = itr.MakeInstance(itr);
 
         result->Width = Width;
         result->Height = Height;
         result->Transparent = Transparent;
-        result->Dirty = Dirty;
-
-        // Create the DrawableImage instance.
-        MovieRoot* proot = static_cast<const ASVM&>(GetVM()).GetMovieRoot();
-        SF_DEBUG_ASSERT(proot, "Unexpected NULL MovieRoot.");
-        MovieImpl* pimpl = proot->GetMovieImpl();
-        SF_DEBUG_ASSERT(pimpl, "Unexpected NULL MovieImpl.");
-        DrawableImageContext* dicontext = pimpl->GetDrawableImageContext();
-        SF_DEBUG_ASSERT(dicontext, "Unexpected NULL DrawableImageContext.");
-        result->pImage = *SF_NEW DrawableImage(Transparent, (Render::Image*)pImage.GetPtr(), dicontext);
+        result->ClearColor = ClearColor;
 
 //##protect##"instance::BitmapData::clone()"
     }
@@ -368,10 +353,6 @@ namespace Instances { namespace fl_display
     {
 //##protect##"instance::BitmapData::colorTransform()"
         SF_UNUSED(result);
-
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !rect )
             // If the destination is opaque, performing these filter operations is invalid.
             return GetVM().ThrowArgumentError(VM::Error(VM::eIllegalOperationError, GetVM() SF_DEBUG_ARG("rect")));               
@@ -381,6 +362,9 @@ namespace Instances { namespace fl_display
             return GetVM().ThrowArgumentError(VM::Error(VM::eIllegalOperationError, GetVM() SF_DEBUG_ARG("colorTransform")));
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         Cxform cxform = ClassTraits::fl_geom::ColorTransform::GetCxformFromColorTransform(cTransform);
         image->ColorTransform(RectangleToRect(*rect), cxform);
 
@@ -389,22 +373,22 @@ namespace Instances { namespace fl_display
     void BitmapData::compare(Value& result, Instances::fl_display::BitmapData* otherBitmapData)
     {
 //##protect##"instance::BitmapData::compare()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !otherBitmapData )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("otherBitmapData")));
         
         // Verify dimensions first.
-        SInt32 w,h;
+        SInt32 w,h, thisw, thish;
         otherBitmapData->widthGet(w);
         otherBitmapData->heightGet(h);
-        if ( pImage->GetSize().Width != (UInt32)w )
+        widthGet(thisw);
+        heightGet(thish);
+
+        if ( thisw != w )
         {            
             result.SetSInt32(-3);
             return;
         }
-        if ( pImage->GetSize().Height != (UInt32)h )
+        if ( thish != h )
         {
             result.SetSInt32(-4);
             return;
@@ -416,6 +400,10 @@ namespace Instances { namespace fl_display
         SPtr<Instances::fl_display::BitmapData> bitmapResult = clone();
 		DrawableImage* destImage = getDrawableImageFromBitmapData(bitmapResult);
 		DrawableImage* image = getDrawableImageFromBitmapData(this);
+
+        if (!otherImage || !destImage || !image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         destImage->Compare(image, otherImage);
         result = bitmapResult;
 
@@ -425,9 +413,6 @@ namespace Instances { namespace fl_display
     {
 //##protect##"instance::BitmapData::copyChannel()"
         SF_UNUSED(result);
-
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
         if ( !sourceBitmapData )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("sourceBitmapData")));
@@ -440,6 +425,10 @@ namespace Instances { namespace fl_display
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
         DrawableImage* srcImage = getDrawableImageFromBitmapData(sourceBitmapData);
+
+        if (!image || !srcImage)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         image->CopyChannel(srcImage, RectangleToRect(*sourceRect), PointToPoint(*destPoint), 
             (DrawableImage::ChannelBits)sourceChannel, (DrawableImage::ChannelBits)destChannel);
 //##protect##"instance::BitmapData::copyChannel()"
@@ -449,9 +438,6 @@ namespace Instances { namespace fl_display
 //##protect##"instance::BitmapData::copyPixels()"
         SF_UNUSED(result);
         
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !sourceBitmapData )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("sourceBitmapData")));
 
@@ -468,7 +454,7 @@ namespace Instances { namespace fl_display
 
         // NULL alphasrcImage is okay.
         if ( !srcImage || !image )
-            return;
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
         // TODO: what if a an alpha source is provided, but no point?
         if ( alphaPoint )
@@ -489,9 +475,6 @@ namespace Instances { namespace fl_display
     void BitmapData::draw(const Value& result, Instances::fl::Object* source, Instances::fl_geom::Matrix* matrix, Instances::fl_geom::ColorTransform* colorTransform, const ASString& blendMode, Instances::fl_geom::Rectangle* clipRect, bool smoothing)
     {
 //##protect##"instance::BitmapData::draw()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         SF_UNUSED(result);
         if ( !source )
             return GetVM().ThrowArgumentError(VM::Error(VM::eInvalidArgumentError, GetVM() SF_DEBUG_ARG("source")));
@@ -512,6 +495,9 @@ namespace Instances { namespace fl_display
             clip = RectangleToRect(*clipRect);
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
 
         if ( GetVM().IsOfType(Value(reinterpret_cast<Instances::fl::Object*>(source)), GetClass().GetClassTraits()))
         {
@@ -544,13 +530,13 @@ namespace Instances { namespace fl_display
     void BitmapData::fillRect(const Value& result, Instances::fl_geom::Rectangle* rect, UInt32 color)
     {
 //##protect##"instance::BitmapData::fillRect()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !rect )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("rect")));
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         image->FillRect(RectangleToRect(*rect), color);
         SF_UNUSED(result);
 //##protect##"instance::BitmapData::fillRect()"
@@ -558,10 +544,10 @@ namespace Instances { namespace fl_display
     void BitmapData::floodFill(const Value& result, SInt32 x, SInt32 y, UInt32 color)
     {
 //##protect##"instance::BitmapData::floodFill()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         image->FloodFill(Render::Point<SInt32>(x,y), color);
         SF_UNUSED(result);
 //##protect##"instance::BitmapData::floodFill()"
@@ -569,9 +555,6 @@ namespace Instances { namespace fl_display
     void BitmapData::generateFilterRect(SPtr<Instances::fl_geom::Rectangle>& result, Instances::fl_geom::Rectangle* sourceRect, Instances::fl_filters::BitmapFilter* filter)
     {
 //##protect##"instance::BitmapData::generateFilterRect()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !sourceRect )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("sourceRect")));
 
@@ -579,7 +562,8 @@ namespace Instances { namespace fl_display
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("filter")));
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
-        SF_UNUSED(image); // even though it is used.
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
         RectF bounds;
         RectF inputBounds = RectangleToRect(*sourceRect);
         image->CalcFilterRect(&bounds, PixelsToTwips(inputBounds), filter->GetFilterData());
@@ -598,10 +582,10 @@ namespace Instances { namespace fl_display
     void BitmapData::getColorBoundsRect(SPtr<Instances::fl_geom::Rectangle>& result, UInt32 mask, UInt32 color, bool findColor)
     {
 //##protect##"instance::BitmapData::getColorBoundsRect()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         Rect<SInt32> rect = image->GetColorBoundsRect(mask, color, findColor);
 
         Value args[] = {Value(rect.x1), Value(rect.y1), Value(rect.Width()), Value(rect.Height())};
@@ -612,43 +596,42 @@ namespace Instances { namespace fl_display
     void BitmapData::getPixel(UInt32& result, SInt32 x, SInt32 y)
     {
 //##protect##"instance::BitmapData::getPixel()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         result = image->GetPixel(x, y).ToColor32();
 //##protect##"instance::BitmapData::getPixel()"
     }
     void BitmapData::getPixel32(UInt32& result, SInt32 x, SInt32 y)
     {
 //##protect##"instance::BitmapData::getPixel32()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         result = image->GetPixel32(x, y).ToColor32();
 //##protect##"instance::BitmapData::getPixel32()"
     }
     void BitmapData::getPixels(SPtr<Instances::fl_utils::ByteArray>& result, Instances::fl_geom::Rectangle* rect)
     {
 //##protect##"instance::BitmapData::getPixels()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
+        VM& vm = GetVM();
 
         if ( !rect )
-            return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("rect")));
+            return vm.ThrowArgumentError(VM::Error(VM::eNullPointerError, vm SF_DEBUG_ARG("rect")));
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return vm.ThrowArgumentError(VM::Error(VM::eArgumentError, vm SF_DEBUG_ARG("Invalid BitmapData")));
+
         Render::Rect<SInt32> r = RectangleToRect(*rect);
         if ( r.Width() == 0 || r.Height() == 0 )
             return;
 
         // Create ByteArray instance.
-        if ( !GetVM().ConstructBuiltinObject(result, "flash.utils.ByteArray"))
-        {
-            result = 0;
-            return;
-        }
+        result = vm.MakeByteArray();
 
         result->lengthSet(r.Width() * r.Height() *sizeof(UInt32));
         AS3ByteArray_DIPixelProvider provider(*result);
@@ -659,13 +642,13 @@ namespace Instances { namespace fl_display
     void BitmapData::getVector(SPtr<Instances::fl_vec::Vector_uint>& result, Instances::fl_geom::Rectangle* rect)
     {
 //##protect##"instance::BitmapData::getVector()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !rect )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("rect")));
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         Render::Rect<SInt32> r = RectangleToRect(*rect);
         if ( r.Width() == 0 || r.Height() == 0 )
             return;
@@ -684,10 +667,10 @@ namespace Instances { namespace fl_display
     void BitmapData::hitTest(bool& result, Instances::fl_geom::Point* firstPoint, UInt32 firstAlphaThreshold, const Value& secondObject, Instances::fl_geom::Point* secondBitmapDataPoint, UInt32 secondAlphaThreshold)
     {
 //##protect##"instance::BitmapData::hitTest()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         Render::Point<SInt32> fp = PointToPoint(*firstPoint);
 
         if ( GetVM().IsOfType(secondObject, "flash.geom.Rectangle", GetVM().GetCurrentAppDomain()))
@@ -741,9 +724,6 @@ namespace Instances { namespace fl_display
     void BitmapData::histogram(SPtr<Instances::fl::Object>& result, Instances::fl_geom::Rectangle* hRect)
     {
 //##protect##"instance::BitmapData::histogram()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         Render::Rect<SInt32> hr;
         Render::Rect<SInt32>* rect = 0;
         if ( hRect )
@@ -752,6 +732,9 @@ namespace Instances { namespace fl_display
             rect = &hr;
         }
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         unsigned colors[4][256];
         image->Histogram(rect, colors);
 
@@ -784,15 +767,11 @@ namespace Instances { namespace fl_display
     {
 //##protect##"instance::BitmapData::lock()"
         SF_UNUSED1(result);
-        WARN_NOT_IMPLEMENTED("BitmapData::lock()");
 //##protect##"instance::BitmapData::lock()"
     }
     void BitmapData::merge(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::BitmapData::merge()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         SF_UNUSED(result);
 
         if ( argc != 7 )
@@ -805,7 +784,7 @@ namespace Instances { namespace fl_display
         DrawableImage*  srcImage = getDrawableImageFromBitmapData(srcBitmapData);
 
         if ( !srcImage || !image )
-            return;
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
         UInt32 multipliers[4];
         for ( unsigned i = 0; i < 4; ++i )
@@ -819,10 +798,10 @@ namespace Instances { namespace fl_display
     void BitmapData::noise(const Value& result, SInt32 randomSeed, UInt32 low, UInt32 high, UInt32 channelOptions, bool grayScale)
     {
 //##protect##"instance::BitmapData::noise()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         image->Noise(randomSeed, low, high, channelOptions, grayScale);
         SF_UNUSED(result);
 //##protect##"instance::BitmapData::noise()"
@@ -830,9 +809,6 @@ namespace Instances { namespace fl_display
     void BitmapData::paletteMap(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::BitmapData::paletteMap()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         Instances::fl::Array * colorArray[4];
         if ( argc < 3 )
             return;
@@ -879,6 +855,8 @@ namespace Instances { namespace fl_display
         }
         DrawableImage* image = getDrawableImageFromBitmapData(this);
         DrawableImage* sourceImage = getDrawableImageFromBitmapData(sourceBitmapData);
+        if (!image || !sourceImage)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
         image->PaletteMap(sourceImage, RectangleToRect(*sourceRect), PointToPoint(*destPoint), channels);
         
@@ -888,9 +866,6 @@ namespace Instances { namespace fl_display
     void BitmapData::perlinNoise(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::BitmapData::perlinNoise()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         SF_UNUSED(result);
         if (argc < 6 )
             return GetVM().ThrowArgumentError(VM::Error(VM::eWrongArgumentCountError, GetVM() SF_DEBUG_ARG("BitmapData::perlinNoise")));
@@ -945,6 +920,8 @@ namespace Instances { namespace fl_display
         }
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
         image->PerlinNoise((float)frequencyX, (float)frequencyY, octaves, seed, stitch, 
             fractal, channels, grayScale, offsets, offsetCount);
 //##protect##"instance::BitmapData::perlinNoise()"
@@ -952,9 +929,6 @@ namespace Instances { namespace fl_display
     void BitmapData::pixelDissolve(SInt32& result, Instances::fl_display::BitmapData* sourceBitmapData, Instances::fl_geom::Rectangle* sourceRect, Instances::fl_geom::Point* destPoint, SInt32 randomSeed, SInt32 numPixels, UInt32 fillColor)
     {
 //##protect##"instance::BitmapData::pixelDissolve()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !sourceBitmapData)
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("sourceBitmapData")));
 
@@ -969,6 +943,9 @@ namespace Instances { namespace fl_display
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
         DrawableImage* sourceImage = getDrawableImageFromBitmapData(sourceBitmapData);
+        if (!image || !sourceImage)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         result = image->PixelDissolve(sourceImage, RectangleToRect(*sourceRect), PointToPoint(*destPoint), 
                                       (unsigned)randomSeed, (unsigned)numPixels, fillColor);
         
@@ -977,10 +954,10 @@ namespace Instances { namespace fl_display
     void BitmapData::scroll(const Value& result, SInt32 x, SInt32 y)
     {
 //##protect##"instance::BitmapData::scroll()"
-        if (!pImage)
+        DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
             return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
 
-        DrawableImage* image = getDrawableImageFromBitmapData(this);
         image->Scroll(x, y);
         SF_UNUSED(result);
 //##protect##"instance::BitmapData::scroll()"
@@ -988,10 +965,9 @@ namespace Instances { namespace fl_display
     void BitmapData::setPixel(const Value& result, SInt32 x, SInt32 y, UInt32 color)
     {
 //##protect##"instance::BitmapData::setPixel()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
         image->SetPixel(x, y, color);
         SF_UNUSED(result);        
 //##protect##"instance::BitmapData::setPixel()"
@@ -999,10 +975,9 @@ namespace Instances { namespace fl_display
     void BitmapData::setPixel32(const Value& result, SInt32 x, SInt32 y, UInt32 color)
     {
 //##protect##"instance::BitmapData::setPixel32()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
         image->SetPixel32(x, y, color);
         SF_UNUSED(result);        
 //##protect##"instance::BitmapData::setPixel32()"
@@ -1010,9 +985,6 @@ namespace Instances { namespace fl_display
     void BitmapData::setPixels(const Value& result, Instances::fl_geom::Rectangle* rect, Instances::fl_utils::ByteArray* inputByteArray)
     {
 //##protect##"instance::BitmapData::setPixels()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !rect )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("rect")));
 
@@ -1021,6 +993,9 @@ namespace Instances { namespace fl_display
 
         AS3ByteArray_DIPixelProvider pixelProvider(*inputByteArray);
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         if (!image->SetPixels(RectangleToRect(*rect), pixelProvider) &&
             inputByteArray->GetLength() < pixelProvider.GetLength())
         {
@@ -1032,9 +1007,6 @@ namespace Instances { namespace fl_display
     void BitmapData::setVector(const Value& result, Instances::fl_geom::Rectangle* rect, Instances::fl_vec::Vector_uint* inputVector)
     {
 //##protect##"instance::BitmapData::setVector()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( !rect )
             return GetVM().ThrowArgumentError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("rect")));
 
@@ -1043,6 +1015,9 @@ namespace Instances { namespace fl_display
 
         AS3Vectoruint_DIPixelProvider pixelProvider(*inputVector);
         DrawableImage* image = getDrawableImageFromBitmapData(this);
+        if (!image)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         if (!image->SetPixels(RectangleToRect(*rect), pixelProvider) &&
             inputVector->lengthGet() < pixelProvider.GetLength())
         {
@@ -1055,9 +1030,6 @@ namespace Instances { namespace fl_display
     void BitmapData::threshold(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::BitmapData::threshold()"
-        if (!pImage)
-            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
-
         if ( argc < 5 )
             return;
         Instances::fl_display::BitmapData* sourceBitmapData = static_cast<Instances::fl_display::BitmapData*>(argv[0].GetObject());
@@ -1101,6 +1073,9 @@ namespace Instances { namespace fl_display
 
         DrawableImage* image = getDrawableImageFromBitmapData(this);
         DrawableImage* srcImage = getDrawableImageFromBitmapData(sourceBitmapData);
+        if (!image || !srcImage)
+            return GetVM().ThrowArgumentError(VM::Error(VM::eArgumentError, GetVM() SF_DEBUG_ARG("Invalid BitmapData")));
+
         image->Threshold(srcImage, RectangleToRect(*sourceRect), PointToPoint(*destPoint), op, threshold, color, mask, copySource);
 //##protect##"instance::BitmapData::threshold()"
     }
@@ -1108,7 +1083,6 @@ namespace Instances { namespace fl_display
     {
 //##protect##"instance::BitmapData::unlock()"
         SF_UNUSED2(result, changeRect);
-        WARN_NOT_IMPLEMENTED("BitmapData::unlock()");
 //##protect##"instance::BitmapData::unlock()"
     }
 
@@ -1145,7 +1119,11 @@ namespace Instances { namespace fl_display
 //##protect##"instance$methods"
     BitmapData::~BitmapData()
     {
-
+        // Specify the destruction order explicitly. The MovieDefImpl's heap may contain the Image[Resource], so if it was destroyed first,
+        // then it would cause these to become dangling pointers, causing problems when their refcounts cause them to be destroyed.
+        pImageResource.Clear();
+        pImage.Clear();
+        pDefImpl.Clear();
     }
 
     void BitmapData::InitInstance(bool extCall)
@@ -1213,6 +1191,16 @@ namespace Instances { namespace fl_display
     {
         if (pImageResource)
             return pImageResource;
+
+        // If the ImageResource is being queried, create the Image now. This means that the image likely will actually
+        // be displayed somehow, and therefore the image needs to exist.
+        if (!pImage)
+        {
+            DrawableImage* image = getDrawableImageFromBitmapData(this);
+            SF_DEBUG_ASSERT(image == pImage, "Expected getDrawableImageFromBitmapData(this) == pImage. Internal error.");
+            SF_UNUSED(image);
+        }
+
         if (pImage)
         {
             pImageResource = *SF_HEAP_AUTO_NEW(pImage) ImageResource(pImage, Resource::Use_Bitmap);
@@ -1242,37 +1230,7 @@ namespace Instances { namespace fl_display
         if (argc >= 4 )
             argv[3].Convert2UInt32(clearColor).DoNotCheck();
 
-        // Create the DrawableImage instance.
-        MovieRoot* proot = static_cast<const ASVM&>(GetVM()).GetMovieRoot();
-        SF_DEBUG_ASSERT(proot, "Unexpected NULL MovieRoot.");
-        MovieImpl* pimpl = proot->GetMovieImpl();
-        SF_DEBUG_ASSERT(pimpl, "Unexpected NULL MovieImpl.");
-        DrawableImageContext* dicontext = pimpl->GetDrawableImageContext();
-        ThreadCommandQueue* queue;
-        // !AB: revise, sometimes queue is NULL (MenuKit), why?
-        if (dicontext && (queue = dicontext->GetQueue()) != NULL)
-        {
-            SF_DEBUG_ASSERT(dicontext, "Unexpected NULL DrawableImageContext.");
-            SF_DEBUG_ASSERT(queue, "Unexpected NULL ThreadCommandQueue.");
-            Render::Interfaces interfaces;
-            queue->GetRenderInterfaces(&interfaces);
-            TextureManager* ptm = interfaces.pTextureManager;
-            SF_DEBUG_ASSERT(ptm, "To use BitmapData objects, you must first create a Render::TextureManager.");
-
-            if (!pImageResource)
-            {
-                // If there was no ImageResource, it means that this BitmapData was created directly in AS3.
-                // Use the DrawableImage constructor that will allocate new texture storage.
-                pImage = *SF_NEW DrawableImage(ptm->GetDrawableImageFormat(), ImageSize(Width, Height), Transparent, clearColor, dicontext);
-            }
-            else
-            {
-                // ImageResource was present; this BitmapData is being created from constructing a Bitmap's class.
-                // In this case, reference the original Bitmap's image as a delegate, instead of actually creating new storage.
-                // TODOBM: determine value of transparent flag.
-                pImage = *SF_NEW DrawableImage(true, pImageResource->GetImage(), dicontext);
-            }
-        }
+        ClearColor = Color(clearColor);
     }
 
     Render::Rect<SInt32> BitmapData::RectangleToRect(const Instances::fl_geom::Rectangle& rect)
@@ -1292,25 +1250,54 @@ namespace Instances { namespace fl_display
         if ( !sourceBitmapData )
             return 0;
         
-        ImageBase::ImageType imageType = sourceBitmapData->pImage->GetImageType();
-        switch(imageType)
+        // Lazy initialization of the DrawableImage.
+        if (!sourceBitmapData->pImage || sourceBitmapData->pImage->GetImageType() != ImageBase::Type_DrawableImage)
         {
-            case ImageBase::Type_DrawableImage:
-                break;
+            // Create the DrawableImage instance.
+            MovieRoot* proot = static_cast<const ASVM&>(GetVM()).GetMovieRoot();
+            SF_DEBUG_ASSERT(proot, "Unexpected NULL MovieRoot.");
+            MovieImpl* pimpl = proot->GetMovieImpl();
+            SF_DEBUG_ASSERT(pimpl, "Unexpected NULL MovieImpl.");
+            DrawableImageContext* dicontext = pimpl->GetDrawableImageContext();
+            ThreadCommandQueue* queue = dicontext->GetQueue();
 
-            default:
+            SF_DEBUG_ASSERT(dicontext, "Unexpected NULL DrawableImageContext.");
+            SF_DEBUG_WARNING(queue == 0, "To use BitmapData objects, you must provide a ThreadCommandQueue to MovieDef::CreateInstance.");
+            if (dicontext && queue)
             {
-                // Create the DrawableImage instance.
-                MovieRoot* proot = static_cast<const ASVM&>(GetVM()).GetMovieRoot();
-                SF_DEBUG_ASSERT(proot, "Unexpected NULL MovieRoot.");
-                MovieImpl* pimpl = proot->GetMovieImpl();
-                SF_DEBUG_ASSERT(pimpl, "Unexpected NULL MovieImpl.");
-                DrawableImageContext* dicontext = pimpl->GetDrawableImageContext();
-                SF_DEBUG_ASSERT(dicontext, "Unexpected NULL DrawableImageContext.");
-                sourceBitmapData->pImage = *SF_NEW DrawableImage(Transparent, (Render::Image*)sourceBitmapData->pImage.GetPtr(), dicontext);
-                break;
+                Render::Interfaces interfaces;
+                queue->GetRenderInterfaces(&interfaces);
+                TextureManager* ptm = interfaces.pTextureManager;
+                SF_DEBUG_ASSERT(ptm, "To use BitmapData objects, you must first create a Render::TextureManager, and return it in TheadCommandQueue::GetRenderInterfaces.");
+
+                if (!sourceBitmapData->pImageResource)
+                {
+                    // If there was no ImageResource, it means that this BitmapData was created directly in AS3.
+                    // Use the DrawableImage constructor that will allocate new texture storage.
+
+                    // Ensure that the BitmapData dimensions don't violate the size restrictions. In general, sizes above these
+                    // will cause the HAL backends to explode anyhow (eg. D3D9 cannot handle textures with a dimension greater than 8192).
+                    ImageSize size(sourceBitmapData->Width, sourceBitmapData->Height);
+                    if (size.Area() > MaximumArea ||
+                        size.Width > MaximumDimension ||
+                        size.Height > MaximumDimension)
+                    {
+                        return 0;
+                    }
+
+                    sourceBitmapData->pImage = *SF_NEW DrawableImage(ptm->GetDrawableImageFormat(), size, 
+                        sourceBitmapData->Transparent, sourceBitmapData->ClearColor, dicontext);
+                }
+                else
+                {
+                    // ImageResource was present; this BitmapData is being created from constructing a Bitmap's class.
+                    // In this case, reference the original Bitmap's image as a delegate, instead of actually creating new storage.
+                    // TODOBM: determine value of transparent flag.
+                    sourceBitmapData->pImage = *SF_NEW DrawableImage(true, sourceBitmapData->pImageResource->GetImage(), dicontext);
+                }
             }
         }
+
         SF_DEBUG_ASSERT(sourceBitmapData->pImage->GetImageType() == ImageBase::Type_DrawableImage, "Expected image type to be DrawableImage.");
         return (DrawableImage*)sourceBitmapData->pImage.GetPtr();
     }
@@ -1321,50 +1308,97 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 BitmapData::tito[BitmapData::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 9, 10, 13, 15, 21, 28, 29, 36, 39, 43, 46, 50, 53, 56, 58, 60, 66, 68, 69, 77, 83, 91, 101, 108, 111, 115, 119, 122, 125, 134, 
+    // };
+    const TypeInfo* BitmapData::tit[136] = {
+        &AS3::fl::int_TI, 
+        &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl_filters::BitmapFilterTI, 
+        &AS3::fl_display::BitmapDataTI, 
+        NULL, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::ColorTransformTI, 
+        NULL, &AS3::fl_display::BitmapDataTI, 
+        NULL, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::PointTI, &AS3::fl::BooleanTI, 
+        NULL, 
+        NULL, &AS3::fl_display::IBitmapDrawableTI, &AS3::fl_geom::MatrixTI, &AS3::fl_geom::ColorTransformTI, &AS3::fl::StringTI, &AS3::fl_geom::RectangleTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_geom::RectangleTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::uintTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl_geom::RectangleTI, &AS3::fl_filters::BitmapFilterTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::uintTI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::uintTI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl_utils::ByteArrayTI, &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::PointTI, &AS3::fl::uintTI, &AS3::fl::ObjectTI, &AS3::fl_geom::PointTI, &AS3::fl::uintTI, 
+        &AS3::fl::ObjectTI, &AS3::fl_geom::RectangleTI, 
+        NULL, 
+        NULL, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, &AS3::fl::ArrayTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::uintTI, &AS3::fl::int_TI, &AS3::fl::BooleanTI, &AS3::fl::BooleanTI, &AS3::fl::uintTI, &AS3::fl::BooleanTI, &AS3::fl::ArrayTI, 
+        &AS3::fl::int_TI, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::uintTI, 
+        NULL, &AS3::fl_geom::RectangleTI, &AS3::fl_utils::ByteArrayTI, 
+        NULL, &AS3::fl_geom::RectangleTI, NULL, 
+        &AS3::fl::uintTI, &AS3::fl_display::BitmapDataTI, &AS3::fl_geom::RectangleTI, &AS3::fl_geom::PointTI, &AS3::fl::StringTI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::uintTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_geom::RectangleTI, 
+    };
+    const Abc::ConstValue BitmapData::dva[15] = {
+        {Abc::CONSTANT_Null, 0}, {Abc::CONSTANT_Null, 0}, {Abc::CONSTANT_False, 0}, 
+        {Abc::CONSTANT_True, 0}, 
+        {Abc::CONSTANT_UInt, 2}, 
+        {Abc::CONSTANT_UInt, 3}, {Abc::CONSTANT_UInt, 4}, {Abc::CONSTANT_False, 0}, 
+        {Abc::CONSTANT_UInt, 4}, {Abc::CONSTANT_False, 0}, {Abc::CONSTANT_Null, 0}, {}, 
+        {Abc::CONSTANT_UInt, 5}, {Abc::CONSTANT_False, 0}, {}, 
+    };
     const ThunkInfo BitmapData::ti[BitmapData::ThunkInfoNum] = {
-        {TFunc_Instances_BitmapData_heightGet::Func, &AS3::fl::int_TI, "height", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BitmapData_rectGet::Func, &AS3::fl_geom::RectangleTI, "rect", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BitmapData_transparentGet::Func, &AS3::fl::BooleanTI, "transparent", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BitmapData_widthGet::Func, &AS3::fl::int_TI, "width", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_BitmapData_applyFilter::Func, NULL, "applyFilter", NULL, Abc::NS_Public, CT_Method, 4, 4},
-        {TFunc_Instances_BitmapData_clone::Func, &AS3::fl_display::BitmapDataTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_BitmapData_colorTransform::Func, NULL, "colorTransform", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_compare::Func, NULL, "compare", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_BitmapData_copyChannel::Func, NULL, "copyChannel", NULL, Abc::NS_Public, CT_Method, 5, 5},
-        {TFunc_Instances_BitmapData_copyPixels::Func, NULL, "copyPixels", NULL, Abc::NS_Public, CT_Method, 3, 6},
-        {TFunc_Instances_BitmapData_dispose::Func, NULL, "dispose", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_BitmapData_draw::Func, NULL, "draw", NULL, Abc::NS_Public, CT_Method, 1, 6},
-        {TFunc_Instances_BitmapData_fillRect::Func, NULL, "fillRect", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_floodFill::Func, NULL, "floodFill", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_BitmapData_generateFilterRect::Func, &AS3::fl_geom::RectangleTI, "generateFilterRect", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_getColorBoundsRect::Func, &AS3::fl_geom::RectangleTI, "getColorBoundsRect", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_BitmapData_getPixel::Func, &AS3::fl::uintTI, "getPixel", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_getPixel32::Func, &AS3::fl::uintTI, "getPixel32", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_getPixels::Func, &AS3::fl_utils::ByteArrayTI, "getPixels", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_BitmapData_getVector::Func, NULL, "getVector", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_BitmapData_hitTest::Func, &AS3::fl::BooleanTI, "hitTest", NULL, Abc::NS_Public, CT_Method, 3, 5},
-        {TFunc_Instances_BitmapData_histogram::Func, &AS3::fl::ObjectTI, "histogram", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_BitmapData_lock::Func, NULL, "lock", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_BitmapData_merge::Func, NULL, "merge", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_BitmapData_noise::Func, NULL, "noise", NULL, Abc::NS_Public, CT_Method, 1, 5},
-        {TFunc_Instances_BitmapData_paletteMap::Func, NULL, "paletteMap", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_BitmapData_perlinNoise::Func, NULL, "perlinNoise", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_BitmapData_pixelDissolve::Func, &AS3::fl::int_TI, "pixelDissolve", NULL, Abc::NS_Public, CT_Method, 3, 6},
-        {TFunc_Instances_BitmapData_scroll::Func, NULL, "scroll", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_setPixel::Func, NULL, "setPixel", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_BitmapData_setPixel32::Func, NULL, "setPixel32", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_BitmapData_setPixels::Func, NULL, "setPixels", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_setVector::Func, NULL, "setVector", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_BitmapData_threshold::Func, &AS3::fl::uintTI, "threshold", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_BitmapData_unlock::Func, NULL, "unlock", NULL, Abc::NS_Public, CT_Method, 0, 1},
+        {TFunc_Instances_BitmapData_heightGet::Func, &BitmapData::tit[0], "height", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_rectGet::Func, &BitmapData::tit[1], "rect", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_transparentGet::Func, &BitmapData::tit[2], "transparent", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_widthGet::Func, &BitmapData::tit[3], "width", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_applyFilter::Func, &BitmapData::tit[4], "applyFilter", NULL, Abc::NS_Public, CT_Method, 4, 4, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_clone::Func, &BitmapData::tit[9], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_colorTransform::Func, &BitmapData::tit[10], "colorTransform", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_compare::Func, &BitmapData::tit[13], "compare", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_copyChannel::Func, &BitmapData::tit[15], "copyChannel", NULL, Abc::NS_Public, CT_Method, 5, 5, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_copyPixels::Func, &BitmapData::tit[21], "copyPixels", NULL, Abc::NS_Public, CT_Method, 3, 6, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_dispose::Func, &BitmapData::tit[28], "dispose", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_draw::Func, &BitmapData::tit[29], "draw", NULL, Abc::NS_Public, CT_Method, 1, 6, 0, 3, &BitmapData::dva[0]},
+        {TFunc_Instances_BitmapData_fillRect::Func, &BitmapData::tit[36], "fillRect", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_floodFill::Func, &BitmapData::tit[39], "floodFill", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_generateFilterRect::Func, &BitmapData::tit[43], "generateFilterRect", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_getColorBoundsRect::Func, &BitmapData::tit[46], "getColorBoundsRect", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 1, &BitmapData::dva[3]},
+        {TFunc_Instances_BitmapData_getPixel::Func, &BitmapData::tit[50], "getPixel", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_getPixel32::Func, &BitmapData::tit[53], "getPixel32", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_getPixels::Func, &BitmapData::tit[56], "getPixels", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_getVector::Func, &BitmapData::tit[58], "getVector", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_hitTest::Func, &BitmapData::tit[60], "hitTest", NULL, Abc::NS_Public, CT_Method, 3, 5, 0, 1, &BitmapData::dva[4]},
+        {TFunc_Instances_BitmapData_histogram::Func, &BitmapData::tit[66], "histogram", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_lock::Func, &BitmapData::tit[68], "lock", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_merge::Func, &BitmapData::tit[69], "merge", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_BitmapData_noise::Func, &BitmapData::tit[77], "noise", NULL, Abc::NS_Public, CT_Method, 1, 5, 0, 3, &BitmapData::dva[5]},
+        {TFunc_Instances_BitmapData_paletteMap::Func, &BitmapData::tit[83], "paletteMap", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_BitmapData_perlinNoise::Func, &BitmapData::tit[91], "perlinNoise", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 4, &BitmapData::dva[8]},
+        {TFunc_Instances_BitmapData_pixelDissolve::Func, &BitmapData::tit[101], "pixelDissolve", NULL, Abc::NS_Public, CT_Method, 3, 6, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_scroll::Func, &BitmapData::tit[108], "scroll", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_setPixel::Func, &BitmapData::tit[111], "setPixel", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_setPixel32::Func, &BitmapData::tit[115], "setPixel32", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_setPixels::Func, &BitmapData::tit[119], "setPixels", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_setVector::Func, &BitmapData::tit[122], "setVector", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_BitmapData_threshold::Func, &BitmapData::tit[125], "threshold", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 3, &BitmapData::dva[12]},
+        {TFunc_Instances_BitmapData_unlock::Func, &BitmapData::tit[134], "unlock", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
     };
 
     BitmapData::BitmapData(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::BitmapData::BitmapData()"
 //##protect##"InstanceTraits::BitmapData::BitmapData()"
-        SetMemSize(sizeof(Instances::fl_display::BitmapData));
 
     }
 
@@ -1381,24 +1415,27 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    BitmapData::BitmapData(VM& vm)
-    : Traits(vm, AS3::fl_display::BitmapDataCI)
+
+    BitmapData::BitmapData(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::BitmapData::BitmapData()"
 //##protect##"ClassTraits::BitmapData::BitmapData()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::BitmapData(vm, AS3::fl_display::BitmapDataCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> BitmapData::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) BitmapData(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) BitmapData(vm, AS3::fl_display::BitmapDataCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::BitmapDataCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1414,6 +1451,11 @@ namespace fl_display
 
     const TypeInfo BitmapDataTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::BitmapData::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::BitmapData::ThunkInfoNum,
+        0,
         "BitmapData", "flash.display", &fl::ObjectTI,
         BitmapDataImplements
     };
@@ -1421,10 +1463,6 @@ namespace fl_display
     const ClassInfo BitmapDataCI = {
         &BitmapDataTI,
         ClassTraits::fl_display::BitmapData::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::BitmapData::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::BitmapData::ti,

@@ -6,6 +6,7 @@ Created     :   2009
 Authors     :   Mustafa Thamer
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -72,13 +73,12 @@ DeviceImpl::DeviceImpl(Render::ThreadCommandQueue* commandQueue)
  : pWindow(0), 
    pHal(0),
    Status(Device_NeedInit),
-   pApp(NULL),
    hWnd(0),
    hDC(0), 
    hGLRC(0), 
    FSAASupported(false)
 {
-    pHal = *SF_NEW Render::GL::HAL(commandQueue);
+    pHal = *SF_NEW Render::GL::ProfilerHAL(commandQueue);
 }
 
 DeviceImpl::~DeviceImpl()
@@ -268,12 +268,12 @@ bool DeviceImpl::setupPixelFormat(const ViewConfig& config)
             return false;
         }
 
-        HDC hDC = GetDC(hWnd);
+        HDC hDCGL = GetDC(hWnd);
         GLuint numFormats;
         int intAttributes[MAX_PIXELFORMAT_INTS];
         float floatAttributes[MAX_PIXELFORMAT_FLOATS];
         calculatePixelFormat(config, intAttributes, floatAttributes );
-        if (!wglChoosePixelFormatARB(hDC,intAttributes, floatAttributes, 1, 
+        if (!wglChoosePixelFormatARB(hDCGL,intAttributes, floatAttributes, 1, 
             &pixelFormat, &numFormats ) || numFormats <= 0 )
         {
             if (pApp && pApp->GetArgs().GetBool("NoDebugPopups"))
@@ -401,6 +401,13 @@ bool DeviceImpl::initGraphics(const ViewConfig& config, Device::Window* window, 
         createAttributes[currentAttribute++] = 2;
         createAttributes[currentAttribute++] = WGL_CONTEXT_PROFILE_MASK_ARB;
         createAttributes[currentAttribute++] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+
+        // If GL debug_output is desired, the context must be created with the debug flag.
+        if (config.ViewFlags & View_DebugMessages)
+        {
+            createAttributes[currentAttribute++] = WGL_CONTEXT_FLAGS_ARB;
+            createAttributes[currentAttribute++] = WGL_CONTEXT_DEBUG_BIT_ARB;
+        }
         createAttributes[currentAttribute++] = 0;
         hGLRC = wglCreateContextAttribsARB(hDC, NULL, createAttributes);
     }
@@ -448,6 +455,9 @@ bool DeviceImpl::initGraphics(const ViewConfig& config, Device::Window* window, 
 
     if (!config.HasFlag(View_PrecompileShaders))
         flags |= Render::GL::HALConfig_DynamicShaderCompile;
+
+    if (config.HasFlag(View_DebugMessages))
+        flags |= Render::GL::HALConfig_DebugMessages;
 
     if (!pHal->InitHAL(Render::GL::HALInitParams(flags, renderThreadId)))
     {
@@ -576,15 +586,15 @@ void Device::BeginFrame()
 {
 }
 
+void Device::SetWireframe(bool flag)
+{
+    glPolygonMode(GL_FRONT_AND_BACK, flag ? GL_LINE : GL_FILL);
+}
+
 void Device::PresentFrame(unsigned)
 {
     SF_AMP_SCOPE_RENDER_TIMER_ID("Device::PresentFrame", Amp_Native_Function_Id_Present);
     ::SwapBuffers(pImpl->hDC);
-}
-
-void Device::SetWireframe(bool flag)
-{
-    glPolygonMode(GL_FRONT_AND_BACK, flag ? GL_LINE : GL_FILL);
 }
 
 UInt32 Device::GetCaps() const

@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -179,6 +180,7 @@ bool FxPlayerApp::OnInit(Platform::ViewConfig& config)
 	//pblurTxt->SetText("Blur");
 	pblurTxt->SetColor(Render::Color(120, 30, 192, 255));
 	pblurTxt->SetFontSize(32);
+    pblurTxt->SetLetterSpacing(15);
 	GFx::DrawText::Filter blurF(GFx::DrawText::Filter_Blur);
 	blurF.Blur.BlurX = blurF.Blur.BlurY = 5;
 	blurF.Blur.Strength = 120;

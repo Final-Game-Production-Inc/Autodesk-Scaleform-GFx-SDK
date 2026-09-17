@@ -6,6 +6,7 @@ Created     :   Dec 2010
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -109,11 +110,11 @@ public:
     {
 #if defined(_MSC_VER)
         // When initializing unions which contain arrays (which __m128i is), the the initializers are cast to the first member in the union.
-        static Vector4i v = { 
-            ((i0&0x000000FF) >> 0 ), ((i0&0x0000FF00) >> 8), ((i0&0x00FF0000) >> 16), ((i0&0xFF000000) >> 24), 
-            ((i1&0x000000FF) >> 0 ), ((i1&0x0000FF00) >> 8), ((i1&0x00FF0000) >> 16), ((i1&0xFF000000) >> 24), 
-            ((i2&0x000000FF) >> 0 ), ((i2&0x0000FF00) >> 8), ((i2&0x00FF0000) >> 16), ((i2&0xFF000000) >> 24), 
-            ((i3&0x000000FF) >> 0 ), ((i3&0x0000FF00) >> 8), ((i3&0x00FF0000) >> 16), ((i3&0xFF000000) >> 24) };
+        static Vector4i v = {
+            (char)((i0 & 0x000000FF) >> 0), (char)((i0 & 0x0000FF00) >> 8), (char)((i0 & 0x00FF0000) >> 16), (char)((i0 & 0xFF000000) >> 24),
+            (char)((i1 & 0x000000FF) >> 0), (char)((i1 & 0x0000FF00) >> 8), (char)((i1 & 0x00FF0000) >> 16), (char)((i1 & 0xFF000000) >> 24),
+            (char)((i2 & 0x000000FF) >> 0), (char)((i2 & 0x0000FF00) >> 8), (char)((i2 & 0x00FF0000) >> 16), (char)((i2 & 0xFF000000) >> 24),
+            (char)((i3 & 0x000000FF) >> 0), (char)((i3 & 0x0000FF00) >> 8), (char)((i3 & 0x00FF0000) >> 16), (char)((i3 & 0xFF000000) >> 24) };
 #else
         static const __m128i v = _mm_set_epi32(i3, i2, i1, i0);
 #endif

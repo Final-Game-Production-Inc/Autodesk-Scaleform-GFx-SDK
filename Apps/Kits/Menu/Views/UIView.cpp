@@ -5,6 +5,7 @@ Content     :   C++ interface for UI views in Menu Kit
 Authors     :   Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -33,13 +34,13 @@ void    UIView::OnTopMostView(bool bPlayOpenAnimation)
     }
 }
 
-Double  UIView::toNumber(const GFx::Value& val)
+GFx::Double  UIView::toNumber(const GFx::Value& val)
 {
     switch (val.GetType())
     {
-    case GFx::Value::VT_Number:     return Double(val.GetNumber());
-    case GFx::Value::VT_UInt:       return Double(val.GetUInt());
-    case GFx::Value::VT_Int:        return Double(val.GetInt());
+    case GFx::Value::VT_Number:     return GFx::Double(val.GetNumber());
+    case GFx::Value::VT_UInt:       return GFx::Double(val.GetUInt());
+    case GFx::Value::VT_Int:        return GFx::Double(val.GetInt());
     default:
         {
             SF_ASSERT(0);

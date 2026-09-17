@@ -6,6 +6,7 @@ Created     :   March 10, 2006
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -135,7 +136,7 @@ NumberProto::NumberProto(ASStringContext *psc, Object* pprototype, const Functio
 struct GASNameNumberFunc
 {
     const char* Name;
-    Number (SF_CDECL *Function)();
+    Double (SF_CDECL *Function)();
 };
 
 static const GASNameNumberFunc GASNumberConstTable[] = 
@@ -169,7 +170,7 @@ void NumberCtorFunction::GlobalCtor(const FnCall& fn)
         *fn.Result = retVal;
     }
     else
-        fn.Result->SetNumber((fn.NArgs == 0)?0:fn.Arg(0).ToNumber(fn.Env));
+        fn.Result->SetNumber((fn.NArgs == 0) ? Double(0.0) : fn.Arg(0).ToNumber(fn.Env));
 }
 
 Object* NumberCtorFunction::CreateNewObject(Environment* penv) const 

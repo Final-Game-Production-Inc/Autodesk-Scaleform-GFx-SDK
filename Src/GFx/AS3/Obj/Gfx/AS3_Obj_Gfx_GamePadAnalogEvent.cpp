@@ -7,6 +7,7 @@ Created     :   Jun, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_gfx::GamePadAnalogEvent, Instances::fl_gfx::GamePadAnalogEvent::mid_codeGet, UInt32> TFunc_Instances_GamePadAnalogEvent_codeGet;
 typedef ThunkFunc1<Instances::fl_gfx::GamePadAnalogEvent, Instances::fl_gfx::GamePadAnalogEvent::mid_codeSet, const Value, UInt32> TFunc_Instances_GamePadAnalogEvent_codeSet;
 typedef ThunkFunc0<Instances::fl_gfx::GamePadAnalogEvent, Instances::fl_gfx::GamePadAnalogEvent::mid_controllerIdxGet, UInt32> TFunc_Instances_GamePadAnalogEvent_controllerIdxGet;
@@ -229,25 +224,39 @@ namespace Instances { namespace fl_gfx
 
 namespace InstanceTraits { namespace fl_gfx
 {
+    // const UInt16 GamePadAnalogEvent::tito[GamePadAnalogEvent::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 
+    // };
+    const TypeInfo* GamePadAnalogEvent::tit[14] = {
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo GamePadAnalogEvent::ti[GamePadAnalogEvent::ThunkInfoNum] = {
-        {TFunc_Instances_GamePadAnalogEvent_codeGet::Func, &AS3::fl::uintTI, "code", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GamePadAnalogEvent_codeSet::Func, NULL, "code", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GamePadAnalogEvent_controllerIdxGet::Func, &AS3::fl::uintTI, "controllerIdx", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GamePadAnalogEvent_controllerIdxSet::Func, NULL, "controllerIdx", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GamePadAnalogEvent_xvalueGet::Func, &AS3::fl::NumberTI, "xvalue", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GamePadAnalogEvent_xvalueSet::Func, NULL, "xvalue", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GamePadAnalogEvent_yvalueGet::Func, &AS3::fl::NumberTI, "yvalue", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_GamePadAnalogEvent_yvalueSet::Func, NULL, "yvalue", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_GamePadAnalogEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_GamePadAnalogEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_GamePadAnalogEvent_codeGet::Func, &GamePadAnalogEvent::tit[0], "code", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_codeSet::Func, &GamePadAnalogEvent::tit[1], "code", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_controllerIdxGet::Func, &GamePadAnalogEvent::tit[3], "controllerIdx", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_controllerIdxSet::Func, &GamePadAnalogEvent::tit[4], "controllerIdx", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_xvalueGet::Func, &GamePadAnalogEvent::tit[6], "xvalue", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_xvalueSet::Func, &GamePadAnalogEvent::tit[7], "xvalue", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_yvalueGet::Func, &GamePadAnalogEvent::tit[9], "yvalue", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_yvalueSet::Func, &GamePadAnalogEvent::tit[10], "yvalue", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_clone::Func, &GamePadAnalogEvent::tit[12], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_GamePadAnalogEvent_toString::Func, &GamePadAnalogEvent::tit[13], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     GamePadAnalogEvent::GamePadAnalogEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::GamePadAnalogEvent::GamePadAnalogEvent()"
 //##protect##"InstanceTraits::GamePadAnalogEvent::GamePadAnalogEvent()"
-        SetMemSize(sizeof(Instances::fl_gfx::GamePadAnalogEvent));
 
     }
 
@@ -282,24 +291,27 @@ namespace ClassTraits { namespace fl_gfx
         {"CHANGE", NULL, OFFSETOF(Classes::fl_gfx::GamePadAnalogEvent, CHANGE), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    GamePadAnalogEvent::GamePadAnalogEvent(VM& vm)
-    : Traits(vm, AS3::fl_gfx::GamePadAnalogEventCI)
+
+    GamePadAnalogEvent::GamePadAnalogEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::GamePadAnalogEvent::GamePadAnalogEvent()"
 //##protect##"ClassTraits::GamePadAnalogEvent::GamePadAnalogEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_gfx::GamePadAnalogEvent(vm, AS3::fl_gfx::GamePadAnalogEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::GamePadAnalogEvent(*this));
 
     }
 
     Pickable<Traits> GamePadAnalogEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) GamePadAnalogEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) GamePadAnalogEvent(vm, AS3::fl_gfx::GamePadAnalogEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::GamePadAnalogEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -310,6 +322,11 @@ namespace fl_gfx
 {
     const TypeInfo GamePadAnalogEventTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::GamePadAnalogEvent::InstanceType),
+        0,
+        ClassTraits::fl_gfx::GamePadAnalogEvent::MemberInfoNum,
+        InstanceTraits::fl_gfx::GamePadAnalogEvent::ThunkInfoNum,
+        0,
         "GamePadAnalogEvent", "scaleform.gfx", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -317,10 +334,6 @@ namespace fl_gfx
     const ClassInfo GamePadAnalogEventCI = {
         &GamePadAnalogEventTI,
         ClassTraits::fl_gfx::GamePadAnalogEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_gfx::GamePadAnalogEvent::MemberInfoNum,
-        InstanceTraits::fl_gfx::GamePadAnalogEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_gfx::GamePadAnalogEvent::mi,
         InstanceTraits::fl_gfx::GamePadAnalogEvent::ti,

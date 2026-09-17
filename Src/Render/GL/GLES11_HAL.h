@@ -6,6 +6,7 @@ Created     :   Feb 2012
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -55,7 +56,8 @@ enum CapFlags
     // Caps for buffers in mesh cache. Static buffers are still used even if none of these caps are set.
     Cap_MapBuffer       = 0x20,
     Cap_BufferUpdate    = 0x40,
-    Cap_UseMeshBuffers  = Cap_MapBuffer | Cap_BufferUpdate,
+    Cap_MapBufferRange  = 0x80, // GLES 1.1 does not support this extension, it is here to make code cross-compilable.
+    Cap_UseMeshBuffers  = Cap_MapBuffer | Cap_BufferUpdate | Cap_MapBufferRange,
 
     Caps_Standard       = Cap_MapBuffer
 };
@@ -86,7 +88,7 @@ public:
 
 public:    
 
-    HAL(ThreadCommandQueue* commandQueue = 0);
+    HAL(ThreadCommandQueue* commandQueue);
     virtual ~HAL();
 
     // *** Implement Dependent Video Mode configuration
@@ -103,6 +105,7 @@ public:
     // *** Rendering
 
     virtual bool        BeginFrame();
+    virtual void        FinishFrame();
 
     virtual bool        BeginScene();
 
@@ -116,6 +119,10 @@ public:
     // Updates HW Viewport and ViewportMatrix based on the current
     // values of VP, ViewRect and ViewportValid.
     void                updateViewport();
+
+
+    // GLES 1.1 does not support VAOs, this is here to make the code cross-compilable.
+    bool                ShouldUseVAOs() const { return false; }
 
     virtual void        DrawProcessedPrimitive(Primitive* pprimitive,
                                                PrimitiveBatch* pstart, PrimitiveBatch *pend);
@@ -135,7 +142,7 @@ public:
     virtual void    PopMask();
 
     void    drawMaskClearRectangles(const HMatrix* matrices, UPInt count);
-    void    clearSolidRectangle(const Rect<int>& r, Color color);
+    void    clearSolidRectangle(const Rect<int>& r, Color color, bool blend);
     
     // This flag indicates whether to use stencil-based masking or Z-based masking. This is
     // implemented more as a hedge in case we want to run on ES 1.1 implementations that actually
@@ -158,7 +165,8 @@ public:
     virtual bool    createDefaultRenderBuffer() { return false; };
     virtual void    destroyRenderBuffers() { };
 
-    bool SetVertexArray(PrimitiveFillType fillType, const VertexFormat* pFormat, GLuint buffer, UByte* vertexOffset);
+    bool SetVertexArray(PrimitiveFillType fillType, const VertexFormat* pFormat, GLuint buffer, UByte* vertexOffset, int textureBase = 0);
+    void SetFactorArray(const VertexFormat* pFormat, GLuint buffer, UByte* vertexOffset, int factorTexture);
 
 
     // *** BlendMode
@@ -181,7 +189,10 @@ public:
 
     // Check whether the given extension exists in the current profile.
     bool                CheckExtension(const char *name);
-    
+
+    // Check whether the input major/minor version pair is greater or equal to the current profile version.
+    bool                CheckGLVersion(unsigned reqMajor, unsigned reqMinor);
+
     virtual RQCacheInterface& GetRQCacheInterface()
     {
         return QueueProcessor.GetQueueCachesRef();
@@ -195,30 +206,36 @@ public:
         MT_Count
     };
 
-    void SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatch::BatchType btype, const VertexFormat* pformat, 
-        unsigned batchCount, const MatrixState* mstate, const Primitive::MeshEntry* pmeshes );
+    int SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatch::BatchType btype, const VertexFormat* pformat,
+        unsigned batchCount, const MatrixState* mstate, const Primitive::MeshEntry* pmeshes, int *textureBase);
     void SetFill(PrimitiveFillType fillType, unsigned fillFlags, const VertexFormat* vf );
     void SetMatrix(MatrixType type, const Matrix2F &m1, const HMatrix &m2, const MatrixState* Matrices, unsigned index = 0, unsigned batch = 0);
     void SetMatrix(MatrixType type, const Matrix2F &m, unsigned index = 0, unsigned batch = 0);
     void SetCxform(unsigned stage, const Cxform & cx, unsigned index = 0, unsigned batch = 0);
-    int SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount, PrimitiveFill* pfill, const Cxform &cx);
+    int SetComplexCombiners(bool vertexColor, bool solidColor, bool uvTexture, int textureCount, PrimitiveFill* pfill, const Cxform &cx);
     void SetColor(unsigned stage, Color c, unsigned index = 0, unsigned batch = 0);
     void SetVertexColors(unsigned stage);
-    void SetTexture(PrimitiveFillType fillType, unsigned stage, Texture* ptex, ImageFillMode mode, bool deferredCombine);
+    void SetTexture(PrimitiveFillType fillType, unsigned stage, Texture* ptex, ImageFillMode mode, bool deferredCombine, bool uvTexture, bool vcolor);
     void DisableExtraStages(unsigned stage);
 
     MultiKeyCollection<VertexElement, VertexFormat, 32>         VFormats;
     
     unsigned DummyTextureID;
     
-    unsigned AddAlphaTextureID[256];
+    unsigned AddTextureID[256];
+    unsigned EdgeAAID;
 
 protected:
-    // Cached GL_EXTENSIONS string.
-    String              Extensions;
 
+    virtual void        initMatrices();
+    
     void                drawPrimitive(unsigned indexCount, unsigned meshCount);
     void                drawIndexedPrimitive( unsigned indexCount, unsigned meshCount, UByte* indexPtr);
+
+    // Cached versions read from GL_VERSION string.
+    unsigned            MajorVersion, MinorVersion;
+    // Cached GL_EXTENSIONS string.
+    String              Extensions;
 };
 
 

@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,7 +35,7 @@ Texture::Texture(TextureManagerLocks* pmanagerLocks, const TextureFormat* pforma
                  unsigned mipLevels, const ImageSize& size, unsigned use,
                  ImageBase* pimage) :   
     Render::Texture(pmanagerLocks, size, (UByte)mipLevels, (UInt16)use, pimage, pformat), 
-	LastMinFilter(0), LastAddress(0)
+    LastMinFilter(0), LastAddress(0)
 {
     TextureCount = (UByte) pformat->GetPlaneCount();
     if (TextureCount > 1)
@@ -132,11 +133,7 @@ bool Texture::Initialize()
     // Determine how many mipLevels we should have and whether we can
     // auto-generate them or not.
     unsigned allocMipLevels = MipLevels;
-    bool genMipmaps = 0, allocMapBuffer = 0;
-
-    if (Use & ImageUse_MapSimThread ||
-        Use & ImageUse_MapRenderThread )
-        allocMapBuffer = 1;
+    bool genMipmaps = 0;
 
     if (Use & ImageUse_GenMipmaps)
     {
@@ -157,11 +154,6 @@ bool Texture::Initialize()
         }
     }
 
-    if (allocMapBuffer)
-    {
-        pBackingImage = *RawImage::Create(format, MipLevels, pTextures[0].Size, 0);
-    }
-
     // Create textures
     for (itex = 0; itex < TextureCount; itex++)
     {
@@ -173,10 +165,13 @@ bool Texture::Initialize()
 #if defined(GL_TEXTURE_MAX_LEVEL)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, MipLevels-1);
 #elif defined(GL_APPLE_texture_max_level)
-        if (MipLevels > 1 )
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL_APPLE, MipLevels-1);
-        else
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL_APPLE, 1);
+		if (pmanager->Caps & TextureManager::TC_UseAppleMaxLevel)
+        {
+			if (MipLevels > 1 )
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL_APPLE, MipLevels-1);
+			else
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL_APPLE, 1);
+		}
 #endif
 
         if (!ImageData::IsFormatCompressed(format))
@@ -201,8 +196,26 @@ bool Texture::Initialize()
 
     if (genMipmaps)
     {
-        glGenerateMipmapEXT(GL_TEXTURE_2D);
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
+
+    // If we have lost the text, but have a backing image, the contents should be able to be restored.
+    if (State == State_Lost && pBackingImage != 0)
+    {
+        UpdateRenderTargetData(0); // NOTE: RenderTargetData is not used in GL, so it can be NULL.
+
+        // Reallocation of the backing buffer/update from pImage is not necessary, return now
+        State = State_Valid;
+        return Render::Texture::Initialize();
+    }
+
+    // If the image is mappable, we need to create a buffer in which the mapped data will exist.
+    if ((Use & ImageUse_MapSimThread ||
+        Use & ImageUse_MapRenderThread ))
+    {
+        pBackingImage = *RawImage::Create(format, MipLevels, pTextures[0].Size, 0);
+    }
+
 
     // Upload image content to texture, if any.
     if (pImage && !Render::Texture::Update())
@@ -245,6 +258,14 @@ bool Texture::Initialize(GLuint texID)
     glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, &levelN);
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPONENTS, &format);
 
+    // 1000 is the default value for GL_TEXTURE_MAX_LEVEL
+    // If we get this value, we can assume the texture is not mipmapped, and
+    // the user simply failed to set the value properly.
+    if (levelN == 1000)
+    {
+        levelN = 1;
+    }
+
     Texture0.Size.SetSize(width, height);
 
     // Override the image size if it was not provided.
@@ -270,6 +291,7 @@ bool Texture::Initialize(GLuint texID)
             break;
         }
     }
+
     if ( !pFormat )
     {
         State = State_InitFailed;
@@ -367,13 +389,13 @@ bool Texture::Upload(unsigned itex, unsigned level, const ImagePlane& plane)
 void Texture::uploadImage(ImageData* psource)
 {
     for (unsigned itex = 0; itex < TextureCount; itex++)
-    {
-        for (unsigned level = 0; level < MipLevels; level++)
         {
-            ImagePlane plane;
-            psource->GetPlane(level * TextureCount + itex, &plane);
-            Upload(itex, level, plane);
-        }
+            for (unsigned level = 0; level < MipLevels; level++)
+            {
+                ImagePlane plane;
+                psource->GetPlane(level * TextureCount + itex, &plane);
+                Upload(itex, level, plane);
+            }
     }
 }
 
@@ -468,7 +490,7 @@ bool Texture::UpdateStagingData(Render::RenderTargetData* prtData)
     RenderTargetData* glPRT = (RenderTargetData*)prtData;
     SF_DEBUG_ASSERT(TextureCount == 1, "Can only update RTs with one texture.");
     SF_DEBUG_ASSERT(MipLevels== 1, "Can only update RTs with one mip-level.");
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, glPRT->FBOID);
+    glBindFramebuffer(GL_FRAMEBUFFER, glPRT->FBOID);
     //glPixelStorei() ?
     const TextureFormat::Mapping* pmapping = GetTextureFormatMapping();
     for (unsigned mip = 0; mip < Alg::Min(BackingData.GetMipLevelCount(), GetMipmapCount()); ++mip)
@@ -481,7 +503,7 @@ bool Texture::UpdateStagingData(Render::RenderTargetData* prtData)
     // Set back to the default framebuffer
     RenderTarget* lastRT = GetHAL()->RenderTargetStack.Back().pRenderTarget;
     GL::RenderTargetData* defaultData = (GL::RenderTargetData*)lastRT->GetRenderTargetData();
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, defaultData->FBOID);
+    glBindFramebuffer(GL_FRAMEBUFFER, defaultData->FBOID);
     return true;
 #else
     // GLES 1.1 doesn't have FBOs.
@@ -625,12 +647,12 @@ bool Texture::Copy(ImageData* pdata)
         {
             glBindTexture(GL_TEXTURE_2D, pTextures[ip].TexId );
             imageDest = *RawImage::Create(GetImageFormat(), mipCount, pTextures[ip].Size, Use);
-            ImageData pdata;
-            imageDest->GetImageData(&pdata);
+            ImageData pIdata;
+            imageDest->GetImageData(&pIdata);
 
             for ( unsigned mip = 0; mip < mipCount; ++ mip)
             {
-                pdata.GetMipLevelPlane(mip, ip, &splane);
+                pIdata.GetMipLevelPlane(mip, ip, &splane);
 
                 // For safety.
                 GLint w,h;
@@ -698,10 +720,10 @@ unsigned DepthStencilSurface::GLStencilFormats[] =
     GL_STENCIL_INDEX4_OES,
 #endif
 #if defined(GL_ARB_framebuffer_object)
+    GL_DEPTH24_STENCIL8,
     GL_STENCIL_INDEX8,
     GL_STENCIL_INDEX4,
     GL_STENCIL_INDEX16,
-    GL_DEPTH24_STENCIL8,
 #endif
     0
 };
@@ -732,8 +754,8 @@ DepthStencilSurface::~DepthStencilSurface()
 bool DepthStencilSurface::Initialize()
 {
 #if !defined(SF_USE_GLES)
-    glGenRenderbuffersEXT(1, &RenderBufferID);
-    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, RenderBufferID);
+    glGenRenderbuffers(1, &RenderBufferID);
+    glBindRenderbuffer(GL_RENDERBUFFER, RenderBufferID);
 
     // Clear glError
     GLenum glError = glGetError();
@@ -742,7 +764,7 @@ bool DepthStencilSurface::Initialize()
 
     do 
     {
-        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GLStencilFormats[GLFormatIndex], Size.Width, Size.Height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GLStencilFormats[GLFormatIndex], Size.Width, Size.Height);
         glError = glGetError();
     } while ( glError != GL_NO_ERROR && SetNextGLFormatIndex());
 
@@ -763,7 +785,6 @@ bool DepthStencilSurface::SetNextGLFormatIndex()
         return false;
     GLFormatIndex++;
     SF_ASSERT(GLFormatIndex >= 0);
-    SF_DEBUG_MESSAGE2(1, "format index = %d, enum = 0x%x", GLFormatIndex, GLStencilFormats[GLFormatIndex] );
     return GLStencilFormats[GLFormatIndex] > 0;
 }
 
@@ -804,9 +825,9 @@ bool MappedTexture::Map(Render::Texture* ptexture, unsigned mipLevel, unsigned l
     if (!glTexture->pBackingImage)
         return false;
 
-    pTexture            = ptexture;
-    StartMipLevel       = mipLevel;
-    LevelCount          = levelCount;
+    pTexture      = ptexture;
+    StartMipLevel = mipLevel;
+    LevelCount    = levelCount;
 
 
     unsigned textureCount = ptexture->TextureCount;
@@ -891,20 +912,6 @@ void TextureManager::NotifyLostContext()
     while (!Textures.IsNull(p))
     {
         p->LoseTextureData();
-	    p = Textures.GetNext(p);
-    }
-}
-
-void TextureManager::RestoreAfterLoss()
-{
-    Mutex::Locker lock(&pLocks->TextureMutex);
-
-    Render::Texture* p= Textures.GetFirst();
-    while (!Textures.IsNull(p))
-    {
-        // Try to restore textures.
-        if (p->State == Texture::State_Lost)
-            p->Initialize();
         p = Textures.GetNext(p);
     }
 }
@@ -922,7 +929,7 @@ void TextureManager::DestroyFBO(GLuint fboid)
 {
 #if !defined(SF_USE_GLES)
     if (CanCreateTextureCurrentThread())
-        glDeleteFramebuffersEXT(1, &fboid);
+        glDeleteFramebuffers(1, &fboid);
     else
         GLFrameBufferKillList.PushBack(fboid);
 #endif
@@ -943,8 +950,10 @@ void SF_STDCALL GL_CopyScanline8_Extend_A_LA(UByte* pd, const UByte* ps, UPInt s
 #define BGRA_EXT "GL_APPLE_texture_format_BGRA8888"
 #elif defined(GL_ES_VERSION_2_0)
 #define BGRA_EXT "GL_IMG_texture_format_BGRA8888"
-#else
+#elif !defined(GL_BGRA)
 #define BGRA_EXT "EXT_bgra"
+#else
+#define BGRA_EXT NULL
 #endif
 
 TextureFormat::Mapping TextureFormatMapping[] = 
@@ -1010,6 +1019,10 @@ TextureFormat::Mapping TextureFormatMapping[] =
     { Image_ATCICA,   Image_ATCICA,   GL_ATC_RGBA_EXPLICIT_ALPHA_AMD,     GL_ATC_RGBA_EXPLICIT_ALPHA_AMD,     GL_UNSIGNED_BYTE, 0, "AMD_compressed_ATC_texture", &Image::CopyScanlineDefault, 0 },
     { Image_ATCICI,   Image_ATCICI,   GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD, GL_UNSIGNED_BYTE, 0, "AMD_compressed_ATC_texture", &Image::CopyScanlineDefault, 0 },
 #endif // GL_AMD_compressed_ATC_texture
+
+#if defined(GL_ARB_texture_compression_bptc)
+    { Image_BC7,      Image_BC7,      GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,  GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,  GL_UNSIGNED_BYTE, 0, "ARB_texture_compression_bptc", &Image::CopyScanlineDefault, 0 },
+#endif
 
     { Image_None, Image_None,      0,  0, 0, 0 }
 };
@@ -1119,6 +1132,10 @@ if (pHal->CheckExtension("GL_OES_required_internalformat") &&
     Caps |= TC_NonPower2Full|TC_NonPower2Limited|TC_NonPower2RT;
 #endif
 
+	// Check to see if Apple's texture_max_level ext is actually present.
+    if (pHal->CheckExtension("APPLE_texture_max_level"))
+        Caps |= TC_UseAppleMaxLevel;
+
     initTextureFormats();
 }
 
@@ -1166,12 +1183,12 @@ void    TextureManager::processTextureKillList()
 #if !defined(SF_USE_GLES)
     if ( GLDepthStencilKillList.GetSize() > 0 )
     {
-        glDeleteRenderbuffersEXT((GLsizei)GLDepthStencilKillList.GetSize(), GLDepthStencilKillList.GetDataPtr());
+        glDeleteRenderbuffers((GLsizei)GLDepthStencilKillList.GetSize(), GLDepthStencilKillList.GetDataPtr());
         GLDepthStencilKillList.Clear();
     }
     if ( GLFrameBufferKillList.GetSize() > 0 )
     {
-        glDeleteFramebuffersEXT((GLsizei)GLFrameBufferKillList.GetSize(), GLFrameBufferKillList.GetDataPtr());
+        glDeleteFramebuffers((GLsizei)GLFrameBufferKillList.GetSize(), GLFrameBufferKillList.GetDataPtr());
         GLFrameBufferKillList.Clear();
     }
 #endif
@@ -1238,13 +1255,13 @@ Render::DepthStencilSurface* TextureManager::CreateDepthStencilSurface(const Ima
 Render::DepthStencilSurface* TextureManager::CreateDepthStencilSurface(GLuint id)
 {
 #if !defined(SF_USE_GLES)
-    if ( !glIsRenderbufferEXT(id) )
+    if ( !glIsRenderbuffer(id) )
         return 0;
 
     GLint width, height;
-    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, id);
-    glGetRenderbufferParameterivEXT(GL_RENDERBUFFER_EXT, GL_RENDERBUFFER_WIDTH_EXT, &width);
-    glGetRenderbufferParameterivEXT(GL_RENDERBUFFER_EXT, GL_RENDERBUFFER_WIDTH_EXT, &height);
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &height);
     DepthStencilSurface* pdss = SF_HEAP_AUTO_NEW(this) DepthStencilSurface(pLocks, ImageSize(width, height) );
     pdss->RenderBufferID = id;
     pdss->State = Texture::State_Valid;

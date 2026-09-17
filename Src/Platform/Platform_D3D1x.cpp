@@ -6,6 +6,7 @@ Created     :   Mar 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -96,8 +97,7 @@ DeviceImpl::DeviceImpl(Render::ThreadCommandQueue *commandQueue)
    FSAAEnabled(false),
    VSync(false)
 {
-    
-    pHal = *SF_NEW Render::D3D1x::HAL(commandQueue);
+        pHal = *SF_NEW Render::D3D1x::ProfilerHAL(commandQueue);
 }
 
 DeviceImpl::~DeviceImpl()
@@ -164,7 +164,7 @@ DXGI_FORMAT DeviceImpl::determineFormat(const ViewConfig& config) const
 
 DXGI_FORMAT DeviceImpl::determineDepthStencilFormat(const ViewConfig& config) const
 {
-    unsigned stencilBits = config.StencilBits == 1 ? 8 : config.StencilBits;
+    unsigned stencilBits = config.StencilBits == -1 ? 8 : config.StencilBits;
     unsigned depthBits = config.DepthBits == -1 ? 24 : config.DepthBits;
 
     bool stencilValid = stencilBits == 0 || stencilBits == 8;
@@ -360,7 +360,9 @@ bool DeviceImpl::initGraphics(const ViewConfig& config, Device::Window* window,
         hWnd = 0;
         return false;
     }
-    SF_DEBUG_MESSAGE1(featureLevels[bestFeature] != D3D_FEATURE_LEVEL_10_1, "Created D3D10.1 with a lower feature level (0x%x)\n", featureLevels[bestFeature]);
+    SF_DEBUG_MESSAGE1(static_cast<UINT>(featureLevels[bestFeature]) != static_cast<UINT>(D3D_FEATURE_LEVEL_10_1),
+        "Created D3D10.1 with a lower feature level (0x%x)\n",
+        featureLevels[bestFeature]);
     pDeviceContext = pDevice;
 #endif
 
@@ -573,7 +575,7 @@ void DeviceImpl::shutdownGraphics()
     pDeviceContext->Release();
     pDeviceContext = 0;
 
-    while ( pDevice->Release() );
+    pDevice->Release();
     pDevice = 0;
 
     pWindow = 0;
@@ -688,8 +690,8 @@ void Device::BeginFrame()
 
 void Device::SetWireframe(bool flag)
 {
-    pImpl->pHal->SetRasterMode(flag ? Render::D3D1x::HAL::RasterMode_Wireframe : 
-            Render::D3D1x::HAL::RasterMode_Default );
+    pImpl->pHal->SetRasterMode(flag ? Render::D3D1x::HAL::RasterMode_Wireframe :
+        Render::D3D1x::HAL::RasterMode_Default);
 }
 
 UInt32 Device::GetCaps() const

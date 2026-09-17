@@ -216,6 +216,7 @@ AvmCharacter::MemberTableType AvmCharacter::MemberTable[] =
     { "topmostLevel",    AvmCharacter::M_topmostLevel, false },
     { "noAdvance",       AvmCharacter::M_noAdvance, false },
     { "focusGroupMask",      AvmCharacter::M_focusGroupMask, false },
+    { "bidirectionalTextEnabled", AvmCharacter::M_bidirectionalTextEnabled, false },
 
     // Dynamic Text
     { "autoFit",        AvmCharacter::M_autoFit, false },

@@ -7,6 +7,7 @@ Created     :   Jan 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,6 +20,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render/Renderer2D.h"
 #include "Render/Render_ThreadCommandQueue.h"
+#include "Render/Render_Profiler.h"
 #include "Platform_RTCommandQueue.h"
 #include "Platform.h"
 
@@ -154,7 +156,24 @@ public:
 	{
 		Wireframe = wireframe;
 	}
-    
+
+    void        SetProfileMode(Render::ProfilerModes mode)
+    {
+        PushCall(&RenderHALThread::setProfileMode, mode);
+    }
+
+    void        SetProfileFlag(unsigned flag, bool state)
+    {
+        PushCall(&RenderHALThread::setProfileFlag, flag, state);
+    }
+
+    unsigned    GetProfileFlag( unsigned flag )
+    {
+        unsigned result;
+        PushCallAndWaitResult(&RenderHALThread::getProfileFlag, &result, flag);
+        return result;
+    }
+
     unsigned GetFrames()
     {
         return Frames.Exchange_NoSync(0);
@@ -213,6 +232,9 @@ protected:
     void         exitThread();
     void         setBackgroundColor(Render::Color bgColor) { BGColor = bgColor; }
     void         setStereoParams(Render::StereoParams sparams);
+    void         setProfileMode(Render::ProfilerModes mode);
+    void         setProfileFlag(unsigned flag, bool state);
+    unsigned     getProfileFlag(unsigned flag);
     Render::Color getBackgroundColor() const { return BGColor; }
 
     Render::HAL* getHAL() const { return pDevice->GetHAL(); }   

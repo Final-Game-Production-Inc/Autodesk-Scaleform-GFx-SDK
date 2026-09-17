@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -37,6 +38,26 @@ namespace fl_display
     extern const TypeInfo LoaderInfoTI;
     extern const ClassInfo LoaderInfoCI;
 } // namespace fl_display
+namespace fl_net
+{
+    extern const TypeInfo URLRequestTI;
+    extern const ClassInfo URLRequestCI;
+} // namespace fl_net
+namespace fl_system
+{
+    extern const TypeInfo LoaderContextTI;
+    extern const ClassInfo LoaderContextCI;
+} // namespace fl_system
+namespace fl_utils
+{
+    extern const TypeInfo ByteArrayTI;
+    extern const ClassInfo ByteArrayCI;
+} // namespace fl_utils
+namespace fl
+{
+    extern const TypeInfo BooleanTI;
+    extern const ClassInfo BooleanCI;
+} // namespace fl
 
 namespace ClassTraits { namespace fl_display
 {
@@ -176,7 +197,7 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
-    class Loader : public CTraits
+    class Loader : public fl_display::DisplayObjectContainer
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -202,6 +223,9 @@ namespace InstanceTraits { namespace fl_display
 
         enum { ThunkInfoNum = 7 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[12];
+        static const Abc::ConstValue dva[1];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -214,17 +238,19 @@ namespace InstanceTraits { namespace fl_display
     
 namespace ClassTraits { namespace fl_display
 {
-    class Loader : public Traits
+    class Loader : public fl_display::DisplayObjectContainer
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Loader"; }
 #endif
     public:
-        typedef Classes::fl_display::Loader ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_display::Loader InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Loader(VM& vm);
+        Loader(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

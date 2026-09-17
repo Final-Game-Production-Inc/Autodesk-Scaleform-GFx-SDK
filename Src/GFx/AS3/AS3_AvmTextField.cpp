@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -16,7 +17,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Text/Text_DocView.h"
 #include "GFx/AS3/AS3_MovieRoot.h"
 #include "GFx/AS3/Obj/Events/AS3_Obj_Events_TextEvent.h"
-#include "GFx/AS3/Obj/Gfx/AS3_Obj_Gfx_TextEventEx.h"
+#include "GFx/AS3/Obj/GFx/AS3_Obj_Gfx_TextEventEx.h"
 #include "GFx/AS3/Obj/Display/AS3_Obj_Display_BitmapData.h"
 
 namespace Scaleform {
@@ -100,24 +101,27 @@ bool AvmTextField::OnMouseEvent(const EventId& event)
                                 // fire the link event
                                 const ASString& evtName = GetAS3Root()->GetStringManager()->CreateString("link");
                                 Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
-                                if (as3obj->WillTrigger(evtName, false))
+                                if (as3obj != NULL)
                                 {
-                                    SPtr<Instances::fl_events::TextEvent> evt;
-                                    Value params[] = { Value(evtName), Value(true), Value(true) };
-                                    ASVM* asvm = GetAS3Root()->GetAVM();
-                                    asvm->ConstructInstance(evt, asvm->ExtensionsEnabled ? asvm->TextEventExClass : asvm->TextEventClass, 3, params);
-                                    SF_ASSERT(evt);
-                                    evt->Target = as3obj;
-                                    evt->SetText(GetAS3Root()->GetStringManager()->CreateString(url));
-
-                                    if (asvm->ExtensionsEnabled)
+                                    if (as3obj->WillTrigger(evtName, false) || as3obj->WillTrigger(evtName, true))
                                     {
-                                        Instances::fl_gfx::TextEventEx* evtExt = static_cast<Instances::fl_gfx::TextEventEx*>(evt.GetPtr());
-                                        evtExt->SetControllerIdx(event.ControllerIndex);
-                                        evtExt->SetButtonIdx(event.ButtonId);
-                                    }
+                                        SPtr<Instances::fl_events::TextEvent> evt;
+                                        Value params[] = { Value(evtName), Value(true), Value(true) };
+                                        ASVM* asvm = GetAS3Root()->GetAVM();
+                                        asvm->ConstructInstance(evt, asvm->ExtensionsEnabled ? asvm->TextEventExClass : asvm->TextEventClass, 3, params);
+                                        SF_ASSERT(evt);
+                                        evt->Target = as3obj;
+                                        evt->SetText(GetAS3Root()->GetStringManager()->CreateString(url));
 
-                                    as3obj->Dispatch(evt, GetDispObj());
+                                        if (asvm->ExtensionsEnabled)
+                                        {
+                                            Instances::fl_gfx::TextEventEx* evtExt = static_cast<Instances::fl_gfx::TextEventEx*>(evt.GetPtr());
+                                            evtExt->SetControllerIdx(event.ControllerIndex);
+                                            evtExt->SetButtonIdx(event.ButtonId);
+                                        }
+
+                                        as3obj->Dispatch(evt, GetDispObj());
+                                    }
                                 }
                             }
                             //printf ("%s\n", url);
@@ -169,18 +173,21 @@ void AvmTextField::OnLinkEventEx(TextField::LinkEvent event, unsigned pos, unsig
                 // fire the link event
                 const ASString& evtName = GetAS3Root()->GetStringManager()->CreateString(evtSyn);
                 Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
-                if (as3obj->WillTrigger(evtName, false))
+                if (as3obj != NULL)
                 {
-                    SPtr<Instances::fl_gfx::TextEventEx> evtEx;
-                    Value params[] = { Value(evtName), Value(true), Value(true) };
-                    ASVM* asvm = GetAS3Root()->GetAVM();
-                    asvm->ConstructInstance(evtEx, asvm->TextEventExClass, 3, params);
-                    SF_ASSERT(evtEx);
-                    evtEx->Target = as3obj;
-                    evtEx->SetText(GetAS3Root()->GetStringManager()->CreateString(url));
-                    evtEx->SetControllerIdx(controllerIndex);
+                    if (as3obj->WillTrigger(evtName, false) || as3obj->WillTrigger(evtName, true))
+                    {
+                        SPtr<Instances::fl_gfx::TextEventEx> evtEx;
+                        Value params[] = { Value(evtName), Value(true), Value(true) };
+                        ASVM* asvm = GetAS3Root()->GetAVM();
+                        asvm->ConstructInstance(evtEx, asvm->TextEventExClass, 3, params);
+                        SF_ASSERT(evtEx);
+                        evtEx->Target = as3obj;
+                        evtEx->SetText(GetAS3Root()->GetStringManager()->CreateString(url));
+                        evtEx->SetControllerIdx(controllerIndex);
 
-                    as3obj->Dispatch(evtEx, GetDispObj());
+                        as3obj->Dispatch(evtEx, GetDispObj());
+                    }
                 }
             }
         }
@@ -190,29 +197,7 @@ void AvmTextField::OnLinkEventEx(TextField::LinkEvent event, unsigned pos, unsig
 bool AvmTextField::OnCharEvent(wchar_t wcharCode, unsigned controllerIdx)
 {
     SF_ASSERT(wcharCode);
-    bool rv = true;
-
-    const ASString& evtName = GetAS3Root()->GetBuiltinsMgr().GetBuiltin(AS3Builtin_textInput);
-    Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
-    if (as3obj->WillTrigger(evtName, false))
-    {
-        SPtr<Instances::fl_events::TextEvent> evt;
-        Value params[] = { Value(evtName), Value(true), Value(true) };
-        ASVM* asvm = GetAS3Root()->GetAVM();
-        asvm->ConstructInstance(evt, asvm->ExtensionsEnabled ? asvm->TextEventExClass : asvm->TextEventClass, 3, params);
-        SF_ASSERT(evt);
-        evt->Target = as3obj;
-        evt->SetText(wcharCode);
-
-        if (asvm->ExtensionsEnabled)
-        {
-            Instances::fl_gfx::TextEventEx* evtExt = static_cast<Instances::fl_gfx::TextEventEx*>(evt.GetPtr());
-            evtExt->SetControllerIdx(controllerIdx);
-        }
-
-        rv = as3obj->Dispatch(evt, GetDispObj());
-    }
-    return rv;
+    return OnEditorInsertingText(GetTextField()->GetCaretIndex(), 1, &wcharCode, controllerIdx);
 }
 
 void AvmTextField::OnEventLoad()
@@ -222,19 +207,6 @@ void AvmTextField::OnEventLoad()
     GetIntObj()->ModifyOptimizedPlayList();
 
     AvmInteractiveObj::OnEventLoad();
-//     // finalize the initialization. We need to initialize text here rather than in ctor
-//     // since the name of instance is not set yet in the ctor and setting text might cause
-//     // GFxTranslator to be invoked, which uses the instance name.
-//     TextField* ptf = GetTextField();
-//     if (GetTextFieldDef()->DefaultText.GetLength() > 0)
-//     {
-//         ptf->SetTextValue(GetTextFieldDef()->DefaultText.ToCStr(), ptf->IsHtml());
-//     }
-//     else
-//     {
-//         // This assigns both Text and HtmlText vars.
-//         ptf->SetTextValue("", ptf->IsHtml(), false);
-//     }
 }
 
 void AvmTextField::UpdateAutosizeSettings()
@@ -270,7 +242,8 @@ void AvmTextField::NotifyChanged()
 {
     const ASString& evtName = GetAS3Root()->GetBuiltinsMgr().GetBuiltin(AS3Builtin_change);
     Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
-    if (as3obj && as3obj->HasEventHandler(evtName, false))
+    // check both capture and regular events, this event bubbles.
+    if (as3obj && (as3obj->WillTrigger(evtName, false) || as3obj->WillTrigger(evtName, true)))
     {
         SPtr<Instances::fl_events::Event> evt = as3obj->CreateEventObject(evtName, true, false);
         SF_ASSERT(evt);
@@ -283,6 +256,7 @@ void AvmTextField::OnScroll()
 {
     const ASString& evtName = GetAS3Root()->GetBuiltinsMgr().GetBuiltin(AS3Builtin_scroll);
     Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
+    // scroll event doesn't bubble
     if (as3obj && as3obj->HasEventHandler(evtName, false))
     {
         SPtr<Instances::fl_events::Event> evt = as3obj->CreateEventObject(evtName, true, false);
@@ -290,6 +264,43 @@ void AvmTextField::OnScroll()
         evt->Target = as3obj;
         as3obj->Dispatch(evt, GetDispObj());
     }
+}
+
+bool AvmTextField::OnEditorInsertingText(UPInt pos, UPInt len, const wchar_t* wstr, unsigned controllerIdx)
+{
+    SF_UNUSED3(pos, len, wstr);
+
+    bool rv = true;
+
+    const ASString& evtName = GetAS3Root()->GetBuiltinsMgr().GetBuiltin(AS3Builtin_textInput);
+    Instances::fl_display::DisplayObject* as3obj = GetAS3Obj();
+    if (as3obj != NULL)
+    {
+        if (as3obj->WillTrigger(evtName, false) || as3obj->WillTrigger(evtName, true))
+        {
+            SPtr<Instances::fl_events::TextEvent> evt;
+            Value params[] = { Value(evtName), Value(true), Value(true) };
+            ASVM* asvm = GetAS3Root()->GetAVM();
+            asvm->ConstructInstance(evt, asvm->ExtensionsEnabled ? asvm->TextEventExClass : asvm->TextEventClass, 3, params);
+            SF_ASSERT(evt);
+            evt->Target = as3obj;
+            evt->SetText(wstr);
+
+            if (asvm->ExtensionsEnabled)
+            {
+                Instances::fl_gfx::TextEventEx* evtExt = static_cast<Instances::fl_gfx::TextEventEx*>(evt.GetPtr());
+                evtExt->SetControllerIdx(controllerIdx);
+            }
+
+            rv = as3obj->Dispatch(evt, GetDispObj());
+        }
+    }
+    return rv;
+}
+bool AvmTextField::OnEditorRemovingText(UPInt pos, UPInt len, unsigned controllerIdx)
+{
+    SF_UNUSED3(pos, len, controllerIdx);
+    return true;
 }
 
 void AvmTextField::ProceedImageSubstitution(VM& vm, int idx, const Value& ve)
@@ -318,7 +329,7 @@ void AvmTextField::ProceedImageSubstitution(VM& vm, int idx, const Value& ve)
                     GetName().ToCStr(), idx);
                 return;
             }
-            UTF8Util::DecodeString(isElem.SubString, str.ToCStr(), str.GetSize() + 1);
+            UTF8Util::DecodeStringSafe(isElem.SubString, 20, str.ToCStr(), str.GetSize() + 1);
             isElem.SubStringLen = (UByte)wstrLen;
         }
         else

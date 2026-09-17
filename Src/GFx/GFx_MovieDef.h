@@ -16,6 +16,7 @@ Notes       :   Starting with GFx 2.0, loaded and bound data is stored
                 depending on State objects specified during loading.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -278,6 +279,7 @@ public:
     // Allocates an individual chunk of memory, without using the pool.
     // The chunk will be freed later together with the pool.
     void*    AllocIndividual(UPInt bytes);
+    void*    AllocIndividualAlign(UPInt bytes, size_t a);
 
 };
 
@@ -1179,7 +1181,15 @@ public:
     // It could be 'const MovieDefBindStates*' but we can't do that with Ptr.
     Ptr<MovieDefBindStates> pBindStates;
 
+    class ReleaseNotifier
+    {
+    public:
+        virtual ~ReleaseNotifier() {}
 
+        virtual void OnMovieDefRelease(MovieDefImpl*) = 0;
+    };
+    HashSetLH<ReleaseNotifier*> ReleaseNotifiers;
+    Lock ReleaseNotifiersLock;
 
     // *** BindTaskData
 
@@ -1535,6 +1545,9 @@ public:
 
     virtual ResourceKey     GetKey()                        { return CreateMovieKey(GetDataDef(), pBindStates); }
     virtual unsigned        GetResourceTypeCode() const     { return MakeTypeCode(RT_MovieDef); }
+
+    void AddReleaseNotifier(ReleaseNotifier* rn);
+    void RemoveReleaseNotifier(ReleaseNotifier* rn);
 };
 
 

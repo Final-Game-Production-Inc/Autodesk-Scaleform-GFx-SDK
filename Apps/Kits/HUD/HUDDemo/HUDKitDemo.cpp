@@ -7,6 +7,7 @@ Created     :
 Authors     :   Michael Antonov, Maxim Didenko, Boris Rayskiy, 
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -97,6 +98,10 @@ public:
     virtual bool            OnInit(Platform::ViewConfig& config);
     virtual void            OnUpdateFrame(bool needRepaint);
     virtual void            OnShutdown();
+
+#ifdef SF_AMP_SERVER
+	virtual void			GetAmpServerCapabilities(GFx::AMP::MessageAppControl &caps) const;
+#endif
 
     virtual void            SetMovieVariables(String& argString);
 //    virtual bool            DoRender();
@@ -340,6 +345,9 @@ FxPlayerApp::FxPlayerApp()
     HUDFrameCounter = 0;
 
     // Disable some GFxPlayer controls 
+	KeyCommandMap.Remove(Key::F3 | ctrlMask);
+	KeyCommandMap.Remove(Key::F4 | ctrlMask);
+	KeyCommandMap.Remove(Key::F5 | ctrlMask);
     KeyCommandMap.Remove(Key::R | ctrlMask);      // Restart
     KeyCommandMap.Remove(Key::Right | ctrlMask);  // Step forward
     KeyCommandMap.Remove(Key::Left | ctrlMask);  // Step back
@@ -916,6 +924,27 @@ bool FxPlayerApp::OnInit(Platform::ViewConfig& config)
     return true;
 }
 
+#ifdef SF_AMP_SERVER
+void			FxPlayerApp::GetAmpServerCapabilities(GFx::AMP::MessageAppControl &caps) const
+{
+    caps.SetCurveToleranceDown(true);
+    caps.SetCurveToleranceUp(true);
+    caps.SetNextFont(true);
+    caps.SetRestartMovie(false);
+    caps.SetToggleAaMode(true);
+    caps.SetToggleAmpRecording(true);
+    caps.SetToggleFastForward(true);
+    caps.SetToggleInstructionProfile(true);
+    caps.SetToggleOverdraw(true);
+    caps.SetToggleBatch(true);
+    caps.SetToggleBlending(true);
+    caps.SetToggleTextureDensity(true);
+    caps.SetToggleStrokeType(false);
+    caps.SetTogglePause(true);
+    caps.SetToggleWireframe(true);
+}
+#endif
+
 void FxPlayerApp::SetMovieVariables(String& argString)
 {
     FxPlayerAppBase::SetMovieVariables(argString);
@@ -1149,7 +1178,7 @@ void FxPlayerApp::UpdateWindowTitle()
         // Display frame rate in title
         //Format(strTitle, "{1} (fps:{0:3.1})", LastFPS, GetAppTitle());
 
-        Double invDiv = 1.0 / ((Double)HUDFrameCounter*1000);   // display per frame numbers in ms, so convert from seconds to milliseconds
+        GFx::Double invDiv = 1.0 / ((double)HUDFrameCounter*1000);   // display per frame numbers in ms, so convert from seconds to milliseconds
 
         Render::HAL::Stats rstats;
         pRenderThread->GetRenderStats(&rstats);
@@ -1168,7 +1197,7 @@ void FxPlayerApp::UpdateWindowTitle()
                 double(LastAdvanceTicks)/1000.0,
                 double(displayTicks)/1000.0,
                 double(otherTicks)/1000.0,
-                HUDstats.MinimapStats.PushedObjects, (Double)HUDUpdateTimeAccumulator * invDiv, (Double)MMUpdateTimeAccumulator * invDiv);
+                HUDstats.MinimapStats.PushedObjects, (double)HUDUpdateTimeAccumulator * invDiv, (double)MMUpdateTimeAccumulator * invDiv);
         }
         else
         {
@@ -1183,7 +1212,7 @@ void FxPlayerApp::UpdateWindowTitle()
                 double(LastAdvanceTicks)/1000.0,
                 double(displayTicks)/1000.0,
                 double(otherTicks)/1000.0,
-                HUDstats.MinimapStats.PushedObjects, (Double)HUDUpdateTimeAccumulator * invDiv, (Double)MMUpdateTimeAccumulator * invDiv);
+                HUDstats.MinimapStats.PushedObjects, (double)HUDUpdateTimeAccumulator * invDiv, (double)MMUpdateTimeAccumulator * invDiv);
         }
         strTitle = buffer;
     }    

@@ -9,6 +9,7 @@ Authors     :   Alex Mantzaris
 Notes       :   Interface to the Analyzer for Memory and Performance
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -49,6 +50,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #endif
 
 namespace Scaleform {
+    class File;
 
 namespace Render { 
     class Renderer2D; 
@@ -59,11 +61,12 @@ namespace GFx {
     class MovieImpl;
     class ImageResource;
     class LoadProcess;
+    class MovieDef;
+    class SocketImplFactory;
     namespace AMP {
         class AppControlInterface;
         class ServerState;
         class MessageAppControl;
-        class SocketImplFactory;
     }
 }
 
@@ -93,6 +96,7 @@ enum AmpNativeFunctionId
     Amp_Native_Function_Id_GradientFill,
     Amp_Native_Function_Id_GlyphCache_RasterizeGlyph,
     Amp_Native_Function_Id_GlyphCache_RasterizeShadow,
+    Amp_Native_Function_Id_GlyphCache_EvictText,
 
     Amp_Native_Function_Id_Begin_ObjectInterface,
     Amp_Native_Function_Id_GetVariable,
@@ -124,6 +128,7 @@ enum AmpNativeFunctionId
     Amp_Native_Function_Id_ObjectInterface_GetMatrix3D,
     Amp_Native_Function_Id_ObjectInterface_SetMatrix3D,
     Amp_Native_Function_Id_ObjectInterface_IsDisplayObjectActive,
+    Amp_Native_Function_Id_ObjectInterface_GetParent,
     Amp_Native_Function_Id_ObjectInterface_GetDisplayInfo,
     Amp_Native_Function_Id_ObjectInterface_SetDisplayInfo,
     Amp_Native_Function_Id_ObjectInterface_SetText,
@@ -136,10 +141,13 @@ enum AmpNativeFunctionId
     Amp_Native_Function_Id_ObjectInterface_ToString,
     Amp_Native_Function_Id_ObjectInterface_GetWorldMatrix,
     Amp_Native_Function_Id_ObjectInterface_InvokeClosure,
+	Amp_Native_Function_Id_ObjectInterface_IsInstanceOf,
     Amp_Native_Function_Id_ObjectInterface_IsByteArray,
     Amp_Native_Function_Id_ObjectInterface_GetByteArraySize,
+	Amp_Native_Function_Id_ObjectInterface_SetByteArraySize,
     Amp_Native_Function_Id_ObjectInterface_ReadFromByteArray,
     Amp_Native_Function_Id_ObjectInterface_WriteToByteArray,
+	Amp_Native_Function_Id_ObjectInterface_GetRawDataPtr,
     Amp_Native_Function_Id_End_ObjectInterface,
 
     Amp_Num_Native_Function_Ids
@@ -209,7 +217,7 @@ public:
     virtual void        SetConnectionWaitTime(unsigned waitTimeMilliseconds) = 0;
     virtual void        SetHeapLimit(UPInt memLimit) = 0;
     virtual void        SetInitSocketLib(bool initSocketLib) = 0;
-    virtual void        SetSocketImplFactory(GFx::AMP::SocketImplFactory* socketFactory) = 0;
+    virtual void        SetSocketImplFactory(GFx::SocketImplFactory* socketFactory) = 0;
 
     // Message handler
     virtual bool        HandleNextMessage() = 0;
@@ -244,8 +252,9 @@ public:
     // AMP keeps track of some renderer stats
     virtual void        AddStrokes(UInt32 numStrokes) = 0;
     virtual void        RemoveStrokes(UInt32 numStrokes) = 0;
-    virtual void        IncrementFontThrashing() = 0;
     virtual void        IncrementFontFailures() = 0;
+    virtual void        IncrementFontOptRead() = 0;
+    virtual void        DecrementFontOptRead() = 0;
     
     // AMP renderer is used to render overdraw
     virtual void        SetRenderer(Render::Renderer2D* renderer) = 0;
@@ -271,6 +280,7 @@ protected:
     static AmpServer* AmpServerSingleton;
 };
 
+
 class AmpStats : public RefCountBase<AmpStats, Stat_Default_Mem>
 {
 public:
@@ -280,6 +290,9 @@ public:
     virtual void    NativePopCallstack(UInt64 time) = 0;
     virtual void    AddGcRoots(UInt32 numRoots) = 0;
     virtual void    AddGcFreedRoots(UInt32 numFreedRoots) = 0;
+    virtual void    GetStats(StatBag* bag, bool reset) = 0;
+    virtual void    SetMovieDef(GFx::MovieDef* movieDef) = 0;
+    virtual void    SetName(const char* pcName) = 0;
 };
 
 
@@ -353,18 +366,30 @@ private:
 };
 
 
+class AmpMovieObjectDesc : public RefCountBase<AmpMovieObjectDesc, Stat_Default_Mem>
+{
+public:
+    StringLH Description;
+    ArrayLH<Ptr<AmpMovieObjectDesc> > Children;
+    void Read(File& str);
+    void Write(File& str) const;
+};
+
+
 // Some macros for frequently-used methods
 #ifdef SF_AMP_SERVER
 #define SF_AMP_SCOPE_TIMER_ID(ampStats, functionName, functionId)   AmpFunctionTimer _amp_timer_##functionId((ampStats), (functionName), Amp_Profile_Level_Low, (functionId))
 #define SF_AMP_SCOPE_TIMER(ampStats, functionName, profileLevel)    AmpFunctionTimer _amp_timer_((ampStats), (functionName), (profileLevel))
 #define SF_AMP_SCOPE_RENDER_TIMER_ID(functionName, functionId)      AmpFunctionTimer _amp_timer_##functionId(AmpServer::GetInstance().GetDisplayStats(), (functionName), Amp_Profile_Level_Low, (functionId))
 #define SF_AMP_SCOPE_RENDER_TIMER(functionName, profileLevel)       AmpFunctionTimer _amp_timer_(AmpServer::GetInstance().GetDisplayStats(), (functionName), (profileLevel))
+#define SF_AMP_SCOPE_RENDER_TIMER_END_DISPLAY(functionName, profileLevel)       AmpFunctionTimer _amp_timer_enddisplay_(AmpServer::GetInstance().GetDisplayStats(), (functionName), (profileLevel))
 #define SF_AMP_CODE(x) x
 #else
 #define SF_AMP_SCOPE_TIMER_ID(ampStats, functionName, functionId)
 #define SF_AMP_SCOPE_TIMER(ampStats, functionName, profileLevel)
 #define SF_AMP_SCOPE_RENDER_TIMER_ID(functionName, functionId)
 #define SF_AMP_SCOPE_RENDER_TIMER(functionName, profileLevel)
+#define SF_AMP_SCOPE_RENDER_TIMER_END_DISPLAY(functionName, profileLevel)
 #define SF_AMP_CODE(x)
 #endif
 

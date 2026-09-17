@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -55,7 +56,7 @@ namespace Classes { namespace fl_filters
     
 namespace ClassTraits { namespace fl_filters
 {
-    class DisplacementMapFilterMode : public Traits
+    class DisplacementMapFilterMode : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -63,9 +64,11 @@ namespace ClassTraits { namespace fl_filters
 #endif
     public:
         typedef Classes::fl_filters::DisplacementMapFilterMode ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        DisplacementMapFilterMode(VM& vm);
+        DisplacementMapFilterMode(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 4 };
         static const MemberInfo mi[MemberInfoNum];

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -38,6 +39,10 @@ namespace fl
     extern const ClassInfo ArrayCI;
     extern const TypeInfo BooleanTI;
     extern const ClassInfo BooleanCI;
+    extern const TypeInfo StringTI;
+    extern const ClassInfo StringCI;
+    extern const TypeInfo ClassTI;
+    extern const ClassInfo ClassCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_text
@@ -143,7 +148,7 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
-    class Font : public CTraits
+    class Font : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -169,6 +174,8 @@ namespace InstanceTraits { namespace fl_text
 
         enum { ThunkInfoNum = 4 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[5];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -181,7 +188,7 @@ namespace InstanceTraits { namespace fl_text
     
 namespace ClassTraits { namespace fl_text
 {
-    class Font : public Traits
+    class Font : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -189,12 +196,16 @@ namespace ClassTraits { namespace fl_text
 #endif
     public:
         typedef Classes::fl_text::Font ClassType;
+        typedef InstanceTraits::fl_text::Font InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Font(VM& vm);
+        Font(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { ThunkInfoNum = 2 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[4];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 

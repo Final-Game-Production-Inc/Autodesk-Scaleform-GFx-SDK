@@ -6,6 +6,7 @@ Created     :   Mar 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -23,6 +24,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/D3D1x/D3D1x_Shader.h"
 #include "Render/D3D1x/D3D1x_Texture.h"
 #include "Render/Render_ShaderHAL.h"    // Must be included after platform specific shader includes.
+#include "Render/Render_Profiler.h"
 
 namespace Scaleform { namespace Render { namespace D3D1x {
 
@@ -59,6 +61,7 @@ struct HALInitParams : public Render::HALInitParams
 class HAL : public Render::ShaderHAL<ShaderManager, ShaderInterface>
 {
 public:
+    typedef Render::ShaderHAL<ShaderManager, ShaderInterface> BaseHAL;
 
     // Direct3D Device we are using.
     ID3D1x(Device)*               pDevice;
@@ -67,6 +70,7 @@ public:
     Ptr<ID3D1x(DepthStencilView)> pDepthStencilView;
 
     MeshCache                     Cache;
+    RenderSync                    RSync;
     Ptr<TextureManager>           pTextureManager;
     
     // Previous batching mode
@@ -77,7 +81,7 @@ public:
 
 public:    
     
-    HAL(ThreadCommandQueue* commandQueue = 0);
+    HAL(ThreadCommandQueue* commandQueue);
     virtual ~HAL();
     
     // *** HAL Initialization / Shutdown Logic
@@ -99,45 +103,20 @@ public:
     virtual bool        BeginScene();
     virtual bool        EndScene();
 
-    // Bracket the displaying of a frame from a movie.
-    // Fill the background color, and set up default transforms, etc.
-    virtual void        beginDisplay(BeginDisplayData* data);
-
     // Updates D3D HW Viewport and ViewportMatrix based on the current
     // values of VP, ViewRect and ViewportValid.
     virtual void        updateViewport();
 
-
-    virtual void        DrawProcessedPrimitive(Primitive* pprimitive,
-                                               PrimitiveBatch* pstart, PrimitiveBatch *pend);
-
-    virtual void        DrawProcessedComplexMeshes(ComplexMesh* complexMesh,
-                                                   const StrideArray<HMatrix>& matrices);
+    virtual UPInt       setVertexArray(PrimitiveBatch* pbatch, Render::MeshCacheItem* pmesh);
+    virtual UPInt       setVertexArray(const ComplexMesh::FillRecord& fr, unsigned formatIndex, Render::MeshCacheItem* pmesh);
 
     // *** Mask Support
-    // This flag indicates whether we've checked for stencil after BeginDisplay or not.
-    bool            StencilChecked;
-    // This flag is stencil is available, after check.
-    bool            StencilAvailable;
-    bool            DepthBufferAvailable;    
+    virtual void        applyDepthStencilMode(DepthStencilMode mode, unsigned stencilRef);
+    virtual bool        checkDepthStencilBufferCaps();
 
-    virtual void    PushMask_BeginSubmit(MaskPrimitive* primitive);
-    virtual void    EndMaskSubmit();
-    virtual void    PopMask();
-
-    virtual void    beginMaskDisplay()
-    {
-        SF_ASSERT(MaskStackTop == 0);
-        StencilChecked  = 0;
-        StencilAvailable= 0;
-        DepthBufferAvailable = 0;
-        HALState &= ~HS_DrawingMask;
-    }
-
-    bool    checkMaskBufferCaps();
-
-    // Background clear helper, expects viewport coordinates.
-    virtual void    clearSolidRectangle(const Rect<int>& r, Color color);
+    // *** Rasterization
+    virtual bool        IsRasterModeSupported(RasterModeType mode) const;
+    virtual void        applyRasterModeImpl(RasterModeType mode);
 
     // *** BlendMode
     void            applyBlendModeImpl(BlendMode mode, bool sourceAc = false, bool forceAc = false);
@@ -168,30 +147,10 @@ public:
     bool createBlendStates();
     void destroyBlendStates();
 
-    enum StencilModes
-    {
-        StencilMode_Disabled,
-        StencilMode_Available_ClearMasks,
-        StencilMode_Available_ClearMasksAbove,
-        StencilMode_Available_WriteMask,
-        StencilMode_DepthOnly_WriteMask,
-        StencilMode_Available_TestMask,
-        StencilMode_DepthOnly_TestMask,
-        StencilMode_Unavailable,
-        StencilMode_Count
-    };
-    ID3D1x(DepthStencilState)* DepthStencilStates[StencilMode_Count];
+    ID3D1x(DepthStencilState)* DepthStencilStates[DepthStencil_Count];
     bool createDepthStencilStates();
     void destroyDepthStencilStates();
 
-    enum RasterModes
-    {
-        RasterMode_Default,
-        RasterMode_Wireframe,
-        RasterMode_Count
-    };
-    RasterModes RasterMode;
-    void SetRasterMode(RasterModes mode) { RasterMode = mode; }
     ID3D1x(RasterizerState)* RasterStates[RasterMode_Count];
     bool createRasterStates();
     void destroyRasterStates();
@@ -216,17 +175,13 @@ public:
     virtual RenderTarget*   CreateRenderTarget(Render::Texture* texture, bool needsStencil);
     virtual RenderTarget*   CreateTempRenderTarget(const ImageSize& size, bool needsStencil);
     virtual bool            SetRenderTarget(RenderTarget* target, bool setState = 1);
-    virtual void            PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags =0);
+    virtual void            PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags =0, Color clearColor =0);
     virtual void            PopRenderTarget(unsigned flags = 0);
 
     virtual bool            createDefaultRenderBuffer();
 
-    // *** Filters
-    virtual void          PushFilters(FilterPrimitive* primitive);
-    virtual void          drawUncachedFilter(const FilterStackEntry& e);
-    virtual void          drawCachedFilter(FilterPrimitive* primitive);
-
     virtual class MeshCache&       GetMeshCache()        { return Cache; }
+    virtual Render::RenderSync*    GetRenderSync()       { return &RSync; }
         
     virtual void    MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFormat,
                                     const VertexFormat** single,
@@ -239,8 +194,8 @@ protected:
 
     virtual void setBatchUnitSquareVertexStream();
     virtual void drawPrimitive(unsigned indexCount, unsigned meshCount);
-    void         drawIndexedPrimitive( unsigned indexCount, unsigned meshCount, UPInt indexOffset, unsigned vertexBaseIndex);
-    void         drawIndexedInstanced( unsigned indexCount, unsigned meshCount, UPInt indexOffset, unsigned vertexBaseIndex);
+    virtual void drawIndexedPrimitive(unsigned indexCount, unsigned vertexCount, unsigned meshCount, UPInt indexPtr, UPInt vertexOffset );
+    virtual void drawIndexedInstanced(unsigned indexCount, unsigned vertexCount, unsigned meshCount, UPInt indexPtr, UPInt vertexOffset );
 
     // Returns whether the profile can render any of the filters contained in the FilterPrimitive.
     // If a profile does not support dynamic looping (eg. using SM2.0), no blur/shadow type filters
@@ -251,6 +206,15 @@ protected:
     virtual Render::RenderEvent& GetEvent(EventType eventType);
 
     void drawScreenQuad();
+};
+
+// Use this HAL if you want to use profile modes.
+class ProfilerHAL : public Render::ProfilerHAL<HAL>
+{
+public:
+    ProfilerHAL(ThreadCommandQueue* commandQueue) : Render::ProfilerHAL<HAL>(commandQueue)
+    {
+    }
 };
 
 //--------------------------------------------------------------------

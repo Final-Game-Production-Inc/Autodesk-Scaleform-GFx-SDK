@@ -6,6 +6,7 @@ Created     :   May 20, 2008
 Authors     :   Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -247,7 +248,7 @@ CSSToken<T>    CSSTokenizer<T>::GetNextToken()
     }
 
     // number
-    else if (IsDigit(*pstr))
+    else if (IsDigit(*pstr) || (*pstr == '-'))
     {
         // looking for digit or '.'
         while (1)
@@ -1441,7 +1442,7 @@ bool StyleManager::ParseCSS(const char* buffer, UPInt len)
     // of ParseCSSImpl. However, for best performance the char* version should be used.
     //return ParseCSSImpl<char>(buffer, len);
     wchar_t* pwbuf = (wchar_t*)SF_ALLOC((len + 1) * sizeof(wchar_t), StatMV_Text_Mem);
-    len = UTF8Util::DecodeString(pwbuf, buffer, len);
+    len = UTF8Util::DecodeStringSafe(pwbuf, len + 1, buffer, len);
     bool rv = ParseCSSImpl<wchar_t>(pwbuf, len);
     SF_FREE(pwbuf);
     return rv;

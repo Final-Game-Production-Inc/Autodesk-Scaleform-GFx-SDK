@@ -6,6 +6,7 @@ Created     :   December 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -62,12 +63,12 @@ void    ImagePlane::GetMipLevel(ImageFormat format, unsigned level,
 
     for(unsigned lv = level; lv != 0; lv--)
     {
-        UPInt levelSize = ImageData::GetMipLevelSize(format, p->GetSize(), plane);        
-        p->pData += levelSize;
+        UPInt mipLevelSize = ImageData::GetMipLevelSize(format, p->GetSize(), plane);        
+        p->pData += mipLevelSize;
         p->SetNextMipSize();
         p->Pitch  = ImageData::GetFormatPitch(format, p->Width, plane);
 
-        totalLevelSize += levelSize;
+        totalLevelSize += mipLevelSize;
         SF_ASSERT(totalLevelSize <= DataSize);
     }
     p->DataSize = DataSize - totalLevelSize + levelSize;
@@ -267,7 +268,7 @@ void    ImageData::SetPixelARGB(unsigned x, unsigned y, UInt32 color)
 
 void ImageData::SetPixelInScanline( UByte * pline, unsigned x, UInt32 color )
 {
-    switch(Format)
+    switch(GetFormatNoConv())
     {
     case Image_B8G8R8A8:
         *(pline + x * 4 + 0)    = (UByte) color & 0xFF;        // B
@@ -326,7 +327,7 @@ Color   ImageData::GetPixel(unsigned x, unsigned y) const
 Color ImageData::GetPixelInScanline( const UByte * pline, unsigned x ) const
 {
     Color color;
-    switch(Format)
+    switch(GetFormatNoConv())
     {
     case Image_B8G8R8A8:
         color.SetColor( 
@@ -607,6 +608,7 @@ unsigned  ImageData::GetFormatBitsPerPixel(ImageFormat fmt, unsigned plane)
         return 8;
     case Image_DXT3:
     case Image_DXT5:
+    case Image_BC7:
         return 32;
     case Image_PVRTC_RGB_2BPP:
     case Image_PVRTC_RGBA_2BPP:
@@ -643,6 +645,7 @@ UPInt  ImageData::GetFormatPitch(ImageFormat fmt, UInt32 width, unsigned plane)
         return (8 * ((width+3) / 4)); // 64 bits per 4x4 texel.
     case Image_DXT5:
     case Image_DXT3:
+    case Image_BC7:
         return (16 * ((width+3) / 4)); // 128 bits per 4x4 texel.
     case Image_PVRTC_RGB_2BPP:
     case Image_PVRTC_RGBA_2BPP:
@@ -650,14 +653,17 @@ UPInt  ImageData::GetFormatPitch(ImageFormat fmt, UInt32 width, unsigned plane)
     case Image_PVRTC_RGB_4BPP:
     case Image_PVRTC_RGBA_4BPP:
     case Image_ETC1_RGB_4BPP:
+    case Image_ETC2_RGB:
+    case Image_ETC2_RGBA1:
     case Image_ATCIC:
             return width/2;
     case Image_ATCICA:
+    case Image_ETC2_RGBA:
             return width;
     default:
         break;
     }
-	// Some platforms depend on their formats having 0 pitch in this function.
+    // Some platforms depend on their formats having 0 pitch in this function.
     return 0;
 }
 
@@ -669,6 +675,7 @@ UPInt  ImageData::GetFormatScanlineCount(ImageFormat fmt, UInt32 height, unsigne
     case Image_DXT1:
     case Image_DXT3:
     case Image_DXT5:
+    case Image_BC7:
         return (height + 3) / 4;
     default:
         break;    
@@ -699,7 +706,7 @@ UPInt ImageData::GetMipLevelSize(ImageFormat format, const ImageSize& sz, unsign
     if (fmt == Image_DXT1)
         levelSize = Alg::Max<UInt32>(1u, (sz.Width+3) / 4) *
                     Alg::Max<UInt32>(1u, (sz.Height+3) / 4) * 8;
-    else if (fmt >= Image_DXT3 && fmt <= Image_DXT5)
+    else if ((fmt >= Image_DXT3 && fmt <= Image_BC7) ||(fmt >= Image_ATCICA && fmt <= Image_ATCICI))
         levelSize = Alg::Max<UInt32>(1u, (sz.Width+3) / 4) *
                     Alg::Max<UInt32>(1u, (sz.Height+3) / 4) * 16;
     else
@@ -916,16 +923,11 @@ void Image::GetMatrix(Matrix2F* mat) const
         mat->SetIdentity();
     }
 }
-void Image::GetMatrixInverse(Matrix2F* mat) const
+bool Image::GetMatrixInverse(Matrix2F* mat) const
 {
     if (pInverseMatrix)
-    {
         *mat = *pInverseMatrix;
-    }
-    else
-    {
-        mat->SetIdentity();
-    }
+    return pInverseMatrix != 0;
 }
 
 void Image::GetUVGenMatrix(Matrix2F* mat, TextureManager* manager)
@@ -933,11 +935,12 @@ void Image::GetUVGenMatrix(Matrix2F* mat, TextureManager* manager)
     Texture* texture = GetTexture(manager);
     if (texture)
     {
-        if (pInverseMatrix)
+        Matrix2F invImageMatrix(Matrix2F::NoInit);
+        if (GetMatrixInverse(&invImageMatrix))
         {
             Matrix2F uvGenMatrix(Matrix2F::NoInit);
             texture->GetUVGenMatrix(&uvGenMatrix);
-            mat->SetToAppend(*pInverseMatrix, uvGenMatrix);
+            mat->SetToAppend(invImageMatrix, uvGenMatrix);
         }
         else
         {
@@ -960,6 +963,14 @@ void Image::GetUVNormMatrix(Matrix2F* mat, TextureManager* manager)
     {
         texture->GetUVGenMatrix(mat);
         ImageRect r = GetRect();
+
+        // We need to apply the inverse image matrix, only if this is a sub-image (not the entire area of the texture).
+        if (r.GetSize() != texture->GetSize())
+        {
+            Matrix2F invImageMatrix(Matrix2F::NoInit);
+            if (GetMatrixInverse(&invImageMatrix))
+                mat->Prepend(invImageMatrix);
+        }
         mat->PrependTranslation((float)r.x1, (float)r.y1);
     }
     else
@@ -971,7 +982,16 @@ void Image::GetUVNormMatrix(Matrix2F* mat, TextureManager* manager)
     mat->PrependScaling((float)s.Width, (float)s.Height);
 }
 
-
+#ifdef SF_AMP_SERVER
+UPInt Image::GetBytes(int* memRegion) const
+{
+    if (pTexture)
+    {
+        return pTexture->GetBytes(memRegion);
+    }
+    return ImageBase::GetBytes(memRegion);
+}
+#endif
 
 //--------------------------------------------------------------------
 // ***** ImageSource
@@ -1078,6 +1098,18 @@ RawImage::~RawImage()
     // Destructor still needs to handle partially-initialized
     // image since it may exist in Create.
     freeData();
+}
+
+bool RawImage::hasData() const
+{
+    for (unsigned plane = 0; plane < Data.RawPlaneCount; plane++)
+    {
+        if (Data.pPlanes[plane].pData)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void RawImage::freeData()
@@ -1192,6 +1224,13 @@ bool RawImage::Unmap()
 
 bool RawImage::Decode(ImageData* pdest, CopyScanlineFunc copyScanline, void* arg) const
 {
+#if defined (SF_AMP_SERVER)
+    // If there are no data in system memory, read from the GPU
+    if (pTexture && !hasData())
+    {
+        return pTexture->Copy(pdest);
+    }
+#endif //SF_AMP_SERVER
     ImagePlane  splane, dplane;
     ImageFormat format           = Data.GetFormat();
     unsigned    formatPlaneCount = ImageData::GetFormatPlaneCount(format);
@@ -1339,6 +1378,33 @@ bool    TextureImage::Unmap()
 {
     return pTexture->Unmap();
 }
+
+
+//--------------------------------------------------------------------
+// ***** SubImage
+
+bool SubImage::GetMatrixInverse( Matrix2F* mat ) const
+{
+    bool baseInverse = pImage->GetMatrixInverse(mat);
+
+    // No inverse matrices set.
+    if (!baseInverse && !pInverseMatrix)
+        return false;
+
+    // Only subimage inverse is set, use it.
+    if (!baseInverse)
+        *mat = *pInverseMatrix;
+
+    // Both subimage and base image have an inverse. Append them.
+    if (pInverseMatrix && baseInverse)
+        mat->Append(*pInverseMatrix);
+
+    // baseInverse && !pInverseMatrix already handled.
+
+    // matrix is non-identity.
+    return true; 
+}
+
 
 //--------------------------------------------------------------------
 // ***** ImageUpdateQueue
@@ -1500,6 +1566,15 @@ const Render::TextureFormat* TextureManager::precreateTexture(ImageFormat format
     return ptformat;
 }
 
+#if defined( SF_OS_WIN32 ) && !defined(_DURANGO)
+#define PUMP_MESSAGES_HACK
+#endif
+
+#ifdef PUMP_MESSAGES_HACK
+static void NullPumpMessages() {}
+typedef void (*MessagePumpFunc)();
+MessagePumpFunc FnPumpMessages = &NullPumpMessages;
+#endif // PUMP_MESSAGES_HACK
 
 Render::Texture* TextureManager::postCreateTexture( Render::Texture* ptexture, unsigned use )
 {
@@ -1533,8 +1608,17 @@ Render::Texture* TextureManager::postCreateTexture( Render::Texture* ptexture, u
         pLocks->TextureMutex.Unlock();
         pRTCommandQueue->PushThreadCommand(&ServiceCommandInstance);
         pLocks->TextureMutex.DoLock();
+
+#ifdef PUMP_MESSAGES_HACK
         while(ptexture->State == Texture::State_InitPending)
-            pLocks->TextureInitWC.Wait(&pLocks->TextureMutex);
+		{
+            pLocks->TextureInitWC.Wait(&pLocks->TextureMutex, 100 );
+			FnPumpMessages();
+		}
+#else
+		while(ptexture->State == Texture::State_InitPending)
+			pLocks->TextureInitWC.Wait(&pLocks->TextureMutex);
+#endif
     }
 
     // Clear out 'pImage' reference if it's not supposed to be kept. It is safe to do this
@@ -1550,6 +1634,7 @@ Render::Texture* TextureManager::postCreateTexture( Render::Texture* ptexture, u
     // If texture was properly initialized, it would've been added to list.
     if (ptexture->State == Texture::State_InitFailed)
     {
+        ptexture->pImage = 0;
         ptexture->Release();
         return 0;
     }
@@ -1629,7 +1714,7 @@ void TextureManager::unmapTexture(Texture *ptexture, bool applyUpdate)
 ImageSwizzler& TextureManager::GetImageSwizzler() const
 {
     static ImageSwizzler swizzler;
-	return swizzler;
+    return swizzler;
 }
 
 // ***** Texture

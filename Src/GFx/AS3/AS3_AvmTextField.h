@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -152,6 +153,8 @@ public:
     // returns false, if default action should be prevented
     virtual bool            OnCharEvent(wchar_t wcharCode, unsigned controllerIdx);
     virtual void            OnScroll();
+    virtual bool            OnEditorInsertingText(UPInt pos, UPInt len, const wchar_t* wstr, unsigned controllerIdx = 0);
+    virtual bool            OnEditorRemovingText(UPInt pos, UPInt len, unsigned controllerIdx = 0);
     virtual bool            UpdateTextFromVariable() { return false; }
     virtual void            UpdateVariable() {}
 

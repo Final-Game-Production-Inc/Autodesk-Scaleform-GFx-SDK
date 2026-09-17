@@ -7,6 +7,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,6 +36,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Render_Bundle.h"
 #include "Render/Render_Queue.h"
 #include "Render/Render_Events.h"
+#include "Render/Render_Profiler.h"
 #include "Render/Renderer2D.h"
 
 namespace Scaleform { namespace Render {
@@ -61,7 +63,17 @@ struct StereoParams
     StereoParams() : DisplayWidthCm(0), Distortion(0.75f), DisplayDiagInches(52.f), DisplayAspectRatio(9.f/16.f), EyeSeparationCm(6.4f) {  }
 };
 
+class StereoImplBase : public RefCountBase<StereoImplBase, Stat_Default_Mem>
+{
+protected:
+    StereoParams S3DParams;
 
+public:
+    virtual void SetParams(const StereoParams& p) { S3DParams = p; }
+    virtual const StereoParams& GetParams() { return S3DParams; }
+    virtual void GetStereoProj(const Matrix4F& proj, float eyeZ, Matrix4F* left, Matrix4F* right, float factor = 1.0f) const;
+};
+ 
 class MatrixState : public RefCountBase<MatrixState, StatRender_Mem>
 {
 public:
@@ -88,8 +100,8 @@ public:
     bool                OrientationSet;
 
     // 3D stereo support
-    StereoParams        S3DParams;
     StereoDisplay       S3DDisplay; 
+    Ptr<StereoImplBase> S3DImpl;
 
     HAL*                pHAL;
 
@@ -98,21 +110,21 @@ public:
 
     const Matrix4F&     GetUVP() const;
     const Matrix4F&     GetUVP( const Rect<int> & viewRect ) const;
-    virtual Matrix2F&   GetFullViewportMatrix();
+    virtual Matrix2F&   GetFullViewportMatrix(const Size<int>& rtSize);
 
     virtual void        SetUserMatrix(const Matrix2F& user);
+    virtual void        SetUserMatrix(const Matrix2F& user, const Matrix2F& user3D);
     virtual void        SetViewportMatrix(const Matrix2F& vp);
     virtual Viewport    SetOrientation(const Viewport& vp);
     virtual void        CopyFrom(MatrixState* state);
     virtual void        CopyTo(MatrixState* state);
 
-    static void         Copy(MatrixState* outmat, MatrixState* inmat);
+    virtual void        Copy(MatrixState* outmat, MatrixState* inmat);
     
 protected:
     virtual void        recalculateUVPOC() const;
     
     // 3D stereo support
-    void                getStereoProjectionMatrix(Matrix4F *left, Matrix4F *right, const Matrix4F &original, float screenDist, float factor = 1.0f) const;
     const               Matrix4F& updateStereoProjection(float factor = 1.0f) const;
 
     Matrix2F            FullViewportMVP;        // MVP for a 2D quad to fill the entire viewport.
@@ -141,151 +153,6 @@ public:
     virtual void OnHALEvent(HALNotifyType type) = 0;
 };
 
-
-//------------------------------------------------------------------------
-
-class ProfileViews
-{
-public:
-    enum ProfileFlags
-    {
-        Channel_Red    = 0,
-        Channel_Green  = 16,
-        Channel_Blue   = 32,
-        Channel_Flags  = 48,
-        Profile_Fill   = 0x100,
-        Profile_Mask   = 0x200,
-        Profile_Filter = 0x400,
-        Profile_Batch  = 0x800,
-        Profile_Blend  = 0x1000,
-
-        ProfileFlag_NoFilterCaching = 0x00000001,   // Flag that disables caching of filters (sent in Channel_Flags).
-    };
-
-#ifdef SF_RENDERER_PROFILE
-private:
-    BlendMode OverrideBlend;
-    bool      OverrideMasks, FillMode;
-    unsigned  BatchMode;
-    Cxform    FillCxforms[4];
-
-    int       DrawMode;
-    Color     BatchColor;
-    
-    bool      NoFilterCaching;    // Flag indicating whether filters will be not be cached.
-
-    Color     GetColorForBatch(UPInt base, unsigned index) const;
-
-public:
-    ProfileViews()
-    {
-        DisableProfileViews();
-    }
-
-    void DisableProfileViews() 
-    {
-        OverrideBlend = Blend_None;
-        OverrideMasks = 0;
-        FillMode = 0;
-        BatchMode = 0;
-        DrawMode = 0;
-        NoFilterCaching = false;
-    }
-
-    void SetProfileViews (UInt64 modes);
-
-
-    void      SetDrawMode(int mode)
-    {
-        DrawMode = mode;
-    }
-    void      SetBatch(UPInt batchKey, unsigned batchIndex)
-    {
-        BatchColor = GetColorForBatch(batchKey, batchIndex);
-    }
-    void      SetFillFlags(unsigned fillFlags)
-    {
-        if (DrawMode == 0 || DrawMode == 3)
-            DrawMode = (fillFlags & FF_Blending) ? 3 : 0;
-    }
-
-    Color     GetClearColor(Color c) const
-    {
-        return (FillMode || BatchMode) ? Color(0,0,0,255) : c;
-    }
-
-    BlendMode GetBlendMode(BlendMode mode) const
-    {
-        return (OverrideBlend == Blend_None) ? mode : OverrideBlend;
-    }
-
-    PrimitiveFillType GetFillType(PrimitiveFillType fill) const
-    {
-        return (OverrideMasks && fill == PrimFill_Mask) ? PrimFill_SolidColor : fill;
-    }
-
-    bool      ShouldDrawMask() const
-    {
-        return !OverrideMasks;
-    }
-
-    Color     GetColor(Color color) const
-    {
-        if (FillMode || BatchMode)
-            return GetCxform(Cxform::Identity).Transform(color);
-        else
-            return color;
-    }
-
-    bool      IsCxformChanged() const
-    {
-        return (FillMode && !FillCxforms[DrawMode].IsIdentity()) || BatchMode;
-    }
-
-    Cxform    GetCxform(const Cxform& cx) const
-    {
-        Cxform outCx(Cxform::NoInit);
-        if (FillMode)
-            outCx = FillCxforms[DrawMode];
-        else
-            outCx = cx;
-        if (BatchMode)
-        {
-            Cxform batch (BatchColor);
-            for (int i = 0; i < 4; i++)
-                if (BatchMode & (1 << i))
-                {
-                    outCx.M[0][i] = batch.M[0][i];
-                    outCx.M[1][i] = batch.M[1][i];
-                }
-        }
-        return outCx;
-    }
-
-    bool      IsFilterCachingEnabled() const            { return !NoFilterCaching;   }
-
-#else
-    void      SetProfileViews(UInt64) {}
-    void      SetDrawMode(int) {}
-    void      SetBatch(UPInt, unsigned) {}
-
-    Color             GetClearColor(Color c) const { return c; }
-    BlendMode         GetBlendMode(BlendMode mode) const { return mode; }
-    PrimitiveFillType GetFillType(PrimitiveFillType fill) const { return fill; }
-    Color             GetColor(Color color) const { return color; }
-    bool              IsCxformChanged() const { return false; }
-    Cxform            GetCxform(const Cxform& cx) const { return cx; }
-    void              SetFillFlags(unsigned) { } 
-
-    bool              ShouldDrawMask() const { return true; }
-
-    bool              IsFilterCachingEnabled() const            { return true; }
-#endif
-};
-
-
-
-
 //------------------------------------------------------------------------
 
 // HALInitParams contains common arguments passed to HAL::InitHAL function.
@@ -302,8 +169,9 @@ struct HALInitParams
     // enumerations in the appropriate platform-specific back ends,
     // such as D3D9::HALConfig_NoSceneCalls.
     unsigned                    ConfigFlags;
-    // RenderThreadId identifies the renderer thread; it is used on some platforms
-    // to synchronize texture creation. Can be left null on most consoles.
+    // RenderThreadId identifies the renderer thread; it is used to identify which thread
+    // is currently executing, and is used by the texture manager, and DrawableImage systems.
+    // Should not be null.
     ThreadId                    RenderThreadId;
     // Texture manager can be created early and specified here. Early texture manager
     // creation allows resource loading to take place before HAL init.
@@ -341,9 +209,8 @@ class HAL : public RefCountBase<HAL, StatRender_Mem>
 {
 public:
 
-    // HAL tracks an optional command queue that allows its associated systems
-    // to post commands for the render thread.
-    HAL(ThreadCommandQueue *commandQueue = 0);
+    // HAL tracks a command queue that allows its associated systems to post commands for the render thread.
+    HAL(ThreadCommandQueue *commandQueue);
 
     struct Stats
     {
@@ -367,6 +234,12 @@ protected:
     // initialization.
     virtual bool initHAL(const HALInitParams& params);
 
+    // initHAL - initializes the HAL's matrix state. Normally just the base class
+    // implementation is fine, but on systems that support stereo 3D (3DS) or that have
+    // non-standard orientation in render targets (Wii, OpenGL), the derived version
+    // must be allocated.
+    virtual void initMatrices();
+    
     // Platform-specific function called to shutdown an initialized HAL;
     // implemented in every back-end.
     virtual bool shutdownHAL();
@@ -414,6 +287,7 @@ public:
     // Set "User" matrix that is applied to shift the view just before viewport.
     // Should be called before BeginDisplay.
     virtual void        SetUserMatrix(const Matrix& m) { Matrices->SetUserMatrix(m); }
+    virtual void        SetUserMatrix(const Matrix2F& user, const Matrix2F& user3D) { Matrices->SetUserMatrix(user, user3D); }
 
     // Caclulates the 2D view/projection matrix, given a view rectangle, and a window offset.
     virtual void        CalcHWViewMatrix(unsigned vpFlags, Matrix* pmatrix, const Rect<int>& viewRect, int dx, int dy);
@@ -425,8 +299,9 @@ public:
     // Updates the hardware viewport based on current settings of HALState and VP/ViewRect.
     virtual void        updateViewport() = 0;
 
-    // Clears a rectangle (in screen coordinates) to the given color.
-    virtual void        clearSolidRectangle(const Rect<int>& r, Color color) = 0;
+    // Clears a rectangle (in screen coordinates) to the given color. If blend is true, the rectangle is not
+    // actually cleared, it is 'normal' blended over the current buffer contents, with the alpha in the 'color'.
+    virtual void        clearSolidRectangle(const Rect<int>& r, Color color, bool blend) = 0;
 
 
     // *** Render target state management
@@ -451,6 +326,7 @@ public:
     {
         PRT_NoClear     = 0x01,     // Do not clear the render target being pushed (clear is done by default).
         PRT_Resolve     = 0x02,     // Resolve the current backbuffer to a texture before rendering (X360).
+        PRT_NoSet       = 0x04,     // Do not actually set the render target on the device (optimization for filter drawing)
     };
 
     // Applies render target; should be called before BeginDisplay, If called successfully 
@@ -460,8 +336,8 @@ public:
 
     // Begin rendering to the specified target; frameRect is the ortho projection.
     // Texture referenced by prt must not be used until PopRenderTarget. Flags are available,
-    // see PushRenderTargetFlags.
-    virtual void    PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags = 0) = 0;
+    // see PushRenderTargetFlags. If the PRT_NoClear flag is not set, the target will be cleared to 'clearColor'.
+    virtual void    PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags = 0, Color clearColor = 0) = 0;
 
     // Restore previous render target. Contents of Texture in popped render target are now available
     // for rendering. Flags are available, see PushRenderTargetFlags.
@@ -475,7 +351,7 @@ public:
     // Destroys the default render targets.
     virtual void    destroyRenderBuffers();
 
-	// Allocates a PrimitiveFill initialized with the given data.
+    // Allocates a PrimitiveFill initialized with the given data.
     virtual PrimitiveFill*  CreatePrimitiveFill(const PrimitiveFillData& data);    
 
     // Most platforms do not require the prepass step (except X360/Wii), their HALs override this function. 
@@ -506,9 +382,17 @@ public:
     //  PushMask_BeginSubmit - pushes a new mask on stack and begins "submit mask" rendering.
     //  EndMaskSubmit - Ends submit mask and begins content rendering, clipped by the mask.
     //  PopMask - pops the mask from stack; further rendering will use previous masks, if any.
-    virtual void        PushMask_BeginSubmit(MaskPrimitive* primitive) = 0;
-    virtual void        EndMaskSubmit() = 0;
-    virtual void        PopMask() = 0;
+    virtual void        PushMask_BeginSubmit(MaskPrimitive* primitive);
+    virtual void        EndMaskSubmit();
+    virtual void        PopMask();
+
+    // Used with render states which can be enabled and disabled, but may also be ignored.
+    enum EnableIgnoreValue
+    {
+        EnableIgnore_Off    = 0,
+        EnableIgnore_On     = 1,
+        EnableIgnore_Ignore = 2
+    };
 
     // *** BlendMode
     enum BlendOp
@@ -534,6 +418,7 @@ public:
         BlendOp         Operator;
         BlendFactor     SourceColor;
         BlendFactor     DestColor;
+        BlendOp         AlphaOperator;
         BlendFactor     SourceAlpha;
         BlendFactor     DestAlpha;
     };
@@ -541,22 +426,116 @@ public:
 
     struct HALBlendState
     {
-        HALBlendState() : Mode(Blend_None), SourceAc(false), ForceAc(false) { }
+        HALBlendState() : Mode(Blend_None), SourceAc(false), ForceAc(false), BlendEnable(false) { }
         BlendMode Mode;
         bool      SourceAc;
         bool      ForceAc;
+        bool      BlendEnable;
     };
 
-    virtual void          PushBlendMode(BlendMode mode);
+    virtual void          PushBlendMode(BlendPrimitive* prim);
     virtual void          PopBlendMode();
+    void                  SetFullSceneTargetBlend(bool enable);
+
     void                  applyBlendMode(BlendMode mode, bool sourceAc = false, bool forceAc = false);
     void                  applyBlendMode(const HALBlendState& state);
+    virtual void          applyBlendModeEnable(bool enabled);
+
+protected:
+    BlendMode             getLastBlendModeOrDefault() const;
     virtual void          applyBlendModeImpl(BlendMode mode, bool sourceAc = false, bool forceAc = false) = 0;
+    virtual void          applyBlendModeEnableImpl(bool enabled) { SF_UNUSED(enabled); };
+    virtual bool          shouldRenderTargetBlend(const BlendPrimitive*) const { return true; }
+
+    Ptr<RenderTarget>     FullSceneBlendTarget;
+
+public:
+    // *** DepthStencil modes
+
+    // The depth/stencil modes. Generally used to perform masking operations.
+    enum DepthStencilMode
+    {
+        DepthStencil_Invalid,                   // Used to invalidate these states at during BeginFrame.
+        DepthStencil_Disabled,                  // All depth and stencil testing/writing is disabled.
+
+        // Used for writing stencil values (depth operations disabled, color write enable off)
+        DepthStencil_StencilClear,              // Clears all stencil values to the stencil reference.
+        DepthStencil_StencilClearHigher,        // Clears all stencil values lower than the reference, to the reference.
+        DepthStencil_StencilIncrementEqual,     // Increments any stencil values that match the reference.
+
+        // Used for testing stencil values (depth operations disabled).
+        DepthStencil_StencilTestLessEqual,      // Allows rendering where the stencil value is less than the reference.
+
+        // Used for writing depth values (stencil operations disabled, color write enable off).
+        DepthStencil_DepthWrite,                // Depth is written (but not tested), stenciling is disabled.
+
+        // Used for testing depth values (stencil operations disabled).
+        DepthStencil_DepthTestEqual,            // Allows rendering where the depth values are equal, stenciling and depth writing are disabled.
+
+        DepthStencil_Count
+    };
+
+    // The depth/stencil test functions used by the renderer
+    enum DepthStencilFunction
+    {
+        DepthStencilFunction_Ignore,
+        DepthStencilFunction_Never,
+        DepthStencilFunction_Less,
+        DepthStencilFunction_Equal,
+        DepthStencilFunction_LessEqual,
+        DepthStencilFunction_Greater,
+        DepthStencilFunction_NotEqual,
+        DepthStencilFunction_GreaterEqual,
+        DepthStencilFunction_Always,
+        DepthStencilFunction_Count
+    };
+
+    // The stencil operations used by the renderer
+    enum StencilOp
+    {
+        StencilOp_Ignore,
+        StencilOp_Keep,
+        StencilOp_Replace,
+        StencilOp_Increment,
+        StencilOp_Count
+    };
+
+    struct HALDepthStencilDescriptor
+    {
+        EnableIgnoreValue           DepthTestEnable;    // true if depth testing should be performed, false otherwise (DepthFunction ignored).
+        EnableIgnoreValue           DepthWriteEnable;   // true if depth writing should be performed, false otherwise.
+        EnableIgnoreValue           StencilEnable;      // true if stenciling should be performed, false otherwise (StencilFunction ignored).
+        EnableIgnoreValue           ColorWriteEnable;   // true if color writing should be enabled, false otherwise.
+        DepthStencilFunction        DepthFunction;      // The function to perform when doing depth testing, determining whether a fragment passes or fails.
+        DepthStencilFunction        StencilFunction;    // The function to perform when doing stencil testing, determining whether a fragment passes or fails.
+        StencilOp                   StencilPassOp;      // The operation to perform on the stencil buffer if a fragment passes the stencil test.
+        StencilOp                   StencilFailOp;      // The operation to perform on the stencil buffer if a fragment fails the stencil test.
+        StencilOp                   StencilZFailOp;     // The operation to perform on the stencil buffer if a fragment passes stencil test, but fails depth testing.
+    };
+
+    // *** Rasterization
+    enum RasterModeType
+    {
+        RasterMode_Solid,       // Primitives are solid.
+        RasterMode_Wireframe,   // Primitives are rendered in wireframe.
+        RasterMode_Point,       // Primitives are rendered as points.
+        RasterMode_Count,
+        RasterMode_Default = RasterMode_Solid
+    };
+
+    // Sets the raster mode to be applied to the next scene. 
+    void SetRasterMode(RasterModeType mode)                         { NextSceneRasterMode = mode; }
+    // Returns whether this platform supports the given raster mode.
+    virtual bool IsRasterModeSupported(RasterModeType mode) const   { SF_UNUSED(mode); return true; }
+
+public:
+
+    // *** Cacheable
+    virtual void        PrepareCacheable(CacheablePrimitive*, bool unprepare);
 
     // *** Filters
     struct FilterStackEntry;
-    virtual void        PrepareFilters(FilterPrimitive*);
-    virtual void        PushFilters(FilterPrimitive*)    { }
+    virtual void        PushFilters(FilterPrimitive*);
     virtual void        PopFilters();
     virtual void        drawUncachedFilter(const FilterStackEntry&)  { };
     virtual void        drawCachedFilter(FilterPrimitive*)           { };
@@ -582,8 +561,8 @@ public:
     virtual void        DrawablePaletteMap( Texture** tex, const Matrix2F* texgen, const Matrix2F& mvp, 
                                             unsigned channelMask, const UInt32* values) 
                         { SF_UNUSED5( tex, texgen, mvp, channelMask, values ); }
-    virtual void        DrawableCopyback( Texture* tex, const Matrix2F& mvp, const Matrix2F& texgen ) 
-                        { SF_UNUSED3(tex, mvp, texgen); }
+    virtual void        DrawableCopyback( Render::Texture* tex, const Matrix2F& mvp, const Matrix2F& texgen, unsigned flagMask = 0xFFFFFFFF ) 
+                        { SF_UNUSED4(tex, mvp, texgen, flagMask); }
 
     virtual void        GetStats(Stats* pstats, bool clear = true);
 
@@ -591,11 +570,12 @@ public:
 
     // Generic rendering event API - default implementation does nothing.
     // Override this in a HAL to provide overloaded event types.
-    virtual RenderEvent& GetEvent(EventType) 
-    { 
-        static RenderEvent defaultEvent;
-        return defaultEvent;
-    };
+    virtual RenderEvent& GetEvent(EventType);
+
+    ProfileViews& GetProfiler()
+    {
+        return Profiler;
+    }
 
     // Texture manager
     virtual TextureManager*           GetTextureManager() const = 0;
@@ -605,21 +585,23 @@ public:
 
     // Returns the RenderSync object, used for synchronizing the CPU and GPU. Not all platforms require
     // this object, it is valid for this function to return 0.
-    virtual RenderSync*               GetRenderSync() const { return 0; }
+    virtual RenderSync*               GetRenderSync() { return 0; }
 
     // Obtains formats that renderer will use for single, batches and instanced rendering of
     // the specified source format.
     //   - Filled in pointer may be the same as sourceFormat.
     //   - 'batch' format may be reported as 0, in which case batching is disabled.
     //   - 'instanced' format may be reported as 0, in which instancing is not supported for format.
-    virtual void    MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFormat,
-                                    const VertexFormat** single,
-                                    const VertexFormat** batch, const VertexFormat** instanced, unsigned meshType) = 0;
-                                     
-    // Profile view modes
-    virtual void    SetProfileViews (UInt64 modes)	{ NextProfileMode = modes; }
-    ProfileViews*   GetProfiler()                   { return &Profiler; }
+    virtual void     MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFormat,
+                                     const VertexFormat** single,
+                                     const VertexFormat** batch, const VertexFormat** instanced, unsigned meshType) = 0;
 
+    // Returns the maximum number of batches, based on the number of available uniforms, and the number required per-batch
+    // (on shader-platforms). The MeshCacheParams can lower the return value of this function further.
+    // If the user modifies the shader type, during the emit step (eg. with the PushUserData API), and this changes uniform usage,
+    // they must account for this, to return the minimum possible batch count, based on any possible modification.
+    virtual unsigned GetMaximumBatchCount(Primitive* prim) = 0;
+                                     
     // Adds an external notification object that will be told about HAL
     // events such as SetVideoMode/ResetVideoMode. Should be removed with RemoveNotify.
     void AddNotify(HALNotify *notify)
@@ -632,15 +614,24 @@ public:
         notify->RemoveNode();
     }    
 
+     // 3D stereo support
+    virtual void SetStereoImpl(StereoImplBase* simpl)
+    {
+        Matrices->S3DImpl = simpl;
+    }
+    
     // 3D stereo support
     virtual void SetStereoParams(StereoParams sParams)  
     { 
         if (sParams.DisplayWidthCm == 0)
         {
-            sParams.DisplayWidthCm = sParams.DisplayDiagInches / sqrt(1.0f + 1.f/sParams.DisplayAspectRatio * 
+            sParams.DisplayWidthCm = sParams.DisplayDiagInches / sqrtf(1.0f + 1.f/sParams.DisplayAspectRatio *
             1.f/sParams.DisplayAspectRatio) * 2.54f /* inches to cm */; 
         }
-        Matrices->S3DParams = sParams;
+        if (Matrices->S3DImpl)
+        {
+            Matrices->S3DImpl->SetParams(sParams);
+        }
     }
 
     virtual void SetStereoDisplay(StereoDisplay sDisplay, bool setstate = 0) 
@@ -694,14 +685,16 @@ public:
         HS_ViewValid        = 0x00020,  // Non-empty viewport; culls rendering.
         HS_DrawingMask      = 0x00040,  // Set when drawing a mask
         HS_DrawingFilter    = 0x00080,  // Set when drawing a filter (from scratch)
-        HS_CachedFilter     = 0x00100,  // Set when drawing a filter from a cached result.
-        HS_SceneInDisplay   = 0x00200,  // Set if BeginScene was called by BeginDisplay
+        HS_InCachedFilter   = 0x00100,  // Set when drawing a filter from a cached result.
+        HS_InCachedBlend    = 0x00200,  // Set when drawing a filter from a cached result.
+        HS_SceneInDisplay   = 0x00400,  // Set if BeginScene was called by BeginDisplay
+        HS_BlendTarget      = 0x00800,  // Set if a fullscreen target is required to perform an BlendMode requiring a target.
+        HS_InCachedTarget   = HS_InCachedFilter | HS_InCachedBlend,  // Set when a filter or target blend from a cached result.
 
         HS_DeviceValid      = 0x01000,  // If not valid, device is Lost (3DS/D3D9 only).
         HS_ReadyForReset    = 0x02000,  // Set when reset-dependent resources are released (D3D9/D3D1x only).
         HS_InGxmScene       = 0x10000,  // Currently in a gxm scene (PSVITA only).
         HS_SceneChanged     = 0x20000,  // The gxm scene was changed after BeginDisplay (PSVITA only).
-        HS_LeaveSceneActive = 0x40000,  // Leave a scene with the current render target active (PSVITA only).
     };
 
 protected:
@@ -736,13 +729,22 @@ protected:
     // Self-accessor used to avoid constructor warning.
     HAL*      getThis() { return this; }
 
+public:
     // Returns whether the profile can render any of the filters contained in the FilterPrimitive
     // By default, always return true. Platforms can override this if they have conditional support
     // for filters.
     virtual bool shouldRenderFilters(const FilterPrimitive*) const { return true; }
 
+
+protected:
+
     // Simply sets a quad vertex buffer and draws (uniforms, etc, need to be set already).
     virtual void drawScreenQuad() = 0;
+
+    // *** Profiler
+    friend class ProfileModifierTDensity;
+    virtual void profilerApplyUniform(ProfilerUniform uniform, unsigned components, float* values) { SF_UNUSED3(uniform, components, values); }
+    virtual void profilerDrawCacheablePrimArea(const CacheablePrimitive* prim)                     { SF_UNUSED(prim); }
 
 
     unsigned                 HALState;       // See HALStateFlags above
@@ -781,9 +783,47 @@ protected:
     // The current state of alpha blending. Used for redundancy checking.
     HALBlendState CurrentBlendState;
 
+    // *** DepthStencil modes
+    static HALDepthStencilDescriptor DepthStencilModeTable[DepthStencil_Count];
+
+    virtual void        applyDepthStencilMode(DepthStencilMode mode, unsigned stencilRef) = 0;
+    virtual bool        checkDepthStencilBufferCaps() = 0;
+    virtual void        drawMaskClearRectangles(const HMatrix* matrices, UPInt count);
+    virtual void        drawMaskClearRectangles(const Matrix2F* matrices, UPInt count) = 0;
+    virtual void        beginMaskDisplay();
+    virtual void        endMaskDisplay();
+
+    DepthStencilMode            CurrentDepthStencilState;   // The current values of the depth stencil 
+    unsigned                    CurrentStencilRef;          // The current value of the stencil ref.
+    bool                        StencilChecked;             // true if the depth/stencil capabilities have been checked this frame.
+    bool                        StencilAvailable;           // true if there is a stencil buffer available.
+    bool                        MultiBitStencil;            // true if the available stencil buffer has more than 1 bit available.
+    bool                        DepthBufferAvailable;       // true if the depth buffer is available.
+
+    // *** Rasterization 
+
+    // Applies the given raster mode, with redundancy checking.
+    void applyRasterMode(RasterModeType mode);
+    // Platform specific method which unconditionally applies the given raster mode.
+    virtual void applyRasterModeImpl(RasterModeType mode) = 0;
+
+    RasterModeType NextSceneRasterMode;     // The raster mode to be used for the next scene (applied in BeginScene)
+    RasterModeType CurrentSceneRasterMode;  // The raster mode for the current scene
+    RasterModeType AppliedSceneRasterMode;  // The currently applied raster mode (may differ from the current raster mode).
+
 public:
-    // BlendModeStack (holds blend modes).
-    typedef ArrayLH<BlendMode, Stat_Default_Mem, NeverShrinkPolicy> BlendStackType;
+
+    // BlendModeStack (holds BlendPrimitives).
+    struct BlendStackEntry
+    {
+        Ptr<BlendPrimitive>     pPrimitive;         // The blend primitive, at this level of the blend-stack.
+        Ptr<RenderTarget>       pRenderTarget;      // The render target, holding the actual content
+        Ptr<RenderTarget>       pLayerAlpha;        // Layer alpha channel. Note: this target contains the layer alpha, 
+                                                    // which is different from the alpha channel of pRenderTarget.
+        bool                    LayerAlphaCleared;  // true if the pLayerAlpha member has been cleared, false otherwise.
+        bool                    NoLayerParent;      // true if this is an Alpha or Erase blend mode, but there was no layer parent.
+    };
+    typedef ArrayLH<BlendStackEntry, Stat_Default_Mem, NeverShrinkPolicy> BlendStackType;
     BlendStackType  BlendModeStack;
 
     // *** Mask Support   
@@ -800,18 +840,6 @@ public:
     // to allow PopMask optimization. Last item above top may be needed to 
     // erased previous mask bounds when entering a new nested mask.
     unsigned        MaskStackTop;
-
-    virtual void    beginMaskDisplay()
-    {
-        SF_ASSERT(MaskStackTop == 0);
-        HALState &= ~HS_DrawingMask;
-    }
-    virtual void   endMaskDisplay()
-    {
-        SF_ASSERT(MaskStackTop == 0);
-        MaskStackTop = 0;
-        MaskStack.Clear();
-    }
 
     // *** Render Target Support
     struct RenderTargetEntry
@@ -833,8 +861,9 @@ public:
     typedef ArrayLH<FilterStackEntry, Stat_Default_Mem, NeverShrinkPolicy> FilterStackType;
     FilterStackType FilterStack;
 
-    int CachedFilterIndex;			// Holds the level of cached filter on the FilterStack being drawn (-1 for none).
-	int CachedFilterPrepIndex;		// Holds the level of cached filter being prepared (-1 for none).
+    int CacheableIndex;         // Holds the level of cached filter on the FilterStack being drawn (-1 for none).
+    int CacheablePrepIndex;     // Holds the level of cacheable primitive being prepared (-1 for none).
+    int CacheablePrepStart;     // Holds the level at which cacheable primitives started to be prepared (-1 for none)
 
     typedef ListAllocLH_POD<BeginDisplayData> BeginDisplayDataType;
     BeginDisplayDataType BeginDisplayDataList;  // Holds data passed to BeginScene.
@@ -844,8 +873,6 @@ public:
 
     Viewport                 VP;        // Output size.
     Rect<int>                ViewRect;    
-
-	UInt64					 NextProfileMode;	// Holds the state of the next ProfileView state (applied next BeginScene).
 };
 
 

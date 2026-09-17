@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,8 +21,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "../Events/AS3_Obj_Events_EventDispatcher.h"
 //##protect##"includes"
-#include "GFx/AMP/Amp_Socket.h"
+#include "GFx/Net/GFx_Socket.h"
 #include "GFx/AS3/AS3_SocketThreadMgr.h"
+
+namespace Scaleform { namespace GFx { class SocketImplFactory; } }
 //##protect##"includes"
 
 
@@ -45,9 +48,13 @@ namespace fl
     extern const ClassInfo int_CI;
     extern const TypeInfo NumberTI;
     extern const ClassInfo NumberCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
 } // namespace fl
 namespace fl_utils
 {
+    extern const TypeInfo ByteArrayTI;
+    extern const ClassInfo ByteArrayCI;
     extern const TypeInfo IDataInputTI;
     extern const ClassInfo IDataInputCI;
     extern const TypeInfo IDataOutputTI;
@@ -486,7 +493,7 @@ namespace Instances { namespace fl_net
 
 namespace InstanceTraits { namespace fl_net
 {
-    class Socket : public CTraits
+    class Socket : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -512,6 +519,8 @@ namespace InstanceTraits { namespace fl_net
 
         enum { ThunkInfoNum = 42 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[68];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -524,17 +533,19 @@ namespace InstanceTraits { namespace fl_net
     
 namespace ClassTraits { namespace fl_net
 {
-    class Socket : public Traits
+    class Socket : public fl_events::EventDispatcher
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Socket"; }
 #endif
     public:
-        typedef Classes::fl_net::Socket ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_net::Socket InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Socket(VM& vm);
+        Socket(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

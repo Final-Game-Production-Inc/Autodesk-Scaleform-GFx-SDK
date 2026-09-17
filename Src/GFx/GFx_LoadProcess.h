@@ -11,6 +11,7 @@ Notes       :   This file contains class declarations used in
                 in GFxCharacter.h.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -90,7 +91,7 @@ private:
     Ptr<LoadTaskData>       pLoadData;
 
     // A pointer to DataDef used to pass to SpriteDef constructor.
-    // This pointer is usuable from the sprite instance point of view,
+    // This pointer is usable from the sprite instance point of view,
     // but it can go bad if pMovieDef is released in playback thread.
     // Therefore, we can't really use it during loading.
     MovieDataDef*           pDataDef_Unsafe;

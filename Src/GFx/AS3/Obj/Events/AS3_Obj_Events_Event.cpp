@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::Event, Instances::fl_events::Event::mid_bubblesGet, bool> TFunc_Instances_Event_bubblesGet;
 typedef ThunkFunc0<Instances::fl_events::Event, Instances::fl_events::Event::mid_cancelableGet, bool> TFunc_Instances_Event_cancelableGet;
 typedef ThunkFunc0<Instances::fl_events::Event, Instances::fl_events::Event::mid_currentTargetGet, SPtr<Instances::fl::Object> > TFunc_Instances_Event_currentTargetGet;
@@ -351,28 +346,45 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 Event::tito[Event::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 
+    // };
+    const TypeInfo* Event::tit[14] = {
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::ObjectTI, 
+        &AS3::fl::uintTI, 
+        &AS3::fl::ObjectTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, 
+        NULL, 
+        NULL, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Event::ti[Event::ThunkInfoNum] = {
-        {TFunc_Instances_Event_bubblesGet::Func, &AS3::fl::BooleanTI, "bubbles", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Event_cancelableGet::Func, &AS3::fl::BooleanTI, "cancelable", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Event_currentTargetGet::Func, &AS3::fl::ObjectTI, "currentTarget", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Event_eventPhaseGet::Func, &AS3::fl::uintTI, "eventPhase", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Event_targetGet::Func, &AS3::fl::ObjectTI, "target", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Event_typeGet::Func, &AS3::fl::StringTI, "type", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Event_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Event_formatToString::Func, &AS3::fl::StringTI, "formatToString", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_Event_isDefaultPrevented::Func, &AS3::fl::BooleanTI, "isDefaultPrevented", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Event_preventDefault::Func, NULL, "preventDefault", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Event_stopImmediatePropagation::Func, NULL, "stopImmediatePropagation", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Event_stopPropagation::Func, NULL, "stopPropagation", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Event_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_Event_bubblesGet::Func, &Event::tit[0], "bubbles", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_cancelableGet::Func, &Event::tit[1], "cancelable", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_currentTargetGet::Func, &Event::tit[2], "currentTarget", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_eventPhaseGet::Func, &Event::tit[3], "eventPhase", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_targetGet::Func, &Event::tit[4], "target", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_typeGet::Func, &Event::tit[5], "type", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_clone::Func, &Event::tit[6], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_formatToString::Func, &Event::tit[7], "formatToString", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_Event_isDefaultPrevented::Func, &Event::tit[9], "isDefaultPrevented", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_preventDefault::Func, &Event::tit[10], "preventDefault", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_stopImmediatePropagation::Func, &Event::tit[11], "stopImmediatePropagation", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_stopPropagation::Func, &Event::tit[12], "stopPropagation", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Event_toString::Func, &Event::tit[13], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Event::Event(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Event::Event()"
 //##protect##"InstanceTraits::Event::Event()"
-        SetMemSize(sizeof(Instances::fl_events::Event));
 
     }
 
@@ -481,24 +493,27 @@ namespace ClassTraits { namespace fl_events
         {"USER_PRESENT", NULL, OFFSETOF(Classes::fl_events::Event, USER_PRESENT), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    Event::Event(VM& vm)
-    : Traits(vm, AS3::fl_events::EventCI)
+
+    Event::Event(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Event::Event()"
 //##protect##"ClassTraits::Event::Event()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::Event(vm, AS3::fl_events::EventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::Event(*this));
 
     }
 
     Pickable<Traits> Event::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Event(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Event(vm, AS3::fl_events::EventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::EventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -509,6 +524,11 @@ namespace fl_events
 {
     const TypeInfo EventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::Event::InstanceType),
+        0,
+        ClassTraits::fl_events::Event::MemberInfoNum,
+        InstanceTraits::fl_events::Event::ThunkInfoNum,
+        0,
         "Event", "flash.events", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -516,10 +536,6 @@ namespace fl_events
     const ClassInfo EventCI = {
         &EventTI,
         ClassTraits::fl_events::Event::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::Event::MemberInfoNum,
-        InstanceTraits::fl_events::Event::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::Event::mi,
         InstanceTraits::fl_events::Event::ti,

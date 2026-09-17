@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -33,6 +34,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -45,6 +47,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_display::DisplayObjectContainer, Instances::fl_display::DisplayObjectContainer::mid_mouseChildrenGet, bool> TFunc_Instances_DisplayObjectContainer_mouseChildrenGet;
 typedef ThunkFunc1<Instances::fl_display::DisplayObjectContainer, Instances::fl_display::DisplayObjectContainer::mid_mouseChildrenSet, const Value, bool> TFunc_Instances_DisplayObjectContainer_mouseChildrenSet;
 typedef ThunkFunc0<Instances::fl_display::DisplayObjectContainer, Instances::fl_display::DisplayObjectContainer::mid_numChildrenGet, SInt32> TFunc_Instances_DisplayObjectContainer_numChildrenGet;
@@ -373,16 +377,13 @@ namespace Instances { namespace fl_display
         GFx::DisplayObjContainer* container = pDispObj->CharToDisplayObjContainer_Unsafe();
 
         int numCh = int(container->GetNumChildren());
-        if (beginIndex < 0 || beginIndex >= numCh || endIndex < 0)
-        {
-            GetVM().ThrowRangeError(VM::Error(VM::eParamRangeError, GetVM()));
-            return;
-        }
+        if (beginIndex < 0 || beginIndex > numCh || endIndex < 0)
+            return GetVM().ThrowRangeError(VM::Error(VM::eParamRangeError, GetVM()));
+
         AvmDisplayObjContainer* avmObj = ToAvmDisplayObjContainer(container);
         for (int i = beginIndex; i < endIndex && i < numCh; ++i)
-        {
             avmObj->RemoveChildAt(unsigned(beginIndex));
-        }
+
         WARN_NOT_IMPLEMENTED("instance::DisplayObjectContainer::removeChildren()");
 //##protect##"instance::DisplayObjectContainer::removeChildren()"
     }
@@ -390,9 +391,16 @@ namespace Instances { namespace fl_display
     {
 //##protect##"instance::DisplayObjectContainer::setChildIndex()"
         SF_UNUSED3(result, child, index);
+
+        if (!child)
+            return GetVM().ThrowTypeError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("child")));
+
         SF_ASSERT(pDispObj && pDispObj->IsDisplayObjContainer());
         GFx::DisplayObjContainer* container = pDispObj->CharToDisplayObjContainer_Unsafe();
         
+        if (index < 0 || index >= (SInt32)container->GetNumChildren())
+            return GetVM().ThrowRangeError(VM::Error(VM::eParamRangeError, GetVM()));
+       
         if (child->pDispObj)
         {
             if (index < 0) index = 0; //?
@@ -408,6 +416,11 @@ namespace Instances { namespace fl_display
         SF_ASSERT(pDispObj && pDispObj->IsDisplayObjContainer());
         GFx::DisplayObjContainer* container = pDispObj->CharToDisplayObjContainer_Unsafe();
 
+        if (!child1)
+            return GetVM().ThrowTypeError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("child1")));
+        if (!child2)
+            return GetVM().ThrowTypeError(VM::Error(VM::eNullPointerError, GetVM() SF_DEBUG_ARG("child2")));
+
         if (child1->pDispObj && child2->pDispObj)
         {
             AvmDisplayObjContainer* avmObj = ToAvmDisplayObjContainer(container);
@@ -422,8 +435,10 @@ namespace Instances { namespace fl_display
         SF_ASSERT(pDispObj && pDispObj->IsDisplayObjContainer());
         GFx::DisplayObjContainer* container = pDispObj->CharToDisplayObjContainer_Unsafe();
 
-        if (index1 < 0) index1 = 0; //?
-        if (index2 < 0) index2 = 0; //?
+        if (index1 < 0 || index1 >= (SInt32)container->GetNumChildren())
+            return GetVM().ThrowRangeError(VM::Error(VM::eParamRangeError, GetVM()));
+        if (index2 < 0 || index2 >= (SInt32)container->GetNumChildren())
+            return GetVM().ThrowRangeError(VM::Error(VM::eParamRangeError, GetVM()));
         AvmDisplayObjContainer* avmObj = ToAvmDisplayObjContainer(container);
         avmObj->SwapChildrenAt((unsigned)index1, (unsigned)index2);
 //##protect##"instance::DisplayObjectContainer::swapChildrenAt()"
@@ -507,36 +522,63 @@ namespace Instances { namespace fl_display
 
 namespace InstanceTraits { namespace fl_display
 {
+    // const UInt16 DisplayObjectContainer::tito[DisplayObjectContainer::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 7, 8, 10, 13, 15, 17, 19, 21, 23, 25, 26, 28, 31, 34, 37, 
+    // };
+    const TypeInfo* DisplayObjectContainer::tit[40] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl_text::TextSnapshotTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::StringTI, 
+        &AS3::fl::int_TI, &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl::ArrayTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl_display::DisplayObjectTI, 
+        &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl::int_TI, 
+        NULL, &AS3::fl_display::DisplayObjectTI, &AS3::fl_display::DisplayObjectTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+    };
+    const Abc::ConstValue DisplayObjectContainer::dva[1] = {
+        {Abc::CONSTANT_Int, 1}, 
+    };
     const ThunkInfo DisplayObjectContainer::ti[DisplayObjectContainer::ThunkInfoNum] = {
-        {TFunc_Instances_DisplayObjectContainer_mouseChildrenGet::Func, &AS3::fl::BooleanTI, "mouseChildren", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObjectContainer_mouseChildrenSet::Func, NULL, "mouseChildren", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_numChildrenGet::Func, &AS3::fl::int_TI, "numChildren", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObjectContainer_tabChildrenGet::Func, &AS3::fl::BooleanTI, "tabChildren", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObjectContainer_tabChildrenSet::Func, NULL, "tabChildren", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_textSnapshotGet::Func, &AS3::fl_text::TextSnapshotTI, "textSnapshot", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_DisplayObjectContainer_addChild::Func, &AS3::fl_display::DisplayObjectTI, "addChild", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_addChildAt::Func, &AS3::fl_display::DisplayObjectTI, "addChildAt", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_DisplayObjectContainer_areInaccessibleObjectsUnderPoint::Func, &AS3::fl::BooleanTI, "areInaccessibleObjectsUnderPoint", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_contains::Func, &AS3::fl::BooleanTI, "contains", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_getChildAt::Func, &AS3::fl_display::DisplayObjectTI, "getChildAt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_getChildByName::Func, &AS3::fl_display::DisplayObjectTI, "getChildByName", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_getChildIndex::Func, &AS3::fl::int_TI, "getChildIndex", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_getObjectsUnderPoint::Func, &AS3::fl::ArrayTI, "getObjectsUnderPoint", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_removeChild::Func, &AS3::fl_display::DisplayObjectTI, "removeChild", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_DisplayObjectContainer_removeChildAt::Func, &AS3::fl_display::DisplayObjectTI, "removeChildAt", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_DisplayObjectContainer_removeChildren::Func, NULL, "removeChildren", NULL, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_DisplayObjectContainer_setChildIndex::Func, NULL, "setChildIndex", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_DisplayObjectContainer_swapChildren::Func, NULL, "swapChildren", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_DisplayObjectContainer_swapChildrenAt::Func, NULL, "swapChildrenAt", NULL, Abc::NS_Public, CT_Method, 2, 2},
+        {TFunc_Instances_DisplayObjectContainer_mouseChildrenGet::Func, &DisplayObjectContainer::tit[0], "mouseChildren", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_mouseChildrenSet::Func, &DisplayObjectContainer::tit[1], "mouseChildren", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_numChildrenGet::Func, &DisplayObjectContainer::tit[3], "numChildren", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_tabChildrenGet::Func, &DisplayObjectContainer::tit[4], "tabChildren", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_tabChildrenSet::Func, &DisplayObjectContainer::tit[5], "tabChildren", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_textSnapshotGet::Func, &DisplayObjectContainer::tit[7], "textSnapshot", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_addChild::Func, &DisplayObjectContainer::tit[8], "addChild", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_addChildAt::Func, &DisplayObjectContainer::tit[10], "addChildAt", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_areInaccessibleObjectsUnderPoint::Func, &DisplayObjectContainer::tit[13], "areInaccessibleObjectsUnderPoint", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_contains::Func, &DisplayObjectContainer::tit[15], "contains", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_getChildAt::Func, &DisplayObjectContainer::tit[17], "getChildAt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_getChildByName::Func, &DisplayObjectContainer::tit[19], "getChildByName", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_getChildIndex::Func, &DisplayObjectContainer::tit[21], "getChildIndex", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_getObjectsUnderPoint::Func, &DisplayObjectContainer::tit[23], "getObjectsUnderPoint", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_removeChild::Func, &DisplayObjectContainer::tit[25], "removeChild", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_removeChildAt::Func, &DisplayObjectContainer::tit[26], "removeChildAt", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_removeChildren::Func, &DisplayObjectContainer::tit[28], "removeChildren", NULL, Abc::NS_Public, CT_Method, 0, 2, 0, 1, &DisplayObjectContainer::dva[0]},
+        {TFunc_Instances_DisplayObjectContainer_setChildIndex::Func, &DisplayObjectContainer::tit[31], "setChildIndex", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_swapChildren::Func, &DisplayObjectContainer::tit[34], "swapChildren", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_DisplayObjectContainer_swapChildrenAt::Func, &DisplayObjectContainer::tit[37], "swapChildrenAt", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
     };
 
     DisplayObjectContainer::DisplayObjectContainer(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_display::InteractiveObject(vm, ci)
     {
 //##protect##"InstanceTraits::DisplayObjectContainer::DisplayObjectContainer()"
         SetTraitsType(Traits_DisplayObjectContainer);
 //##protect##"InstanceTraits::DisplayObjectContainer::DisplayObjectContainer()"
-        SetMemSize(sizeof(Instances::fl_display::DisplayObjectContainer));
 
     }
 
@@ -553,25 +595,28 @@ namespace InstanceTraits { namespace fl_display
 
 namespace ClassTraits { namespace fl_display
 {
-    DisplayObjectContainer::DisplayObjectContainer(VM& vm)
-    : Traits(vm, AS3::fl_display::DisplayObjectContainerCI)
+
+    DisplayObjectContainer::DisplayObjectContainer(VM& vm, const ClassInfo& ci)
+    : fl_display::InteractiveObject(vm, ci)
     {
 //##protect##"ClassTraits::DisplayObjectContainer::DisplayObjectContainer()"
         SetTraitsType(Traits_DisplayObjectContainer);
 //##protect##"ClassTraits::DisplayObjectContainer::DisplayObjectContainer()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_display::DisplayObjectContainer(vm, AS3::fl_display::DisplayObjectContainerCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> DisplayObjectContainer::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) DisplayObjectContainer(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) DisplayObjectContainer(vm, AS3::fl_display::DisplayObjectContainerCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_display::DisplayObjectContainerCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -582,6 +627,11 @@ namespace fl_display
 {
     const TypeInfo DisplayObjectContainerTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_display::DisplayObjectContainer::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_display::DisplayObjectContainer::ThunkInfoNum,
+        0,
         "DisplayObjectContainer", "flash.display", &fl_display::InteractiveObjectTI,
         TypeInfo::None
     };
@@ -589,10 +639,6 @@ namespace fl_display
     const ClassInfo DisplayObjectContainerCI = {
         &DisplayObjectContainerTI,
         ClassTraits::fl_display::DisplayObjectContainer::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_display::DisplayObjectContainer::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_display::DisplayObjectContainer::ti,

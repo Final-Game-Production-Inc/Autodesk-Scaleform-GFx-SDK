@@ -9,6 +9,7 @@ Notes       :   Contains MovieImpl, Value::ObjectInterface and
                 Value method definitions.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -217,12 +218,17 @@ class AS2ValueObjectInterface : public MovieImpl::ValueObjectInterface
     bool    PopBack(void* pdata, Value* pval);
     bool    RemoveElements(void* pdata, unsigned idx, int count);
 
+	bool	IsInstanceOf(void* pdata, const char* className) const;
+
     bool    IsByteArray(void* pdata) const;
     unsigned GetByteArraySize(void* pdata) const;
+	void	SetByteArraySize(void* pdata, UPInt setSize);
     bool    ReadFromByteArray(void* pdata, UByte *destBuff, UPInt destBuffSz) const;
     bool    WriteToByteArray(void* pdata, const UByte *srcBuff, UPInt writeSize);
+	void*   GetRawDataPtr(void* pdata);
 
     bool    IsDisplayObjectActive(void* pdata) const;
+    bool    GetParent(void* pdata, Value* pparent) const;
     bool    GetDisplayInfo(void* pdata, DisplayInfo* pinfo) const;
     bool    SetDisplayInfo(void* pdata, const DisplayInfo& info);
     bool    GetWorldMatrix(void* pdata, Render::Matrix2F* pmat) const;
@@ -256,7 +262,7 @@ class AS2ValueObjectInterface : public MovieImpl::ValueObjectInterface
 
 #endif  // GFX_AS_ENABLE_USERDATA
 
-    AMP::ViewStats* GetAdvanceStats() const;
+    AmpStats* GetAdvanceStats() const;
 
 public:
     AS2ValueObjectInterface(MovieImpl* pmovieRoot)
@@ -271,30 +277,9 @@ public:
 
 // ***** GFxValue::ObjectInterface definitions
 
-#ifdef GFC_BUILD_DEBUG
-void GFxValue::ObjectInterface::DumpTaggedValues() const
-{
-    GFC_DEBUG_MESSAGE(1, "** Begin Tagged GFxValues Dump **");
-    const GFxValue* data = ExternalObjRefs.GetFirst();
-    while (!ExternalObjRefs.IsNull(data))
-    {
-        const char* ptypestr = NULL;
-        switch (data->GetType())
-        {
-        case GFxValue::VT_Array: ptypestr = "Array"; break;
-        case GFxValue::VT_DisplayObject: ptypestr = "DispObj"; break;
-        default: ptypestr = "Object";
-        }
-        GFC_DEBUG_MESSAGE2(1, "> [%s] : %p", ptypestr, data);
-        data = ExternalObjRefs.GetNext(data);
-    }
-    GFC_DEBUG_MESSAGE(1, "** End Tagged GFxValues Dump **");
-}
-#endif
-
 #ifdef GFX_AS2_SUPPORT
 
-AMP::ViewStats* GFX_Value_ObjectInterface_CLASS::GetAdvanceStats() const
+AmpStats* GFX_Value_ObjectInterface_CLASS::GetAdvanceStats() const
 {
     return GetMovieImpl()->pASMovieRoot->GetMovieImpl()->AdvanceStats; 
 }
@@ -547,6 +532,16 @@ void GFX_Value_ObjectInterface_CLASS::VisitMembers(void* pdata, Value::ObjectVis
         AS2::ObjectInterface::VisitMember_Prototype | AS2::ObjectInterface::VisitMember_ChildClips);
 }
 
+
+bool GFX_Value_ObjectInterface_CLASS::IsInstanceOf(void* pdata, const char* className) const
+{
+	SF_UNUSED2(pdata, className);
+    SF_DEBUG_ERROR(1, "Not implemented in AS2!\n");
+    SF_ASSERT(0);
+    return false;
+}
+
+
 bool GFX_Value_ObjectInterface_CLASS::IsByteArray(void* pdata) const
 {
     SF_UNUSED(pdata);
@@ -563,6 +558,13 @@ unsigned GFX_Value_ObjectInterface_CLASS::GetByteArraySize(void* pdata) const
     return 0;
 }
 
+void GFX_Value_ObjectInterface_CLASS::SetByteArraySize(void* pdata, UPInt setSize)
+{
+	SF_UNUSED2(pdata, setSize);
+    SF_DEBUG_ERROR(1, "The AS2 VM does not support ByteArray!\n");
+    SF_ASSERT(0);
+}
+
 bool GFX_Value_ObjectInterface_CLASS::ReadFromByteArray(void* pdata, UByte *destBuff, UPInt destBuffSz) const
 {
     SF_UNUSED3(pdata, destBuff, destBuffSz);
@@ -577,6 +579,14 @@ bool GFX_Value_ObjectInterface_CLASS::WriteToByteArray(void* pdata, const UByte 
     SF_DEBUG_ERROR(1, "The AS2 VM does not support ByteArray!\n");
     SF_ASSERT(0);
     return false;
+}
+
+void* GFX_Value_ObjectInterface_CLASS::GetRawDataPtr(void* pdata)
+{
+    SF_UNUSED(pdata);
+    SF_DEBUG_ERROR(1, "The AS2 VM does not support ByteArray!\n");
+    SF_ASSERT(0);
+    return NULL;
 }
 
 unsigned GFX_Value_ObjectInterface_CLASS::GetArraySize(void* pdata) const
@@ -830,6 +840,28 @@ bool    GFX_Value_ObjectInterface_CLASS::IsDisplayObjectActive(void* pdata) cons
     return pd != NULL;
 }
 
+bool    GFX_Value_ObjectInterface_CLASS::GetParent(void* pdata, Value* pparent) const
+{
+    SF_AMP_SCOPE_TIMER_ID(GetAdvanceStats(), "ObjectInterface::GetParent", Amp_Native_Function_Id_ObjectInterface_GetParent);
+
+    CharacterHandle* pch = static_cast<CharacterHandle*>(pdata);
+    DisplayObject*   pd = pch->ResolveCharacter(GetMovieImpl());
+
+    if(pd == NULL) return false;
+
+    DisplayObject*    pdp = pd->GetParent();
+    if(pdp != NULL)
+    {
+        AS2::MovieRoot*   proot= static_cast<AS2::MovieRoot*>(GetMovieImpl()->pASMovieRoot.GetPtr());
+        return proot->CreateObjectValue(pparent, proot->GetMovieImpl()->pObjectInterface, pdp->GetCharacterHandle(), true);
+    }
+    else
+    {
+        pparent->SetNull();
+        return true;
+    }
+}
+
 bool GFX_Value_ObjectInterface_CLASS::GetDisplayInfo(void* pdata, Value::DisplayInfo* pinfo) const
 {
     SF_AMP_SCOPE_TIMER_ID(GetAdvanceStats(), "ObjectInterface::GetDisplayInfo", Amp_Native_Function_Id_ObjectInterface_GetDisplayInfo);
@@ -921,7 +953,7 @@ bool GFX_Value_ObjectInterface_CLASS::SetDisplayInfo(void *pdata, const Value::D
         if (NumberUtil::IsNEGATIVE_INFINITY(zval) || NumberUtil::IsPOSITIVE_INFINITY(zval))
             zval = 0;
 
-        // pd->EnsureGeomDataCreated(); // let timeline anim continue
+        pd->EnsureGeomDataCreated(); // let timeline anim continue
         DisplayObjectBase::GeomDataType* tfgeomData = pd->GetGeomDataPtr();
         SF_ASSERT(tfgeomData);
 
@@ -941,7 +973,7 @@ bool GFX_Value_ObjectInterface_CLASS::SetDisplayInfo(void *pdata, const Value::D
             newZScale = 100.;
         }
 
-        // pd->EnsureGeomDataCreated(); // let timeline anim continue
+        pd->EnsureGeomDataCreated(); // let timeline anim continue
         DisplayObjectBase::GeomDataType* tfgeomData = pd->GetGeomDataPtr();
         SF_ASSERT(tfgeomData);
 
@@ -956,7 +988,7 @@ bool GFX_Value_ObjectInterface_CLASS::SetDisplayInfo(void *pdata, const Value::D
     {
         Double rval = cinfo.GetXRotation();
 
-        // pd->EnsureGeomDataCreated(); // let timeline anim continue
+        pd->EnsureGeomDataCreated(); // let timeline anim continue
         DisplayObjectBase::GeomDataType* tfgeomData = pd->GetGeomDataPtr();
         SF_ASSERT(tfgeomData);
 
@@ -977,7 +1009,7 @@ bool GFX_Value_ObjectInterface_CLASS::SetDisplayInfo(void *pdata, const Value::D
     {
         Double rval = cinfo.GetYRotation();
 
-        // pd->EnsureGeomDataCreated(); // let timeline anim continue
+        pd->EnsureGeomDataCreated(); // let timeline anim continue
         DisplayObjectBase::GeomDataType* tfgeomData = pd->GetGeomDataPtr();
         SF_ASSERT(tfgeomData);
 
@@ -1114,7 +1146,7 @@ bool GFX_Value_ObjectInterface_CLASS::SetDisplayInfo(void *pdata, const Value::D
         }
 
         // _x
-        Double xval = cinfo.IsFlagSet(DisplayInfo::V_x) ? pt.x : NumberUtil::NaN();
+        Double xval = cinfo.IsFlagSet(DisplayInfo::V_x) ? Double(pt.x) : NumberUtil::NaN();
         if (!NumberUtil::IsNaN(xval))
         {
             if (NumberUtil::IsNEGATIVE_INFINITY(xval) || NumberUtil::IsPOSITIVE_INFINITY(xval))
@@ -1123,7 +1155,7 @@ bool GFX_Value_ObjectInterface_CLASS::SetDisplayInfo(void *pdata, const Value::D
             m.Tx() = (float) tfgeomData->X;
         }
         // _y
-        Double yval = cinfo.IsFlagSet(DisplayInfo::V_y) ? pt.y : NumberUtil::NaN();
+        Double yval = cinfo.IsFlagSet(DisplayInfo::V_y) ? Double(pt.y) : NumberUtil::NaN();
         if (!NumberUtil::IsNaN(yval))
         {
             if (NumberUtil::IsNEGATIVE_INFINITY(yval) || NumberUtil::IsPOSITIVE_INFINITY(yval))
@@ -1446,12 +1478,9 @@ bool    GFX_Value_ObjectInterface_CLASS::CreateObjectValue(Value* pval, void* pd
 
 namespace AS2 {
 
-#ifdef GFX_AS_ENABLE_USERDATA
-
 bool    MovieRoot::CreateObjectValue(GFx::Value* pval, GFx::Value::ObjectInterface* pobjifc, void* pdata, bool isdobj)
 {
     GFx::Value::ValueType type = GFx::Value::VT_Object;
-    ObjectInterface* pifc = static_cast<ObjectInterface*>(pdata);
     if (isdobj)
     {
         type = GFx::Value::VT_DisplayObject;
@@ -1459,19 +1488,25 @@ bool    MovieRoot::CreateObjectValue(GFx::Value* pval, GFx::Value::ObjectInterfa
         MovieImpl* pmovieImpl = GetMovieImpl();
         SF_ASSERT(pmovieImpl);
         DisplayObject* pd = pch->ResolveCharacter(pmovieImpl);
-        if (!pd || !pd->IsSprite())
+        if (!pd || (!pd->IsSprite() && !pd->IsInteractiveObject()))
+        {
             return false;
+        }
     }
     else
     {
-        Object* pobj = pifc->ToASObject();
+        Object* pobj = static_cast<ObjectInterface*>(pdata)->ToASObject();
         if (pobj->GetObjectType() == AS2::ObjectInterface::Object_Array)
+        {
             type = GFx::Value::VT_Array;
+        }
     }
 
     // Clear existing managed ref first
     if (pval->IsManagedValue()) pval->ReleaseManagedValue();
-    pval->Type = GFx::Value::ValueType(type | GFx::Value::VTC_ManagedBit);
+    pval->Type = static_cast<GFx::Value::ValueType>(
+        static_cast<int>(type) | static_cast<int>(GFx::Value::VTC_ManagedBit)
+    );
     pval->mValue.pData = pdata;
     pval->pObjectInterface = pobjifc;
     // Make sure to add-ref before returning
@@ -1479,8 +1514,6 @@ bool    MovieRoot::CreateObjectValue(GFx::Value* pval, GFx::Value::ObjectInterfa
 
     return true;
 }
-
-#endif
 
 
 void MovieRoot::Value2ASValue(const GFx::Value& gfxVal, Value* pdestVal)
@@ -1552,7 +1585,7 @@ void MovieRoot::ASValue2Value(Environment* penv, const Value& value, GFx::Value*
 {
 	SF_ASSERT(pdestVal);
 	int toType;
-	if (pdestVal->GetType() & GFx::Value::VTC_ConvertBit)
+	if (pdestVal->GetType() & static_cast<int>(GFx::Value::VTC_ConvertBit))
 		toType = pdestVal->GetType() & (~GFx::Value::VTC_ConvertBit);
 	else
 	{
@@ -1612,7 +1645,7 @@ void MovieRoot::ASValue2Value(Environment* penv, const Value& value, GFx::Value*
 			size_t memberOffset = OFFSETOF(ASStringNode, pData);
 			ASString str = value.ToString(penv);
 			ASStringNode* strNode = str.GetNode();
-			pdestVal->Type = GFx::Value::ValueType(GFx::Value::VT_String | GFx::Value::VTC_ManagedBit);
+			pdestVal->Type = GFx::Value::ValueType(static_cast<int>(GFx::Value::VT_String) | static_cast<int>(GFx::Value::VTC_ManagedBit));
 			pdestVal->mValue.pStringManaged = (const char**)(((UByte*)strNode) + memberOffset);
 			pdestVal->pObjectInterface = pMovieImpl->pObjectInterface;
 			pMovieImpl->pObjectInterface->ObjectAddRef(pdestVal, pdestVal->mValue.pData);
@@ -1625,8 +1658,8 @@ void MovieRoot::ASValue2Value(Environment* penv, const Value& value, GFx::Value*
 			ASStringNode* strNode = str.GetNode();
 			unsigned len = str.GetLength() + 1;
 			void* pdata = SF_HEAP_ALLOC(GetMovieHeap(), sizeof(MovieImpl::WideStringStorage) - sizeof(UByte) + (sizeof(wchar_t) * len), StatMV_Other_Mem);
-			pdestVal->Type = GFx::Value::ValueType(GFx::Value::VT_StringW | GFx::Value::VTC_ManagedBit);
-			Ptr<MovieImpl::WideStringStorage> wstr = *::new(pdata) MovieImpl::WideStringStorage(strNode);
+			pdestVal->Type = GFx::Value::ValueType(static_cast<int>(GFx::Value::VT_StringW) | static_cast<int>(GFx::Value::VTC_ManagedBit));
+			Ptr<MovieImpl::WideStringStorage> wstr = *::new(pdata) MovieImpl::WideStringStorage(strNode, len);
 			pdestVal->mValue.pStringW = (const wchar_t*)(((UByte*)wstr.GetPtr()) + memberOffset);
 			pdestVal->pObjectInterface = pMovieImpl->pObjectInterface;            
 			pMovieImpl->pObjectInterface->ObjectAddRef(pdestVal, pdestVal->mValue.pData);
@@ -1642,7 +1675,7 @@ void MovieRoot::ASValue2Value(Environment* penv, const Value& value, GFx::Value*
 				if (pobj->GetObjectType() == ObjectInterface::Object_Array)
 					type = GFx::Value::VT_Array;
 			}
-			pdestVal->Type = GFx::Value::ValueType(type | GFx::Value::VTC_ManagedBit);
+			pdestVal->Type = GFx::Value::ValueType(type | static_cast<int>(GFx::Value::VTC_ManagedBit));
 			pdestVal->mValue.pData = pifc;
 			pdestVal->pObjectInterface = pMovieImpl->pObjectInterface;
 		    pMovieImpl->pObjectInterface->ObjectAddRef(pdestVal, pdestVal->mValue.pData);
@@ -1651,8 +1684,13 @@ void MovieRoot::ASValue2Value(Environment* penv, const Value& value, GFx::Value*
 	case GFx::Value::VT_DisplayObject:
 		{
 			ObjectInterface* pifc = (ObjectInterface*)value.ToObjectInterface(penv);
+            if (!pifc) 
+            {
+                pdestVal->Type = GFx::Value::VT_Undefined;
+                return;
+            }
 			InteractiveObject* aschar = pifc->ToCharacter();
-			pdestVal->Type = GFx::Value::ValueType(GFx::Value::VT_DisplayObject | GFx::Value::VTC_ManagedBit);
+			pdestVal->Type = GFx::Value::ValueType(static_cast<int>(GFx::Value::VT_DisplayObject) | static_cast<int>(GFx::Value::VTC_ManagedBit));
 			pdestVal->mValue.pData = aschar->GetCharacterHandle();
 			pdestVal->pObjectInterface = pMovieImpl->pObjectInterface;
 			pMovieImpl->pObjectInterface->ObjectAddRef(pdestVal, pdestVal->mValue.pData);
@@ -1713,10 +1751,10 @@ void MovieRoot::CreateObject(GFx::Value* pvalue, const char* className,
 
             while(pname)
             {
-                const char* p = strchr(pname, '.');
+                const char* pal = strchr(pname, '.');
                 UPInt sz;
-                if (p)
-                    sz = p++ - pname + 1;
+                if (pal)
+                    sz = pal++ - pname + 1;
                 else
                     break;  // class name found
 
@@ -1727,7 +1765,7 @@ void MovieRoot::CreateObject(GFx::Value* pvalue, const char* className,
                 memcpy(buf, pname, sz-1);
                 buf[sz-1] = '\0';
 
-                pname = p;
+                pname = pal;
 
                 Value        pkgObjVal;
                 Ptr<Object> pkgObj;

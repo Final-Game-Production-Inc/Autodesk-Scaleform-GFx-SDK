@@ -6,6 +6,7 @@ Created     :   April 29, 2008
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -224,7 +225,7 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
         {
         case SGMLPS_START_ELEMENT:
             {
-                const Char* elemName;
+                const Char* elemName = NULL;
                 UPInt elemLen;
 
                 parser.ParseStartElement(&elemName, &elemLen);
@@ -367,6 +368,7 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
                                 ptextFmt->SetImageDesc(NULL);  // make sure IMG is not duplicated for following content
                                 lastFormat.SetImageDesc(NULL); // make sure IMG is not duplicated for <br>
                                 SetDefaultTextFormat(*ptextFmt);
+								defaultTextFmt = *ptextFmt;
                             }
                         }
                         break;
@@ -448,12 +450,12 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
                                 if (stackElem.TextFmt.IsUrlSet())
                                 {
                                     // get a:link CSS style since there is a HREF attr
-                                    const Style* pstyle = 
+                                    const Style* pstyleLink =
                                         pstyleMgr->GetStyle(StyleManagerBase::CSS_Tag, "a:link");
-                                    if (pstyle)
+                                    if (pstyleLink)
                                     {
-                                        //?stackElem.ParaFmt = stackElem.ParaFmt.Merge(pstyle->mParagraphFormat);
-                                        stackElem.TextFmt = stackElem.TextFmt.Merge(pstyle->mTextFormat);
+                                        //?stackElem.ParaFmt = stackElem.ParaFmt.Merge(pstyleLink->mParagraphFormat);
+                                        stackElem.TextFmt = stackElem.TextFmt.Merge(pstyleLink->mTextFormat);
                                     }
                                 }
                             }
@@ -518,12 +520,12 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
                             #endif //SF_NO_CSS_SUPPORT
 
                             // new paragraph
-                            const Char* pattrName;
-                            UPInt       attrSz;
-                            while(parser.GetNextAttribute(&pattrName, &attrSz))
+                            const Char* pattrNameGraph = nullptr;
+                            UPInt       attrSzGraph;
+                            while(parser.GetNextAttribute(&pattrNameGraph, &attrSzGraph))
                             {
                                 const SGMLElementDesc* pattrDesc = SGMLElementDesc::FindElem<Char>
-                                    (pattrName, attrSz, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
+                                    (pattrNameGraph, attrSzGraph, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
                                 if (pattrDesc)
                                 {
                                     const Char* pattrVal;
@@ -596,12 +598,12 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
                             break;
                         case GFxHTML_FONT:
                             {
-                                const Char* pattrName;
-                                UPInt       attrSz;
-                                while(parser.GetNextAttribute(&pattrName, &attrSz))
+                                const Char* pattrNameFont = nullptr;
+                                UPInt       attrSzFont;
+                                while(parser.GetNextAttribute(&pattrNameFont, &attrSzFont))
                                 {
                                     const SGMLElementDesc* pattrDesc = SGMLElementDesc::FindElem<Char>
-                                        (pattrName, attrSz, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
+                                        (pattrNameFont, attrSzFont, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
                                     if (pattrDesc)
                                     {
                                         const Char* pattrVal;
@@ -674,12 +676,12 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
                             break;
                         case GFxHTML_TEXTFORMAT:
                             {
-                                const Char* pattrName;
-                                UPInt       attrSz;
-                                while(parser.GetNextAttribute(&pattrName, &attrSz))
+                                const Char* pattrNameTF = nullptr;
+                                UPInt       attrSzTF;
+                                while(parser.GetNextAttribute(&pattrNameTF, &attrSzTF))
                                 {
                                     const SGMLElementDesc* pattrDesc = SGMLElementDesc::FindElem<Char>
-                                        (pattrName, attrSz, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
+                                        (pattrNameTF, attrSzTF, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
                                     if (pattrDesc)
                                     {
                                         const Char* pattrVal;
@@ -787,12 +789,12 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
                         case GFxHTML_SPAN:
                             {
                                 #ifdef GFX_ENABLE_CSS
-                                const Char* pattrName;
-                                UPInt       attrSz;
-                                while(parser.GetNextAttribute(&pattrName, &attrSz))
+                                const Char* pattrNameSPA = nullptr;
+                                UPInt       attrSzSPA;
+                                while(parser.GetNextAttribute(&pattrNameSPA, &attrSzSPA))
                                 {
                                     const SGMLElementDesc* pattrDesc = SGMLElementDesc::FindElem<Char>
-                                        (pattrName, attrSz, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
+                                        (pattrNameSPA, attrSzSPA, attributesTable, sizeof(attributesTable)/sizeof(attributesTable[0]));
                                     if (pattrDesc)
                                     {
                                         const Char* pattrVal;
@@ -1010,10 +1012,10 @@ bool StyledText::ParseHtmlImpl(const Char* phtml,
         ParagraphsIterator paraIter = Paragraphs.Last();
         while(!paraIter.IsFinished())
         {
-            Paragraph* pcurPara = paraIter->GetPtr();
-            if (pcurPara->GetLength() <= 1)
+            Paragraph* pcurParaGraph = paraIter->GetPtr();
+            if (pcurParaGraph->GetLength() <= 1)
             {
-                pcurPara->SetTextFormat(GetAllocator(), lastFormat, 0, SF_MAX_UPINT);
+                pcurParaGraph->SetTextFormat(GetAllocator(), lastFormat, 0, SF_MAX_UPINT);
             }
             else
                 break;
@@ -1033,7 +1035,7 @@ bool StyledText::ParseHtml(const char* phtml, UPInt  htmlSize, HTMLImageTagInfoA
 // of the ParseHtml. However, for best performance the char* version should be used.
 //    return ParseHtmlImpl(phtml, htmlSize, pimgInfoArr, multiline, condenseWhite, pstyleMgr);
     wchar_t* pwbuf = (wchar_t*)SF_ALLOC((htmlSize + 1) * sizeof(wchar_t), StatRender_Text_Mem);
-    htmlSize = UTF8Util::DecodeString(pwbuf, phtml, htmlSize);
+    htmlSize = UTF8Util::DecodeStringSafe(pwbuf, htmlSize + 1, phtml, htmlSize);
     bool rv = ParseHtmlImpl(pwbuf, htmlSize, pimgInfoArr, multiline, condenseWhite, pstyleMgr, txtFmt, paraFmt);
     SF_FREE(pwbuf);
     return rv;

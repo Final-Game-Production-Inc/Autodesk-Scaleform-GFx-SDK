@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,12 +30,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::TouchEvent, Instances::fl_events::TouchEvent::mid_altKeyGet, bool> TFunc_Instances_TouchEvent_altKeyGet;
 typedef ThunkFunc1<Instances::fl_events::TouchEvent, Instances::fl_events::TouchEvent::mid_altKeySet, const Value, bool> TFunc_Instances_TouchEvent_altKeySet;
 typedef ThunkFunc0<Instances::fl_events::TouchEvent, Instances::fl_events::TouchEvent::mid_commandKeyGet, bool> TFunc_Instances_TouchEvent_commandKeyGet;
@@ -548,48 +543,85 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 TouchEvent::tito[TouchEvent::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 41, 42, 44, 45, 46, 
+    // };
+    const TypeInfo* TouchEvent::tit[47] = {
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_display::InteractiveObjectTI, 
+        NULL, &AS3::fl_display::InteractiveObjectTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::int_TI, 
+        NULL, &AS3::fl::int_TI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+    };
     const ThunkInfo TouchEvent::ti[TouchEvent::ThunkInfoNum] = {
-        {TFunc_Instances_TouchEvent_altKeyGet::Func, &AS3::fl::BooleanTI, "altKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_altKeySet::Func, NULL, "altKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_commandKeyGet::Func, &AS3::fl::BooleanTI, "commandKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_commandKeySet::Func, NULL, "commandKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_controlKeyGet::Func, &AS3::fl::BooleanTI, "controlKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_controlKeySet::Func, NULL, "controlKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_ctrlKeyGet::Func, &AS3::fl::BooleanTI, "ctrlKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_ctrlKeySet::Func, NULL, "ctrlKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_isPrimaryTouchPointGet::Func, &AS3::fl::BooleanTI, "isPrimaryTouchPoint", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_isPrimaryTouchPointSet::Func, NULL, "isPrimaryTouchPoint", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_isRelatedObjectInaccessibleGet::Func, &AS3::fl::BooleanTI, "isRelatedObjectInaccessible", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_isRelatedObjectInaccessibleSet::Func, NULL, "isRelatedObjectInaccessible", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_localXGet::Func, &AS3::fl::NumberTI, "localX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_localXSet::Func, NULL, "localX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_localYGet::Func, &AS3::fl::NumberTI, "localY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_localYSet::Func, NULL, "localY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_pressureGet::Func, &AS3::fl::NumberTI, "pressure", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_pressureSet::Func, NULL, "pressure", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_relatedObjectGet::Func, &AS3::fl_display::InteractiveObjectTI, "relatedObject", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_relatedObjectSet::Func, NULL, "relatedObject", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_shiftKeyGet::Func, &AS3::fl::BooleanTI, "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_shiftKeySet::Func, NULL, "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_sizeXGet::Func, &AS3::fl::NumberTI, "sizeX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_sizeXSet::Func, NULL, "sizeX", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_sizeYGet::Func, &AS3::fl::NumberTI, "sizeY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_sizeYSet::Func, NULL, "sizeY", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_stageXGet::Func, &AS3::fl::NumberTI, "stageX", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_stageYGet::Func, &AS3::fl::NumberTI, "stageY", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_touchPointIDGet::Func, &AS3::fl::int_TI, "touchPointID", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TouchEvent_touchPointIDSet::Func, NULL, "touchPointID", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_TouchEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_TouchEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_TouchEvent_updateAfterEvent::Func, NULL, "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_TouchEvent_altKeyGet::Func, &TouchEvent::tit[0], "altKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_altKeySet::Func, &TouchEvent::tit[1], "altKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_commandKeyGet::Func, &TouchEvent::tit[3], "commandKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_commandKeySet::Func, &TouchEvent::tit[4], "commandKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_controlKeyGet::Func, &TouchEvent::tit[6], "controlKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_controlKeySet::Func, &TouchEvent::tit[7], "controlKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_ctrlKeyGet::Func, &TouchEvent::tit[9], "ctrlKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_ctrlKeySet::Func, &TouchEvent::tit[10], "ctrlKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_isPrimaryTouchPointGet::Func, &TouchEvent::tit[12], "isPrimaryTouchPoint", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_isPrimaryTouchPointSet::Func, &TouchEvent::tit[13], "isPrimaryTouchPoint", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_isRelatedObjectInaccessibleGet::Func, &TouchEvent::tit[15], "isRelatedObjectInaccessible", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_isRelatedObjectInaccessibleSet::Func, &TouchEvent::tit[16], "isRelatedObjectInaccessible", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_localXGet::Func, &TouchEvent::tit[18], "localX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_localXSet::Func, &TouchEvent::tit[19], "localX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_localYGet::Func, &TouchEvent::tit[21], "localY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_localYSet::Func, &TouchEvent::tit[22], "localY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_pressureGet::Func, &TouchEvent::tit[24], "pressure", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_pressureSet::Func, &TouchEvent::tit[25], "pressure", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_relatedObjectGet::Func, &TouchEvent::tit[27], "relatedObject", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_relatedObjectSet::Func, &TouchEvent::tit[28], "relatedObject", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_shiftKeyGet::Func, &TouchEvent::tit[30], "shiftKey", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_shiftKeySet::Func, &TouchEvent::tit[31], "shiftKey", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_sizeXGet::Func, &TouchEvent::tit[33], "sizeX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_sizeXSet::Func, &TouchEvent::tit[34], "sizeX", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_sizeYGet::Func, &TouchEvent::tit[36], "sizeY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_sizeYSet::Func, &TouchEvent::tit[37], "sizeY", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_stageXGet::Func, &TouchEvent::tit[39], "stageX", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_stageYGet::Func, &TouchEvent::tit[40], "stageY", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_touchPointIDGet::Func, &TouchEvent::tit[41], "touchPointID", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_touchPointIDSet::Func, &TouchEvent::tit[42], "touchPointID", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_clone::Func, &TouchEvent::tit[44], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_toString::Func, &TouchEvent::tit[45], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TouchEvent_updateAfterEvent::Func, &TouchEvent::tit[46], "updateAfterEvent", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     TouchEvent::TouchEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::TouchEvent::TouchEvent()"
 //##protect##"InstanceTraits::TouchEvent::TouchEvent()"
-        SetMemSize(sizeof(Instances::fl_events::TouchEvent));
 
     }
 
@@ -638,24 +670,27 @@ namespace ClassTraits { namespace fl_events
         {"TOUCH_TAP", NULL, OFFSETOF(Classes::fl_events::TouchEvent, TOUCH_TAP), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    TouchEvent::TouchEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::TouchEventCI)
+
+    TouchEvent::TouchEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::TouchEvent::TouchEvent()"
 //##protect##"ClassTraits::TouchEvent::TouchEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::TouchEvent(vm, AS3::fl_events::TouchEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::TouchEvent(*this));
 
     }
 
     Pickable<Traits> TouchEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TouchEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TouchEvent(vm, AS3::fl_events::TouchEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::TouchEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -666,6 +701,11 @@ namespace fl_events
 {
     const TypeInfo TouchEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::TouchEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::TouchEvent::MemberInfoNum,
+        InstanceTraits::fl_events::TouchEvent::ThunkInfoNum,
+        0,
         "TouchEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -673,10 +713,6 @@ namespace fl_events
     const ClassInfo TouchEventCI = {
         &TouchEventTI,
         ClassTraits::fl_events::TouchEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::TouchEvent::MemberInfoNum,
-        InstanceTraits::fl_events::TouchEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::TouchEvent::mi,
         InstanceTraits::fl_events::TouchEvent::ti,

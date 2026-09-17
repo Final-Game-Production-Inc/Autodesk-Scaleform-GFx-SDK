@@ -8,6 +8,7 @@ Authors     :   Maxim Shemanarev
 Notes       :   Path-to-stroke converter
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -869,8 +870,8 @@ void StrokeSorter::GenerateDashes(const DashArray* da, const ToleranceParams& pa
                 PathType path = { start, 0 };
                 OutPaths.PushBack(path);
             }
-            VertexType ver = { x, y, 0, Math2D::Seg_LineTo, false, false };
-            OutVertices.PushBack(ver);
+            VertexType vert = { x, y, 0, Math2D::Seg_LineTo, false, false };
+            OutVertices.PushBack(vert);
             SF_ASSERT(OutPaths.GetSize() > 0);
             OutPaths.Back().numVer++;
             ++start;

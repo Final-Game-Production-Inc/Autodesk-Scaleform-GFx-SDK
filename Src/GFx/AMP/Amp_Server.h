@@ -8,6 +8,7 @@ Created     :   December 2009
 Authors     :   Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,16 +19,22 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef INCLUDE_FX_AMP_SERVER_H
 #define INCLUDE_FX_AMP_SERVER_H
 
+#include "GFxConfig.h"
+#if defined(SF_AMP_SERVER) || defined (SF_AMP_CLIENT)
+
 #include "Amp_Interfaces.h"
 #include "Kernel/SF_AmpInterface.h"
 #include "GFx/GFx_Log.h"
 #include "GFx/GFx_ImageResource.h"
 #include "Render/Renderer2D.h"
 #include "Render/Render_HAL.h"
+#include "GFx/AMP/Amp_Message.h"
 
 namespace Scaleform {
 
 namespace GFx {
+
+class SocketImplFactory;
 
 namespace AMP {
 
@@ -35,7 +42,6 @@ class ThreadMgr;
 class SendThreadCallback;
 class StatusChangedCallback;
 class ViewStats;
-class SocketImplFactory;
 class AmpStream;
 class ObjectsLog;
 
@@ -53,11 +59,11 @@ enum ServerStateType
     Amp_App_Wireframe =             0x00002000,
     Amp_App_FastForward =           0x00004000,
     Amp_RenderBatch =               0x00008000,
+    Amp_RenderBlending =            0x00010000,
+    Amp_RenderTextureDensity =      0x00020000,
 };
 
 #define GFX_AMP_BROADCAST_PORT 7533
-
-#ifdef SF_AMP_SERVER
 
 // Server encapsulates the communication of a GFx application with an AMP client
 // It is a singleton so that it can be easily accessed throughout GFx
@@ -157,8 +163,9 @@ public:
     // AMP keeps track of some renderer stats
     virtual void    AddStrokes(UInt32 numStrokes);
     virtual void    RemoveStrokes(UInt32 numStrokes);
-    virtual void    IncrementFontThrashing();
     virtual void    IncrementFontFailures();
+    virtual void    IncrementFontOptRead();
+    virtual void    DecrementFontOptRead();
 
     // Set the renderer to be profiled (only one supported)
     virtual void    SetRenderer(Render::Renderer2D* renderer);
@@ -245,12 +252,11 @@ private:
     Scaleform::Event                SendingEvent; // Used to suspend GFx until message queue is empty
     unsigned                        ConnectionWaitDelay;  // milliseconds
     bool                            InitSocketLib;  // Initialize socket library?
-    SocketImplFactory*              SocketFactory;
     mutable AtomicInt<UInt32>       Profiling;
     AtomicInt<UPInt>                SoundMemory;
     AtomicInt<UInt32>               NumStrokes;
-    AtomicInt<UInt32>               FontThrashing;
     AtomicInt<UInt32>               FontFailures;
+    AtomicInt<UInt32>               FontOptRead;
     AtomicInt<UInt32>               MemReportLocked;
     AtomicInt<UInt32>               ProfileLevelLocked;
 
@@ -314,6 +320,8 @@ private:
     void        SendFrameStats();
     void        CollectRendererStats(ProfileFrame* frameProfile, const Render::HAL::Stats& stats);
     void        CollectMeshCacheStats(ProfileFrame* frameProfile);
+    void        CollectRendererExternalMemory(ProfileFrame* frameProfile);
+    
     MessageImageData* GetImageData(UInt32 imageId) const;
 
     typedef StringHash< Array<String> > FontResourceMap;
@@ -322,11 +330,12 @@ private:
     Ptr<ViewStats>  GetDebugPausedMovie() const;
 };
 
-#endif  // SF_AMP_SERVER
 
 } // namespace AMP
 } // namespace GFx
 } // namespace Scaleform
+
+#endif  // SF_AMP_SERVER
 
 #endif  // INCLUDE_FX_AMP_SERVER_H
 

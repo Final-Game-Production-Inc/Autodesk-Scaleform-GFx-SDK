@@ -16,6 +16,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef INCLUDE_GFX_AMP_OBJECTS_LOG_H
 #define INCLUDE_GFX_AMP_OBJECTS_LOG_H
 
+#include "GFxConfig.h"
+#ifdef SF_AMP_SERVER
+
 #include "Kernel/SF_Log.h"
 #include "Kernel/SF_String.h"
 
@@ -36,5 +39,6 @@ private:
 } // namespace GFx
 } // namespace Scaleform
 
+#endif
 
 #endif

@@ -8,7 +8,7 @@
       <PreprocessorDefinitions>SF_D3D_VERSION=11;FXPLAYER_RENDER_DIRECT3D;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d11.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;libgfxrender_d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 </Project>

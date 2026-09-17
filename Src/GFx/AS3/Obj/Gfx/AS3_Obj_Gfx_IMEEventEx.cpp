@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_gfx
 {
@@ -60,11 +55,10 @@ namespace InstanceTraits { namespace fl_gfx
 
 
     IMEEventEx::IMEEventEx(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"InstanceTraits::IMEEventEx::IMEEventEx()"
 //##protect##"InstanceTraits::IMEEventEx::IMEEventEx()"
-        SetMemSize(sizeof(Instances::fl_gfx::IMEEventEx));
 
     }
 
@@ -113,24 +107,27 @@ namespace ClassTraits { namespace fl_gfx
         {"SET_CONVERSION_STATUS", NULL, OFFSETOF(Classes::fl_gfx::IMEEventEx, SET_CONVERSION_STATUS), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    IMEEventEx::IMEEventEx(VM& vm)
-    : Traits(vm, AS3::fl_gfx::IMEEventExCI)
+
+    IMEEventEx::IMEEventEx(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::IMEEventEx::IMEEventEx()"
 //##protect##"ClassTraits::IMEEventEx::IMEEventEx()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_gfx::IMEEventEx(vm, AS3::fl_gfx::IMEEventExCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::IMEEventEx(*this));
 
     }
 
     Pickable<Traits> IMEEventEx::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) IMEEventEx(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) IMEEventEx(vm, AS3::fl_gfx::IMEEventExCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::IMEEventExCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -141,6 +138,11 @@ namespace fl_gfx
 {
     const TypeInfo IMEEventExTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::IMEEventEx::InstanceType),
+        0,
+        ClassTraits::fl_gfx::IMEEventEx::MemberInfoNum,
+        0,
+        InstanceTraits::fl_gfx::IMEEventEx::MemberInfoNum,
         "IMEEventEx", "scaleform.gfx", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -148,10 +150,6 @@ namespace fl_gfx
     const ClassInfo IMEEventExCI = {
         &IMEEventExTI,
         ClassTraits::fl_gfx::IMEEventEx::MakeClassTraits,
-        0,
-        ClassTraits::fl_gfx::IMEEventEx::MemberInfoNum,
-        0,
-        InstanceTraits::fl_gfx::IMEEventEx::MemberInfoNum,
         NULL,
         ClassTraits::fl_gfx::IMEEventEx::mi,
         NULL,

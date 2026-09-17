@@ -1,0 +1,5 @@
+void main(in float4 VertColor  : COLOR,
+          out float4 FragColor : COLOR)
+{
+    FragColor = VertColor;
+};

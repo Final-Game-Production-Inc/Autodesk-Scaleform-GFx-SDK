@@ -6,6 +6,7 @@ Created     :   December 4, 2009
 Authors     :   Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -185,7 +186,7 @@ void SimPlayerEntity::SetDirection(float a)
 {
     float x = 1.f, y = 0.f; // 0 angle
     float rad = (float)SF_DEGTORAD(a);
-    float cosa = cos(rad), sina = sin(rad);
+    float cosa = (float)cos(rad), sina = (float)sin(rad);
     Direction.x = x * cosa - y * sina;
     Direction.y = x * sina + y * cosa;  
 }
@@ -284,7 +285,7 @@ bool SimPlayerEntity::CycleWeapons()
 
 bool SimPlayerEntity::ChangeWeaponByIndex(unsigned index)
 {
-	if (index > 3 || index < 0)
+	if (index > 3)
 		return false;
 
 	unsigned invIndex = index + ITEM_SLOTS;
@@ -359,7 +360,7 @@ void SimPlayerEntity::Update(float delta, HUDSimulation* psim)
     {
         float x = Direction.x, y = Direction.y;
         float rad = (float)SF_DEGTORAD(ActiveRotation);
-        float cosa = cos(rad), sina = sin(rad);
+        float cosa = (float)cos(rad), sina = (float)sin(rad);
         Direction.x = x * cosa - y * sina;
         Direction.y = x * sina + y * cosa;  
     }

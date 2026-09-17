@@ -6,6 +6,7 @@ Created     :   Jan 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -23,7 +24,7 @@ namespace Scaleform { namespace Platform {
 
 RenderHALThread::RenderHALThread(RTCommandQueue::ThreadingType threadingType)
 : Thread(256 * 1024, 1), // 256k stack size, create on processor #1.
-  RTCommandQueue((RTCommandQueue::ThreadingType)(threadingType & TT_TypeMask)),
+  RTCommandQueue((RTCommandQueue::ThreadingType)(static_cast<unsigned>(threadingType) & static_cast<unsigned>(TT_TypeMask))),
   pDevice(0),
   pTextureManager(0),
   Status(Device_NeedInit),
@@ -38,7 +39,7 @@ RenderHALThread::RenderHALThread(RTCommandQueue::ThreadingType threadingType)
 {        
     memset(CursorPrims, 0, sizeof CursorPrims);
 
-    if (threadingType & TT_WatchDogFlag)
+    if (static_cast<unsigned>(threadingType) & static_cast<unsigned>(TT_WatchDogFlag))
         WatchDogThread.Start();
 }
 
@@ -280,6 +281,20 @@ void RenderHALThread::updateCursor(const Point<int> mousePos, SystemCursorState 
 void RenderHALThread::setStereoParams(Render::StereoParams sparams)
 {
     getHAL()->SetStereoParams(sparams);
+}
+
+void RenderHALThread::setProfileMode(Render::ProfilerModes mode)
+{
+    getHAL()->GetProfiler().SetProfileMode(mode);
+}
+void RenderHALThread::setProfileFlag(unsigned flag, bool state)
+{
+    getHAL()->GetProfiler().SetProfileFlag(flag, state);
+}
+
+unsigned RenderHALThread::getProfileFlag(unsigned flag)
+{
+    return getHAL()->GetProfiler().GetProfileFlag(flag);
 }
 
 void RenderHALThread::getMeshCacheParams(Render::MeshCacheParams* params)

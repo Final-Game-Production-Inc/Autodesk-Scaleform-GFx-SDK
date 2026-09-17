@@ -6,6 +6,7 @@ Created     :   Sep, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -41,158 +42,11 @@ otherwise accompanies this software in either electronic or hard copy form.
 namespace Scaleform { namespace GFx { namespace AS3 
 {
 
-///////////////////////////////////////////////////////////////////////////////
-class StateMachine
-{
-public:
-    StateMachine(Tracer& tr);
-
-public:
-    Tracer& GetTracer()
+    namespace fl
     {
-        return Tr;
-    }
-
-public:
-    void PushNewOpCode(Abc::Code::OpCode opcode);
-    void PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1);
-    void PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1, UPInt arg2);
-    void PushNewOpCodeArg(UPInt arg);
-
-private:
-    class State : public NewOverrideBase<Stat_Default_Mem>
-    {
-    public:
-        State() : RefCount(1) {}
-        virtual ~State();
-
-    public:
-        virtual void OnOpCode(StateMachine& m, Abc::Code::OpCode opcode);
-        virtual void OnOpCodeArg(StateMachine& m, UPInt arg);
-
-    public:
-        void    AddRef()
-        {
-            ++RefCount;
-        }
-        void    Release()
-        {
-            if (--RefCount == 0)
-                delete this;
-        }
-
-    private:
-        UInt32  RefCount;
-    };
-
-    class DefaultState : public State
-    {
-    public:
-        virtual void OnOpCode(StateMachine& m, Abc::Code::OpCode opcode);
-        virtual void OnOpCodeArg(StateMachine& m, UPInt arg);
-    };
-    friend class DefaultState;
-
-    class DeadBlockState : public State
-    {
-    public:
-        virtual void OnOpCode(StateMachine& m, Abc::Code::OpCode opcode);
-        virtual void OnOpCodeArg(StateMachine& m, UPInt arg);
-    };
-
-private:
-    void TracerNewOpCode(Abc::Code::OpCode opcode)
-    {
-        GetTracer().PushNewOpCode(opcode);
-    }
-    void TracerNewOpCodeArg(UPInt arg)
-    {
-        GetTracer().PushNewOpCodeArg(arg);
-    }
-
-private:
-    void SetState(State& st)
-    {
-        pState = &st;
-    }
-    State& GetState() const
-    {
-        SF_ASSERT(pState.GetPtr());
-        return *pState;
-    }
-
-private:
-    StateMachine& operator=(const StateMachine&);
-
-private:
-    SPtr<State> DS;
-    SPtr<State> pState;
-    Tracer&     Tr;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-StateMachine::StateMachine(Tracer& tr)
-: Tr(tr)
-{
-    DS.Pick(SF_NEW DefaultState());
-    pState = DS;
-}
-
-void StateMachine::PushNewOpCode(Abc::Code::OpCode opcode)
-{
-    GetState().OnOpCode(*this, opcode);
-}
-
-void StateMachine::PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1)
-{
-    State& st = GetState();
-
-    st.OnOpCode(*this, opcode);
-    st.OnOpCodeArg(*this, arg1);
-}
-
-void StateMachine::PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1, UPInt arg2)
-{
-    State& st = GetState();
-
-    st.OnOpCode(*this, opcode);
-    st.OnOpCodeArg(*this, arg1);
-    st.OnOpCodeArg(*this, arg2);
-}
-
-void StateMachine::PushNewOpCodeArg(UPInt arg)
-{
-    GetState().OnOpCodeArg(*this, arg);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-StateMachine::State::~State()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-void StateMachine::State::OnOpCode(StateMachine& m, Abc::Code::OpCode opcode)
-{
-    m.TracerNewOpCode(opcode);
-}
-
-void StateMachine::State::OnOpCodeArg(StateMachine& m, UPInt arg)
-{
-    m.TracerNewOpCodeArg(arg);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-void StateMachine::DefaultState::OnOpCode(StateMachine& m, Abc::Code::OpCode opcode)
-{
-    // Do nothing.
-    SF_UNUSED2(m, opcode);
-}
-
-void StateMachine::DefaultState::OnOpCodeArg(StateMachine& m, UPInt arg)
-{
-    // Do nothing.
-    SF_UNUSED2(m, arg);
-}
+        extern const TypeInfo ArgumentErrorTI;
+        extern const ClassInfo ArgumentErrorCI;
+    } // namespace fl
 
 ///////////////////////////////////////////////////////////////////////////////
 // static
@@ -344,7 +198,7 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_construct, arg_count);
 #endif
 
-        PushNewOpCodeArg(arg_count);
+        GetTracer().PushNewOpCode(Abc::Code::op_construct, arg_count);
 
         TR::ReadArgsObject args(GetVM(), *this, arg_count);
         const Traits* tr = GetValueTraits(args.ArgObject);
@@ -415,7 +269,7 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_constructsuper, arg_count);
 #endif
 
-        PushNewOpCodeArg(arg_count);
+        GetTracer().PushNewOpCode(Abc::Code::op_constructsuper, arg_count);
 
         TR::ReadArgsObject args(GetVM(), *this, arg_count);
     }
@@ -482,7 +336,13 @@ namespace TR
 
     void State::exec_call(UInt32 arg_count)
     {
-        PushNewOpCodeArg(arg_count);
+        // function is the closure that is being called. receiver is the object to use for the "this" value. This will
+        // invoke the [[Call]] property on function with the arguments receiver, arg1, ..., argn. 
+        // The result of invoking the [[Call]] property will be pushed onto the stack.
+
+        // ??? Do we need to handle default values of arguments here ???
+
+        GetTracer().PushNewOpCode(Abc::Code::op_call, arg_count);
 
         TR::ReadArgsObjectValue args(GetVM(), *this, arg_count);
 
@@ -515,6 +375,30 @@ namespace TR
         PushOp(Value(rt, CanBeNull(rt) SF_AOTC_ARG(*sn)));
     }
 
+    void State::exec_sxi1() 
+    {
+        // Sign extend ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_sxi1")));
+    }
+
+    void State::exec_sxi8() 
+    {
+        // Sign extend ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_sxi8")));
+    }
+
+    void State::exec_sxi16() 
+    {
+        // Sign extend ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_sxi16")));
+    }
+
     void State::exec_applytype(UInt32 arg_count)
     {
 #if 0
@@ -527,7 +411,7 @@ namespace TR
         }
 #endif
 
-        PushNewOpCodeArg(arg_count);
+        GetTracer().PushNewOpCode(Abc::Code::op_applytype, arg_count);
 
         VM& vm = GetVM();
         TR::ReadArgsObject args(vm, *this, arg_count);
@@ -562,16 +446,25 @@ namespace TR
 
         if (ctr)
         {
-            if (ctr == &vm.GetClassTraitsSInt())
+            const BuiltinTraitsType tt = ctr->GetTraitsType();
+            switch (tt)
+            {
+            case Traits_SInt:
                 v_ctr = &vm.GetClassTraitsVectorSInt();
-            else if (ctr == &vm.GetClassTraitsUInt())
+                break;
+            case Traits_UInt:
                 v_ctr = &vm.GetClassTraitsVectorUInt();
-            else if (ctr == &vm.GetClassTraitsNumber())
+                break;
+            case Traits_Number:
                 v_ctr = &vm.GetClassTraitsVectorNumber();
-            else if (ctr == &vm.GetClassTraitsString())
+                break;
+            case Traits_String:
                 v_ctr = &vm.GetClassTraitsVectorString();
-            else
-                v_ctr = &vm.GetClassVector().Resolve2Vector(*ctr, &GetFile());
+                break;
+            default:
+                v_ctr = &vm.GetClassVector().Resolve2Vector(*ctr);
+                break;
+            }
         }
 
 #ifdef SF_AS3_AOTC
@@ -591,7 +484,7 @@ namespace TR
 
     void State::exec_newobject(UInt32 arg_count)
     {
-        PushNewOpCodeArg(arg_count);
+        GetTracer().PushNewOpCode(Abc::Code::op_newobject, arg_count);
 
         TR::ReadArgs args(GetVM(), *this, arg_count * 2);
 
@@ -612,7 +505,7 @@ namespace TR
 
     void State::exec_newarray(UInt32 arr_size)
     {
-        PushNewOpCodeArg(arr_size);
+        GetTracer().PushNewOpCode(Abc::Code::op_newarray, arr_size);
 
         TR::ReadArgs args(GetVM(), *this, arr_size);
 
@@ -630,9 +523,89 @@ namespace TR
         PushOp(Value(GetArrayType(), Value::NotNull SF_AOTC_ARG(*sn)));
     }
 
+    void State::exec_li8() 
+    {
+        // Load data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_li8")));
+    }
+
+    void State::exec_li16() 
+    {
+        // Load data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_li16")));
+    }
+
+    void State::exec_li32() 
+    {
+        // Load data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_li32")));
+    }
+
+    void State::exec_lf32() 
+    {
+        // Load data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_lf32")));
+    }
+
+    void State::exec_lf64() 
+    {
+        // Load data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_lf64")));
+    }
+
+    void State::exec_si8() 
+    {
+        // Store data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_si8")));
+    }
+
+    void State::exec_si16() 
+    {
+        // Store data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_si16")));
+    }
+
+    void State::exec_si32()
+    {
+        // Store data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_si32")));
+    }
+
+    void State::exec_sf32()
+    {
+        // Store data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_sf32")));
+    }
+
+    void State::exec_sf64() 
+    {
+        // Store data ... FP10 ...
+        // Not documented ...
+        // Not implemented yet ...
+        GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("exec_sf64")));
+    }
+
     void State::exec_newfunction(UInt32 method_ind)
     {
-        PushNewOpCodeArg(method_ind);
+        GetTracer().PushNewOpCode(Abc::Code::op_newfunction, method_ind);
 
 #if defined(SF_AS3_AOTC)
         Instances::fl::GlobalObjectScript& gos = GetTracer().GetGlobalObjectScript();
@@ -665,7 +638,7 @@ namespace TR
         if (!GetVM().GetXMLSupport().IsEnabled())
             return GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("getdescendants")));
 
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_getdescendants, mn_index);
 
         TR::ReadMnObject args(GetFile(), *this, mn_index);
 
@@ -689,7 +662,7 @@ namespace TR
 
     void State::exec_newcatch(UInt32 v)
     {
-        PushNewOpCodeArg(v);
+        GetTracer().PushNewOpCode(Abc::Code::op_newcatch, v);
 
 #if defined(SF_AS3_AOTC)
         VM& vm = GetVM();
@@ -828,12 +801,12 @@ namespace TR
                         obj = &vm.GetGlobalObjectCPP();
 
                     SF_ASSERT(obj);
-                    UPInt slot_index = 0;
-                    const SlotInfo* si = AS3::FindFixedSlot(vm, obj->GetTraits(), mn, slot_index, obj);
+                    UPInt slot_index_traits = 0;
+                    const SlotInfo* si = AS3::FindFixedSlot(vm, obj->GetTraits(), mn, slot_index_traits, obj);
 
                     if (si)
                     {
-                        result = PropRef(obj, si, slot_index);
+                        result = PropRef(obj, si, slot_index_traits);
                         stype = stGlobalObject;
                         return;
                     }
@@ -861,7 +834,7 @@ namespace TR
 
     void State::exec_findpropstrict(UInt32 mn_index)
     {
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_findpropstrict, mn_index);
 
         TR::ReadMn args(GetFile(), *this, mn_index);
 
@@ -896,7 +869,7 @@ namespace TR
 
     void State::exec_findproperty(UInt32 mn_index)
     {
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_findproperty, mn_index);
 
         TR::ReadMn args(GetFile(), *this, mn_index);
 
@@ -935,7 +908,7 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_getlex, mn_index);
 #endif
 
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_getlex, mn_index);
 
         //TR::ReadMnCt args(GetFile(), *this, mn_index); // ReadMnCt() doesn't change stack state.
 
@@ -943,11 +916,12 @@ namespace TR
         PushOp(Value(GetObjectType(), Value::NotNull));
     }
 
-    void State::exec_getabsobject(InstanceTraits::Traits& tr)
+    void State::exec_getabsobject(Abc::Code::OpCode opcode, InstanceTraits::Traits& tr)
     {
         // It is a replacement opcode, so, we do not have to store mn_index.
         //TR::ReadMnCt args(GetFile(), *this, mn_index); // ReadMnCt() doesn't change stack state.
 
+        GetTracer().PushNewOpCode(opcode);
         PushOp(Value(tr, Value::NotNull));
     }
 
@@ -957,7 +931,7 @@ namespace TR
         PushSNodeGetLocal(reg_ind);
 #endif
 
-        PushNewOpCodeArg(reg_ind);
+        GetTracer().PushNewOpCode(Abc::Code::op_getlocal, reg_ind);
         const Value& reg_value = GetRegister(AbsoluteIndex(reg_ind));
 
         PushOp(reg_value);
@@ -970,6 +944,7 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_newactivation, mbi_ind.Get());
 #endif
 
+        GetTracer().PushNewOpCode(Abc::Code::op_newactivation);
         InstanceTraits::Traits& it = GetFile().GetActivationInstanceTraits(GetTracer().GetMethodBodyInd() SF_DEBUG_ARG(GetTracer().GetName()));
 
         PushOp(Value(it, Value::NotNull));
@@ -980,7 +955,8 @@ namespace TR
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_pushbyte, v);
 #endif
-        PushNewOpCodeArg(v);
+
+        GetTracer().PushNewOpCode(Abc::Code::op_pushbyte, v);
 
         // The value is promoted to an int.
         PushOp(Value(SInt32(SInt8(v))));
@@ -992,7 +968,7 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_pushshort, v);
 #endif
 
-        PushNewOpCodeArg(v);
+        GetTracer().PushNewOpCode(Abc::Code::op_pushshort, v);
 
         PushOp(Value(v));
     }
@@ -1002,15 +978,25 @@ namespace TR
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_pushstring, v);
 #endif
+        VMAbcFile& file = GetFile();
+        const StringDataPtr strView = file.GetConstPool().GetString(AbsoluteIndex(v));
 
-        PushNewOpCodeArg(v);
+#if 0
+        const ASString str = file.GetInternedString(v);
+#else
+        const ASString str = GetVM().GetStringManager().CreateString(strView.ToCStr(), strView.GetSize());
+#endif
 
-        StringDataPtr str = GetFile().GetConstPool().GetString(AbsoluteIndex(v));
-        PushOp(
-            Value(GetVM().GetStringManager().CreateString(
-            str.ToCStr(), str.GetSize()
-            ))
-            );
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        // Store reference to a string.
+        file.ASStringNodeSet.Set(str.GetNode());
+        // Store pointer to a string.
+        GetTracer().PushNewOpCode(Abc::Code::op_pushstring, reinterpret_cast<UPInt>(str.GetNode()));
+#else
+        GetTracer().PushNewOpCode(Abc::Code::op_pushstring, v);
+#endif
+
+        PushOp(Value(str));
     }
 
     void State::exec_pushint(SInt32 v)
@@ -1018,9 +1004,16 @@ namespace TR
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_pushint, v);
 #endif
-        PushNewOpCodeArg(v);
 
-        PushOp(Value(GetFile().GetConstPool().GetInt(v)));
+        const SInt32 value = GetFile().GetConstPool().GetInt(v);
+
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        GetTracer().PushNewOpCode(Abc::Code::op_pushint, value);
+#else
+        GetTracer().PushNewOpCode(Abc::Code::op_pushint, v);
+#endif
+
+        PushOp(Value(value));
     }
 
     void State::exec_pushuint(SInt32 v)
@@ -1029,9 +1022,15 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_pushuint, v);
 #endif
 
-        PushNewOpCodeArg(v);
+        const UInt32 value = GetFile().GetConstPool().GetUInt(v);
 
-        PushOp(Value(GetFile().GetConstPool().GetUInt(v)));
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        GetTracer().PushNewOpCode(Abc::Code::op_pushuint, value);
+#else
+        GetTracer().PushNewOpCode(Abc::Code::op_pushuint, v);
+#endif
+
+        PushOp(Value(value));
     }
 
     void State::exec_pushdouble(SInt32 v)
@@ -1040,15 +1039,20 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_pushdouble, v);
 #endif
 
-        PushNewOpCodeArg(v);
+        const Value::Number value = MakeValueNumber(GetFile().GetConstPool().GetDouble(v));
 
-        PushOp(Value(MakeValueNumber(GetFile().GetConstPool().GetDouble(v))));
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        GetTracer().PushNewOpCodeNumber(Abc::Code::op_pushdouble, value);
+#else
+        GetTracer().PushNewOpCode(Abc::Code::op_pushdouble, v);
+#endif
+
+        PushOp(Value(value));
     }
 
     void State::exec_hasnext2(UInt32 object_reg, UInt32 index_reg)
     {
-        PushNewOpCodeArg(object_reg);
-        PushNewOpCodeArg(index_reg);
+        GetTracer().PushNewOpCode(Abc::Code::op_hasnext2, object_reg, index_reg);
 
         AbsoluteIndex reg_ind(index_reg); // Value must be of type int.
         //AbsoluteIndex obj_ind(object_reg); // Can be set to null.
@@ -1084,6 +1088,8 @@ namespace TR
         sn.Pick(SF_NEW SNodeName("nextname"));
 #endif
 
+        GetTracer().PushNewOpCode(Abc::Code::op_nextname);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_nextname);
 #endif
@@ -1113,6 +1119,8 @@ namespace TR
 
     void State::exec_hasnext()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_hasnext);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_hasnext);
 #endif
@@ -1123,8 +1131,22 @@ namespace TR
         PushOp(GetSIntType(), Value::NotNull); // next_index
     }
 
+    void State::exec_pushundefined()
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_pushundefined);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_pushundefined);
+#endif
+        // Tamarin style.
+        //PushOp(Value(GetVoidType()));
+        PushOp(Value::GetUndefined());
+    }
+
     void State::exec_nextvalue()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_nextvalue);
+
 #if defined(SF_AS3_AOTC)
         using namespace AOT;
 
@@ -1150,12 +1172,113 @@ namespace TR
 #endif
     }
 
+    void State::exec_convert_o() 
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_convert_o);
+
+        // Error if value.IsNullOrUndefined() || !value.IsObjectStrict()
+    }
+
+    void State::exec_checkfilter() 
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_checkfilter);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_checkfilter);
+#endif
+        //GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() DEBUG_ARG("exec_checkfilter")));
+        // Nothing happens.
+    }
+
     void State::exec_coerce_s()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_coerce_s);
+
         if (BackOpValue().IsString())
             return;
 
         exec_1OpString(SF_AOTC_CODE(AOT::SNode1::opCoerceS) SF_AOTC2_CODE(AOT::SNodeOC::op_coerce_s));
+    }
+
+    void State::exec_inclocal(UInt32 v)
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_inclocal);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_inclocal, v);
+#endif
+        ConvertRegisterTo(AbsoluteIndex(v), GetNumberType(), Value::NotNull);
+    }
+
+    void State::exec_declocal(UInt32 v)
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_declocal);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_declocal, v);
+#endif
+        ConvertRegisterTo(AbsoluteIndex(v), GetNumberType(), Value::NotNull);
+    }
+
+    void State::exec_not()
+    {
+        RefineOpCodeStack1(Abc::Code::op_not, GetBooleanType(), Abc::Code::op_not_tb SF_AOTC_ARG(AOT::SNode1::opNot));
+    }
+
+    void State::exec_negate()
+    {
+        // Result type of "negate" should always be number.
+        RefineOpCodeStack1(Abc::Code::op_negate, GetNumberType(), Abc::Code::op_negate_td SF_AOTC_ARG(AOT::SNode1::opNegate));
+    }
+
+    void State::exec_increment_i()
+    {
+        RefineOpCodeStack1(Abc::Code::op_increment_i, GetSIntType(), Abc::Code::op_increment_ti SF_AOTC_ARG(AOT::SNode1::opIncr));
+    }
+
+    void State::exec_decrement_i()
+    {
+        RefineOpCodeStack1(Abc::Code::op_decrement_i, GetSIntType(), Abc::Code::op_decrement_ti SF_AOTC_ARG(AOT::SNode1::opDecr));
+    }
+
+    void State::exec_negate_i()
+    {
+        RefineOpCodeStack1(Abc::Code::op_negate_i, GetSIntType(), Abc::Code::op_negate_ti SF_AOTC_ARG(AOT::SNode1::opNegate));
+    }
+
+    void State::exec_add_d()
+    {
+        RefineOpCodeStack2(Abc::Code::op_add_d, GetNumberType(), Abc::Code::op_add_td SF_AOTC_ARG(AOT::SNode2::opAdd));
+    }
+
+    void State::exec_add_i()
+    {
+        RefineOpCodeStack2(Abc::Code::op_add_i, GetSIntType(), Abc::Code::op_add_ti SF_AOTC_ARG(AOT::SNode2::opAdd));
+    }
+
+    void State::exec_subtract()
+    {
+        RefineOpCodeStack2(Abc::Code::op_subtract, GetNumberType(), Abc::Code::op_subtract_td SF_AOTC_ARG(AOT::SNode2::opSub));
+    }
+
+    void State::exec_subtract_i()
+    {
+        RefineOpCodeStack2(Abc::Code::op_subtract_i, GetSIntType(), Abc::Code::op_subtract_ti SF_AOTC_ARG(AOT::SNode2::opSub));
+    }
+
+    void State::exec_multiply()
+    {
+        RefineOpCodeStack2(Abc::Code::op_multiply, GetNumberType(), Abc::Code::op_multiply_td SF_AOTC_ARG(AOT::SNode2::opMul));
+    }
+
+    void State::exec_multiply_i()
+    {
+        RefineOpCodeStack2(Abc::Code::op_multiply_i, GetSIntType(), Abc::Code::op_multiply_ti SF_AOTC_ARG(AOT::SNode2::opMul));
+    }
+
+    void State::exec_divide()
+    {
+        RefineOpCodeStack2(Abc::Code::op_divide, GetNumberType(), Abc::Code::op_divide_td SF_AOTC_ARG(AOT::SNode2::opDiv));
     }
 
     void State::exec_1OpSInt(SF_AOTC_CODE(AOT::SNode1::OP op) SF_AOTC2_CODE(AOT::SNodeOC::OP op))
@@ -1280,7 +1403,7 @@ namespace TR
 
     void State::exec_istype(UInt32 mn_index)
     {
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_istype, mn_index);
 
         TR::ReadMnCt args(GetFile(), *this, mn_index);
 
@@ -1289,6 +1412,8 @@ namespace TR
 
     void State::exec_pushscope()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_pushscope);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_pushscope);
 #endif
@@ -1299,9 +1424,22 @@ namespace TR
         PopOp();
     }
 
+    void State::exec_getscopeobject(UInt32 scope_index) 
+    {
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_getscopeobject, scope_index);
+#endif
+
+        GetTracer().PushNewOpCode(Abc::Code::op_getscopeobject, scope_index);
+
+        PushOp(GetScopeValue(scope_index));
+        // Clean up the *with* flag.
+        GetOpStack().Back().SetWith(false);
+    }
+
     void State::exec_deleteproperty(UInt32 mn_index)
     {
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_deleteproperty, mn_index);
 
         TR::ReadMnObject args(GetFile(), *this, mn_index);
 
@@ -1322,14 +1460,15 @@ namespace TR
         PushOp(Value(GetBooleanType(), Value::NotNull SF_AOTC_ARG(*sn)));
     }
 
-    void State::exec_getslot(UInt32 slot_index SF_AOTC2_ARG(bool simulate))
+    void State::exec_getslot(UInt32 slot_index, bool simulate)
     {
 #if defined(SF_AS3_AOTC2)
         if (!simulate)
             PushSNodeOC(AOT::SNodeOC::op_getslot, slot_index);
 #endif
 
-        PushNewOpCodeArg(slot_index);
+        if (!simulate)
+            GetTracer().PushNewOpCode(Abc::Code::op_getslot, slot_index);
 
         TR::ReadObject args(GetVM(), *this);
 
@@ -1447,7 +1586,8 @@ namespace TR
 
     void State::exec_setlocal(UInt32 rnum)
     {
-        PushNewOpCodeArg(rnum);
+        GetTracer().PushNewOpCode(Abc::Code::op_setlocal, rnum);
+
         Value& value = BackOpValue();
 
 #ifdef SF_AS3_AOTC
@@ -1462,6 +1602,68 @@ namespace TR
         PopOp();
     }
 
+    void State::exec_inclocal_i(UInt32 v)
+    {
+        RefineOpCodeReg1(Abc::Code::op_inclocal_i, GetSIntType(), Abc::Code::op_inclocal_ti, v);
+    }
+
+    void State::exec_declocal_i(UInt32 v) 
+    {
+        RefineOpCodeReg1(Abc::Code::op_declocal_i, GetSIntType(), Abc::Code::op_declocal_ti, v);
+    }
+
+    void State::exec_getlocal0() 
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_getlocal0);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeGetLocal(0);
+#endif
+
+        const Value& reg_value = GetRegister(AbsoluteIndex(0));
+
+        PushOp(reg_value);
+    }
+
+    void State::exec_getlocal1()
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_getlocal1);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeGetLocal(1);
+#endif
+
+        const Value& reg_value = GetRegister(AbsoluteIndex(1));
+
+        PushOp(reg_value);
+    }   
+
+    void State::exec_getlocal2()
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_getlocal2);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeGetLocal(2);
+#endif
+
+        const Value& reg_value = GetRegister(AbsoluteIndex(2));
+
+        PushOp(reg_value);
+    }
+
+    void State::exec_getlocal3()
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_getlocal3);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeGetLocal(3);
+#endif
+
+        const Value& reg_value = GetRegister(AbsoluteIndex(3));
+
+        PushOp(reg_value);
+    }
+
     void State::exec_setlocal0()
     {
         Value& value = BackOpValue();
@@ -1469,6 +1671,8 @@ namespace TR
 #ifdef SF_AS3_AOTC
         AotUpdateRegisterValue(0, value);
 #endif
+
+        GetTracer().PushNewOpCode(Abc::Code::op_setlocal0);
 
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_setlocal, 0);
@@ -1486,6 +1690,8 @@ namespace TR
         AotUpdateRegisterValue(1, value);
 #endif
 
+        GetTracer().PushNewOpCode(Abc::Code::op_setlocal1);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_setlocal, 1);
 #endif
@@ -1502,6 +1708,8 @@ namespace TR
         AotUpdateRegisterValue(2, value);
 #endif
 
+        GetTracer().PushNewOpCode(Abc::Code::op_setlocal2);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_setlocal, 2);
 #endif
@@ -1517,6 +1725,8 @@ namespace TR
 #ifdef SF_AS3_AOTC
         AotUpdateRegisterValue(3, value);
 #endif
+
+        GetTracer().PushNewOpCode(Abc::Code::op_setlocal3);
 
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_setlocal, 3);
@@ -1775,14 +1985,16 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_pushnamespace, v);
 #endif
 
-        PushNewOpCodeArg(v);
+        GetTracer().PushNewOpCode(Abc::Code::op_pushnamespace, v);
+
 //         PushOp(Value(GetNamespaceType(), Value::NotNull));
         PushOp(Value(&GetFile().GetInternedNamespace(v)));
     }
 
-    void State::exec_setslot(UInt32 slot_index SF_AOTC2_ARG(bool simulate))
+    void State::exec_setslot(UInt32 slot_index, bool simulate)
     {
-        PushNewOpCodeArg(slot_index);
+        if (!simulate)
+            GetTracer().PushNewOpCode(Abc::Code::op_setslot, slot_index);
 
         TR::ReadValueObject args(GetVM(), *this);
 
@@ -1848,14 +2060,14 @@ namespace TR
         PushSNodeOC(AOT::SNodeOC::op_astype, mn_index);
 #endif
 
-        PushNewOpCodeArg(mn_index);
+        GetTracer().PushNewOpCode(Abc::Code::op_astype, mn_index);
 
         TR::ReadMnCtValue args(GetFile(), *this, mn_index);
     }
 
     void State::exec_newclass(UInt32 v)
     {
-        PushNewOpCodeArg(v);
+        GetTracer().PushNewOpCode(Abc::Code::op_newclass, v);
 
         PopOp(); // Base Class: Object or null
 
@@ -1948,7 +2160,7 @@ namespace TR
         return *result;
     }
 
-    void State::RefineOpCodeStack1(InstanceTraits::Traits& type, Abc::Code::OpCode op SF_AOTC_ARG(AOT::SNode1::OP sn_op))
+    void State::RefineOpCodeStack1(Abc::Code::OpCode opcode, InstanceTraits::Traits& type, Abc::Code::OpCode op SF_AOTC_ARG(AOT::SNode1::OP sn_op))
     {
 #ifdef SF_AS3_AOTC
         SPtr<SNode> sn;
@@ -1958,7 +2170,8 @@ namespace TR
         if (GetValueTraits(BackOpValue()) == &type)
         {
             // Value already has a correct type.
-            GetTracer().SetNewOpCode(op);
+            GetTracer().PushNewOpCode(op);
+
 #ifdef SF_AS3_AOTC
             ConvertOpTo(type, CanBeNull(type) SF_AOTC_ARG(*sn));
 #endif
@@ -1969,14 +2182,16 @@ namespace TR
         }
         else
         {
+            GetTracer().PushNewOpCode(opcode);
+
 #if defined(SF_AS3_AOTC2)
-            PushSNodeOC(AOT::SNodeOC::GetOP(GetTracer().GetNewOpCode()));
+            PushSNodeOC(AOT::SNodeOC::GetOP(opcode));
 #endif
             ConvertOpTo(type, CanBeNull(type) SF_AOTC_ARG(*sn));
         }
     }
 
-    void State::RefineOpCodeStack2(InstanceTraits::Traits& type, Abc::Code::OpCode op SF_AOTC_ARG(AOT::SNode2::OP sn_op))
+    void State::RefineOpCodeStack2(Abc::Code::OpCode opcode, InstanceTraits::Traits& type, Abc::Code::OpCode op SF_AOTC_ARG(AOT::SNode2::OP sn_op))
     {
         const Value _2 = PopOpValue(); // value2
 
@@ -1988,7 +2203,8 @@ namespace TR
         if (GetValueTraits(BackOpValue()) == &type && GetValueTraits(_2) == &type)
         {
             // Values already have correct types.
-            GetTracer().SetNewOpCode(op);
+            GetTracer().PushNewOpCode(op);
+
 #ifdef SF_AS3_AOTC
             ConvertOpTo(type, CanBeNull(type) SF_AOTC_ARG(*sn));
 #endif
@@ -1999,21 +2215,23 @@ namespace TR
         }
         else
         {
+            GetTracer().PushNewOpCode(opcode);
+
 #if defined(SF_AS3_AOTC2)
-            PushSNodeOC(AOT::SNodeOC::GetOP(GetTracer().GetNewOpCode()));
+            PushSNodeOC(AOT::SNodeOC::GetOP(opcode));
 #endif
             ConvertOpTo(type, CanBeNull(type) SF_AOTC_ARG(*sn));
         }
     }
 
-    void State::RefineOpCodeReg1(InstanceTraits::Traits& type, Abc::Code::OpCode op, int reg_num)
+    void State::RefineOpCodeReg1(Abc::Code::OpCode opcode, InstanceTraits::Traits& type, Abc::Code::OpCode op, int reg_num)
     {
         const Value& r = GetRegister(AbsoluteIndex(reg_num));
 
         if (GetValueTraits(r) == &type)
         {
             // Value already has a correct type.
-            GetTracer().SetNewOpCode(op);
+            GetTracer().PushNewOpCode(op, reg_num);
 
 #if defined(SF_AS3_AOTC2)
             PushSNodeOC(AOT::SNodeOC::GetOP(op), reg_num);
@@ -2021,13 +2239,13 @@ namespace TR
         }
         else
         {
+            GetTracer().PushNewOpCode(opcode, reg_num);
+
 #if defined(SF_AS3_AOTC2)
-            PushSNodeOC(AOT::SNodeOC::GetOP(GetTracer().GetNewOpCode()), reg_num);
+            PushSNodeOC(AOT::SNodeOC::GetOP(opcode), reg_num);
 #endif
             ConvertRegisterTo(AbsoluteIndex(reg_num), type, CanBeNull(type));
         }
-
-        PushNewOpCodeArg(reg_num);
     }
 
     void State::exec_pop()
@@ -2050,7 +2268,9 @@ namespace TR
 
         if (GetTracer().IsNotRefCountedType(GetValueTraits(BackOpValue())))
             // Value has not ref-counted type.
-            GetTracer().SetNewOpCode(Code::op_pop_nrc);
+            GetTracer().PushNewOpCode(Code::op_pop_nrc);
+        else
+            GetTracer().PushNewOpCode(Code::op_pop);
 
         PopOp();
     }
@@ -2065,7 +2285,9 @@ namespace TR
 
         if (GetTracer().IsNotRefCountedType(GetValueTraits(BackOpValue())))
             // Value has not ref-counted type.
-            GetTracer().SetNewOpCode(Code::op_dup_nrc);
+            GetTracer().PushNewOpCode(Code::op_dup_nrc);
+        else
+            GetTracer().PushNewOpCode(Code::op_dup);
 
         // This sequence of calls is necessary to prevent problems related
         // to Array reallocation.
@@ -2100,8 +2322,24 @@ namespace TR
 #endif
     }
 
+    void State::exec_swap(bool simulate) 
+    {
+        if (!simulate)
+            GetTracer().PushNewOpCode(Abc::Code::op_swap);
+
+        SwapOp();
+    }
+
+    void State::exec_convert_reg_i(UInt32 reg_num) 
+    {
+        // reg_num should be stored in MI.OpCode outside of this method.
+        ConvertRegisterTo(AbsoluteIndex(reg_num), GetSIntType(), Value::NotNull);
+    }
+
     void State::exec_convert_u()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_convert_u);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_convert_u);
 #endif
@@ -2115,8 +2353,55 @@ namespace TR
             ConvertOpTo(GetUIntType(), Value::NotNull);
     }
 
+    void State::exec_getglobalslot(UInt32 slot_index) 
+    {
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_getglobalslot, slot_index);
+#endif
+
+        GetTracer().PushNewOpCode(Abc::Code::op_getglobalslot, slot_index);
+
+        // We can do better than this.
+        PushOp(Value());
+    }
+
+    void State::exec_setglobalslot(UInt32 slot_index) 
+    {
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_setglobalslot, slot_index);
+#endif
+
+        GetTracer().PushNewOpCode(Abc::Code::op_setglobalslot, slot_index);
+
+        // We can do better than this.
+        PopOp();
+    }
+
+    void State::exec_esc_xelem() 
+    {
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_esc_xelem);
+#endif
+        GetTracer().PushNewOpCode(Abc::Code::op_esc_xelem);
+
+        // ??? Can it be null?
+        // It look like it cannot be null.
+        ConvertOpTo(GetStringType(), Value::NotNull);
+    }
+
+    void State::exec_esc_xattr() 
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_esc_xattr);
+
+        // ??? Can it be null?
+        // It look like it cannot be null.
+        ConvertOpTo(GetStringType(), Value::NotNull);
+    }
+
     void State::exec_convert_i()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_convert_i);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_convert_i);
 #endif
@@ -2130,8 +2415,16 @@ namespace TR
             ConvertOpTo(GetSIntType(), Value::NotNull);
     }
 
+    void State::exec_convert_reg_u(UInt32 reg_num) 
+    {
+        // reg_num should be stored in MI.OpCode outside of this method.
+        ConvertRegisterTo(AbsoluteIndex(reg_num), GetUIntType(), Value::NotNull);
+    }
+
     void State::exec_convert_d()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_convert_d);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_convert_d);
 #endif
@@ -2145,8 +2438,16 @@ namespace TR
             ConvertOpTo(GetNumberType(), Value::NotNull);
     }
 
+    void State::exec_convert_reg_d(UInt32 reg_num) 
+    {
+        // reg_num should be stored in MI.OpCode outside of this method.
+        ConvertRegisterTo(AbsoluteIndex(reg_num), GetNumberType(), Value::NotNull);
+    }
+
     void State::exec_convert_b()
     {
+        GetTracer().PushNewOpCode(Abc::Code::op_convert_b);
+
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_convert_b);
 #endif
@@ -2176,6 +2477,8 @@ namespace TR
         Pickable<SNode> sn(SF_NEW AOT::SNode1(BackOpValue(), AOT::SNode1::opThrow SF_DEBUG_ARG(OpcodeCP)));
         PushSNode(sn);
 #endif
+
+        GetTracer().PushNewOpCode(Abc::Code::op_throw);
 
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_throw);
@@ -2212,7 +2515,7 @@ namespace TR
         // index is a u30 that must be an index into the string constant pool. The string at index is used
         // as the uri for the default XML namespace for this method.
 
-        PushNewOpCodeArg(index);
+        GetTracer().PushNewOpCode(Abc::Code::op_dxns, index);
 
         // A VerifyError is thrown if dxns is used in a method that does not have the SETS_DXNS flag set.
         if (!GetTracer().GetMethodBodyInfo().GetMethodInfo(GetFile().GetMethods()).NeedToSetDXNS())
@@ -2226,6 +2529,8 @@ namespace TR
     void State::exec_dxnslate()
     {
         // Sets the default XML namespace with a value determined at runtime.
+
+        GetTracer().PushNewOpCode(Abc::Code::op_dxnslate);
 
 #if defined(SF_AS3_AOTC2)
         PushSNodeOC(AOT::SNodeOC::op_dxnslate);
@@ -2243,6 +2548,30 @@ namespace TR
 #else
         GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG("dxnslate")));
 #endif
+    }
+
+    void State::exec_pushwith()
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_pushwith);
+
+        // A TypeError is thrown if scope_obj is null or undefined.
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_pushwith);
+#endif
+
+        PushScope(PopOpValue());
+        // Set up the *scope* flag.
+        GetScopeStack().Back().SetWith();
+    }
+
+    void State::exec_popscope()
+    {
+        GetTracer().PushNewOpCode(Abc::Code::op_popscope);
+
+#if defined(SF_AS3_AOTC2)
+        PushSNodeOC(AOT::SNodeOC::op_popscope);
+#endif
+        PopScope();
     }
 
 #if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
@@ -2451,7 +2780,7 @@ namespace TR
             }
 #endif
 
-            tr.SetNewOpCode(new_opcode);
+            tr.PushNewOpCode(new_opcode);
         } else if (tr.IsNumberType(BackOpValue()) && tr.IsNumberType(BackOp2ndValue()))
         {
             Code::OpCode new_opcode = opcode;
@@ -2535,8 +2864,10 @@ namespace TR
             }
 #endif
 
-            tr.SetNewOpCode(new_opcode);
+            tr.PushNewOpCode(new_opcode);
         }
+        else
+            tr.PushNewOpCode(opcode);
 
         // Relative
         const int offset = ReadS24(tr.pCode, bcp);
@@ -2733,7 +3064,9 @@ namespace TR
         Tracer& tr = GetTracer();
 
         if (tr.IsBooleanType(BackOpValue()))
-            tr.SetNewOpCode(opcode == Code::op_iftrue ? Code::op_iftrue_tb : Code::op_iffalse_tb);
+            tr.PushNewOpCode(opcode == Code::op_iftrue ? Code::op_iftrue_tb : Code::op_iffalse_tb);
+        else
+            tr.PushNewOpCode(opcode);
 
         // Relative
         const int offset = ReadS24(tr.pCode, bcp);
@@ -2858,6 +3191,8 @@ namespace TR
         using namespace Abc;
 
         Tracer& tr = GetTracer();
+
+        tr.PushNewOpCode(Abc::Code::op_jump);
 
         const int offset = ReadS24(tr.pCode, bcp);
 
@@ -3044,6 +3379,8 @@ namespace TR
 
         Tracer& tr = GetTracer();
 
+        tr.PushNewOpCode(Abc::Code::op_lookupswitch);
+
 #if defined(SF_AS3_AOTC)
         {
             // This switch statement should be already handled.
@@ -3106,12 +3443,12 @@ namespace TR
             PopOp(); // Index
 
             Abc::TCodeOffset base_location = tr.CurrOffset;
-            int default_offset = ReadS24(tr.pCode, bcp);
+            const int default_offset = ReadS24(tr.pCode, bcp);
 
             tr.StoreOffset(bcp, *this, static_cast<SInt32>(base_location + default_offset - bcp), 1);
 
             int case_count = ReadU30(tr.pCode, bcp);
-            tr.PushNewOpCodeArg(case_count);
+            tr.PushNewOpCodeArg0(case_count);
 
             for(int i = 0; i <= case_count; ++i)
             {
@@ -3135,9 +3472,9 @@ namespace TR
         const UInt8* pCode = tr.pCode;
         OpcodeCP = bcp - 1;
 
-        tr.PushNewOpCode(opcode);
+//         tr.PushNewOpCode(opcode);
 
-        // We do not need to handle new WCode here ...
+        // We do not need to handle new MI.OpCode here ...
         switch (opcode)
         {
         case Code::op_throw:
@@ -3162,9 +3499,7 @@ namespace TR
             // Block starts from LABEL.
             tr.AddBlock(*this, bcp - 1, Block::tUnknown, true);
 
-            // Get rid of op_label.
-            tr.PopNewOpCode();
-
+            // Get rid of op_label. (Do not push the opcode)
             break;
         case Code::op_ifnlt:
         case Code::op_ifnle:
@@ -3203,6 +3538,8 @@ namespace TR
             exec_hasnext();
             break;
         case Code::op_pushnull:
+            tr.PushNewOpCode(Abc::Code::op_pushnull);
+
 #if defined(SF_AS3_AOTC2)
             PushSNodeOC(AOT::SNodeOC::op_pushnull);
 #endif
@@ -3211,12 +3548,7 @@ namespace TR
             PushOp(Value::GetNull());
             break;
         case Code::op_pushundefined:
-#if defined(SF_AS3_AOTC2)
-            PushSNodeOC(AOT::SNodeOC::op_pushundefined);
-#endif
-            // Tamarin style.
-            //PushOp(Value(GetVoidType()));
-            PushOp(Value::GetUndefined());
+            exec_pushundefined();
             break;
         case Code::op_nextvalue:
             exec_nextvalue();
@@ -3228,18 +3560,24 @@ namespace TR
             exec_pushshort(ReadU30(pCode, bcp));
             break;
         case Code::op_pushtrue:
+            tr.PushNewOpCode(Abc::Code::op_pushtrue);
+
 #if defined(SF_AS3_AOTC2)
             PushSNodeOC(AOT::SNodeOC::op_pushtrue);
 #endif
             PushOp(Value(true));
             break;
         case Code::op_pushfalse:
+            tr.PushNewOpCode(Abc::Code::op_pushfalse);
+
 #if defined(SF_AS3_AOTC2)
             PushSNodeOC(AOT::SNodeOC::op_pushfalse);
 #endif
             PushOp(Value(false));
             break;
         case Code::op_pushnan:
+            tr.PushNewOpCode(Abc::Code::op_pushnan);
+
 #if defined(SF_AS3_AOTC2)
             PushSNodeOC(AOT::SNodeOC::op_pushnan);
 #endif
@@ -3252,6 +3590,8 @@ namespace TR
             exec_dup();
             break;
         case Code::op_swap:
+            tr.PushNewOpCode(Abc::Code::op_swap);
+
 #if defined(SF_AS3_AOTC2)
             PushSNodeOC(AOT::SNodeOC::op_swap);
 #endif
@@ -3324,7 +3664,7 @@ namespace TR
             break;
         case Code::op_callmethod:
         case Code::op_callstatic:
-            // This opcode shouldn't be generated by a compiler.
+            // These opcodes shouldn't be generated by a compiler.
             GetVM().ThrowVerifyError(VM::Error(VM::eNotImplementedError, GetVM() SF_DEBUG_ARG(Code::GetOpCodeInfo(opcode).name)));
             break;
         case Code::op_callsuper:
@@ -3336,6 +3676,8 @@ namespace TR
             SF_ASSERT(false);
             break;
         case Code::op_returnvalue:
+            tr.PushNewOpCode(Abc::Code::op_returnvalue);
+
 #if defined(SF_AS3_AOTC)
             {
                 using namespace AOT;
@@ -3362,6 +3704,8 @@ namespace TR
             // Exceptions are possible, but we can ignore them here.
             break;
         case Code::op_returnvoid:
+            tr.PushNewOpCode(Abc::Code::op_returnvoid);
+
 #if defined(SF_AS3_AOTC)
             {
                 using namespace AOT;
@@ -3471,6 +3815,8 @@ namespace TR
             exec_setglobalslot(ReadU30(pCode, bcp));
             break;
         case Code::op_convert_s:
+            tr.PushNewOpCode(Abc::Code::op_convert_s);
+
             exec_1OpString(SF_AOTC_CODE(AOT::SNode1::opConvertS) SF_AOTC2_CODE(AOT::SNodeOC::op_convert_s));
             break;
         case Code::op_esc_xelem:
@@ -3519,24 +3865,32 @@ namespace TR
             exec_negate();
             break;
         case Code::op_increment:
+            tr.PushNewOpCode(Abc::Code::op_increment);
+
             exec_1OpNumber(SF_AOTC_CODE(AOT::SNode1::opIncr) SF_AOTC2_CODE(AOT::SNodeOC::op_increment));
             break;
         case Code::op_inclocal:
             exec_inclocal(ReadU30(pCode, bcp));
             break;
         case Code::op_decrement:
+            tr.PushNewOpCode(Abc::Code::op_decrement);
+
             exec_1OpNumber(SF_AOTC_CODE(AOT::SNode1::opDecr) SF_AOTC2_CODE(AOT::SNodeOC::op_decrement));
             break;
         case Code::op_declocal:
             exec_declocal(ReadU30(pCode, bcp));
             break;
         case Code::op_typeof:
+            tr.PushNewOpCode(Abc::Code::op_typeof);
+
             exec_1OpString(SF_AOTC_CODE(AOT::SNode1::opTypeOf) SF_AOTC2_CODE(AOT::SNodeOC::op_typeof));
             break;
         case Code::op_not:
             exec_not();
             break;
         case Code::op_bitnot:
+            tr.PushNewOpCode(Abc::Code::op_bitnot);
+
             exec_1OpSInt(SF_AOTC_CODE(AOT::SNode1::opBitNot) SF_AOTC2_CODE(AOT::SNodeOC::op_bitnot));
             break;
         case Code::op_add_d:
@@ -3556,54 +3910,86 @@ namespace TR
             exec_divide();
             break;
         case Code::op_modulo:
+            tr.PushNewOpCode(Abc::Code::op_modulo);
+
             exec_2OpNumber(SF_AOTC_CODE(AOT::SNode2::opModulo));
             break;
         case Code::op_lshift:
+            tr.PushNewOpCode(Abc::Code::op_lshift);
+
             exec_2OpSInt(SF_AOTC_CODE(AOT::SNode2::opLSchift));
             break;
         case Code::op_rshift:
+            tr.PushNewOpCode(Abc::Code::op_rshift);
+
             exec_2OpSInt(SF_AOTC_CODE(AOT::SNode2::opRSchift));
             break;
         case Code::op_urshift:
+            tr.PushNewOpCode(Abc::Code::op_urshift);
+
             exec_2OpUInt(SF_AOTC_CODE(AOT::SNode2::opURSchift));
             break;
         case Code::op_bitand:
+            tr.PushNewOpCode(Abc::Code::op_bitand);
+
             exec_2OpSInt(SF_AOTC_CODE(AOT::SNode2::opBitAnd));
             break;
         case Code::op_bitor:
+            tr.PushNewOpCode(Abc::Code::op_bitor);
+
             exec_2OpSInt(SF_AOTC_CODE(AOT::SNode2::opBitOr));
             break;
         case Code::op_bitxor:
+            tr.PushNewOpCode(Abc::Code::op_bitxor);
+
             exec_2OpSInt(SF_AOTC_CODE(AOT::SNode2::opBitXOr));
             break;
         case Code::op_equals:
+            tr.PushNewOpCode(Abc::Code::op_equals);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opEQ));
             break;
         case Code::op_strictequals:
+            tr.PushNewOpCode(Abc::Code::op_strictequals);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opStrictEQ));
             break;
         case Code::op_lessthan:
+            tr.PushNewOpCode(Abc::Code::op_lessthan);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opLT));
             break;
         case Code::op_lessequals:
+            tr.PushNewOpCode(Abc::Code::op_lessequals);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opLE));
             break;
         case Code::op_greaterthan:
+            tr.PushNewOpCode(Abc::Code::op_greaterthan);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opGT));
             break;
         case Code::op_greaterequals:
+            tr.PushNewOpCode(Abc::Code::op_greaterequals);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opGE));
             break;
         case Code::op_istypelate:
+            tr.PushNewOpCode(Abc::Code::op_istypelate);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opIsTypeLate));
             break;
         case Code::op_instanceof:
+            tr.PushNewOpCode(Abc::Code::op_instanceof);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opInstanceOf));
             break;
         case Code::op_istype:
             exec_istype(ReadU30(pCode, bcp));
             break;
         case Code::op_in:
+            tr.PushNewOpCode(Abc::Code::op_in);
+
             exec_2OpBoolean(SF_AOTC_CODE(AOT::SNodeBoolExpr::opIn));
             break;
         case Code::op_increment_i:
@@ -3658,16 +4044,20 @@ namespace TR
             exec_setlocal3();
             break;
         case Code::op_debug:
-            tr.PushNewOpCodeArg(Read8(pCode, bcp));
-            tr.PushNewOpCodeArg(ReadU30(pCode, bcp));
-            tr.PushNewOpCodeArg(Read8(pCode, bcp));
-            tr.PushNewOpCodeArg(ReadU30(pCode, bcp));
+            tr.PushNewOpCode(Abc::Code::op_debug);
+
+            tr.PushNewOpCodeArg0(Read8(pCode, bcp));
+            tr.PushNewOpCodeArg0(ReadU30(pCode, bcp));
+            tr.PushNewOpCodeArg0(Read8(pCode, bcp));
+            tr.PushNewOpCodeArg0(ReadU30(pCode, bcp));
             break;
         case Code::op_debugline:
             {
+                tr.PushNewOpCode(Abc::Code::op_debugline);
+
                 const int line_num = ReadU30(pCode, bcp);
 
-                tr.PushNewOpCodeArg(line_num);
+                tr.PushNewOpCodeArg0(line_num);
 
 #if defined(SF_AS3_AOTC2)
                 sb.Clear();
@@ -3678,17 +4068,17 @@ namespace TR
             break;
         case Code::op_debugfile:
             {
-                const int str_ind = ReadU30(pCode, bcp);
-                const StringDataPtr fn = GetTracer().GetAbcFile().GetConstPool().GetString(AbsoluteIndex(str_ind));
+                tr.PushNewOpCode(Abc::Code::op_debugfile);
 
-                tr.PushNewOpCodeArg(str_ind);
+                const int str_ind = ReadU30(pCode, bcp);
+
+                tr.PushNewOpCodeArg0(str_ind);
 
 #if defined(SF_AS3_AOTC2)
+                const StringDataPtr fn = tr.GetAbcFile().GetConstPool().GetString(AbsoluteIndex(str_ind));
                 sb.Clear();
                 sb << "File Name: " << fn;
                 PushSNodeComment(sb);
-#else
-                SF_UNUSED(fn);
 #endif
             }
             break;
@@ -3703,7 +4093,7 @@ namespace TR
             case 1:
                 {
                     const int _1 = ReadU30(pCode, bcp);
-                    tr.PushNewOpCodeArg(_1);
+                    tr.PushNewOpCode(opcode, _1);
 
 #if defined(SF_AS3_AOTC2)
                     PushSNodeOC(AOT::SNodeOC::GetOP(opcode), _1);
@@ -3715,8 +4105,7 @@ namespace TR
                     const int _1 = ReadU30(pCode, bcp);
                     const int _2 = ReadU30(pCode, bcp);
 
-                    tr.PushNewOpCodeArg(_1);
-                    tr.PushNewOpCodeArg(_2);
+                    tr.PushNewOpCode(opcode, _1, _2);
 
 #if defined(SF_AS3_AOTC2)
                     PushSNodeOC(AOT::SNodeOC::GetOP(opcode), _1, _2);
@@ -3724,6 +4113,8 @@ namespace TR
                 }
                 break;
             case 0:
+                tr.PushNewOpCode(opcode);
+
 #if defined(SF_AS3_AOTC2)
                 PushSNodeOC(AOT::SNodeOC::GetOP(opcode));
 #endif
@@ -3741,6 +4132,7 @@ namespace TR
     , Type(tUnknown)
     , State(NULL)
     , From(f)
+    , CurOpStackSize(0)
 #if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
     , SwitchOffset(0)
     , TryOffset(0)
@@ -3758,6 +4150,7 @@ namespace TR
     , Type(t)
     , State(&st)
     , From(f)
+    , CurOpStackSize(0)
 #if defined(SF_AS3_AOTC) || defined(SF_AS3_AOTC2)
     , SwitchOffset(0)
     , TryOffset(0)
@@ -3779,16 +4172,14 @@ namespace TR
 Tracer::Tracer(
     MemoryHeap* heap,
     const CallFrame& cf,
-    Abc::TOpCode& wc,
-    Abc::MethodBodyInfo::Exception& we
+    MethodInfo& mi
     SF_AOTC_ARG(AOT::InfoCollector* ic)
     SF_AOTC2_ARG(AOT::InfoCollector* ic)
     )
     : Done(false)
     , Heap(heap)
     , CF(cf)
-    , WCode(wc)
-    , WException(we)
+    , MI(mi)
     , CurrOffset(0)
     , BCode(cf.GetMethodBodyInfo().GetCode().GetCode())
     , pCode(reinterpret_cast<const UInt8*>(BCode.ToCStr()))
@@ -3821,8 +4212,8 @@ Tracer::Tracer(
             --PrintOffset;
     }
 
-    WCode.Clear();
-    WCode.Reserve(BCode.GetSize());
+    MI.OpCode.Clear();
+    MI.OpCode.Reserve(BCode.GetSize());
     Orig2newPosMap.Resize(BCode.GetSize());
 
     TR::State* st = SF_HEAP_NEW(GetHeap()) TR::State(*this, 0);
@@ -3879,14 +4270,14 @@ Tracer::Tracer(
 
         const Abc::MethodBodyInfo& mbi = GetMethodBodyInfo();
 
-        const Abc::MethodInfo& mi = GetMethodBodyInfo().GetMethodInfo(GetAbcFile().GetMethods());
+        const Abc::MethodInfo& mifo = GetMethodBodyInfo().GetMethodInfo(GetAbcFile().GetMethods());
         const SInt32 maxInd = mbi.GetMaxLocalRegisterIndex();
 
         for(SInt32 i = 1; i < maxInd; ++i)
             reg_file.PushBack(Value::GetUndefined());
 
         // Get register's types.
-        const UPInt param_count = mi.GetParamCount();
+        const UPInt param_count = mifo.GetParamCount();
 #ifdef SF_AS3_AOTC
         StringManager& sm = vm.GetStringManager();
 #endif
@@ -3898,7 +4289,7 @@ Tracer::Tracer(
 
         for(UPInt i = 0; i < param_count; ++i)
         {
-            const Abc::Multiname& amn = mi.GetParamType(GetAbcFile().GetConstPool(), i);
+            const Abc::Multiname& amn = mifo.GetParamType(GetAbcFile().GetConstPool(), i);
             const ClassTraits::Traits* tr = vm.Resolve2ClassTraits(GetFile(), amn);
 
 #ifdef SF_AS3_AOTC
@@ -3933,7 +4324,7 @@ Tracer::Tracer(
             }
         }
 
-        if (mi.NeedRest())
+        if (mifo.NeedRest())
         {
             // If NEED_REST is set in method_info.flags, the method_info.param_count+1 register is set up to
             // reference an array that holds the superfluous arguments.
@@ -3946,7 +4337,7 @@ Tracer::Tracer(
 
             reg_file[reg] = Value(vm.GetClassTraitsArray().GetInstanceTraits(), Value::NotNull SF_AOTC_ARG(*sn));
             reg_alive.Set(reg++);
-        } else if (mi.NeedArguments())
+        } else if (mifo.NeedArguments())
         {
             // If NEED_ARGUMENTS is set in method_info.flags, the method_info.param_count+1 register is set up
             // to reference an "arguments" object that holds all the actual arguments: see ECMA-262 for more
@@ -4040,10 +4431,6 @@ void Tracer::EmitCode()
 #endif
             }
 
-            // ei.GetTo() is inclusive.
-//             if (ei.GetTo() != ei.GetTargetPos())
-//                 AddBlock(ei.GetTo());
-
             // !!! ei.GetTargetPos() can be a dead block, if there is no throw.
             // If there is no explicit throw opcode we need to simulate it,
             // otherwise stack will be broken.
@@ -4136,7 +4523,7 @@ void Tracer::EmitCode()
     if (vm.IsException())
     {
         // Clear pCode to prevent execution of not completely generated pCode.
-        WCode.Clear();
+        MI.OpCode.Clear();
         return;
     }
 
@@ -4154,10 +4541,10 @@ void Tracer::EmitCode()
     // Recalculate positions.
     for(UPInt i = 0; i < PosToRecalculate.GetSize(); ++i)
     {
-        // Get position in WCode where an absolute address is stored.
+        // Get position in MI.OpCode where an absolute address is stored.
         const Recalculate& r = PosToRecalculate[i];
         const Abc::TCodeOffset pos = r.pos;
-        const TOpCode::ValueType absolute_address = WCode[pos];
+        const TOpCode::ValueType absolute_address = MI.OpCode[pos];
 
         // Fix relative offset.
         // Convert it back from absolute to relative.
@@ -4174,18 +4561,18 @@ void Tracer::EmitCode()
             new_address += r.base;
         }
 
-        SF_ASSERT(new_address < WCode.GetSize());
-        WCode[pos] = new_address;
+        SF_ASSERT(new_address < MI.OpCode.GetSize());
+        MI.OpCode[pos] = new_address;
     }
 
     // Create exception info for word pCode.
     {
-        const MethodBodyInfo::Exception& e = GetMethodBodyInfo().exception;
-        for (UPInt i = 0; i < e.GetSize(); ++i)
+        const MethodBodyInfo::Exception& embi = GetMethodBodyInfo().exception;
+        for (UPInt i = 0; i < embi.GetSize(); ++i)
         {
-            const MethodBodyInfo::ExceptionInfo& ei = e.Get(i);
+            const MethodBodyInfo::ExceptionInfo& ei = embi.Get(i);
 
-            WException.info.PushBack(MethodBodyInfo::ExceptionInfo(
+            MI.Exception.info.PushBack(MethodBodyInfo::ExceptionInfo(
                 static_cast<SInd>(Orig2newPosMap[ei.GetFrom()]),
                 static_cast<SInd>(Orig2newPosMap[ei.GetTo()]),
                 static_cast<SInd>(Orig2newPosMap[ei.GetTargetPos()]),
@@ -4195,9 +4582,13 @@ void Tracer::EmitCode()
         }
     }
 
-    // Clear original pCode.
     // A hack with constness.
-    const_cast<Abc::MethodBodyInfo&>(CF.GetMethodBodyInfo()).ClearCode();
+    {
+        Abc::MethodBodyInfo& mbi = const_cast<Abc::MethodBodyInfo&>(CF.GetMethodBodyInfo());
+
+        // Clear original pCode.
+        mbi.ClearCode();
+    }
 
     Done = true;
 }
@@ -4617,7 +5008,6 @@ void Tracer::TraceBlock(Abc::TCodeOffset bcp, const TR::Block& initBlock)
 {
     using namespace Abc;
 
-//     StateMachine sm(*this);
     TR::Block*& pBlock = CurrBlock;
     pBlock = GetBlock(bcp);
     SF_ASSERT(pBlock);
@@ -4722,13 +5112,36 @@ void Tracer::StoreOffset(Abc::TCodeOffset bcp, const TR::State& st, SInt32 offse
 
     if (offset < 0)
     {
-        /* DO NOT delete this pCode.
+        /* DO NOT delete this code.
         // This check proves that each back reference is marked with the Code::op_label.
         {
             TCodeOffset ccp = cp;
             const Code::OpCode offset_opcode = static_cast<Code::OpCode>(Read8(pCode + offset, ccp));
             SF_UNUSED(offset_opcode);
             SF_ASSERT(offset_opcode == Code::op_label);
+        }
+        */
+
+        /* DO NOT delete this code.
+        // This check proves that each Code::op_label is referenced only by ONE opcode.
+        // It can be referenced twice within op_lookupswitch (because of "default" branch).
+        {
+            // HashDH<UPInt, UPInt> Refs2Labels;
+            TCodeOffset ccp = bcp;
+            const Code::OpCode offset_opcode = static_cast<Code::OpCode>(Read8(pCode + offset, ccp));
+            const UPInt opcode_base = OrigOpcodePos.Back();
+
+            if (offset_opcode == Code::op_label)
+            {
+                UPInt base = 0;
+                if (Refs2Labels.Get(bcp_offset, &base))
+                {
+                    if (base != opcode_base)
+                        SF_ASSERT(false);
+                }
+                else
+                    Refs2Labels.Add(bcp_offset, opcode_base);
+            }
         }
         */
 
@@ -4739,10 +5152,10 @@ void Tracer::StoreOffset(Abc::TCodeOffset bcp, const TR::State& st, SInt32 offse
 #endif
 
         // We already know a new address. We just need to get it and store it.
-        TCodeOffset new_offset = Orig2newPosMap[bcp_offset] - WCode.GetSize() + base;
+        TCodeOffset new_offset = Orig2newPosMap[bcp_offset] - MI.OpCode.GetSize() + base;
 
-        //SF_ASSERT((WCode.GetSize() + new_offset) >= 0);
-        PushNewOpCodeArg(static_cast<Abc::TOpCode::ValueType>(new_offset));
+        //SF_ASSERT((MI.OpCode.GetSize() + new_offset) >= 0);
+        PushNewOpCodeArg0(static_cast<Abc::TOpCode::ValueType>(new_offset));
     } else
     {
         TR::Block* block = AddBlock(st, bcp_offset, TR::Block::tUnknown, true);
@@ -4762,10 +5175,10 @@ void Tracer::StoreOffset(Abc::TCodeOffset bcp, const TR::State& st, SInt32 offse
 
         // A new address is not known at this time because it is in front of current pCode pointer.
         // Translate offset to an absolute address and store it instead of a relative address.
-        PushNewOpCodeArg(static_cast<Abc::TOpCode::ValueType>(bcp_offset));
-        // Store a position in WCode where we stored this absolute address, which we will need 
+        PushNewOpCodeArg0(static_cast<Abc::TOpCode::ValueType>(bcp_offset));
+        // Store a position in MI.OpCode where we stored this absolute address, which we will need 
         // to recalculate later.
-        PosToRecalculate.PushBack(Recalculate(WCode.GetSize() - 1, base));
+        PosToRecalculate.PushBack(Recalculate(MI.OpCode.GetSize() - 1, base));
     }
 }
 
@@ -4776,7 +5189,7 @@ Abc::Code::OpCode Tracer::GetNewTopOpCode(UPInt num) const
     if (NewOpcodePos.GetSize() > num)
     {
         TCodeOffset ccp = NewOpcodePos[NewOpcodePos.GetSize() - 1 - num];
-        const Code::OpCode prev_opcode = static_cast<Code::OpCode>(WCode[ccp]);
+        const Code::OpCode prev_opcode = static_cast<Code::OpCode>(MI.OpCode[ccp]);
 
         return prev_opcode;
     }
@@ -4790,7 +5203,7 @@ void Tracer::SkipOrigOpCode(Abc::TCodeOffset& opcode_cp, Abc::TCodeOffset new_cp
     {
         // Store pos in case it is referenced.
         OrigOpcodePos.PushBack(opcode_cp);
-        Orig2newPosMap[opcode_cp] = WCode.GetSize();
+        Orig2newPosMap[opcode_cp] = MI.OpCode.GetSize();
     }
 
     // This assert triggers in several tests.
@@ -4807,7 +5220,7 @@ void Tracer::RegisterOrigOpCode(Abc::TCodeOffset opcode_cp)
         CurrOffset = opcode_cp;
 
         OrigOpcodePos.PushBack(opcode_cp);
-        Orig2newPosMap[opcode_cp] = WCode.GetSize();
+        Orig2newPosMap[opcode_cp] = MI.OpCode.GetSize();
 
         // This assert triggers in several tests.
         //SF_ASSERT(Orig2newPosMap[opcode_cp] < 100000);
@@ -5568,6 +5981,7 @@ void Tracer::InitializeBlock(TR::Block& to, const TR::Block& from)
     const TR::State& from_st = GetState(from);
     TR::State& to_st = GetState(to);
 
+    to.CurOpStackSize = from.CurOpStackSize;
     MergeLists(to_st, from_st, false, TR::msOpStack).DoNotCheck();
     MergeLists(to_st, from_st, false, TR::msScopeStack).DoNotCheck();
     MergeLists(to_st, from_st, true,  TR::msRegisterFile).DoNotCheck();
@@ -5582,8 +5996,11 @@ CheckResult Tracer::MergeBlock(TR::Block& to, const TR::Block& from)
     const TR::State& from_st = GetState(from);
     TR::State& to_st = GetState(to);
 
-    if (!to.IsCatchBlock())
+    if (!to.IsCatchBlock() && !to.IsDeadBlock())
     {
+        // SF_ASSERT(from.IsCatchBlock() || to.CurOpStackSize == from.CurOpStackSize);
+        to.CurOpStackSize = Alg::Max(to.CurOpStackSize, from.CurOpStackSize);
+
         if (!MergeLists(to_st, from_st, true, TR::msOpStack))
         {
 #if 0
@@ -5598,14 +6015,10 @@ CheckResult Tracer::MergeBlock(TR::Block& to, const TR::Block& from)
 #endif
         }
 
-//         if (!MergeLists(to_st, from_st, true, TR::msScopeStack))
         // It looks like the only place where not matched sizes of scope stack 
         // are allowed is Code::op_label.
         if (!MergeLists(to_st, from_st, false, TR::msScopeStack))
         {
-#if 1
-            // Enabling this exception breaks five tests. Otherwise it seems to be fine.
-            // This seems to work fine.
             VM& vm = GetVM();
             vm.ThrowVerifyError(VM::Error(VM::eScopeDepthUnbalancedError, vm
                 SF_DEBUG_ARG((int)to_st.GetScopeStack().GetSize())
@@ -5613,7 +6026,6 @@ CheckResult Tracer::MergeBlock(TR::Block& to, const TR::Block& from)
                 ));
 
             return false;
-#endif
         }
     }
 
@@ -5741,7 +6153,7 @@ bool Tracer::SubstituteOpCode(const Abc::Code::OpCode opcode, Abc::TCodeOffset& 
                 // If previous opcode was op_pushundefined we can replace it with op_pushnull.
                 if (GetNewTopOpCode() == Code::op_pushundefined)
                 {
-                    SetNewOpCode(Code::op_pushnull);
+                    PushNewOpCode(Code::op_pushnull);
 
 #if defined(SF_AS3_AOTC2)
                     st.PushSNodeOC(AOT::SNodeOC::op_pushnull);
@@ -5801,18 +6213,20 @@ bool Tracer::SubstituteOpCode(const Abc::Code::OpCode opcode, Abc::TCodeOffset& 
             if (next_opcode == Code::op_getslot)
             {
                 // Simulate prev opcode.
-                st.exec_getglobalscope();
+                st.exec_getglobalscope(true);
+
 #ifdef GFX_AS3_TRACE
                 if (ui.NeedToCheckOpCode()) { ui.OnOpCode(next_offset); }
 #endif
-                PushNewOpCode(Code::op_getglobalslot);
 
                 const UInt32 slot_index = ReadU30(pCode, ccp);
+                PushNewOpCode(Code::op_getglobalslot, slot_index);
+
 #if defined(SF_AS3_AOTC2)
                 st.PushSNodeOC(AOT::SNodeOC::op_getglobalslot, slot_index);
 #endif
                 // Simulate prev opcode.
-                st.exec_getslot(slot_index SF_AOTC2_ARG(true));
+                st.exec_getslot(slot_index, true);
 
                 // Skip prev combination ...
                 SkipOrigOpCode(bcp, ccp);
@@ -5830,24 +6244,24 @@ bool Tracer::SubstituteOpCode(const Abc::Code::OpCode opcode, Abc::TCodeOffset& 
 
                 if (next_opcode2 == Code::op_setslot)
                 {
-                    PushNewOpCode(Code::op_setglobalslot);
-
                     const UInt32 slot_index = ReadU30(pCode, ccp);
+
+                    PushNewOpCode(Code::op_setglobalslot, slot_index);
 
 #if defined(SF_AS3_AOTC2)
                     st.PushSNodeOC(AOT::SNodeOC::op_setglobalslot, slot_index);
 #endif
 
                     // Simulate a set of opcodes below.
-                    st.exec_getglobalscope();
+                    st.exec_getglobalscope(true);
 #ifdef GFX_AS3_TRACE
                     if (ui.NeedToCheckOpCode()) { ui.OnOpCode(next_offset); }
 #endif
-                    st.exec_swap();
+                    st.exec_swap(true);
 #ifdef GFX_AS3_TRACE
                     if (ui.NeedToCheckOpCode()) { ui.OnOpCode(next_offset2); }
 #endif
-                    st.exec_setslot(slot_index SF_AOTC2_ARG(true));
+                    st.exec_setslot(slot_index, true);
 
 
                     // Instead of simulating a simple one below.
@@ -6000,8 +6414,7 @@ bool Tracer::SubstituteOpCode(const Abc::Code::OpCode opcode, Abc::TCodeOffset& 
                 }
             }
         }
-        // No break on purpose.
-        // op_findpropstrict has same logic as op_findproperty.
+        break;
     case Code::op_findproperty:
         {
             TCodeOffset ccp = bcp;
@@ -6039,7 +6452,9 @@ bool Tracer::SubstituteOpCode(const Abc::Code::OpCode opcode, Abc::TCodeOffset& 
                 SkipOrigOpCode(bcp, ccp);
 
                 // op_getlex should add one element to the stack.
+#ifdef SF_BUILD_DEBUG
                 SF_ASSERT(st.GetOpStack().GetSize() == origOpStackSize + 1);
+#endif
 
                 return true;
             }
@@ -6970,6 +7385,7 @@ bool Tracer::EmitFindProperty(TR::State& st, const int mn_index, bool get_prop, 
                             const Code::OpCode opcode = Code::op_callmethod;
 
                             // Emit op_callmethod.
+                            // Zero arguments. No adjustment is required.
                             PushNewOpCode(opcode, si->GetValueInd(), 0);
 
 #if defined(SF_AS3_AOTC2)
@@ -7065,7 +7481,7 @@ bool Tracer::EmitFindProperty(TR::State& st, const int mn_index, bool get_prop, 
 #if defined(SF_AS3_AOTC2)
                             st.PushSNodeOC(e == undef ? AOT::SNodeOC::op_pushundefined : AOT::SNodeOC::op_pushnan);
 #endif
-                            st.PushOp(undef ? Value::GetUndefined() : Value(NumberUtil::NaN()));
+                            st.PushOp(e == undef ? Value::GetUndefined() : Value(NumberUtil::NaN()));
 
 #ifdef GFX_AS3_TRACE
                             if (show_getprop && ui.NeedToCheckOpCode())
@@ -7179,7 +7595,7 @@ void Tracer::EmitSetAbsSlot(TR::State& st, const SlotInfo& si, const Traits* val
     using namespace Abc;
 
 #ifdef ENABLE_STRICT_SETSLOT
-    const UPInt offset = si.GetValueInd().Get();
+    const UPInt offset = si.GetValueInd();
     VM& vm = GetVM();
 
     if (!si.IsConst())
@@ -7363,22 +7779,39 @@ bool Tracer::EmitGetProperty(const Abc::Code::OpCode opcode, TR::State& st, cons
 
                         // Retrieve type of elements.
                         InstanceTraits::Traits* elem_tr = NULL;
-                        if (tr == &GetVectorSIntType())
-                            elem_tr = &st.GetSIntType();
-                        else if (tr == &GetVectorUIntType())
-                            elem_tr = &st.GetUIntType();
-                        else if (tr == &GetVectorNumberType())
-                            elem_tr = &st.GetNumberType();
-                        else if (tr == &GetVectorStringType())
-                            elem_tr = &st.GetStringType();
-                        else if (tr->GetTraitsType() == Traits_Vector_object && tr->IsInstanceTraits())
-                        {
-                            const InstanceTraits::Traits* itr = static_cast<const InstanceTraits::Traits*>(tr);
 
-                            if (itr && itr->HasConstructorSetup())
-                                elem_tr = &static_cast<const ClassTraits::fl_vec::Vector_object&>(itr->GetClass().GetClassTraits()).GetEnclosedClassTraits().GetInstanceTraits();
-                            else
+                        // TODO: Vector.<Class>
+                        if (tr->IsInstanceTraits())
+                        {
+                            const BuiltinTraitsType tt = tr->GetTraitsType();
+                            switch (tt)
+                            {
+                            case Traits_Vector_int:
+                                elem_tr = &st.GetSIntType();
+                                break;
+                            case Traits_Vector_uint:
+                                elem_tr = &st.GetUIntType();
+                                break;
+                            case Traits_Vector_double:
+                                elem_tr = &st.GetNumberType();
+                                break;
+                            case Traits_Vector_String:
+                                elem_tr = &st.GetStringType();
+                                break;
+                            case Traits_Vector_object:
+                                {
+                                    const InstanceTraits::Traits* itr = static_cast<const InstanceTraits::Traits*>(tr);
+
+                                    if (itr && itr->HasConstructorSetup())
+                                        elem_tr = &static_cast<const ClassTraits::fl_vec::Vector_object&>(itr->GetClass().GetClassTraits()).GetEnclosedClassTraits().GetInstanceTraits();
+                                    else
+                                        elem_tr = &st.GetObjectType();
+                                }
+                                break;
+                            default:
                                 elem_tr = &st.GetObjectType();
+                                break;
+                            }
                         }
                         else
                             elem_tr = &st.GetObjectType();
@@ -7399,7 +7832,7 @@ bool Tracer::EmitGetProperty(const Abc::Code::OpCode opcode, TR::State& st, cons
              * There is no data, we have only code and getters in this case.
             if (!tr->IsInterface())
             */
-            if (!tr->IsInterface() && !IsPrimitiveType(tr))
+            if (!tr->IsInterface() && !IsPrimitiveType(tr) && !IsNamespaceType(tr))
             {
                 // Object is on stack. This is the difference from EmitFindProperty().
                 // ??? Is this an artificial case?
@@ -7447,6 +7880,7 @@ bool Tracer::EmitGetProperty(const Abc::Code::OpCode opcode, TR::State& st, cons
 #endif
                                 }
 
+                                // Zero arguments. No adjustment is required.
                                 PushNewOpCode(opcode == Code::op_getsuper ? Code::op_callsupermethod : Code::op_callmethod, si->GetValueInd(), 0); // Num of arguments.
 #if defined(SF_AS3_AOTC2)
                                 st.PushSNodeOC(opcode == Code::op_getsuper ? AOT::SNodeOC::op_callsupermethod : AOT::SNodeOC::op_callmethod, si->GetValueInd(), 0);
@@ -7505,8 +7939,8 @@ bool Tracer::EmitGetProperty(const Abc::Code::OpCode opcode, TR::State& st, cons
                 // value of that property will be pushed onto the stack. If the property is unresolved,
                 // undefined is pushed onto the stack.
 
-                UPInt slot_ind = 0;
-                const SlotInfo* si = FindFixedSlot(GetVM(), *tr, mn, slot_ind, NULL);
+                UPInt slot_ind_def = 0;
+                const SlotInfo* si = FindFixedSlot(GetVM(), *tr, mn, slot_ind_def, NULL);
                 if (si)
                 {
                     // Get type.
@@ -7546,16 +7980,32 @@ bool Tracer::EmitGetProperty(const Abc::Code::OpCode opcode, TR::State& st, cons
                 // Check for predefined Vector<> types.
                 {
                     InstanceTraits::Traits* vitr = NULL;
-                    if (tr == &vm.GetITraitsVectorSInt())
-                        vitr = &vm.GetITraitsSInt();
-                    else if (tr == &vm.GetITraitsVectorUInt())
-                        vitr = &vm.GetITraitsUInt();
-                    else if (tr == &vm.GetITraitsVectorNumber())
-                        vitr = &vm.GetITraitsNumber();
-                    else if (tr == &vm.GetITraitsVectorString())
-                        vitr = &vm.GetITraitsString();
-                    else if (tr->GetTraitsType() == Traits_Vector_object && tr->IsInstanceTraits())
+                    const BuiltinTraitsType tt = tr->GetTraitsType();
+
+                    if (tr->IsInstanceTraits())
                     {
+                        switch (tt)
+                        {
+                        case Traits_Vector_int:
+                            vitr = &vm.GetITraitsSInt();
+                            break;
+                        case Traits_Vector_uint:
+                            vitr = &vm.GetITraitsUInt();
+                            break;
+                        case Traits_Vector_double:
+                            vitr = &vm.GetITraitsNumber();
+                            break;
+                        case Traits_Vector_String:
+                            vitr = &vm.GetITraitsString();
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+
+                    if (!vitr && tt == Traits_Vector_object)
+                    {
+                        // Traits_Vector_object can also be of type Vector.<Class>.
                         const ClassTraits::fl_vec::Vector_object& ctr = static_cast<const ClassTraits::fl_vec::Vector_object&>(tr->GetClass().GetClassTraits());
                         const ClassTraits::Traits& elem_ctr = ctr.GetEnclosedClassTraits();
 
@@ -7641,8 +8091,10 @@ bool Tracer::EmitSetProperty(const Abc::Code::OpCode opcode, const TR::ReadValue
 #endif
                             }
 
+                            // One argument. It is supposed to be on stack.
+                            // No adjustment is required.
                             PushNewOpCode(
-                                opcode == Code::op_setsuper ? Code::op_callsupermethod : Code::op_callmethod, 
+                                super_tr ? Code::op_callsupermethod : Code::op_callmethod, 
                                 si->GetValueInd() + 1, 
                                 1
                                 );
@@ -7650,7 +8102,7 @@ bool Tracer::EmitSetProperty(const Abc::Code::OpCode opcode, const TR::ReadValue
 
 #if defined(SF_AS3_AOTC2)
                             st.PushSNodeOC(
-                                opcode == Code::op_setsuper ? AOT::SNodeOC::op_callsupermethod : AOT::SNodeOC::op_callmethod,
+                                super_tr ? AOT::SNodeOC::op_callsupermethod : AOT::SNodeOC::op_callmethod,
                                 si->GetValueInd() + 1, 
                                 1
                                 );
@@ -7808,13 +8260,13 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
 
         if (tr && !tr->IsInterface())
         {
-            const SlotInfo* si = FindFixedSlot(GetVM(), *tr, mn, slot_index, NULL);
+            const SlotInfo* si = FindFixedSlot(vm, *tr, mn, slot_index, NULL);
 
             // In case of a method or a getter ...
             if (si && si->GetAValueInd().IsValid() && (si->IsMethod() || si->IsGetter()))
             {
                 // Retrieve a function return type.
-                InstanceTraits::Traits& itr = GetVM().GetFunctReturnType(tr->GetVT().GetValue(si->GetAValueInd()), GetFile().GetAppDomain());
+                InstanceTraits::Traits& itr = vm.GetFunctReturnType(tr->GetVT().GetValue(si->GetAValueInd()), GetFile().GetAppDomain());
 
 #ifdef SF_AS3_AOTC
                 SPtr<SNode> sn;
@@ -7845,9 +8297,15 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
                         break;
                     }
 
-                    PushNewOpCode(new_opcode, si->GetValueInd(), argc);
+                    UPInt new_argc = argc;
+
+#ifdef SF_AS3_EMIT_DEF_ARGS
+                    new_argc = EmitDefaultArgs(tr->GetVT().GetRaw(si->GetAValueInd()), argc, st);
+#endif
+
+                    PushNewOpCode(new_opcode, si->GetValueInd(), new_argc);
 #if defined(SF_AS3_AOTC2)
-                    st.PushSNodeOC(AOT::SNodeOC::GetOP(new_opcode), si->GetValueInd(), argc);
+                    st.PushSNodeOC(AOT::SNodeOC::GetOP(new_opcode), si->GetValueInd(), new_argc);
 #endif
 
                     if (opcode == Code::op_callpropvoid || opcode == Code::op_callsupervoid)
@@ -7881,6 +8339,7 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
 
                     // Getter can be called with more than zero arguments.
                     // Example: Function.prototype(1,true,false,'string', new Date(),null);
+                    // Zero arguments. No adjustment is required.
                     PushNewOpCode(new_opcode, si->GetValueInd(), argc);
 #if defined(SF_AS3_AOTC2)
                     st.PushSNodeOC(AOT::SNodeOC::GetOP(new_opcode), si->GetValueInd(), argc);
@@ -7920,23 +8379,35 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
                 // It can happen that Class wasn't put on stack. This can happen in case of "with" statement.
                 if (tr->IsClassTraits())
                 {
+                    // Call method Call() on an object. No adjustment is required because arguments are handled by the method..
                     PushNewOpCode(Code::op_callobject, argc);
 
 #if defined(SF_AS3_AOTC2)
                     st.PushSNodeOC(AOT::SNodeOC::op_callobject, argc);
 #endif
 
-                    InstanceTraits::Traits& itr = ctr->GetInstanceTraits();
-                    // Are we 100% sure that this is not null?
-                    st.PushOp(Value(itr, Value::NotNull SF_AOTC_ARG(*sn)));
+                    if (opcode == Code::op_callpropvoid || opcode == Code::op_callsupervoid)
+                        PushNewOpCode(Code::op_pop);
+                    else
+                    {
+                        InstanceTraits::Traits& itr = ctr->GetInstanceTraits();
+                        // Retrieve type of result.
+                        // Are we 100% sure that this is not null?
+                        st.PushOp(Value(itr, Value::NotNull SF_AOTC_ARG(*sn)));
+                    }
 
                     return true;
                 }
 
+#if 1
+                // DO NOT DELETE this code!
+                // !!! This "type name" may actually be something else.
                 // Emit original op_callproperty and set precise type, which, by the way, is not null.
                 // It looks like there is no need to validate argc here because all
                 // constructors take variable number of arguments.
+                // Example: Test\AS3\ABC\Testcases\acceptance\scope_stack\scope_stack.02.as
                 {
+                    // Method signature is not resolved. We have to check arguments at run-time.
                     PushNewOpCode(opcode, mn_index, argc);
 #if defined(SF_AS3_AOTC2)
                     st.PushSNodeOC(AOT::SNodeOC::GetOP(opcode), mn_index, argc);
@@ -7951,6 +8422,7 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
                 }
 
                 return true;
+#endif
             }
         }
 
@@ -7974,6 +8446,7 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
 //         st.PushSNode(SPtr<SNode>(sn));
 #endif
 
+        // Method signature is not resolved. We have to check arguments at run-time.
         PushNewOpCode(opcode, mn_index, argc);
 #if defined(SF_AS3_AOTC2)
         st.PushSNodeOC(AOT::SNodeOC::GetOP(opcode), mn_index, argc);
@@ -7983,7 +8456,362 @@ bool Tracer::EmitCall(const Abc::Code::OpCode opcode, TR::State& st, const TR::R
             st.PushOp(Value(GetObjectType(), Value::NullOrNot SF_AOTC_ARG(*sn)));
     }
 
+#if 0
+    // For debugging.
+    switch (opcode)
+    {
+    case Code::op_callproperty:
+    case Code::op_callpropvoid:
+    case Code::op_callproplex:
+    case Code::op_callsuper:
+    case Code::op_callsupervoid:
+        break;
+    default:
+        SF_ASSERT(false);
+        break;
+    }
+#endif
+
     return true;
+}
+
+UPInt Tracer::EmitDefaultArgs(const Value& func, const unsigned argc, TR::State& st)
+{
+    using namespace Abc;
+
+    UPInt param_count = 0;
+    VM& vm = GetVM();
+    SF_UNUSED1(st);
+
+    // VTable stores MethodInd or Thunk.
+    if (func.GetKind() == Value::kMethodInd)
+    {
+        // MethodInd.
+        const AS3::Traits& real_tr = func.GetTraits();
+        SF_ASSERT(real_tr.GetFilePtr());
+        VMAbcFile& file = *real_tr.GetFilePtr();
+        const Abc::ConstPool& cp = file.GetConstPool();
+        const Abc::MiInd method_ind(func.GetMethodInfoInd());
+        const Abc::MethodInfo& mi = file.GetMethodInfo(method_ind);
+        param_count = mi.GetParamCount();
+        const UPInt first_opt_param_num = param_count - mi.GetOptionalParamCount();
+
+        for (UPInt i = argc; i < param_count; ++i)
+        {
+            const Abc::Multiname& arg_type = mi.GetParamType(cp, i);
+
+            if (i < first_opt_param_num)
+            {
+                // Generic default value.
+
+                if (arg_type.IsAnyType())
+                {
+                    PushNewOpCode(Code::op_pushundefined);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushundefined);
+#endif
+                }
+                else if (arg_type.IsBoolean(cp))
+                {
+                    PushNewOpCode(Code::op_pushfalse);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushfalse);
+#endif
+                }
+                else if (arg_type.IsInt(cp))
+                {
+                    PushNewOpCode(Code::op_pushint, 0);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushint);
+#endif
+                }
+                else if (arg_type.IsUInt(cp))
+                {
+                    PushNewOpCode(Code::op_pushuint, 0);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushuint);
+#endif
+                }
+                else if (arg_type.IsString(cp))
+                {
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushstring);
+#endif
+                    const ASString str = vm.GetStringManager().CreateEmptyString();
+                    // Store reference to a string.
+                    file.ASStringNodeSet.Set(str.GetNode());
+                    // Store pointer to a string.
+                    PushNewOpCode(Code::op_pushstring, reinterpret_cast<Abc::TOpCode::ValueType>(str.GetNode()));
+                }
+                else if (arg_type.IsNumber(cp))
+                {
+                    PushNewOpCode(Code::op_pushnan);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushnan);
+#endif
+                }
+                else
+                {
+                    PushNewOpCode(Code::op_pushnull);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushnull);
+#endif
+                }
+            }
+            else
+            {
+                // Stored default value.
+
+                const Abc::ValueDetail& d = mi.GetOptionalParam(i - first_opt_param_num);
+                const Abc::ValueKind k = d.GetKind();
+                const int value_ind = d.GetIndex();
+
+                switch(k)
+                {
+                case Abc::CONSTANT_Int:
+                    PushNewOpCode(Code::op_pushint, cp.GetInt(value_ind));
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushint);
+#endif
+                    break;
+                case Abc::CONSTANT_UInt:
+                    PushNewOpCode(Code::op_pushuint, cp.GetUInt(value_ind));
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushuint);
+#endif
+                    break;
+                case Abc::CONSTANT_Double:
+                    PushNewOpCodeNumber(Code::op_pushdouble, MakeValueNumber(cp.GetDouble(value_ind)));
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushdouble);
+#endif
+                    break;
+                case Abc::CONSTANT_Utf8:
+                    {
+#if defined(SF_AS3_AOTC2)
+                        st.PushSNodeOC(AOT::SNodeOC::op_pushstring);
+#endif
+
+                        const ASString str = file.GetInternedString(value_ind);
+                        // There is no need to store reference to a string because this is an interned string.
+                        // It is already stored.
+                        PushNewOpCode(Code::op_pushstring, reinterpret_cast<Abc::TOpCode::ValueType>(str.GetNode()));
+                    }
+                    break;
+                case Abc::CONSTANT_True:
+                    PushNewOpCode(Code::op_pushtrue);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushtrue);
+#endif
+                    break;
+                case Abc::CONSTANT_False:
+                    PushNewOpCode(Code::op_pushfalse);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushfalse);
+#endif
+                    break;
+                case Abc::CONSTANT_Null:
+                    PushNewOpCode(Code::op_pushnull);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushnull);
+#endif
+                    break;
+                case Abc::CONSTANT_Undefined:
+                    PushNewOpCode(Code::op_pushundefined);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushundefined);
+#endif
+                    break;
+                case Abc::CONSTANT_Namespace:
+                case Abc::CONSTANT_PackageNamespace:
+                case Abc::CONSTANT_PackageInternalNs:
+                case Abc::CONSTANT_ProtectedNamespace:
+                case Abc::CONSTANT_ExplicitNamespace:
+                case Abc::CONSTANT_StaticProtectedNs:
+                case Abc::CONSTANT_PrivateNs:
+                    SF_ASSERT(false);
+                    // No break on purpose.
+                default:
+                    PushNewOpCode(Code::op_pushundefined);
+#if defined(SF_AS3_AOTC2)
+                    st.PushSNodeOC(AOT::SNodeOC::op_pushundefined);
+#endif
+                    break;
+                }
+
+            }
+        }
+    }
+    else
+    {
+        // Thunk.
+
+        const ThunkInfo& thunk = func.AsThunk();
+
+        if (!thunk.HasEllipsis())
+        {
+            param_count = thunk.GetMaxArgNum() == SF_AS3_VARARGNUM ? thunk.GetMinArgNum() : thunk.GetMaxArgNum();
+            const UPInt first_opt_param_num = param_count - thunk.GetDefArgNum();
+
+            if (argc < thunk.GetMinArgNum())
+            {
+                const TypeInfo& ti = AS3::fl::ArgumentErrorTI;
+
+                Value obj;
+                const Value argv[2] = {Value(vm.GetStringManager().CreateConstString("Error #1063: Argument count mismatch.")), Value((SInt32)VM::eWrongArgumentCountError)};
+
+                // We shouldn't have any problems here.
+                vm.ConstructBuiltinValue(obj, ti, 2, argv).DoNotCheck();
+                
+                EmitGetAbsObject2(st, obj);
+
+                PushNewOpCode(Abc::Code::op_throw);
+
+#if defined(SF_AS3_AOTC2)
+                st.PushSNodeOC(AOT::SNodeOC::op_throw);
+#endif
+
+                return argc;
+            }
+            else
+            {
+                for (UPInt i = argc; i < param_count; ++i)
+                {
+                    if (i < first_opt_param_num)
+                    {
+                        // Generic default value.
+
+                        // ArgType[0] is type of return value.
+                        const TypeInfo* arg_type = thunk.ArgType[i + 1];
+
+                        if (arg_type == NULL)
+                        {
+                            PushNewOpCode(Code::op_pushundefined);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushundefined);
+#endif
+                        }
+                        else if (arg_type->IsBoolean())
+                        {
+                            PushNewOpCode(Code::op_pushfalse);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushfalse);
+#endif
+                        }
+                        else if (arg_type->IsInt())
+                        {
+                            PushNewOpCode(Code::op_pushint, 0);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushint);
+#endif
+                        }
+                        else if (arg_type->IsUInt())
+                        {
+                            PushNewOpCode(Code::op_pushuint, 0);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushuint);
+#endif
+                        }
+                        else if (arg_type->IsString())
+                        {
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushstring);
+#endif
+                            const ASString str = vm.GetStringManager().CreateEmptyString();
+                            // Store reference to a string.
+                            GetFile().ASStringNodeSet.Set(str.GetNode());
+                            // Store pointer to a string.
+                            PushNewOpCode(Code::op_pushstring, reinterpret_cast<Abc::TOpCode::ValueType>(str.GetNode()));
+                        }
+                        else if (arg_type->IsNumber())
+                        {
+                            PushNewOpCode(Code::op_pushnan);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushnan);
+#endif
+                        }
+                        else
+                        {
+                            PushNewOpCode(Code::op_pushnull);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushnull);
+#endif
+                        }
+                    }
+                    else
+                    {
+                        // Stored default value.
+
+                        const Abc::ConstValue& cv = thunk.DefArgValue[i - first_opt_param_num];
+                        const Abc::ValueKind k = cv.GetKind();
+
+                        switch (k)
+                        {
+                        case Abc::CONSTANT_Undefined:
+                            PushNewOpCode(Code::op_pushundefined);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushundefined);
+#endif
+                            break;
+                        case Abc::CONSTANT_Utf8:
+                            {
+#if defined(SF_AS3_AOTC2)
+                                st.PushSNodeOC(AOT::SNodeOC::op_pushstring);
+#endif
+
+                                const ASString str = vm.GetStringManager().CreateConstString(Instances::fl::GlobalObjectCPP::Strings[cv.GetIndex()]);
+                                // Store reference to a string.
+                                GetFile().ASStringNodeSet.Set(str.GetNode());
+                                // Store pointer to a string.
+                                PushNewOpCode(Code::op_pushstring, reinterpret_cast<Abc::TOpCode::ValueType>(str.GetNode()));
+                            }
+                            break;
+                        case Abc::CONSTANT_Int:
+                            PushNewOpCode(Code::op_pushint, Instances::fl::GlobalObjectCPP::Ints[cv.GetIndex()]);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushint);
+#endif
+                            break;
+                        case Abc::CONSTANT_UInt:
+                            PushNewOpCode(Code::op_pushuint, Instances::fl::GlobalObjectCPP::UInts[cv.GetIndex()]);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushuint);
+#endif
+                            break;
+                        case Abc::CONSTANT_Double:
+                            PushNewOpCodeNumber(Code::op_pushdouble, Instances::fl::GlobalObjectCPP::Numbers[cv.GetIndex()]);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushdouble);
+#endif
+                            break;
+                        case Abc::CONSTANT_True:
+                            PushNewOpCode(Code::op_pushtrue);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushtrue);
+#endif
+                            break;
+                        case Abc::CONSTANT_False:
+                            PushNewOpCode(Code::op_pushfalse);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushfalse);
+#endif
+                            break;
+                        case Abc::CONSTANT_Null:
+                            PushNewOpCode(Code::op_pushnull);
+#if defined(SF_AS3_AOTC2)
+                            st.PushSNodeOC(AOT::SNodeOC::op_pushnull);
+#endif
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return Alg::Max(param_count, static_cast<UPInt>(argc));
 }
 
 bool Tracer::EmitGetAbsObject(TR::State& st, const Value& value, bool objOnStack SF_AOTC2_ARG(bool simulate))
@@ -7993,41 +8821,49 @@ bool Tracer::EmitGetAbsObject(TR::State& st, const Value& value, bool objOnStack
     bool result = false;
 
 #ifdef SF_AS3_ENABLE_GETABSOBJECT
-    SF_UNUSED1(st);
     const Traits& tr = GetVM().GetValueTraits(value);
 
     if (value.IsClass() || tr.IsGlobal())
     {
-        Value::ObjectTag tag = value.GetObjectTag();
-
         if (objOnStack)
             EmitPopPrevResult(st);
 
-        PushNewOpCode(
-            Code::op_getabsobject,
-            reinterpret_cast<UPInt>(value.GetObject()) + tag
-            );
-
-#if defined(SF_AS3_AOTC2)
-        if (!simulate)
-        {
-            // Push object itself.
-            Pickable<SNode> sn(SF_NEW AOT::SNodeValue(value, AOT::SNodeValue::tAbsObject));
-            st.PushSNode(sn);
-        }
-#endif
-
-        // Putting GetGlobalObjectCPP in AbsObjects list will cause memory leaks.
-        if (value.GetObject() != (Object*)&GetVM().GetGlobalObjectCPP())
-            GetFile().AbsObjects.Set(value.GetObject());
+        EmitGetAbsObject2(st, value SF_AOTC2_ARG(simulate));
 
         result = true;
     }
 #else
-    SF_UNUSED2(value, objOnStack);
+    SF_UNUSED3(st, value, objOnStack);
 #endif
 
     return result;
+}
+
+void Tracer::EmitGetAbsObject2(TR::State& st, const Value& value SF_AOTC2_ARG(bool simulate))
+{
+    using namespace Abc;
+
+    Value::ObjectTag tag = value.GetObjectTag();
+
+    PushNewOpCode(
+        Code::op_getabsobject,
+        reinterpret_cast<UPInt>(value.GetObject()) + tag
+        );
+
+#if defined(SF_AS3_AOTC2)
+    if (!simulate)
+    {
+        // Push object itself.
+        Pickable<SNode> sn(SF_NEW AOT::SNodeValue(value, AOT::SNodeValue::tAbsObject));
+        st.PushSNode(sn);
+    }
+#else
+    SF_UNUSED1(st);
+#endif
+
+    // Putting GetGlobalObjectCPP in AbsObjects list will cause memory leaks.
+    if (value.GetObject() != (Object*)&GetVM().GetGlobalObjectCPP())
+        GetFile().AbsObjects.Set(value.GetObject());
 }
 
 void Tracer::EmitGetOuterScope(TR::State& st, const UPInt index)
@@ -8070,6 +8906,9 @@ void Tracer::AddBlock(Abc::TCodeOffset from)
 
     TR::Block* newNode = SF_HEAP_NEW(GetHeap()) TR::Block(from);
     block->InsertNodeAfter(newNode);
+
+    if (CurrBlock)
+        newNode->CurOpStackSize = CurrBlock->CurOpStackSize;
 }
 
 TR::Block* Tracer::AddBlock(const TR::State& st, Abc::TCodeOffset from, TR::Block::EType type, bool checkOpCode)
@@ -8166,6 +9005,9 @@ TR::Block* Tracer::AddBlock(const TR::State& st, Abc::TCodeOffset from, TR::Bloc
         if (type == TR::Block::tDead)
             // So far we do not check opcode only in exception blocks.
             newNode->SetInitialized(false);
+
+        if (CurrBlock)
+            newNode->CurOpStackSize = CurrBlock->CurOpStackSize;
     }
 
     return newNode;
@@ -8384,8 +9226,11 @@ void Tracer::PushNewOpCode(Abc::Code::OpCode opcode)
         return;
 #endif
 
-    NewOpcodePos.PushBack(WCode.GetSize());
-    WCode.PushBack(opcode);
+    // Calculate OpStack size.
+    CalcOpStackSize(opcode);
+
+    NewOpcodePos.PushBack(MI.OpCode.GetSize());
+    MI.OpCode.PushBack(opcode);
 }
 
 void Tracer::PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1)
@@ -8396,9 +9241,55 @@ void Tracer::PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1)
         return;
 #endif
 
-    NewOpcodePos.PushBack(WCode.GetSize());
-    WCode.PushBack(opcode);
-    WCode.PushBack(arg1);
+    // Calculate OpStack size.
+    CalcOpStackSize(opcode, arg1);
+
+    NewOpcodePos.PushBack(MI.OpCode.GetSize());
+    MI.OpCode.PushBack(opcode);
+    MI.OpCode.PushBack(arg1);
+}
+
+void Tracer::PushNewOpCodeNumber(Abc::Code::OpCode opcode, Value::Number arg1)
+{
+    using namespace Abc;
+
+#ifdef SF_AS3_TRACE_DEAD_BLOCK
+    if (CurrBlock->IsDeadBlock())
+        // Do nothing.
+        return;
+#endif
+
+    // Calculate OpStack size.
+    // We do not need an argument here.
+    CalcOpStackSize(opcode);
+
+    NewOpcodePos.PushBack(MI.OpCode.GetSize());
+    MI.OpCode.PushBack(opcode);
+
+    if (sizeof(Abc::TOpCode::ValueType) == sizeof(Value::Number))
+    {
+        // This case handles 64-bit platforms and SF_NO_DOUBLE.
+        union
+        {
+            TOpCode::ValueType  I;
+            Value::Number       D;
+        } u;
+
+        u.D = arg1;
+        MI.OpCode.PushBack(u.I);
+    }
+    else
+    {
+        union
+        {
+            UInt32  I[2];
+            double  D;
+        } u;
+
+        u.D = arg1;
+        MI.OpCode.PushBack(u.I[0]);
+        MI.OpCode.PushBack(u.I[1]);
+    }
 }
 
 void Tracer::PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1, UPInt arg2)
@@ -8409,13 +9300,85 @@ void Tracer::PushNewOpCode(Abc::Code::OpCode opcode, UPInt arg1, UPInt arg2)
         return;
 #endif
 
-    NewOpcodePos.PushBack(WCode.GetSize());
-    WCode.PushBack(opcode);
-    WCode.PushBack(arg1);
-    WCode.PushBack(arg2);
+    // Calculate OpStack size.
+    CalcOpStackSize(opcode, arg1, arg2);
+
+    NewOpcodePos.PushBack(MI.OpCode.GetSize());
+    MI.OpCode.PushBack(opcode);
+    MI.OpCode.PushBack(arg1);
+    MI.OpCode.PushBack(arg2);
 }
 
-void Tracer::PushNewOpCodeArg(Abc::TOpCode::ValueType code)
+void Tracer::CalcOpStackSize(Abc::Code::OpCode opcode, UPInt arg1, UPInt arg2)
+{
+    using namespace Abc;
+
+    // Adjust stack size.
+    SInt32 st_size = 0;
+    const Code::OpCodeInfo& oi = Code::GetOpCodeInfo(opcode);
+
+    st_size -= oi.pop;
+
+    if (oi.pop_mn)
+    {
+        const UPInt mn_index = arg1;
+        const Abc::Multiname& mn = GetAbcFile().GetConstPool().GetMultiname(mn_index);
+
+        switch (mn.GetKind())
+        {
+        case Abc::MN_QName:
+        case Abc::MN_QNameA:
+            // QName is not read from stack; both name and namespase known at compile-time.
+            break;
+        case Abc::MN_RTQName:
+        case Abc::MN_RTQNameA:
+            // Name is known at compile time, Namespace is resolved at runtime.
+            --st_size;
+            break;
+        case Abc::MN_RTQNameL:
+        case Abc::MN_RTQNameLA:
+            // Both name and namespace are resolved at runtime.
+            st_size -= 2;
+            break;
+        case Abc::MN_Multiname:
+        case Abc::MN_MultinameA:
+            // MInfo is not supposed to be read from stack.
+            break;
+        case Abc::MN_MultinameL:
+        case Abc::MN_MultinameLA:
+            // Namespace set is known at compile time, Name is resolved at runtime.        
+            --st_size;
+            break;
+        case Abc::MN_Typename:
+            // Recursive!!!?
+            SF_ASSERT(false);
+            break;
+        default:
+            SF_ASSERT(false);
+            break;
+        }
+    }
+
+    if (oi.pop_args)
+    {
+        const SInt32 arg_count = static_cast<SInt32>(arg2);
+
+        if (opcode == Code::op_newobject)
+            st_size -= arg_count * 2;
+        else
+            st_size -= arg_count;
+    }
+
+    st_size += oi.push;
+
+    SF_ASSERT(CurrBlock);
+    TR::Block& bl = *CurrBlock;
+    SF_ASSERT(st_size >= 0 || bl.CurOpStackSize >= static_cast<UInt32>(-st_size));
+    bl.CurOpStackSize += st_size;
+    MI.MaxOpStackSize = Alg::Max(MI.MaxOpStackSize, bl.CurOpStackSize);
+}
+
+void Tracer::PushNewOpCodeArg0(Abc::TOpCode::ValueType arg)
 {
 #ifdef SF_AS3_TRACE_DEAD_BLOCK
     if (CurrBlock->IsDeadBlock())
@@ -8423,7 +9386,43 @@ void Tracer::PushNewOpCodeArg(Abc::TOpCode::ValueType code)
         return;
 #endif
 
-    WCode.PushBack(code);
+    MI.OpCode.PushBack(arg);
+}
+
+void Tracer::PushNewOpCodeArgNumber0(Value::Number arg)
+{
+    using namespace Abc;
+
+#ifdef SF_AS3_TRACE_DEAD_BLOCK
+    if (CurrBlock->IsDeadBlock())
+        // Do nothing.
+        return;
+#endif
+
+    if (sizeof(TOpCode::ValueType) == sizeof(Value::Number))
+    {
+        // This case handles 64-bit platforms and SF_NO_DOUBLE.
+        union
+        {
+            TOpCode::ValueType  I;
+            Value::Number       D;
+        } u;
+
+        u.D = arg;
+        MI.OpCode.PushBack(u.I);
+    }
+    else
+    {
+        union
+        {
+            UInt32  I[2];
+            double  D;
+        } u;
+
+        u.D = arg;
+        MI.OpCode.PushBack(u.I[0]);
+        MI.OpCode.PushBack(u.I[1]);
+    }
 }
 
 void Tracer::PopNewOpCode()
@@ -8438,24 +9437,13 @@ void Tracer::PopNewOpCode()
     Abc::TCodeOffset offset = NewOpcodePos.Back();
 
     NewOpcodePos.Pop();
-    SF_ASSERT(WCode.GetSize() > offset);
-    WCode.Resize(offset);
-}
-
-void Tracer::SetNewOpCode( UInt32 code )
-{
-#ifdef SF_AS3_TRACE_DEAD_BLOCK
-    if (CurrBlock->IsDeadBlock())
-        // Do nothing.
-        return;
-#endif
-
-    WCode.Back() = code;
+    SF_ASSERT(MI.OpCode.GetSize() > offset);
+    MI.OpCode.Resize(offset);
 }
 
 Abc::TOpCode::ValueType Tracer::GetNewOpCode() const
 {
-    return WCode.Back();
+    return MI.OpCode.Back();
 }
 
 bool Tracer::IsOrigCall(Abc::Code::OpCode opcode)

@@ -6,6 +6,7 @@ Created     :   May, 2007
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -128,6 +129,7 @@ void    StaticTextDef::Read(LoadProcess* p, TagType tagType)
     // Style offset starts at 0 and is overwritten when specified.
     offset.SetPoint(0.0f);
 
+	float prevOffY = 0;
     for (;;)
     {
         int FirstByte = in->ReadU8();
@@ -208,21 +210,35 @@ void    StaticTextDef::Read(LoadProcess* p, TagType tagType)
             int GlyphCount = FirstByte;
             // Don't mask the top GlyphCount bit; the first record is allowed to have > 127 glyphs.
 
-            StaticTextRecord* precord = TextRecords.AddRecord();
-            if (precord)
-            {
-                precord->Offset     = offset;
-                precord->pFont      = pfont;
-                precord->TextHeight = textHeight;
-                precord->ColorV     = color;
-                precord->FontId     = fontId;
-                precord->Read(in, GlyphCount, GlyphBits, AdvanceBits);
+			if (offset.y < 0 && prevOffY > 0)
+			{
+				in->LogParse("  Negative Y-offset, 16-bit value rollover, skipping the line...\n");
+				// skipping glyph records
+				for (int i = 0; i < GlyphCount; i++)
+				{
+					in->ReadUInt(GlyphBits);
+					in->ReadSInt(AdvanceBits);
+				}
+			}
+			else
+			{
+				StaticTextRecord* precord = TextRecords.AddRecord();
+				if (precord)
+				{
+					prevOffY = offset.y;
+					precord->Offset     = offset;
+					precord->pFont      = pfont;
+					precord->TextHeight = textHeight;
+					precord->ColorV     = color;
+					precord->FontId     = fontId;
+					precord->Read(in, GlyphCount, GlyphBits, AdvanceBits);
 
-                // Add up advances and adjust offset.
-                offset.x += precord->GetCumulativeAdvance();
-            }
+					// Add up advances and adjust offset.
+					offset.x += precord->GetCumulativeAdvance();
+				}
 
-            in->LogParse("  GlyphRecords: count = %d\n", GlyphCount);
+				in->LogParse("  GlyphRecords: count = %d\n", GlyphCount);
+			}
         }
     }
 }
@@ -357,15 +373,16 @@ StaticTextCharacter::StaticTextCharacter(StaticTextDef* pdef,
         LineBuffer::GlyphInserter gins(pline->GetGlyphs(), glyphsCount, pline->GetFormatData());
 
         int  advanceAccum = 0;
-        for (unsigned i = 0; i < glyphsCount; ++i, ++gins)
+        // C4456 Fixed.......
+        for (unsigned i_Accum = 0; i_Accum < glyphsCount; ++i_Accum, ++gins)
         {
             LineBuffer::GlyphEntry& glyph = gins.GetGlyph();
             glyph.SetLength(1);
-            glyph.SetIndex(prec->Glyphs[i].GlyphIndex);
-            glyph.SetAdvance((int)prec->Glyphs[i].GlyphAdvance);
-            advanceAccum += (int)prec->Glyphs[i].GlyphAdvance;
+            glyph.SetIndex(prec->Glyphs[i_Accum].GlyphIndex);
+            glyph.SetAdvance((int)prec->Glyphs[i_Accum].GlyphAdvance);
+            advanceAccum += (int)prec->Glyphs[i_Accum].GlyphAdvance;
             glyph.SetFontSize((float)TwipsToPixels(prec->TextHeight));
-            if (i == 0)
+            if (i_Accum == 0)
             {
                 gins.AddFont(pfontHandle);
                 gins.AddColor(prec->ColorV);
@@ -389,10 +406,24 @@ StaticTextCharacter::StaticTextCharacter(StaticTextDef* pdef,
     pdef->SetHasInstances();  
 
     RecreateVisibleTextLayout();
+
+#ifdef SF_AMP_SERVER
+    if (pDef->IsAAForReadability())
+    {
+        AmpServer::GetInstance().IncrementFontOptRead();
+    }
+#endif
 }
 
 StaticTextCharacter::~StaticTextCharacter()
 {
+#ifdef SF_AMP_SERVER
+    if (pDef->IsAAForReadability())
+    {
+        AmpServer::GetInstance().DecrementFontOptRead();
+    }
+#endif
+
     if (pHighlight)
         delete pHighlight;
 }
@@ -437,7 +468,8 @@ void StaticTextCharacter::SetFilters(const FilterSet* filters)
 Ptr<Render::TreeNode> StaticTextCharacter::CreateRenderNode(Render::Context& context) const
 {
     Ptr<Render::TreeText> tshp = *context.CreateEntry<Render::TreeText>();
-    return tshp;
+    // 使用static_cast明确指定转换路径，消除歧义
+    return static_cast<Ptr<Render::TreeNode>>(tshp);
 }
 
 void StaticTextCharacter::RecreateVisibleTextLayout()
@@ -629,7 +661,7 @@ String StaticTextSnapshotData::GetSelectedText(bool binclNewLines) const
                     lastTextIdx--;
                 lastTextIdx++;
             }
-            for (UPInt i = lastTextIdx; i < endIdx; i++)
+            for (UPInt i_Ti = lastTextIdx; i_Ti < endIdx; i_Ti++)
             {
                 do 
                 {
@@ -894,7 +926,7 @@ int     StaticTextSnapshotData::HitTestTextNearPos(float x, float y, float close
     {
         StaticTextCharacter* pstc = StaticTextCharRefs[i].pChar;    
         Render::PointF ip = pstc->GetMatrix().TransformByInverse(cpb);
-        RectF& tf = pstc->TextGlyphRecords.Geom.VisibleRect;        
+        const RectF& tf = pstc->TextGlyphRecords.Geom.VisibleRect;        
         // If point is inside textfield rect, we're done searching
         if (tf.Contains(ip))
         {

@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -179,10 +180,10 @@ void    MorphCharacterDef::ReadMorphFillStyle(LoadProcess* p, TagType tagType,
         fs1.pFill->ImageMatrix = textureMatrix1;
         switch( type )
         {
-        case Fill_TiledImage:           fs1.pFill->FillMode.Fill = ( Wrap_Repeat | Sample_Point ); break;
-        case Fill_TiledSmoothImage:     fs1.pFill->FillMode.Fill = ( Wrap_Repeat | Sample_Linear ); break;
-        case Fill_ClippedImage:         fs1.pFill->FillMode.Fill = ( Wrap_Clamp | Sample_Point ); break;
-        case Fill_ClippedSmoothImage:   fs1.pFill->FillMode.Fill = ( Wrap_Clamp | Sample_Linear ); break;
+        case Fill_TiledImage:           fs1.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Repeat) | static_cast<uint32_t>(Sample_Point) ); break;
+        case Fill_TiledSmoothImage:     fs1.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Repeat) | static_cast<uint32_t>(Sample_Linear) ); break;
+        case Fill_ClippedImage:         fs1.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Clamp) | static_cast<uint32_t>(Sample_Point) ); break;
+        case Fill_ClippedSmoothImage:   fs1.pFill->FillMode.Fill = (static_cast<uint32_t>(Wrap_Clamp) | static_cast<uint32_t>(Sample_Linear) ); break;
         }
 
         fs2.pFill = *SF_NEW ComplexFill(); // heap? stat id? @TODO

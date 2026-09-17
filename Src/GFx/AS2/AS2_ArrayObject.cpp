@@ -6,6 +6,7 @@ Created     :   March 10, 2006
 Authors     :   Maxim Shemanarev & Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -454,14 +455,14 @@ void ArrayObject::InsertEmpty(int start, int count)
     Elements.Resize(oldSize + count);
     if(oldSize)
     {
-        for(int i = (int)Elements.GetSize() - 1; i >= start + count; --i)
+        for(int ie = (int)Elements.GetSize() - 1; ie >= start + count; --ie)
         {
-            Elements[i] = Elements[i - count];
+            Elements[ie] = Elements[static_cast<Scaleform::UPInt>(ie) - count];
         }
     }
     for(i = 0; i < count; i++)
     {
-        Elements[start + i] = 0;
+        Elements[static_cast<Scaleform::UPInt>(start) + i] = 0;
     }
 }
 
@@ -844,10 +845,10 @@ void ArrayObject::ArraySortOn(const FnCall& fn)
         bool uniqueSortFailed = false;
         if(commonFlags & ArrayObject::SortFlags_UniqueSort)
         {
-            int i;
-            for(i = 1; i < retArray->GetSize(); i++)
+            int igs;
+            for(igs = 1; igs < retArray->GetSize(); igs++)
             {
-                if(sortFunctor.Compare(retArray->GetElementPtr(i-1), retArray->GetElementPtr(i)) == 0)
+                if(sortFunctor.Compare(retArray->GetElementPtr(igs-1), retArray->GetElementPtr(igs)) == 0)
                 {
                     uniqueSortFailed = true;
                     break;

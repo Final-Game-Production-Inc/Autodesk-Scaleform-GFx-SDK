@@ -6,6 +6,7 @@ Content     :  C++ implementation of the Start Game view of the Menu Kit.
 Authors     :  Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -88,7 +89,7 @@ void    StartGameView::OnTopMostView( bool bIsTopView )
         UpdateListDataProvider();
 
         // Reset the selectedIndex of the List to 0.
-        GFx::Value tempVal( (Double)0 );
+        GFx::Value tempVal( (double)0.0 );
         List.SetMember("selectedIndex", tempVal);
 
         pManager->SetSelectionFocus(List);
@@ -173,7 +174,7 @@ void    StartGameView::OnList_ItemPress(UIView* pthis, const GFx::FunctionHandle
 {
     StartGameView* pview = (StartGameView*)pthis;
     EventData eventData = ConvertParamsToEventData(params);
-    unsigned selectedIndex = (eventData.Index >= 0) ? eventData.Index : 0;
+    unsigned selectedIndex = eventData.Index;
     unsigned itemId = pview->ListOptions[selectedIndex].OptionId;
 
     switch(itemId)
@@ -196,11 +197,11 @@ void    StartGameView::OnList_Change(UIView* pthis, const GFx::FunctionHandler::
 {
     StartGameView* pview = (StartGameView*)pthis;
     EventData eventData = ConvertParamsToEventData(params);
-    unsigned selectedIndex = (eventData.Index >= 0) ? eventData.Index : 0;
+    unsigned selectedIndex = eventData.Index;
     pview->UpdateDescription(selectedIndex);
 
     // Update the selectedIndex of the Image Scroller.
-    GFx::Value tempVal( (Double)selectedIndex );
+    GFx::Value tempVal( (double)selectedIndex );
     pview->ImageScroller.SetMember("selectedIndex", tempVal);
 }
 

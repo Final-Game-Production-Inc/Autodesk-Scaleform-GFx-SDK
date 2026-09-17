@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,6 +29,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -40,6 +42,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_net::NetConnection, Instances::fl_net::NetConnection::mid_clientGet, SPtr<Instances::fl::Object> > TFunc_Instances_NetConnection_clientGet;
 typedef ThunkFunc1<Instances::fl_net::NetConnection, Instances::fl_net::NetConnection::mid_clientSet, const Value, const Value&> TFunc_Instances_NetConnection_clientSet;
 typedef ThunkFunc0<Instances::fl_net::NetConnection, Instances::fl_net::NetConnection::mid_connectedGet, bool> TFunc_Instances_NetConnection_connectedGet;
@@ -198,30 +202,49 @@ namespace Instances { namespace fl_net
 
 namespace InstanceTraits { namespace fl_net
 {
+    // const UInt16 NetConnection::tito[NetConnection::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 7, 8, 10, 11, 13, 14, 15, 19, 22, 23, 
+    // };
+    const TypeInfo* NetConnection::tit[25] = {
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::BooleanTI, &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl_net::ResponderTI, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, 
+    };
     const ThunkInfo NetConnection::ti[NetConnection::ThunkInfoNum] = {
-        {TFunc_Instances_NetConnection_clientGet::Func, &AS3::fl::ObjectTI, "client", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_clientSet::Func, NULL, "client", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_NetConnection_connectedGet::Func, &AS3::fl::BooleanTI, "connected", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_connectedProxyTypeGet::Func, &AS3::fl::StringTI, "connectedProxyType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_defaultObjectEncodingSet::Func, NULL, "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_NetConnection_objectEncodingGet::Func, &AS3::fl::uintTI, "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_objectEncodingSet::Func, NULL, "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_NetConnection_proxyTypeGet::Func, &AS3::fl::StringTI, "proxyType", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_proxyTypeSet::Func, NULL, "proxyType", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_NetConnection_uriGet::Func, &AS3::fl::StringTI, "uri", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_usingTLSGet::Func, &AS3::fl::BooleanTI, "usingTLS", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_NetConnection_addHeader::Func, NULL, "addHeader", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_NetConnection_call::Func, NULL, "call", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_NetConnection_close::Func, NULL, "close", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_NetConnection_connect::Func, NULL, "connect", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+        {TFunc_Instances_NetConnection_clientGet::Func, &NetConnection::tit[0], "client", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_clientSet::Func, &NetConnection::tit[1], "client", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_connectedGet::Func, &NetConnection::tit[3], "connected", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_connectedProxyTypeGet::Func, &NetConnection::tit[4], "connectedProxyType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_defaultObjectEncodingSet::Func, &NetConnection::tit[5], "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_objectEncodingGet::Func, &NetConnection::tit[7], "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_objectEncodingSet::Func, &NetConnection::tit[8], "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_proxyTypeGet::Func, &NetConnection::tit[10], "proxyType", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_proxyTypeSet::Func, &NetConnection::tit[11], "proxyType", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_uriGet::Func, &NetConnection::tit[13], "uri", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_usingTLSGet::Func, &NetConnection::tit[14], "usingTLS", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_addHeader::Func, &NetConnection::tit[15], "addHeader", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_call::Func, &NetConnection::tit[19], "call", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_NetConnection_close::Func, &NetConnection::tit[22], "close", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_NetConnection_connect::Func, &NetConnection::tit[23], "connect", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
     };
 
     NetConnection::NetConnection(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::NetConnection::NetConnection()"
 //##protect##"InstanceTraits::NetConnection::NetConnection()"
-        SetMemSize(sizeof(Instances::fl_net::NetConnection));
 
     }
 
@@ -238,24 +261,27 @@ namespace InstanceTraits { namespace fl_net
 
 namespace ClassTraits { namespace fl_net
 {
-    NetConnection::NetConnection(VM& vm)
-    : Traits(vm, AS3::fl_net::NetConnectionCI)
+
+    NetConnection::NetConnection(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::NetConnection::NetConnection()"
 //##protect##"ClassTraits::NetConnection::NetConnection()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_net::NetConnection(vm, AS3::fl_net::NetConnectionCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> NetConnection::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) NetConnection(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) NetConnection(vm, AS3::fl_net::NetConnectionCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_net::NetConnectionCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -266,6 +292,11 @@ namespace fl_net
 {
     const TypeInfo NetConnectionTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_net::NetConnection::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_net::NetConnection::ThunkInfoNum,
+        0,
         "NetConnection", "flash.net", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -273,10 +304,6 @@ namespace fl_net
     const ClassInfo NetConnectionCI = {
         &NetConnectionTI,
         ClassTraits::fl_net::NetConnection::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_net::NetConnection::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_net::NetConnection::ti,

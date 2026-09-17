@@ -7,6 +7,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -96,6 +97,7 @@ struct GlyphParam
         FineBlur   = 0x0080,
         BitmapFont = 0x0100,
         UseRaster  = 0x0200,
+        ForceVector = 0x0400,
         OutlineMask= 0xF000
     };
 
@@ -113,6 +115,7 @@ struct GlyphParam
     bool     GetUseRaster()    const { return (Flags & UseRaster) != 0; }
     bool     IsFauxBold()      const { return (Flags & FauxBold) != 0; }
     bool     IsFauxItalic()    const { return (Flags & FauxItalic) != 0; }
+    bool     IsForceVector()   const { return (Flags & ForceVector) != 0; }
     bool     IsKnockOut()      const { return (Flags & KnockOut) != 0; }
     bool     IsHiddenObject()  const { return (Flags & HideObject) != 0; }
     bool     IsFineBlur()      const { return (Flags & FineBlur) != 0; }
@@ -128,6 +131,7 @@ struct GlyphParam
     void SetUseRaster(bool f)     { if(f) Flags |= UseRaster;  else Flags &= ~UseRaster; }
     void SetFauxBold(bool f)      { if(f) Flags |= FauxBold;   else Flags &= ~FauxBold; }
     void SetFauxItalic(bool f)    { if(f) Flags |= FauxItalic; else Flags &= ~FauxItalic; }
+    void SetForceVector(bool f) { if (f) Flags |= ForceVector; else Flags &= ~ForceVector; }
     void SetKnockOut(bool f)      { if(f) Flags |= KnockOut;   else Flags &= ~KnockOut; }
     void SetHideObject(bool f)    { if(f) Flags |= HideObject; else Flags &= ~HideObject; }
     void SetFineBlur(bool f)      { if(f) Flags |= FineBlur;   else Flags &= ~FineBlur; }

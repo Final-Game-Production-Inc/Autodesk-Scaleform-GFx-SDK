@@ -7,6 +7,7 @@ Created     :
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -69,14 +70,16 @@ class TreeCacheMeshBase; // For pattern match
 
 enum TransformFlags
 {
-    TF_None         = 0,
-    TF_Matrix       = Change_Matrix,
-    TF_Cxform       = Change_CxForm,
-    TF_NeedCull     = 0x00000010,   // TBD: Verify that doesn't match above.
-    TF_CullCxform   = 0x00000020,   // Cxforms are only culled for leaf shapes.
-    TF_Has2D        = 0x00000040,
-    TF_Has3D        = 0x00000080,
-    TF_ParentFilter = 0x00000100,   // A parent of this node contains a filter.
+    TF_None             = 0,
+    TF_Matrix           = Change_Matrix,
+    TF_Cxform           = Change_CxForm,
+    TF_NeedCull         = 0x00000010,   // TBD: Verify that doesn't match above.
+    TF_CullCxform       = 0x00000020,   // Cxforms are only culled for leaf shapes.
+    TF_Has2D            = 0x00000040,
+    TF_Has3D            = 0x00000080,
+    TF_ParentCacheable  = 0x00000100,   // A parent of this node contains a cacheable primitive (filter or cached blend).
+    TF_ForceRecache     = 0x00000200,   // The update transform pass should force re-caching results (eg. filters)
+    TF_ParentLayerBlend = 0x00000400,   // A parent of this ndoe contains a BlendMode == Layer.
 
     // Combined flags for readability in debugger.
     TF_Matrix_Cxform   = TF_Matrix | TF_Cxform,
@@ -252,7 +255,7 @@ public:
     inline bool IsMaskNode() const { return (Flags & NF_MaskNode) != 0; }
     inline bool IsDrawn() const
     {
-        return (Flags & (NF_Visible|NF_Culled)) == NF_Visible;
+        return (Flags & (NF_Visible|NF_Culled)) == NF_Visible || (Flags&NF_PartOfMask);
     }
 
     inline bool HasMask() const    { return pMask != 0; }
@@ -340,6 +343,11 @@ public:
     TransformFlags updateCulling(const TreeNode::NodeData* data, const TransformArgs& t,
                                  RectF* cullRect, TransformFlags flags);
 
+    void updateFilterCache( const TreeNode::NodeData* data, const TransformArgs &t, 
+        TransformFlags flags, RectF* cullRect, const Matrix3F& m3, bool is3d );
+    void updateBlendCache( const TreeNode::NodeData* data, const TransformArgs &t, 
+        TransformFlags flags, RectF* cullRect, const Matrix3F& m3, bool is3d );
+
     // Calculates bounds of the mask in local coordinates. Return false if no
     // adjustment is necessary (mask is invisible, has no content, etc).
     bool            calcChildMaskBounds(RectF *bounds, TreeCacheNode *child);
@@ -347,17 +355,16 @@ public:
     // Calculate the local mask bounds + bounding area matrix to use in mask rendering;
     // reports masking state to use based on oldState.
     MaskEffectState calcMaskBounds(RectF* maskBounds, Matrix2F* boundAreaMatrix,
-                                   const Matrix3F& viewMatrix, const Matrix4F& viewProjMatrix, 
-                                   MaskEffectState oldState, unsigned flags);
+                                   const Matrix3F& viewMatrix, const Matrix4F& viewProjMatrix);
 
     // Calculate the local mask bounds + bounding area matrix to use in filter rendering;
-    enum FilterBoundResult
+    enum CacheableBoundResult
     {
-        FilterBoundResult_CompletelyClipped,
-        FilterBoundResult_PartiallyClipped,
-        FilterBoundResult_FullyVisible
+        CacheableBoundResult_CompletelyClipped,
+        CacheableBoundResult_PartiallyClipped,
+        CacheableBoundResult_FullyVisible
     };
-    FilterBoundResult calcFilterBounds(RectF* filterBounds, Matrix2F* boundAreaMatrix, 
+    CacheableBoundResult calcCacheableBounds(RectF* returnBounds, Matrix2F* boundAreaMatrix, 
                                        const Matrix3F& viewMatrix, const Matrix4F& viewProjMatrix, 
                                        RectF* cullRect = 0);
 
@@ -459,15 +466,17 @@ public:
     // Cached primitives and matrices.
     HAL*            pHAL;    
     RectF           ViewCullRect;
-    bool            ViewValid;
     TreeCacheNode*  pUpdateList;
     
+    bool            ViewValid;
+    bool            EnableBlendTarget;
     bool            DepthUpdatesChained;    
+
     DepthUpdateArrayPOD<TreeCacheNode*> DepthUpdates;
 
     TreeCacheRoot(Renderer2DImpl* prenderer2D, HAL* phal, unsigned flags, TreeRoot* pnode)
         : TreeCacheContainer(pnode, prenderer2D, flags),
-          pHAL(phal), pUpdateList(0), DepthUpdatesChained(false),
+          pHAL(phal), pUpdateList(0), ViewValid(false), EnableBlendTarget(false), DepthUpdatesChained(false), 
           DepthUpdates(Memory::GetHeapByAddress(GetThis()), 0)
           
     {
@@ -596,7 +605,7 @@ protected:
     bool grow(UPInt reserve)
     {        
         UPInt newReserve = (reserve + DefSize-1) & ~(DefSize-1);        
-        C* p = (C*)SF_MEMALIGN(newReserve * sizeof(C), 16, Stat_Default_Mem);
+        C* p = (C*)SF_MEMALIGN(newReserve * sizeof(C), 16, StatRender_TreeCache_Mem);
         if (p)
         {
             memcpy(p, pData, Size * sizeof(C));

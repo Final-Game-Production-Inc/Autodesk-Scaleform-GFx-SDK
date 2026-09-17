@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_geom::Rectangle, Instances::fl_geom::Rectangle::mid_bottomGet, Value::Number> TFunc_Instances_Rectangle_bottomGet;
 typedef ThunkFunc1<Instances::fl_geom::Rectangle, Instances::fl_geom::Rectangle::mid_bottomSet, const Value, Value::Number> TFunc_Instances_Rectangle_bottomSet;
 typedef ThunkFunc0<Instances::fl_geom::Rectangle, Instances::fl_geom::Rectangle::mid_bottomRightGet, SPtr<Instances::fl_geom::Point> > TFunc_Instances_Rectangle_bottomRightGet;
@@ -230,13 +225,13 @@ namespace Instances { namespace fl_geom
 		GetVM().ConstructBuiltinObject(result, "flash.geom.Rectangle", 4, args).DoNotCheck();
 //##protect##"instance::Rectangle::clone()"
     }
-    void Rectangle::contains(bool& result, Value::Number x, Value::Number y)
+    void Rectangle::contains(bool& result, Value::Number vnx, Value::Number vny)
     {
 //##protect##"instance::Rectangle::contains()"
 		// note that bottom and right edges are not contained.
 		Value::Number right = this->x + width;
 		Value::Number bottom = this->y + height;
-		result = ((x < right) && (x >= this->x) && (y < bottom) && (y >= this->y));
+		result = ((vnx < right) && (vnx >= this->x) && (vny < bottom) && (vny >= this->y));
 //##protect##"instance::Rectangle::contains()"
     }
     void Rectangle::containsPoint(bool& result, Instances::fl_geom::Point* point)
@@ -543,36 +538,70 @@ namespace Instances { namespace fl_geom
 
 namespace InstanceTraits { namespace fl_geom
 {
+    // const UInt16 Rectangle::tito[Rectangle::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 25, 27, 29, 31, 34, 36, 38, 40, 41, 44, 46, 47, 48, 
+    // };
+    const TypeInfo* Rectangle::tit[50] = {
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::PointTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::RectangleTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::RectangleTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        NULL, 
+        &AS3::fl::StringTI, 
+        &AS3::fl_geom::RectangleTI, &AS3::fl_geom::RectangleTI, 
+    };
     const ThunkInfo Rectangle::ti[Rectangle::ThunkInfoNum] = {
-        {TFunc_Instances_Rectangle_bottomGet::Func, &AS3::fl::NumberTI, "bottom", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_bottomSet::Func, NULL, "bottom", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_bottomRightGet::Func, &AS3::fl_geom::PointTI, "bottomRight", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_bottomRightSet::Func, NULL, "bottomRight", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_leftGet::Func, &AS3::fl::NumberTI, "left", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_leftSet::Func, NULL, "left", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_rightGet::Func, &AS3::fl::NumberTI, "right", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_rightSet::Func, NULL, "right", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_sizeGet::Func, &AS3::fl_geom::PointTI, "size", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_sizeSet::Func, NULL, "size", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_topGet::Func, &AS3::fl::NumberTI, "top", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_topSet::Func, NULL, "top", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_topLeftGet::Func, &AS3::fl_geom::PointTI, "topLeft", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Rectangle_topLeftSet::Func, NULL, "topLeft", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Rectangle_clone::Func, &AS3::fl_geom::RectangleTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Rectangle_contains::Func, &AS3::fl::BooleanTI, "contains", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Rectangle_containsPoint::Func, &AS3::fl::BooleanTI, "containsPoint", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_containsRect::Func, &AS3::fl::BooleanTI, "containsRect", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_equals::Func, &AS3::fl::BooleanTI, "equals", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_inflate::Func, NULL, "inflate", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Rectangle_inflatePoint::Func, NULL, "inflatePoint", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_intersection::Func, &AS3::fl_geom::RectangleTI, "intersection", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_intersects::Func, &AS3::fl::BooleanTI, "intersects", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_isEmpty::Func, &AS3::fl::BooleanTI, "isEmpty", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Rectangle_offset::Func, NULL, "offset", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Rectangle_offsetPoint::Func, NULL, "offsetPoint", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Rectangle_setEmpty::Func, NULL, "setEmpty", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Rectangle_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Rectangle_union_::Func, &AS3::fl_geom::RectangleTI, "union", NULL, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_Rectangle_bottomGet::Func, &Rectangle::tit[0], "bottom", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_bottomSet::Func, &Rectangle::tit[1], "bottom", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_bottomRightGet::Func, &Rectangle::tit[3], "bottomRight", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_bottomRightSet::Func, &Rectangle::tit[4], "bottomRight", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_leftGet::Func, &Rectangle::tit[6], "left", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_leftSet::Func, &Rectangle::tit[7], "left", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_rightGet::Func, &Rectangle::tit[9], "right", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_rightSet::Func, &Rectangle::tit[10], "right", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_sizeGet::Func, &Rectangle::tit[12], "size", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_sizeSet::Func, &Rectangle::tit[13], "size", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_topGet::Func, &Rectangle::tit[15], "top", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_topSet::Func, &Rectangle::tit[16], "top", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_topLeftGet::Func, &Rectangle::tit[18], "topLeft", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_topLeftSet::Func, &Rectangle::tit[19], "topLeft", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_clone::Func, &Rectangle::tit[21], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_contains::Func, &Rectangle::tit[22], "contains", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_containsPoint::Func, &Rectangle::tit[25], "containsPoint", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_containsRect::Func, &Rectangle::tit[27], "containsRect", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_equals::Func, &Rectangle::tit[29], "equals", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_inflate::Func, &Rectangle::tit[31], "inflate", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_inflatePoint::Func, &Rectangle::tit[34], "inflatePoint", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_intersection::Func, &Rectangle::tit[36], "intersection", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_intersects::Func, &Rectangle::tit[38], "intersects", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_isEmpty::Func, &Rectangle::tit[40], "isEmpty", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_offset::Func, &Rectangle::tit[41], "offset", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_offsetPoint::Func, &Rectangle::tit[44], "offsetPoint", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_setEmpty::Func, &Rectangle::tit[46], "setEmpty", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_toString::Func, &Rectangle::tit[47], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Rectangle_union_::Func, &Rectangle::tit[48], "union", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
     const MemberInfo Rectangle::mi[Rectangle::MemberInfoNum] = {
         {"height", NULL, OFFSETOF(Instances::fl_geom::Rectangle, height), Abc::NS_Public, SlotInfo::BT_Number, 0},
@@ -583,11 +612,10 @@ namespace InstanceTraits { namespace fl_geom
 
 
     Rectangle::Rectangle(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Rectangle::Rectangle()"
 //##protect##"InstanceTraits::Rectangle::Rectangle()"
-        SetMemSize(sizeof(Instances::fl_geom::Rectangle));
 
     }
 
@@ -604,24 +632,27 @@ namespace InstanceTraits { namespace fl_geom
 
 namespace ClassTraits { namespace fl_geom
 {
-    Rectangle::Rectangle(VM& vm)
-    : Traits(vm, AS3::fl_geom::RectangleCI)
+
+    Rectangle::Rectangle(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Rectangle::Rectangle()"
 //##protect##"ClassTraits::Rectangle::Rectangle()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_geom::Rectangle(vm, AS3::fl_geom::RectangleCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Rectangle::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Rectangle(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Rectangle(vm, AS3::fl_geom::RectangleCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_geom::RectangleCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -632,6 +663,11 @@ namespace fl_geom
 {
     const TypeInfo RectangleTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_geom::Rectangle::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_geom::Rectangle::ThunkInfoNum,
+        InstanceTraits::fl_geom::Rectangle::MemberInfoNum,
         "Rectangle", "flash.geom", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -639,10 +675,6 @@ namespace fl_geom
     const ClassInfo RectangleCI = {
         &RectangleTI,
         ClassTraits::fl_geom::Rectangle::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_geom::Rectangle::ThunkInfoNum,
-        InstanceTraits::fl_geom::Rectangle::MemberInfoNum,
         NULL,
         NULL,
         InstanceTraits::fl_geom::Rectangle::ti,

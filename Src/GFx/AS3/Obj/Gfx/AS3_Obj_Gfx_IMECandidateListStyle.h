@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -112,7 +113,7 @@ namespace Instances { namespace fl_gfx
 
 namespace InstanceTraits { namespace fl_gfx
 {
-    class IMECandidateListStyle : public CTraits
+    class IMECandidateListStyle : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -150,17 +151,19 @@ namespace InstanceTraits { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class IMECandidateListStyle : public Traits
+    class IMECandidateListStyle : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::IMECandidateListStyle"; }
 #endif
     public:
-        typedef Classes::fl_gfx::IMECandidateListStyle ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_gfx::IMECandidateListStyle InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        IMECandidateListStyle(VM& vm);
+        IMECandidateListStyle(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

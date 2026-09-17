@@ -6,6 +6,7 @@ Created     :   May 18, 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -15,6 +16,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render_Filters.h"
 #include "Kernel/SF_HeapNew.h"
+#include "Render/Render_Primitive.h"
 
 namespace Scaleform { namespace Render {
 
@@ -94,6 +96,51 @@ bool BevelFilter::CanCacheAcrossTransform(bool deltaTrans, bool deltaRot, bool d
     return !deltaRot && !deltaScale;
 }
 
+
+//--------------------------------------------------------------------
+// ***** GradientFilter
+GradientFilter::GradientFilter(FilterType type, GradientData* gradient, float dist, float angle, float blurx, float blury, unsigned passes) :
+    BlurFilterImpl(type)
+{
+    SF_DEBUG_ASSERT1(type == Filter_GradientBevel || type == Filter_GradientGlow, 
+        "Expected filter type to be Filter_GradientBevel or Filter_GradientGlow, but it was (%d)", type);
+    Params.BlurX  = PixelsToTwips(blurx);
+    Params.BlurY  = PixelsToTwips(blury);
+    Params.Passes = passes;
+    SetAngleDistance(angle, PixelsToTwips(dist));
+    Params.Strength = 1.0f;
+    Params.Gradient = gradient;
+}
+
+GradientFilter::GradientFilter(FilterType type, const BlurFilterParams& params, float angle, float dist) :
+    BlurFilterImpl(type, params)
+{
+    SetAngleDistance(angle, PixelsToTwips(dist));
+}
+
+Filter* GradientFilter::Clone(MemoryHeap *heap) const
+{
+    if (!heap)
+        heap = Memory::GetHeapByAddress(this);
+    return SF_HEAP_NEW(heap) GradientFilter(Type, Params, Angle, TwipsToPixels(Distance));
+}
+
+bool GradientFilter::IsContributing() const
+{
+    return Params.Passes > 0 && Params.Gradient != 0;
+}
+
+bool GradientFilter::CanCacheAcrossTransform(bool deltaTrans, bool deltaRot, bool deltaScale) const
+{
+    SF_UNUSED(deltaTrans);
+    return !deltaRot && !deltaScale;
+}
+
+void GradientFilter::GenerateGradientImage(PrimitiveFillManager& mgr) const
+{
+    GradientImage = *mgr.createGradientImage(Params.Gradient, 0.0f);
+}
+
 //--------------------------------------------------------------------
 // ***** ColorMatrixFilter
 
@@ -132,12 +179,51 @@ Filter* ColorMatrixFilter::Clone(MemoryHeap* heap) const
     return newFilter;
 }
 
+//--------------------------------------------------------------------
+// ***** CacheAsBitmapFilter
+Filter* CacheAsBitmapFilter::Clone( MemoryHeap * pheap) const
+{
+    if (!pheap)
+        pheap = Memory::GetHeapByAddress(this);
+    return SF_HEAP_NEW(pheap) CacheAsBitmapFilter();
+}
+
+
+//--------------------------------------------------------------------
+// ***** DisplacementMapFilter
+DisplacementMapFilter::DisplacementMapFilter(Render::Image* mapBitmap, PointF mapPoint, 
+                                             DrawableImage::ChannelBits compx, 
+                                             DrawableImage::ChannelBits compy, 
+                                             DisplacementMode mode,
+                                             float scaleX, float scaleY,
+                                             Color color) :
+    Render::Filter(Filter_DisplacementMap),
+    DisplacementMap(mapBitmap),
+    MapPoint(mapPoint),
+    ComponentX(compx), ComponentY(compy),
+    Mode(mode), ScaleX(scaleX), ScaleY(scaleY),
+    ColorValue(color)
+{
+
+}
+
+bool DisplacementMapFilter::IsContributing() const
+{
+    return DisplacementMap != 0;
+}
+
+Filter* DisplacementMapFilter::Clone(MemoryHeap *heap) const
+{
+    if (!heap)
+        heap = Memory::GetHeapByAddress(this);
+    return SF_HEAP_NEW(heap) DisplacementMapFilter(DisplacementMap, MapPoint, ComponentX, ComponentY, Mode, ScaleX, ScaleY, ColorValue);
+}
 
 //--------------------------------------------------------------------
 // ***** FilterSet
 
 FilterSet::FilterSet(Filter* filter)
-    : Frozen(false), CacheAsBitmap(false)
+    : Frozen(false), CacheAsBitmap(false), pCacheAsBitmapFilter(0)
 {
     if (filter)
         AddFilter(filter);
@@ -156,9 +242,61 @@ void FilterSet::Freeze()
     }
 }
 
+
+unsigned FilterSet::GetFilterCount() const
+{
+    return (unsigned)Filters.GetSize();
+}
+
+
+const Filter* FilterSet::GetFilter( UPInt index ) const
+{
+    return Filters[index].GetPtr();
+}
+
+
+void FilterSet::SetFilter( UPInt index, Filter* filter )
+{
+    SF_DEBUG_ASSERT(!IsFrozen(), "Cannot modify a filter set that is frozen."); 
+    Filters[index] = filter;
+}
+
+
+void FilterSet::AddFilter( Filter* filter )
+{
+    SF_DEBUG_ASSERT(!IsFrozen(), "Cannot modify a filter set that is frozen."); 
+    if (Filters.GetSize() == 1 && Filters[0]->GetFilterType() == Filter_CacheAsBitmap)
+        Filters[0] = filter;
+    else
+        Filters.PushBack(filter);
+}
+
+
+void FilterSet::InsertFilterAt( UPInt index, Filter* filter )
+{
+    SF_DEBUG_ASSERT(!IsFrozen(), "Cannot modify a filter set that is frozen."); 
+    if (Filters.GetSize() == 1 && Filters[0]->GetFilterType() == Filter_CacheAsBitmap)
+        Filters[0] = filter;
+    else
+        Filters.InsertAt(index, filter);
+}
+
+
+void FilterSet::RemoveFilterAt( UPInt index )
+{
+    SF_DEBUG_ASSERT(!IsFrozen(), "Cannot modify a filter set that is frozen."); 
+    Filters.RemoveAt(index);
+    if (Filters.GetSize() == 0 && CacheAsBitmap)
+    {
+        if (!pCacheAsBitmapFilter)
+            pCacheAsBitmapFilter = *SF_NEW CacheAsBitmapFilter();
+        Filters.PushBack(pCacheAsBitmapFilter);
+    }
+}
+
 void FilterSet::RemoveFilter(Filter* filter)
 {
-    SF_ASSERT(!IsFrozen());
+    SF_DEBUG_ASSERT(!IsFrozen(), "Cannot modify a filter set that is frozen."); 
     for (UPInt i=0; i<Filters.GetSize(); i++)
     {
         if (Filters[i] == filter)
@@ -168,8 +306,18 @@ void FilterSet::RemoveFilter(Filter* filter)
         }
     }
 
-    if (Filters.GetSize() == 0 && GetCacheAsBitmap())
-        Filters.PushBack(CacheAsBitmapFilter::GetInstance());
+    if (Filters.GetSize() == 0 && CacheAsBitmap)
+    {
+        if (!pCacheAsBitmapFilter)
+            pCacheAsBitmapFilter = *SF_NEW CacheAsBitmapFilter();
+        Filters.PushBack(pCacheAsBitmapFilter);
+    }
+}
+
+
+bool FilterSet::GetCacheAsBitmap() const
+{
+    return CacheAsBitmap;
 }
 
 void FilterSet::SetCacheAsBitmap(bool enable)
@@ -177,9 +325,13 @@ void FilterSet::SetCacheAsBitmap(bool enable)
     // If we have no filters, we need to add in a 'bogus' cacheAsBitmap filter to the array.
     CacheAsBitmap = enable;
     if (enable && GetFilterCount() == 0)
-        AddFilter(CacheAsBitmapFilter::GetInstance());
+    {
+        if (pCacheAsBitmapFilter == 0)
+            pCacheAsBitmapFilter = *SF_NEW CacheAsBitmapFilter();
+        AddFilter(pCacheAsBitmapFilter);
+    }
     else if (!enable && GetFilterCount() == 1 && Filters[0]->GetFilterType() == Filter_CacheAsBitmap)
-        Filters.RemoveAt(0);
+            Filters.RemoveAt(0);
 }
 
 FilterSet* FilterSet::Clone(bool deepCopy, MemoryHeap *heap) const

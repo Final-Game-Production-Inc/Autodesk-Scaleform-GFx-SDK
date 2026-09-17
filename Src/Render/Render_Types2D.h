@@ -7,6 +7,7 @@ Created     :   January 14, 1999
 Authors     :   Michael Antonov, Brendan Iribe, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -26,6 +27,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Kernel/SF_Alg.h"
 #include "Kernel/SF_SIMD.h"
+#include "Kernel/SF_RefCount.h"
 
 namespace Scaleform { namespace Render {
 
@@ -503,7 +505,7 @@ public:
     inline Rect<T>& Union(const Rect<T> &r)      { return Union(r.x1,r.y1,r.x2,r.y2); }
 
     // Stores the area inside both rectangles
-    // - clears the rectangle if they don’t intersect
+    // - clears the rectangle if they donæŠ° intersect
     inline Rect<T>& Intersect(T l, T t, T r, T b);
     inline Rect<T>& Intersect(const Rect<T> &r)      { return Intersect(r.x1,r.y1,r.x2,r.y2); }
 
@@ -538,7 +540,7 @@ public:
     inline Point<T> ClampPoint(const Point<T> &pt) const;
 
     // Calculates area inside both rectangles
-    // Returns 0 if rectangles don’t intersect
+    // Returns 0 if rectangles donæŠ° intersect
     inline bool IntersectRect(Rect<T> *pdest, const Rect<T> &r) const;
     // Calculates the area enclosing both rectangles
     inline void UnionRect(Rect<T> *pdest, const Rect<T> &r) const;
@@ -741,7 +743,7 @@ inline bool    Rect<T>::IntersectsEdge(const Rect<T> &r, T lw, T tw, T rw, T bw)
 
 
 // Calculates area inside both GRectangles
-// Return 0 if GRectangles don’t intersect
+// Return 0 if GRectangles donæŠ° intersect
 template <class T>
 inline bool    Rect<T>::IntersectRect(Rect<T> *pdest, const Rect<T> &r) const
 {
@@ -789,6 +791,25 @@ inline const Rect<T>& Rect<T>::operator &= (const Rect<T> &r)
                                                                                            
 // ** End Inline Implementation
 
+// Ref-coutanble Rect
+template <class T>
+class RectRef : public Rect<T>, public RefCountBase<Rect<T>, Stat_Default_Mem>
+{
+public:
+    using RectData<T>::x1;  // GCC 3.4 compatibility.
+    using RectData<T>::y1;  // GCC 3.4 compatibility.
+    using RectData<T>::x2;  // GCC 3.4 compatibility.
+    using RectData<T>::y2;  // GCC 3.4 compatibility.
+
+    inline void operator = (const Rect<T> &r)
+    {
+        x1 = r.x1;
+        y1 = r.y1;
+        x2 = r.x2;
+        y2 = r.y2;
+    }
+};
+
 // ****************************************************************************
 // Backwards compatible typedefs 
 // 
@@ -797,6 +818,7 @@ inline const Rect<T>& Rect<T>::operator &= (const Rect<T> &r)
 typedef Point<float> PointF;
 typedef Size<float>  SizeF;
 typedef Rect<float>  RectF;
+typedef RectRef<float>  RectFRef;
 
 // Double structures
 typedef Point<Double> PointD;

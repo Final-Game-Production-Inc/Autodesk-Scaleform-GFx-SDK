@@ -6,6 +6,7 @@ Created     :   Sep 21, 2009
 Authors     :   Artyom Bolgar, Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -152,17 +153,15 @@ namespace AS3
     class Formatter
     {
     public:
-        Formatter() 
-            : Endp(Buf + sizeof (Buf) - 1)
-            , pBuf(Buf)
-        {
-        }
-
-    public:
-        void EscapeWithMask(const char* psrc, UPInt length, String& escapedStr, const unsigned* escapeMask,
+        static void EscapeWithMask(const char* psrc, UPInt length, StringBuffer& b, const unsigned* escapeMask,
             bool useUtf8 = false);
         // Return true on success.
-        bool Unescape(const char* psrc, UPInt length, String& unescapedStr, bool useUtf8 = false);
+        // ECMA 15.1.3
+        static bool EscapeWithMaskURI(const char* psrc, UPInt length, StringBuffer& b, bool isComp);
+        // Return true on success.
+        static bool Unescape(const char* psrc, UPInt length, StringBuffer& b, bool useUtf8 = false);
+        // Return true on success.
+        static bool DecodeURI(const char* psrc, UPInt length, StringBuffer& b, bool isComp);
 
     private:
         static bool InMask(int ch, const unsigned* escapeMask)
@@ -171,35 +170,21 @@ namespace AS3
         }
 
         // One byte
-        void WriteHexNibble(UInt8 v);
-        UInt8 ReadHexNibble(const char*& pStr, const char* end);
+        static void WriteHexNibble(StringBuffer& b, UInt8 v);
+        static UInt8 ReadHexNibble(const char*& pStr, const char* end);
 
         // Two bytes
-        void WriteHexByte(UInt8 v)
+        static void WriteHexByte(StringBuffer& b, UInt8 v)
         {
-            WriteHexNibble(static_cast<UInt8>(v >> 4));
-            WriteHexNibble(static_cast<UInt8>(v & 0x0F));
-        }
-        UInt8 ReadHexByte(const char*& pStr, const char* end)
-        {
-            const UInt8 v1 = ReadHexNibble(pStr, end) << 4;
-            const UInt8 v2 = ReadHexNibble(pStr, end);
-
-            return (v1 | v2);
+            WriteHexNibble(b, static_cast<UInt8>(v >> 4));
+            WriteHexNibble(b, static_cast<UInt8>(v & 0x0F));
         }
 
         // Four bytes
-        void WriteHexWord(UInt16 v)
+        static void WriteHexWord(StringBuffer& b, UInt16 v)
         {
-            WriteHexByte(static_cast<UInt8>(v >> 8));
-            WriteHexByte(static_cast<UInt8>(v & 0xFF));
-        }
-        UInt16 ReadHexWord(const char*& pStr, const char* end)
-        {
-            const UInt8 v1 = ReadHexByte(pStr, end) << 8;
-            const UInt8 v2 = ReadHexByte(pStr, end);
-
-            return (v1 | v2);
+            WriteHexByte(b, static_cast<UInt8>(v >> 8));
+            WriteHexByte(b, static_cast<UInt8>(v & 0xFF));
         }
 
         static bool IsHexDigit(char c)
@@ -209,15 +194,7 @@ namespace AS3
 
         // This method will not advance position if format doesn't comply with the rules.
         // pStr has to be checked after a call to ReadHex().
-        UInt16 ReadHex(const char*& pStr, const char* end, UInt8 max_chars);
-
-    private:
-        Formatter& operator =(const Formatter&);
-
-    private:
-        char  Buf[512];
-        char* const Endp;
-        char* pBuf;
+        static UInt16 ReadHex(const char*& pStr, const char* end, UInt8 max_chars);
     };
 
     UInt16 Formatter::ReadHex(const char*& pStr, const char* end, UInt8 max_chars)
@@ -235,12 +212,12 @@ namespace AS3
         return result;
     }
 
-    void Formatter::WriteHexNibble(UInt8 v)
+    void Formatter::WriteHexNibble(StringBuffer& b, UInt8 v)
     {
         if (v < 10)
-            *pBuf++ = (char)(v + '0');
+            b += (char)(v + '0');
         else
-            *pBuf++ = (char)(v + 'A' - 10);
+            b += (char)(v + 'A' - 10);
     }
 
     UInt8 Formatter::ReadHexNibble(const char*& pStr, const char* end)
@@ -257,6 +234,9 @@ namespace AS3
 
             if ('a' <= c && c <= 'f') 
                 return c - 'a' + 10;
+
+            // Error.
+            --pStr;
         }
 
         return 0;
@@ -264,80 +244,152 @@ namespace AS3
 
     void Formatter::EscapeWithMask(
         const char* psrc, UPInt length, 
-        String& escapedStr, 
+        StringBuffer& b, 
         const unsigned* escapeMask,
         bool useUtf8)
     {
         const char* end = psrc + length;
 
-        pBuf = Buf;
         while (psrc < end)
         {
             const char* psrc_saved = psrc;
             int ch = (int)UTF8Util::DecodeNextChar_Advance0(&psrc);
 
-            // Close enough to the end of the buffer.
-            if (pBuf + 7 >= Endp)
-            {
-                // flush
-                *pBuf = '\0';
-                escapedStr += Buf;
-                pBuf = Buf;
-            }
-
             if (InMask(ch, escapeMask)) // isalnum (ch)
-                *pBuf++ = char(ch);
+                b += char(ch);
             else if (ch & 0xFF00)
             {
                 if (!useUtf8)
                 {
                     // encode as Unicode 16-bit value
                     // Totally six bytes.
-                    *pBuf++ = '%';
-                    *pBuf++ = 'u';
-                    WriteHexWord(static_cast<UInt16>(ch));
+                    b += '%';
+                    b += 'u';
+                    WriteHexWord(b, static_cast<UInt16>(ch));
                 }
                 else
                 {
                     // encode as series of UTF-8 8-bit bytes
                     while (psrc_saved < psrc)
                     {
-                        *pBuf++ = '%';
-                        WriteHexByte(static_cast<UInt8>(*psrc_saved++));
+                        b += '%';
+                        WriteHexByte(b, static_cast<UInt8>(*psrc_saved++));
                     }
                 }
             }
             else 
             {
-                *pBuf++ = '%';
-                WriteHexByte(static_cast<UInt8>(ch));
+                b += '%';
+                WriteHexByte(b, static_cast<UInt8>(ch));
+            }
+        }
+    }
+
+    static unsigned uriUnescaped[] =
+    {
+        0x00000000,
+        0x03ff6782,
+        0x87fffffe,
+        0x47fffffe
+    };
+    
+    static unsigned uriReservedPlusPound[] =
+    {
+        0x00000000,
+        0xac009858,
+        0x00000001,
+        0x00000000
+    };
+    
+    bool Formatter::EscapeWithMaskURI(
+        const char* psrc, UPInt length,
+        StringBuffer& b,
+        bool isComp
+        )
+    {
+        SF_UNUSED1(isComp);
+        const char* end = psrc + length;
+        // 1.
+        UPInt strLen = UTF8Util::GetLength(psrc);
+        // 3.
+        UPInt k = 0;
+
+        while (psrc < end)
+        {
+            int ch = (int)UTF8Util::DecodeNextChar_Advance0(&psrc);
+            ++k;
+
+            // 4.c.i
+            if (InMask(ch, uriUnescaped) || (!isComp && InMask(ch, uriReservedPlusPound)))
+            {
+                // 4.c.ii
+                b += char(ch);
+            }
+            else
+            {
+                if (ch >= 0xDC00 && ch <= 0xDFFF)
+                    // 4.d.i
+                    // URIError exception.
+                    return false;
+
+                UInt32 v;
+                if (ch < 0xD800 || ch > 0xDBFF)
+                    // 4.d.ii.1
+                    v = ch;
+                else
+                {
+                    // 4.d.iii.1
+                    ++k;
+                    if (k == strLen)
+                        // 4.d.iii.2
+                        // URIError exception.
+                        return false;
+
+                    // 4.d.iii.3
+                    int kch = (int)UTF8Util::DecodeNextChar_Advance0(&psrc);
+                    if (kch < 0xDC00 || kch > 0xDFFF)
+                        // 4.d.iii.4
+                        // URIError exception.
+                        return false;
+
+                    // 4.d.iii.5
+                    // Let V be (((the code unit value of C) ?0xD800) * 0x400 + (kChar ?0xDC00) + 0x10000).
+                    v = (ch - 0xD800) * 0x400 + (kch - 0xDC00) + 0x10000;
+                }
+
+                // 4.d.iv
+                char Octets[6];
+                SPInt l = 0;
+                UTF8Util::EncodeCharSafe(Octets, 6, &l, v);
+
+                if (l == 0)
+                    // URIError exception.
+                    return false;
+
+                // 4.d.v
+                // 4.d.vi
+                for (SPInt j = 0; j < l; ++j)
+                {
+                    // 4.d.vi.1
+                    UInt8 jOctet = Octets[j];
+                    // 4.d.vi.2
+                    b += '%';
+                    WriteHexByte(b, jOctet);
+                }
             }
         }
 
-        // flush
-        *pBuf = '\0';
-        escapedStr += Buf;
+        return true;
     }
 
-    bool Formatter::Unescape(const char* psrc, UPInt length, String& unescapedStr, bool useUtf8)
+    bool Formatter::Unescape(const char* psrc, UPInt length, StringBuffer& b, bool useUtf8)
     {   
         const char* end = psrc + length;
         bool asUtf8;
 
-        pBuf = Buf;
         while (psrc < end)
         {
             int ch = *psrc++;
-
-            // Close enough to the end of the buffer.
-            // An UTF8 character may be up to six bytes long.
-            if (pBuf + 7 >= Endp)
-            {
-                // flush
-                *pBuf = '\0';
-                unescapedStr += Buf;
-                pBuf = Buf;
-            }
 
             if (ch == '%')
             {
@@ -354,24 +406,198 @@ namespace AS3
                     return false;
 
                 if (asUtf8)
-                    *pBuf++ = static_cast<char>(ch);
+                    // It is a regular character.
+                    b += static_cast<char>(ch);
                 else
-                {
-                    // Let's encode character into UTF8.
-                    SPInt pos = pBuf - Buf;
-                    UTF8Util::EncodeChar(Buf, &pos, ch);
-                    pBuf = Buf + pos;
-                }
+                    b.AppendChar(ch);
             }
             else
                 // It is a regular character.
-                *pBuf++ = static_cast<char>(ch);
+                b += static_cast<char>(ch);
         }
 
-        // flush
-        *pBuf = '\0';
-        // Zero characters also belong to an unescaped string.
-        unescapedStr.AppendString(Buf, pBuf - Buf);
+        return true;
+    }
+
+    bool Formatter::DecodeURI(const char* psrc, UPInt length, StringBuffer& b, bool isComp)
+    {
+        const char* end = psrc + length;
+        const char* prev_ptr;
+        // 3.
+        UPInt k = 0;
+
+        while (psrc < end)
+        {
+            // 4.b
+            int ch = *psrc++;
+
+            if (ch == '%')
+            {
+                // 4.d.i
+                UPInt start = k;
+
+#if 0
+                // 4.d.i
+                if (k + 2 >= length)
+                    // URIError exception.
+                    return false;
+#endif
+
+                prev_ptr = psrc;
+                int v1 = ReadHexNibble(psrc, end);
+                if (psrc == prev_ptr)
+                    // 4.d.iii
+                    return false;
+
+                prev_ptr = psrc;
+                int v2 = ReadHexNibble(psrc, end);
+                if (psrc == prev_ptr)
+                    // 4.d.iii
+                    return false;
+
+                // 4.d.iv
+                UInt8 B = (UInt8)((v1 << 4) | v2);
+
+                // 4.d.v
+                k += 2;
+
+                UInt32 V;
+
+                if (!(B & 0x80))
+                    // 4.d.vi
+                    V = B;
+                else
+                {
+                    // 4.d.vii
+
+                    // 4.d.vii.1
+                    // Let n be the smallest non-negative number such that (B << n) & 0x80 is equal to 0.
+                    int n = 1;
+                    while (((B << n) & 0x80) != 0)
+                        ++n;
+
+                    // 4.d.vii.2
+                    // If n equals 1 or n is greater than 4, throw a URIError exception.
+                    if (n == 1 || n > 4)
+                        return false;
+
+                    // 4.d.vii.3
+                    char Octets[4]; 
+
+                    // 4.d.vii.4
+                    // Put B into Octets at position 0.
+                    Octets[0] = B;
+
+                    // 4.d.vii.5
+                    // If k + (3 * (n ?1)) is greater than or equal to strLen, throw a URIError exception.
+                    if (k + (3 * (n - 1)) >= length)
+                        return false;
+
+                    // 4.d.vii.6
+                    // Let j be 1
+                    // 4.d.vii.7
+                    // Repeat, while j < n
+                    for (int j = 1; j < n; ++j)
+                    {
+                        // 4.d.vii.7.a
+                        // Increment k by 1.
+                        ++k;
+                        ch = *psrc++;
+
+                        // 4.d.vii.7.b
+                        // If the character at position k is not '%', throw a URIError exception.
+                        if (ch != '%')
+                            return false;
+
+                        prev_ptr = psrc;
+                        int v1_inner = ReadHexNibble(psrc, end);
+                        if (psrc == prev_ptr)
+                            // 7.c
+                            return false;
+
+                        prev_ptr = psrc;
+                        int v2_inner = ReadHexNibble(psrc, end);
+                        if (psrc == prev_ptr)
+                            // 7.c
+                            return false;
+
+                        // 7.d
+                        B = (UInt8)((v1_inner << 4) | v2_inner);
+
+                        // 7.e
+                        // If the two most significant bits in B are not 10, throw a URIError exception.
+                        if ((B & 0xC0) != 0x80)
+                            return false;
+
+                        // 7.f
+                        // Increment k by 2.
+                        k += 2;
+
+                        // 7.g
+                        // Put B into Octets at position j.
+                        Octets[j] = B;
+                    }
+
+                    // 4.d.vii.8
+                    // Let V be the value obtained by applying the UTF-8 transformation to Octets,
+                    // that is, from an array of octets into a 21-bit value. If Octets does not 
+                    // contain a valid UTF-8 encoding of a Unicode code point throw an URIError exception.
+                    prev_ptr = Octets;
+                    const char* tmp_ptr = Octets;
+                    V = UTF8Util::DecodeNextChar_Advance0(&tmp_ptr);
+                    if (V == 0xFFFD)
+                        return false;
+                }
+
+                if (V < 0x10000)
+                {
+                    // 4.d.vii.9
+                    // If V is less than 0x10000, then
+
+                    // Check for reserved set
+                    if (!isComp)
+                    {
+                        if (InMask(V, uriReservedPlusPound))
+                        {
+                            while (start <= k)
+                                b += psrc[start++];
+                        } 
+                        else
+                            b.AppendChar(V);
+                    }
+                    else
+                        b.AppendChar(V);
+                } else {
+                    // 4.d.vii.10
+                    // Else, V is >= 0x10000
+
+                    if (V > 0x10FFFF)
+                        return false;
+
+                    // 4.d.vii.10.a
+                    // Let L be (((V - 0x10000) & 0x3FF) + 0xDC00).
+                    UInt32 L = (((V - 0x10000) & 0x3FF) + 0xDC00);
+
+                    // 4.d.vii.10.b
+                    // Let H be ((((V - 0x10000) >> 10) & 0x3FF) + 0xD800).
+                    UInt32 H = ((((V - 0x10000) >> 10) & 0x3FF) + 0xD800);
+
+                    // 4.d.vii.10.c
+                    // Let S be the String containing the two characters with code unit values H and L.
+                    b.AppendChar(H);
+                    b.AppendChar(L);
+                } 
+            }
+            else
+            {
+                // 4.c.i
+                // It is a regular character.
+                b += static_cast<char>(ch);
+            }
+
+            // 4.f
+            ++k;
+        }
 
         return true;
     }
@@ -380,49 +606,41 @@ namespace AS3
     // mask positioning is as follows: mask[char/32]&(1<<(char%32))
     static unsigned unescaped_mask[] = { 0x00000000, 0x03FFEC00, 0x87FFFFFF, 0x07FFFFFE };
     static unsigned unescaped_mask_VAR[] = { 0x00000000, 0x03FF0000, 0x87FFFFFF, 0x07FFFFFE };
-    static unsigned unescaped_mask_URI[] = { 0x00000000, 0xAFFFFFDA, 0x87FFFFFF, 0x47FFFFFE };
     static unsigned unescaped_mask_URIComponent[] = { 0x00000000, 0x03FF6782, 0x87FFFFFE, 0x47FFFFFE };
 
-    void Escape(const char* psrc, UPInt length, String& escapedStr, bool useUtf8)
+    void Escape(const char* psrc, UPInt length, StringBuffer& b, bool useUtf8)
     {
-        Formatter f;
-
-        f.EscapeWithMask(psrc, length, escapedStr, unescaped_mask, useUtf8);
+        Formatter::EscapeWithMask(psrc, length, b, unescaped_mask, useUtf8);
     }
 
-    void EncodeVar(const char* psrc, UPInt length, String& escapedStr, bool useUtf8)
+    void EncodeVar(const char* psrc, UPInt length, StringBuffer& b, bool useUtf8)
     {
-        Formatter f;
-
-        f.EscapeWithMask(psrc, length, escapedStr, unescaped_mask_VAR, useUtf8);
+        Formatter::EscapeWithMask(psrc, length, b, unescaped_mask_VAR, useUtf8);
     }
 
-    void EncodeURI(const char* psrc, UPInt length, String& escapedStr, bool useUtf8)
+    bool EncodeURI(const char* psrc, UPInt length, StringBuffer& escapedStr, bool isComp)
     {
-        Formatter f;
-
-        f.EscapeWithMask(psrc, length, escapedStr, unescaped_mask_URI, useUtf8);
+        return Formatter::EscapeWithMaskURI(psrc, length, escapedStr, isComp);
     }
 
-    void EncodeURIComponent(const char* psrc, UPInt length, String& escapedStr, bool useUtf8)
+    void EncodeURIComponent(const char* psrc, UPInt length, StringBuffer& b, bool useUtf8)
     {
-        Formatter f;
-
-        f.EscapeWithMask(psrc, length, escapedStr, unescaped_mask_URIComponent, useUtf8);
+        Formatter::EscapeWithMask(psrc, length, b, unescaped_mask_URIComponent, useUtf8);
     }
 
-    void EscapeWithMask(const char* psrc, UPInt length, String& escapedStr, const unsigned* escapeMask, bool useUtf8)
+    void EscapeWithMask(const char* psrc, UPInt length, StringBuffer& b, const unsigned* escapeMask, bool useUtf8)
     {   
-        Formatter f;
-
-        f.EscapeWithMask(psrc, length, escapedStr, escapeMask, useUtf8);
+        Formatter::EscapeWithMask(psrc, length, b, escapeMask, useUtf8);
     }
 
-    bool Unescape(const char* psrc, UPInt length, String& unescapedStr, bool useUtf8)
+    bool Unescape(const char* psrc, UPInt length, StringBuffer& b, bool useUtf8)
     {
-        Formatter f;
+        return Formatter::Unescape(psrc, length, b, useUtf8);
+    }
 
-        return f.Unescape(psrc, length, unescapedStr, useUtf8);
+    bool DecodeURI(const char* psrc, UPInt length, StringBuffer& b, bool isComp)
+    {
+        return Formatter::DecodeURI(psrc, length, b, isComp);
     }
 
 } // namespace AS3
@@ -434,59 +652,37 @@ namespace AS3
 
 #if SF_BYTE_ORDER == SF_LITTLE_ENDIAN
 
-#ifdef SF_NO_DOUBLE
-static const UByte GFxNaN_Bytes[]               = {0x00, 0x00, 0xC0, 0xFF};
-static const UByte GFxQNaN_Bytes[]              = {0x00, 0x00, 0xC0, 0x7F};
-static const UByte GFxPOSITIVE_INFINITY_Bytes[] = {0x00, 0x00, 0x80, 0x7F};
-static const UByte GFxNEGATIVE_INFINITY_Bytes[] = {0x00, 0x00, 0x80, 0xFF};
-static const UByte GFxMIN_VALUE_Bytes[]         = {0x00, 0x00, 0x80, 0x00};
-static const UByte GFxMAX_VALUE_Bytes[]         = {0xFF, 0xFF, 0x7F, 0x7F};
-static const UByte GFxNEGATIVE_ZERO_Bytes[]     = {0x00, 0x00, 0x00, 0x80};
-static const UByte GFxPOSITIVE_ZERO_Bytes[]     = {0x00, 0x00, 0x00, 0x00};
-#else
 static const UByte GFxNaN_Bytes[]               = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0xFF};
-static const UByte GFxQNaN_Bytes[]              = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0x7F};
+// static const UByte GFxQNaN_Bytes[]              = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0x7F};
 static const UByte GFxPOSITIVE_INFINITY_Bytes[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x7F};
 static const UByte GFxNEGATIVE_INFINITY_Bytes[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0xFF};
 static const UByte GFxMIN_VALUE_Bytes[]         = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00};
 static const UByte GFxMAX_VALUE_Bytes[]         = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEF, 0x7F};
 static const UByte GFxNEGATIVE_ZERO_Bytes[]     = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80};
 static const UByte GFxPOSITIVE_ZERO_Bytes[]     = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-#endif
 
 #else
 
-#ifdef SF_NO_DOUBLE
-static const UByte GFxNaN_Bytes[]               = {0xFF, 0xC0, 0x00, 0x00};
-static const UByte GFxQNaN_Bytes[]              = {0x7F, 0xC0, 0x00, 0x00};
-static const UByte GFxPOSITIVE_INFINITY_Bytes[] = {0x7F, 0x80, 0x00, 0x00};
-static const UByte GFxNEGATIVE_INFINITY_Bytes[] = {0xFF, 0x80, 0x00, 0x00};
-static const UByte GFxMIN_VALUE_Bytes[]         = {0x00, 0x80, 0x00, 0x00};
-static const UByte GFxMAX_VALUE_Bytes[]         = {0x7F, 0x7F, 0xFF, 0xFF};
-static const UByte GFxNEGATIVE_ZERO_Bytes[]     = {0x80, 0x00, 0x00, 0x00};
-static const UByte GFxPOSITIVE_ZERO_Bytes[]     = {0x00, 0x00, 0x00, 0x00};
-#else
 static const UByte GFxNaN_Bytes[]               = {0xFF, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-static const UByte GFxQNaN_Bytes[]              = {0x7F, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+// static const UByte GFxQNaN_Bytes[]              = {0x7F, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static const UByte GFxPOSITIVE_INFINITY_Bytes[] = {0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static const UByte GFxNEGATIVE_INFINITY_Bytes[] = {0xFF, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static const UByte GFxMIN_VALUE_Bytes[]         = {0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static const UByte GFxMAX_VALUE_Bytes[]         = {0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 static const UByte GFxNEGATIVE_ZERO_Bytes[]     = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static const UByte GFxPOSITIVE_ZERO_Bytes[]     = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-#endif
 
 #endif
 
 namespace NumberUtil {
 
-Double SF_CDECL NaN()               { Double v; memcpy(&v, GFxNaN_Bytes              , sizeof(v)); return v; }
-Double SF_CDECL POSITIVE_INFINITY() { Double v; memcpy(&v, GFxPOSITIVE_INFINITY_Bytes, sizeof(v)); return v; }
-Double SF_CDECL NEGATIVE_INFINITY() { Double v; memcpy(&v, GFxNEGATIVE_INFINITY_Bytes, sizeof(v)); return v; }
-Double SF_CDECL POSITIVE_ZERO()     { Double v; memcpy(&v, GFxPOSITIVE_ZERO_Bytes    , sizeof(v)); return v; }
-Double SF_CDECL NEGATIVE_ZERO()     { Double v; memcpy(&v, GFxNEGATIVE_ZERO_Bytes    , sizeof(v)); return v; }
-Double SF_CDECL MIN_VALUE()         { Double v; memcpy(&v, GFxMIN_VALUE_Bytes        , sizeof(v)); return v; }
-Double SF_CDECL MAX_VALUE()         { Double v; memcpy(&v, GFxMAX_VALUE_Bytes        , sizeof(v)); return v; }
+GFx::Double SF_CDECL NaN()               { Double v; memcpy(&v, GFxNaN_Bytes              , sizeof(v)); return v; }
+GFx::Double SF_CDECL POSITIVE_INFINITY() { Double v; memcpy(&v, GFxPOSITIVE_INFINITY_Bytes, sizeof(v)); return v; }
+GFx::Double SF_CDECL NEGATIVE_INFINITY() { Double v; memcpy(&v, GFxNEGATIVE_INFINITY_Bytes, sizeof(v)); return v; }
+GFx::Double SF_CDECL POSITIVE_ZERO()     { Double v; memcpy(&v, GFxPOSITIVE_ZERO_Bytes    , sizeof(v)); return v; }
+GFx::Double SF_CDECL NEGATIVE_ZERO()     { Double v; memcpy(&v, GFxNEGATIVE_ZERO_Bytes    , sizeof(v)); return v; }
+GFx::Double SF_CDECL MIN_VALUE()         { Double v; memcpy(&v, GFxMIN_VALUE_Bytes        , sizeof(v)); return v; }
+GFx::Double SF_CDECL MAX_VALUE()         { Double v; memcpy(&v, GFxMAX_VALUE_Bytes        , sizeof(v)); return v; }
 
 bool SF_STDCALL IsPOSITIVE_ZERO(Double v)
 {
@@ -547,19 +743,12 @@ const char* SF_STDCALL ToString(Double value, char destStr[], size_t destStrSize
 #if 1
     // MA: not sure about precision, but "%.14g" 
     // makes test_rotation.swf display too much rounding            
-#ifndef SF_NO_DOUBLE
     // MA: not sure about precision, but "%.14g" 
     // makes test_rotation.swf display too much rounding            
     static const char* const fmt[] = { 
         "%.1g", "%.2g", "%.3g", "%.4g", 
         "%.5g", "%.6g", "%.7g", "%.8g", 
         "%.9g", "%.10g", "%.11g", "%.12g", "%.13g", "%.14g" };
-#else  //SF_NO_DOUBLE
-    static const char* const fmt[] = { 
-        "%.1f", "%.2f", "%.3f", "%.4f", 
-        "%.5f", "%.6f", "%.7f", "%.8f", 
-        "%.9f", "%.10f", "%.11f", "%.12f", "%.13f", "%.14f" };
-#endif //SF_NO_DOUBLE
         const char* fmtStr = fmt[14 -1];
 
         if(radix <= 0)
@@ -590,7 +779,7 @@ const char* SF_STDCALL ToString(Double value, char destStr[], size_t destStrSize
                 SInt32 ival = (SInt32)value;
                 if ((Double)ival == value)
                     return IntToString(ival, destStr, destStrSize);
-                SFsprintf(destStr, destStrSize, fmtStr, (Double)value);
+                SFsprintf(destStr, destStrSize, fmtStr, (double)value);
 
 #ifndef SF_OS_WINCE
                 // Get rid of a possible comma ...
@@ -774,7 +963,7 @@ SF_INLINE  SInt32 readDigit (char c)
         return -1;
 }
 
-Double SF_STDCALL StringToInt( const char* str, UInt32 strLen, SInt32 radix, UInt32 *endIndex )
+GFx::Double SF_STDCALL StringToInt( const char* str, UInt32 strLen, SInt32 radix, UInt32 *endIndex )
 {
     SInt32      sign = 1;
     UInt32      &offset = *endIndex;
@@ -945,7 +1134,7 @@ Double SF_STDCALL StringToInt( const char* str, UInt32 strLen, SInt32 radix, UIn
     return n * sign;
 }
 
-Double SF_STDCALL StringToDouble( const char* str, UInt32 strLen, UInt32 *endIndex )
+GFx::Double SF_STDCALL StringToDouble( const char* str, UInt32 strLen, UInt32 *endIndex )
 {
     UInt32      &offset = *endIndex;
     offset = 0;
@@ -994,7 +1183,7 @@ Double SF_STDCALL StringToDouble( const char* str, UInt32 strLen, UInt32 *endInd
 
     double res = SFstrtod(str, &tail);
     offset += (UInt32)(tail - str);
-    return (tail != str ? res : NaN());
+    return (tail != str ? GFx::Double(res) : NaN());
 }
 
 } // namespace NumberUtil

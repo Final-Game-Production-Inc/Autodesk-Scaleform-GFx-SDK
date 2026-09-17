@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_events::IMEEvent, Instances::fl_events::IMEEvent::mid_clone, SPtr<Instances::fl_events::Event> > TFunc_Instances_IMEEvent_clone;
 typedef ThunkFunc0<Instances::fl_events::IMEEvent, Instances::fl_events::IMEEvent::mid_toString, ASString> TFunc_Instances_IMEEvent_toString;
 
@@ -78,17 +73,23 @@ namespace Instances { namespace fl_events
 
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 IMEEvent::tito[IMEEvent::ThunkInfoNum] = {
+    //    0, 1, 
+    // };
+    const TypeInfo* IMEEvent::tit[2] = {
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo IMEEvent::ti[IMEEvent::ThunkInfoNum] = {
-        {TFunc_Instances_IMEEvent_clone::Func, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_IMEEvent_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_IMEEvent_clone::Func, &IMEEvent::tit[0], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_IMEEvent_toString::Func, &IMEEvent::tit[1], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     IMEEvent::IMEEvent(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::TextEvent(vm, ci)
     {
 //##protect##"InstanceTraits::IMEEvent::IMEEvent()"
 //##protect##"InstanceTraits::IMEEvent::IMEEvent()"
-        SetMemSize(sizeof(Instances::fl_events::IMEEvent));
 
     }
 
@@ -123,24 +124,27 @@ namespace ClassTraits { namespace fl_events
         {"IME_COMPOSITION", NULL, OFFSETOF(Classes::fl_events::IMEEvent, IME_COMPOSITION), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    IMEEvent::IMEEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::IMEEventCI)
+
+    IMEEvent::IMEEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::TextEvent(vm, ci)
     {
 //##protect##"ClassTraits::IMEEvent::IMEEvent()"
 //##protect##"ClassTraits::IMEEvent::IMEEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::IMEEvent(vm, AS3::fl_events::IMEEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::IMEEvent(*this));
 
     }
 
     Pickable<Traits> IMEEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) IMEEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) IMEEvent(vm, AS3::fl_events::IMEEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::IMEEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -151,6 +155,11 @@ namespace fl_events
 {
     const TypeInfo IMEEventTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_events::IMEEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::IMEEvent::MemberInfoNum,
+        InstanceTraits::fl_events::IMEEvent::ThunkInfoNum,
+        0,
         "IMEEvent", "flash.events", &fl_events::TextEventTI,
         TypeInfo::None
     };
@@ -158,10 +167,6 @@ namespace fl_events
     const ClassInfo IMEEventCI = {
         &IMEEventTI,
         ClassTraits::fl_events::IMEEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::IMEEvent::MemberInfoNum,
-        InstanceTraits::fl_events::IMEEvent::ThunkInfoNum,
-        0,
         NULL,
         ClassTraits::fl_events::IMEEvent::mi,
         InstanceTraits::fl_events::IMEEvent::ti,

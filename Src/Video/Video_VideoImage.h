@@ -6,6 +6,7 @@ Created     :   Feb, 2011
 Authors     :   Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -46,12 +47,10 @@ public:
     {
         // Do not release the backing texture. Will be restored after loss.
     }
-
     void NotifyVideoPlayerRemoved() { pVideoPlayer = NULL; }
 
 protected:
     void clearImageData(ImageData* pdest) const;
-    void checkAndRequestSkipDecoding() const;
 
     VideoPlayerImpl* pVideoPlayer;
 };

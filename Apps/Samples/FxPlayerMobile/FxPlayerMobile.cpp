@@ -6,6 +6,7 @@ Created     :
 Authors     :
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,7 +30,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/ImageFiles/PNG_ImageFile.h"
 #include "Render/ImageFiles/PVR_ImageFile.h" // PVR, ETC.
 #include "Render/ImageFiles/TGA_ImageFile.h"
-#ifdef SF_OS_ANDROID
+#if defined (SF_OS_ANDROID)
   #include "Render/ImageFiles/KTX_ImageFile.h" // ETC
   #include "Render/ImageFiles/DDS_ImageFile.h" // ATC
 #endif
@@ -44,6 +45,13 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #ifdef GFX_AS2_ENABLE_SHAREDOBJECT
 #include "FxSharedObjectManager.h"
+#endif
+
+#if defined (SF_OS_ANDROID) && !defined (SF_ANDROID_NDK_BUILD)
+extern "C" {
+      extern void *__dso_handle __attribute__((__visibility__ ("hidden")));
+        void *__dso_handle;
+}
 #endif
 
 namespace SF = Scaleform;
@@ -98,6 +106,37 @@ public:
     }
 };
 
+#ifdef SF_USE_ANE
+class FxPlayerExtensionContextInterface : public ExtensionContextInterface
+{
+public:
+    FxPlayerExtensionContextInterface(FxPlayerMobile* papp) : pApp(papp) 
+    {
+#if defined(SF_OS_IPHONE)
+        ArrayLH<Extension*> *freExtensionArray = SF_NEW ArrayLH<Extension*>();
+        
+        /* Native Extensions init. */
+        pApp->GetAppImpl()->InitNativeExtensionManager(freExtensionArray);
+#endif
+    }
+
+    bool Call(const char* extensionID, const char* contextID, const char* functionName, unsigned argc, const Scaleform::GFx::Value* const argv, Scaleform::GFx::Value* const result)
+    {
+        return pApp->GetAppImpl()->Call(extensionID, contextID, functionName, argc, argv, result);
+    }
+
+    const char* GetExtensionDirectory(const char* extensionID)                                    { return pApp->GetAppImpl()->GetExtensionDirectory(extensionID); }
+    void FinalizeExtensionContext(const char* extensionID, const char* contextID)                { pApp->GetAppImpl()->FinalizeExtensionContext(extensionID, contextID); }
+    void InitializeExtensionContext(const char* extensionID, const char* contextID)                { pApp->GetAppImpl()->InitializeExtensionContext(extensionID, contextID); }
+    GFx::Value* GetActionScriptData(const char* extensionID, const char* contextID)                { return pApp->GetAppImpl()->GetActionScriptData(extensionID, contextID); }
+    void SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data)    { pApp->GetAppImpl()->SetActionScriptData(extensionID, contextID, data); }
+    void SetMovie(Movie* pmovie)                                                                { pApp->GetAppImpl()->SetMovie(pmovie);    }
+
+protected:
+    FxPlayerMobile*    pApp;
+};
+#endif
+
 class FxPlayerMultitouchInterface : public MultitouchInterface
 {
 public:
@@ -132,11 +171,57 @@ public:
     }
 };
 
+// Implementation of Accelerometer interface
+class FxPlayerAccelerometerInterface : public AccelerometerInterface
+{
+public:
+    FxPlayerAccelerometerInterface(FxPlayerMobile* papp) : pApp(papp) {}
+
+    bool    RegisterAccelerometer(int accelerometerId)        { return pApp->GetAppImpl()->RegisterAccelerometer(accelerometerId); }
+    bool    UnregisterAccelerometer(int accelerometerId)    { return pApp->GetAppImpl()->UnregisterAccelerometer(accelerometerId); }
+    bool    IsAccelerometerMuted() const                     { return pApp->GetAppImpl()->IsAccelerometerMuted(); }
+    bool    IsAccelerometerSupported() const     { return pApp->GetAppImpl()->IsAccelerometerSupported(); };
+    void    SetAccelerometerInterval(int accelerometerId, int interval)       { pApp->GetAppImpl()->SetAccelerometerInterval(accelerometerId, interval); }
+
+protected:
+    FxPlayerMobile*    pApp;
+};
+
+// Implementation of Geolocation interface
+class FxPlayerGeolocationInterface : public GeolocationInterface
+{
+public:
+    FxPlayerGeolocationInterface(FxPlayerMobile* papp) : pApp(papp) {}
+
+    bool    RegisterGeolocation(int geolocationId)        { return pApp->GetAppImpl()->RegisterGeolocation(geolocationId); }
+    bool    UnregisterGeolocation(int geolocationId)    { return pApp->GetAppImpl()->UnregisterGeolocation(geolocationId); }
+    bool    IsGeolocationMuted() const                     { return pApp->GetAppImpl()->IsGeolocationMuted(); }
+    bool    IsGeolocationSupported() const     { return pApp->GetAppImpl()->IsGeolocationSupported(); };
+    void    SetGeolocationInterval(int geolocationId, int interval)       { pApp->GetAppImpl()->SetGeolocationInterval(geolocationId, interval); }
+
+protected:
+    FxPlayerMobile*    pApp;
+};
+
+// Default implementation of UrlNavigator
+class FxPlayerUrlNavigator : public UrlNavigator
+{
+public:
+    virtual void NavigateToUrl(const String& url)
+    {
+        if (FxPlayerMobile::pApp)
+        {
+            AppImplBase* pimpl = FxPlayerMobile::pApp->GetAppImpl();
+            pimpl->ProcessUrl(url);
+        }
+    }
+};
+
 static const float CurveTolerances[] = {1.0f, 5.0f, 10.0f, 50.0f, 250.0f};
 
 void FxPlayerMobile::FsCommand(Movie* pmovie, const char* pcommand, const char* parg)
 {
-	SF_UNUSED3(pmovie, pcommand, parg);
+    SF_UNUSED3(pmovie, pcommand, parg);
 }
 
 bool FxPlayerMobile::LoadNextMovie(bool prev)
@@ -153,11 +238,15 @@ bool FxPlayerMobile::LoadNextMovie(bool prev)
 
 bool FxPlayerMobile::PrepareMovie(MovieDef* pmoviedef, Movie* pview)
 {
-	SF_UNUSED(pmoviedef);
+    SF_UNUSED(pmoviedef);
 
     pview->SetMultitouchInterface(Ptr<MultitouchInterface>(*new FxPlayerMultitouchInterface()));
 
     pview->SetVirtualKeyboardInterface(Ptr<VirtualKeyboardInterface>(*new FxPlayerVirtualKeyboardInterface()));
+
+    pview->SetAccelerometerInterface(Ptr<AccelerometerInterface>(*new FxPlayerAccelerometerInterface(this)));
+
+    pview->SetGeolocationInterface(Ptr<GeolocationInterface>(*new FxPlayerGeolocationInterface(this)));
 
     return 1;
 }
@@ -165,7 +254,7 @@ bool FxPlayerMobile::PrepareMovie(MovieDef* pmoviedef, Movie* pview)
 void FxPlayerMobile::InitArgDescriptions(Args* args)
 {
     BaseClass::InitArgDescriptions(args);
-	ArgDesc options []=
+    ArgDesc options []=
     {
         //      {"","--------------spacer example------------------\n","",FxCmdOption::Spacer,""},
         {"",    "FileName",  Args::StringOption | Args::Positional, NULL, "GFX or SWF file to load at startup"},
@@ -178,7 +267,7 @@ void FxPlayerMobile::InitArgDescriptions(Args* args)
 
 bool FxPlayerMobile::OnArgs(const Platform::Args& args, Platform::Args::ParseResult parseResult)
 {
-	SF_UNUSED(parseResult);
+    SF_UNUSED(parseResult);
 
     if (args.HasValue("FileName"))
     {
@@ -196,6 +285,9 @@ void FxPlayerMobile::OnDropFiles(const String& NextFile)
     // Unload current movie. If it fails we will see blank screen.
     pMovieDef = 0;
     pMovie = 0;
+#ifdef SF_USE_ANE
+    mLoader.GetExtensionContextInterface()->SetMovie(0);
+#endif
 
     if (!mLoader.GetMovieInfo(NextFile, &NewMovieInfo))
     {
@@ -227,6 +319,10 @@ void FxPlayerMobile::OnDropFiles(const String& NextFile)
     pMovie = pNewMovie;
     mMovieInfo = NewMovieInfo;
 
+#ifdef SF_USE_ANE
+    mLoader.GetExtensionContextInterface()->SetMovie(pMovie);
+#endif
+
     // init the first frame
     ResetViewport();
     pNewMovie->SetViewport(mViewport);
@@ -237,28 +333,34 @@ void FxPlayerMobile::OnDropFiles(const String& NextFile)
 
     pNewMovie->SetEdgeAAMode(EdgeAA ? Render::EdgeAA_On : Render::EdgeAA_Disable);
 
-
-
     pRenderThread->AddDisplayHandle(pMovie->GetDisplayHandle(), Platform::RenderThread::DHCAT_Normal,
                                     true, 0, Windows[ContentWindow].pWindow);
 
     MovieLastTime = Timer::GetTicks()/1000;
     SetFrameTime(0.001f);
 
-    const char *p = FileName.ToCStr();
-    const char *pname = p;
-    while (*p)
+    if (pMovie != NULL && pMovie->IsValid())
     {
-        if (*p == '/' || *p == '\\')
-            pname = p+1;
-        p++;
+        const char *p = FileName.ToCStr();
+        const char *pname = p;
+        while (*p)
+        {
+            if (*p == '/' || *p == '\\')
+                pname = p+1;
+            p++;
+        }
+        FilenameText.SetText(pname);
     }
-    FilenameText.SetText(pname);
     return;
 }
 
 void FxPlayerMobile::SetHudPanelMode()
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+
     if (ContentWindow != HudWindow)
     {
         if (HudMode != 1)
@@ -306,6 +408,11 @@ static const char* ButtonLabels[] = {0, "Next", "Previous", "Profile", "Pause", 
 // HUD Handler
 void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const Value* args, unsigned argCount)
 {
+    if (pMovie != NULL && !pMovie->IsValid())
+    {
+        return;
+    }
+    
     if (pmovieView == pHudMovie)
     {
         if (argCount > 0)
@@ -330,17 +437,17 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
                 break;
 
             case Button_Batch:
-                ProfileMode = (ProfileMode == FxRenderThread::Profile_Batch
-                    ? FxRenderThread::Profile_None : FxRenderThread::Profile_Batch);
+                ProfileMode = (ProfileMode == Render::Profile_Batch
+                    ? Render::Profile_None : Render::Profile_Batch);
                 Buttons[ButtonIndex[Button_Overdraw]].SetMember("toggled", false);
-                Buttons[button].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Batch));
+                Buttons[button].SetMember("toggled", (ProfileMode == Render::Profile_Batch));
                 pRenderThread->SetProfileMode(ProfileMode);
                 break;
             case Button_Overdraw:
-                ProfileMode = (ProfileMode == FxRenderThread::Profile_Overdraw
-                    ? FxRenderThread::Profile_None : FxRenderThread::Profile_Overdraw);
+                ProfileMode = (ProfileMode == Render::Profile_Overdraw
+                    ? Render::Profile_None : Render::Profile_Overdraw);
                 Buttons[ButtonIndex[Button_Batch]].SetMember("toggled", false);
-                Buttons[button].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Overdraw));
+                Buttons[button].SetMember("toggled", (ProfileMode == Render::Profile_Overdraw));
                 pRenderThread->SetProfileMode(ProfileMode);
                 break;
 
@@ -358,20 +465,20 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
                 break;
 
             case Button_CurveTol:
-				ButtonIcons[ButtonIndex[Button_CurveTol]].GetMember("curve", &CurveText);
+                ButtonIcons[ButtonIndex[Button_CurveTol]].GetMember("curve", &CurveText);
 
-				CurveTolerancePosition++;
-				if (CurveTolerancePosition >= 5)
-					CurveTolerancePosition = 0;
-					
-				pRenderThread->GetToleranceParams(&tolParams);
-				tolParams.CurveTolerance = CurveTolerances[CurveTolerancePosition];
-				pRenderThread->SetToleranceParams(tolParams);
+                CurveTolerancePosition++;
+                if (CurveTolerancePosition >= 5)
+                    CurveTolerancePosition = 0;
+                    
+                pRenderThread->GetToleranceParams(&tolParams);
+                tolParams.CurveTolerance = CurveTolerances[CurveTolerancePosition];
+                pRenderThread->SetToleranceParams(tolParams);
 
-				char buf[64];
-				Format(buf, "{0}", CurveTolerancePosition + 1);
-				CurveText.SetText(buf);
-				break;
+                char buf[64];
+                Format(buf, "{0}", CurveTolerancePosition + 1);
+                CurveText.SetText(buf);
+                break;
 
             case Button_LockOrient:
                 LockOrientation = !LockOrientation;
@@ -471,7 +578,7 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
         }
         else if (!strcmp(methodName, "register"))
         {
-			HudMode = args[0].GetInt();
+            HudMode = args[0].GetInt();
             Panel = args[1];
             HiddenFpsText = args[2];
             FilenameText = args[3];
@@ -510,7 +617,7 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
                 SetButton(8, Button_Batch);
                 SetButton(9, Button_Overdraw);
                 SetButton(10, Button_EdgeAA);
-				
+                
                 SetButton(11, Button_CurveTol);
             }
             else // Dashboard view
@@ -537,7 +644,7 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
                     SetButton(10, Button_Wireframe);
 
                 SetButton(11, Button_EdgeAA);
-				SetButton(12, Button_CurveTol);
+                SetButton(12, Button_CurveTol);
             }
 
             for (int i = 0; i < (HudMode == 1 ? 12 : 14); i++)
@@ -551,7 +658,7 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
                     Value label;
                     Buttons[i].GetMember("label", &label);
                     label.SetText(ButtonLabels[ButtonFunctions[i]]);
-				}
+                }
                 else
                 {
                     Value::DisplayInfo disp;
@@ -568,23 +675,23 @@ void FxPlayerMobile::Callback(Movie* pmovieView, const char* methodName, const V
                 Buttons[ButtonIndex[Button_Pause]].SetMember("toggled", Wireframe);
             Buttons[ButtonIndex[Button_StageClip]].SetMember("toggled", StageClipping);
 
-            Buttons[ButtonIndex[Button_Batch]].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Batch));
-            Buttons[ButtonIndex[Button_Overdraw]].SetMember("toggled", (ProfileMode == FxRenderThread::Profile_Overdraw));
+            Buttons[ButtonIndex[Button_Batch]].SetMember("toggled", (ProfileMode == Render::Profile_Batch));
+            Buttons[ButtonIndex[Button_Overdraw]].SetMember("toggled", (ProfileMode == Render::Profile_Overdraw));
 
             if (FastForward)
                 ButtonIcons[ButtonIndex[Button_Profile]].GotoAndStop("fastforward");
             else if (MeasurePerformance)
                 ButtonIcons[ButtonIndex[Button_Profile]].GotoAndStop("profile");
 
-			if (ButtonIndex[Button_CurveTol] >= 0)
-			{
-				Value tfCurve;
-				ButtonIcons[ButtonIndex[Button_CurveTol]].GetMember("curve", &CurveText);
+            if (ButtonIndex[Button_CurveTol] >= 0)
+            {
+                Value tfCurve;
+                ButtonIcons[ButtonIndex[Button_CurveTol]].GetMember("curve", &CurveText);
 
-				char buf[64];
-				Format(buf, "{0}", CurveTolerancePosition + 1);
-				CurveText.SetText(buf);
-			}
+                char buf[64];
+                Format(buf, "{0}", CurveTolerancePosition + 1);
+                CurveText.SetText(buf);
+            }
 
             Value label;
             // Tabs
@@ -674,14 +781,16 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
     LockOrientation = 1;
     StageClipping = 0;
     Wireframe = 0;
-    ProfileMode = FxRenderThread::Profile_None;
+    ProfileMode = Render::Profile_None;
     Width = config.ViewSize.Width;
     Height = config.ViewSize.Height;
     NeedsOrientation = config.HasFlag(View_UseOrientation);
     Orientation = config.Orientation;
-	CurveTolerancePosition = 0;
+    CurveTolerancePosition = 0;
+    Windows[1].pWindow = 0;
 
     config.SetFlag(View_Stereo, 1);
+    SetOrientationMode(!LockOrientation);
 
     // Enable progressive loading
 #ifdef SF_ENABLE_THREADS
@@ -697,27 +806,14 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
 
     mLoader.SetExternalInterface(this);
 
-    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry();
-#ifdef SF_ENABLE_LIBJPEG
-    pimgReg->AddHandler(&SF::Render::JPEG::FileReader::Instance);
+#ifdef SF_USE_ANE
+    mLoader.SetExtensionContextInterface(Ptr<ExtensionContextInterface>(*new FxPlayerExtensionContextInterface(this)));
 #endif
-#ifdef SF_ENABLE_LIBPNG
-    pimgReg->AddHandler(&SF::Render::PNG::FileReader::Instance);
-#endif
-    pimgReg->AddHandler(&SF::Render::PVR::FileReader::Instance);
-    pimgReg->AddHandler(&SF::Render::TGA::FileReader::Instance);
-#if defined(SF_OS_ANDROID)
-    pimgReg->AddHandler(&SF::Render::KTX::FileReader::Instance);
-#endif
-#if defined (SF_OS_PSVITA) || defined(SF_OS_ANDROID)
-    pimgReg->AddHandler(&SF::Render::DDS::FileReader::Instance);
-#endif
-#if defined (SF_OS_WIIU)
-	pimgReg->AddHandler(&SF::Render::GTX::FileReader::Instance);
-#endif
-#if defined (SF_OS_PSVITA)
-	pimgReg->AddHandler(&SF::Render::GXT::FileReader::Instance);
-#endif
+
+    Ptr<FxPlayerUrlNavigator> purlnav = *new FxPlayerUrlNavigator();
+    mLoader.SetUrlNavigator(purlnav);
+
+    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry(GFx::ImageFileHandlerRegistry::AddDefaultHandlers);
     mLoader.SetImageFileHandlerRegistry(pimgReg);
 
 #if defined(GFX_ENABLE_SOUND)
@@ -750,7 +846,6 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
     Ptr<SharedObjectManagerBase> psharedobjs = *new FxSharedObjectManager(savePath);
     mLoader.SetSharedObjectManager(psharedobjs);
 #endif  // GFX_AS2_ENABLE_SHAREDOBJECT
-
 
     OnInitHelper(config, "FxPlayer");
     ContentDir.Reread(GetContentDirectory(), "*.swf");
@@ -816,7 +911,7 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
     fontCacheConfig.MaxSlotHeight  = 100;
     //fontCacheConfig.SlotPadding    = 2;
 
-    pRenderThread->SetFontCacheConfig(fontCacheConfig);
+    pRenderThread->SetGlyphCacheParams(fontCacheConfig);
 
     // Multithreaded loading with single threading rendering is not properly supported
     // because of RTCommandQueue. Disable creating textures on load.
@@ -839,7 +934,7 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
     {
         pHudMovie = *pHudDef->CreateInstance();
 
-        if (pHudMovie)
+        if (pHudMovie && pHudMovie->IsValid())
         {
             pRenderThread->AddDisplayHandle(pHudMovie->GetDisplayHandle(), Platform::RenderThread::DHCAT_Overlay,
                                             true, 0, pHudWindow);
@@ -862,6 +957,9 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
             pMovie = *pMovieDef->CreateInstance(false, 0, NULL, pRenderThread);
             if (pMovie)
             {
+#ifdef SF_USE_ANE
+                mLoader.GetExtensionContextInterface()->SetMovie(pMovie);
+#endif
                 // implicitly disable action error reporting
                 Ptr<ActionControl> pactionControl = *new ActionControl();
                 pactionControl->SetActionErrorSuppress(true);
@@ -875,26 +973,35 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
                 pMovie->Advance(0, 0);
                 pMovie->HandleEvent(GFx::Event::SetFocus);
                 pMovie->SetMouseCursorCount(1);
+                
+                // init EdgeAA and CurveTolerance
+                pMovie->SetEdgeAAMode(EdgeAA ? Render::EdgeAA_On : Render::EdgeAA_Disable);
+                pRenderThread->GetToleranceParams(&tolParams);
+                tolParams.CurveTolerance = CurveTolerances[CurveTolerancePosition];
+                pRenderThread->SetToleranceParams(tolParams);
 
                 pRenderThread->AddDisplayHandle(pMovie->GetDisplayHandle());
 
-                const char *p = FileName.ToCStr();
-                const char *pname = p;
-                while (*p)
+                if (pMovie->IsValid())
                 {
-                    if (*p == '/' || *p == '\\')
-                        pname = p+1;
-                    p++;
-                }
-                FilenameText.SetText(pname);
+                    const char *p = FileName.ToCStr();
+                    const char *pname = p;
+                    while (*p)
+                    {
+                        if (*p == '/' || *p == '\\')
+                            pname = p+1;
+                        p++;
+                    }
+                    FilenameText.SetText(pname);
 
-                // Tell the directory implementation of the current filename.
+                    // Tell the directory implementation of the current filename.
 #if !defined (SF_OS_IPHONE)
-                // Using FileName for iOS will break document loading via iTunes
-                ContentDir.SetCurrentFile(FileName);
+                    // Using FileName for iOS will break document loading via iTunes
+                    ContentDir.SetCurrentFile(FileName);
 #else
-                ContentDir.SetCurrentFile(pname);
+                    ContentDir.SetCurrentFile(pname);
 #endif //SF_OS_IPHONE
+                }
             }
         }
         else
@@ -910,42 +1017,35 @@ bool FxPlayerMobile::OnInit(Platform::ViewConfig& config)
     LastLoggedFps = MovieLastTime = Timer::GetTicks()/1000;
     FrameCount = -1;
 
+
+    // pGestureManager = 0;        // uncomment to disable RECOGNIZE_GESTURES (use native gesture handlers instead)
+
     return 1;
-}
-
-void FxPlayerMobile::OnPause()
-{
-    if (pMovie)
-    {
-        AppLifecycleEvent event (AppLifecycleEvent::OnPause);
-        pMovie->HandleEvent(event);
-    }
-}
-
-void FxPlayerMobile::OnResume()
-{
-    if (pMovie)
-    {
-        AppLifecycleEvent event (AppLifecycleEvent::OnResume);
-        pMovie->HandleEvent(event);
-    }
 }
 
 void FxPlayerMobile::OnShutdown()
 {
-    HiddenFpsText = Panel = FilenameText = CurveText = Value();
-    for (int i = 0; i < 14; i++)
+    if ((pHudMovie != NULL && pHudMovie->IsValid()) ||
+        (pMovie != NULL && pMovie->IsValid()))
     {
-        Buttons[i] = Value();
-        ButtonIcons[i] = Value();
+        HiddenFpsText = Panel = FilenameText = CurveText = Value();
+        for (int i = 0; i < 14; i++)
+        {
+            Buttons[i] = Value();
+            ButtonIcons[i] = Value();
+        }
+        for (int i = 0; i < 10; i++)
+            StatText[i] = Value();
+        for (int i = 0; i < 3; i++)
+        {
+            Sliders[i] = Value();
+            SliderValues[i] = Value();
+        }
     }
-    for (int i = 0; i < 10; i++)
-        StatText[i] = Value();
-    for (int i = 0; i < 3; i++)
-    {
-        Sliders[i] = Value();
-        SliderValues[i] = Value();
-    }
+    
+#ifdef SF_USE_ANE
+    mLoader.GetExtensionContextInterface()->SetMovie(0);
+#endif
 
     pHudMovie = 0;
     pMovie = 0;
@@ -1002,7 +1102,7 @@ SizeF FxPlayerMobile::GetMovieScaleSize()
 // Advances GFx animation and draws the scene.
 void FxPlayerMobile::OnUpdateFrame(bool needDraw)
 {
-	SF_UNUSED(needDraw);
+    SF_UNUSED(needDraw);
 
     UInt64  time    = Timer::GetTicks()/1000;
 
@@ -1037,13 +1137,19 @@ void FxPlayerMobile::OnUpdateFrame(bool needDraw)
 
     AdvanceAndDisplayHud(time);
 
-    pRenderThread->WaitForOutstandingDrawFrame();
-    pRenderThread->DrawFrame();
+    MovieLastTime = time;
+    
+    AppImplBase* pimpl = FxPlayerMobile::pApp->GetAppImpl();
+    if (pimpl->IsDisplayActive())
+    {
+        pRenderThread->WaitForOutstandingDrawFrame();
+        pRenderThread->DrawFrame();
+    }
 }
 
 void FxPlayerMobile::AdvanceAndDisplayHud(UInt64 time)
 {
-    if (pHudMovie)
+    if (pHudMovie && pHudMovie->IsValid())
     {
         if ((time - LastLoggedFps > 1000) && FrameCount && ((HudVisible) || MeasurePerformance))
         {
@@ -1097,13 +1203,17 @@ void FxPlayerMobile::AdvanceAndDisplayHud(UInt64 time)
     {
         pHudMovie->Advance(/*((float)(time - MovieLastTime)) / 1000.0f*/ 0.5f);
     }
-
-    MovieLastTime = time;
 }
 
 void FxPlayerMobile::OnMouseButton(unsigned inputSource, unsigned button, bool downFlag, const Point<int> &pos, KeyModifiers modifiers)
 {
-	SF_UNUSED(modifiers);
+    SF_UNUSED(modifiers);
+
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
 
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned mouseIndex = inputSource & Platform::InputController_Mask;
@@ -1132,7 +1242,13 @@ void FxPlayerMobile::OnMouseButton(unsigned inputSource, unsigned button, bool d
 
 void FxPlayerMobile::OnMouseMove(unsigned inputSource, const Point<int> &pos, KeyModifiers modifiers)
 {
-	SF_UNUSED(modifiers);
+    SF_UNUSED(modifiers);
+
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
 
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned mouseIndex = inputSource & Platform::InputController_Mask;
@@ -1157,7 +1273,13 @@ void FxPlayerMobile::OnMouseMove(unsigned inputSource, const Point<int> &pos, Ke
 void FxPlayerMobile::OnMouseWheel(unsigned inputSource, float zdelta,
                                   const Point<int>& pos, KeyModifiers mods)
 {
-	SF_UNUSED(mods);
+    SF_UNUSED(mods);
+
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
 
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned mouseIndex = inputSource & Platform::InputController_Mask;
@@ -1176,6 +1298,12 @@ void FxPlayerMobile::OnKey(unsigned inputSource, KeyCode key, unsigned wcharCode
 {
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned kbIndex = inputSource & Platform::InputController_Mask;
+
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
 
     if (!down)
         switch (key)
@@ -1204,6 +1332,12 @@ void FxPlayerMobile::OnKey(unsigned inputSource, KeyCode key, unsigned wcharCode
 
 void FxPlayerMobile::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool downFlag)
 {
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     if (!pMovie)
         return;
     switch(keyCode)
@@ -1272,6 +1406,12 @@ void FxPlayerMobile::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool down
 
 void FxPlayerMobile::OnPadStick(unsigned inputSource, PadKeyCode padCode, float xpos, float ypos)
 {
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     unsigned windowIndex = inputSource >> Platform::InputWindow_Shift;
     unsigned controllerIdx = inputSource & Platform::InputController_Mask;
 
@@ -1292,6 +1432,12 @@ PointF FxPlayerMobile::AdjustInputPoint(int x, int y)
 
 void FxPlayerMobile::OnTouchBegin(unsigned window, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary)
 {
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     TouchEvent event(GFx::Event::TouchBegin, id, p.x, p.y, (float)contact.x, (float)contact.y, primary);
 
@@ -1299,34 +1445,84 @@ void FxPlayerMobile::OnTouchBegin(unsigned window, unsigned id, const Point<int>
         (TouchDown || pHudMovie->HitTest(p.x, p.y, Movie::HitTest_ShapesNoInvisible)))
     {
         pHudMovie->HandleEvent(event);
+        if (pGestureManager)
+        {
+            pGestureManager->SetMovie(pHudMovie);
+            pGestureManager->ProcessDown(id, pos, p);
+        }
         TouchDown = true;
     }
     else if (pMovie && ((int)(window >> Platform::InputWindow_Shift) == ContentWindow))
+    {
         pMovie->HandleEvent(event);
+        if (pGestureManager)
+        {
+            pGestureManager->SetMovie(pMovie);
+            pGestureManager->ProcessDown(id, pos, p);
+        }
+    }
 }
 void FxPlayerMobile::OnTouchEnd(unsigned window, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary)
 {
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     TouchEvent event(GFx::Event::TouchEnd, id, p.x, p.y, (float)contact.x, (float)contact.y, primary);
 
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
     {
         pHudMovie->HandleEvent(event);
+        if (pGestureManager)
+        {
+            pGestureManager->SetMovie(pHudMovie);
+            pGestureManager->ProcessUp(id, pos, p);
+        }
         if (primary)
             TouchDown = false;
     }
     else if (pMovie && ((int)(window >> Platform::InputWindow_Shift) == ContentWindow))
+    {
         pMovie->HandleEvent(event);
+        if (pGestureManager)
+        {
+            pGestureManager->SetMovie(pMovie);
+            pGestureManager->ProcessUp(id, pos, p);
+        }
+    }
 }
 void FxPlayerMobile::OnTouchMove(unsigned window, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary)
 {
+    if ((pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     TouchEvent event(GFx::Event::TouchMove, id, p.x, p.y, (float)contact.x, (float)contact.y, primary);
 
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
+    {
         pHudMovie->HandleEvent(event);
+        if (pGestureManager)
+        {
+            pGestureManager->SetMovie(pHudMovie);
+            pGestureManager->ProcessMove(id, pos, p);
+        }
+    }
     else if (pMovie && ((int)(window >> Platform::InputWindow_Shift) == ContentWindow))
+    {
         pMovie->HandleEvent(event);
+        if (pGestureManager)
+        {
+            pGestureManager->SetMovie(pMovie);
+            pGestureManager->ProcessMove(id, pos, p);
+        }
+    }
 }
 
 void FxPlayerMobile::OnGestureBegin(unsigned window, UInt32 gestureMask, const Point<int>& pos,
@@ -1334,6 +1530,12 @@ void FxPlayerMobile::OnGestureBegin(unsigned window, UInt32 gestureMask, const P
                                     const PointF& scale,
                                     float rotation)
 {
+    if (pGestureManager || (pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
     Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     GestureEvent event(GFx::Event::GestureBegin, gestureMask, p.x, p.y,
                        translation.x, translation.y, scale.x, scale.y, rotation);
@@ -1353,8 +1555,14 @@ void FxPlayerMobile::OnGesture(unsigned window, UInt32 gestureMask, const Point<
                                     const PointF& scale,
                                     float rotation)
 {
-    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
 
+    if (pGestureManager || (pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
+    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     GestureEvent event(gestureMask & GestureBit_Swipe ? GFx::Event::GestureSimple
                        : GFx::Event::Gesture, gestureMask, p.x, p.y,
                        translation.x, translation.y, scale.x, scale.y, rotation);
@@ -1370,8 +1578,14 @@ void FxPlayerMobile::OnGesture(unsigned window, UInt32 gestureMask, const Point<
 
 void FxPlayerMobile::OnGestureEnd(unsigned window, UInt32 gestureMask, const Point<int>& pos)
 {
-    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
 
+    if (pGestureManager || (pHudMovie != NULL && !pHudMovie->IsValid()) ||
+        (pMovie != NULL && !pMovie->IsValid()))
+    {
+        return;
+    }
+
+    Render::PointF p = AdjustInputPoint(pos.x, pos.y);
     GestureEvent event(GFx::Event::GestureEnd, gestureMask, p.x, p.y);
 
     if (pHudMovie && ((int)(window >> Platform::InputWindow_Shift) == HudWindow) && TouchDown)
@@ -1387,11 +1601,11 @@ void FxPlayerMobile::OnSize(const Size<unsigned>& size)
 {
     Width = size.Width;
     Height = size.Height;
-/*
+    /*
     StereoParam.DisplayAspectRatio = float(Width)/float(Height);
     if (UseStereo != Stereo_None)
         pHAL->SetStereoParams(StereoParam);
-*/
+    */
     if (NeedsOrientation)
         OnOrientation(Orientation);
     else
@@ -1411,6 +1625,74 @@ void FxPlayerMobile::OnConfigurationChange(const ViewConfig& config)
         UseStereo = Platform::Stereo_None;
 
     pRenderThread->UpdateConfiguration();
+}
+
+void FxPlayerMobile::OnFocus(bool setFocus, KeyModifiers)
+{
+    // By default, if we receive or lose focus, unpause or pause the movie (eg. pause the game). 
+    // On Android, this will be called from the onWindowFocusChanged callback.
+    if (pMovie)
+        pMovie->SetPause(!setFocus);
+}
+
+void FxPlayerMobile::OnAccelerometerUpdate(int idAcc, double timestamp, double accelerationX, double accelerationY, double accelerationZ)
+{
+    if (!pMovie)
+        return;
+    
+    AccelerometerEvent event(GFx::Event::Accelerometer, idAcc, timestamp, accelerationX, accelerationY, accelerationZ);
+    pMovie->HandleEvent(event);
+}
+
+void FxPlayerMobile::OnPause()
+{
+    if (pMovie)
+    {
+        //iOS sockets do not persist when the application becomes inactive. 
+        //The socket connection needs to be closed when the application is about to go inactive.
+#if defined (SF_OS_IPHONE) && !defined SF_BUILD_SHIPPING
+        AmpServer::GetInstance().CloseConnection();
+#endif
+        AppLifecycleEvent event (AppLifecycleEvent::OnPause);
+        pMovie->HandleEvent(event);
+        
+        pMovie->SetPause(true);
+    }
+}
+
+void FxPlayerMobile::OnResume()
+{
+    if (pMovie)
+    {
+		//iOS sockets do not persist when the application becomes inactive. 
+		//The socket connection needs to be re-opened when the application is about resume.
+#if defined (SF_OS_IPHONE) && !defined SF_BUILD_SHIPPING
+        AmpServer::GetInstance().OpenConnection();
+#endif
+        AppLifecycleEvent event (AppLifecycleEvent::OnResume);
+        pMovie->HandleEvent(event);
+        
+        pMovie->SetPause(false);
+    }
+}
+
+void FxPlayerMobile::OnGeolocationUpdate(int idGeo, double latitude, double longitude, double altitude, double hAccuracy, double vAccuracy, double speed, double heading, double timestamp)
+{
+    if (!pMovie)
+        return;
+    
+    GeolocationEvent event(GFx::Event::Geolocation, idGeo, latitude, longitude, altitude, hAccuracy, vAccuracy, speed, heading, timestamp);
+    pMovie->HandleEvent(event);
+}
+
+
+void FxPlayerMobile::OnStatus(String* code, String* level, String* extensionId, String* contextId)
+{
+    if (!pMovie)
+        return;
+
+    StatusEvent event(GFx::Event::Status, code, level, extensionId, contextId);
+    pMovie->HandleEvent(event);
 }
 
 void FxPlayerMobile::Window::UpdateViewport(const Platform::ViewConfig& vc)
@@ -1480,13 +1762,47 @@ bool FxPlayerMobile::OnOrientation(unsigned orientation, bool force)
     if (LockOrientation && !force)
         return false;
 
-    Orientation = orientation;
+	Orientation = orientation;
 
+#if defined (SF_OS_WINMETRO)
     Platform::ViewConfig newconfig;
     Windows[0].pWindow->GetViewConfig(&newconfig);
     Windows[0].UpdateViewport(newconfig);
 
     ResetViewport();
+#else
+	if (pMovie)
+    {
+        switch(orientation)
+        {
+            case Render::Viewport::View_Orientation_L90:
+            {
+                OrientationEvent event(OrientationEvent::RotatedLeft);
+                pMovie->HandleEvent(event);
+                break;
+            }
+            case Render::Viewport::View_Orientation_R90:
+            {
+                OrientationEvent event(OrientationEvent::RotatedRight);
+                pMovie->HandleEvent(event);
+                break;
+            }
+            case Render::Viewport::View_Orientation_180:
+            {
+                OrientationEvent event(OrientationEvent::UpsideDown);
+                pMovie->HandleEvent(event);
+                break;
+            }
+            case Render::Viewport::View_Orientation_Normal:
+            default:
+            {
+                OrientationEvent event(OrientationEvent::Default);
+                pMovie->HandleEvent(event);
+                break;
+            }
+        }
+	}
+#endif
     return true;
 }
 
@@ -1527,7 +1843,8 @@ void FxPlayerMobile::NotifyShowVirtualKeyboard(const Render::RectF& keyboardRect
         {
             visRect.x1 = keyboardRect.x2;
             visRect.x2 = screenRect.x2;
-        }*/
+        }
+        */
         visRect.x1 = screenRect.x1;
         visRect.x2 = screenRect.x2;
         pMovie->MakeAreaVisible(visRect, textBox, GFx::Movie::MAVF_ScaleUp50);
@@ -1543,13 +1860,13 @@ void FxPlayerMobile::NotifyHideVirtualKeyboard()
     }
 }
 
-
 #if defined(GFX_ENABLE_SOUND)
 void FxPlayerMobile::InitializeSound()
 {
 #if defined(GFX_SOUND_FMOD)
     if (!pSoundSystem)
         pSoundSystem = new FxSoundFMOD;
+    pSoundSystem->pFileOpener = FxPlayerMobile::pApp->mLoader.GetFileOpener();
     if (!pSoundSystem->IsInitialized())
     {
         if (!pSoundSystem->Initialize(

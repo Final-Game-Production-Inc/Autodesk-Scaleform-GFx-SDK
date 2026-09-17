@@ -7,6 +7,7 @@ Created     :   2007
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,7 +35,6 @@ class LinearInterpolator
 {
 public:
     //--------------------------------------------------------------------
-    LinearInterpolator() {}
     LinearInterpolator(int y1, int y2, int count) :
     Cnt(count),
         Lft((y2 - y1) / count),
@@ -98,22 +98,25 @@ class ImageFilterLut
 {
 public:
     template<class FilterF> void Calculate(const FilterF& filter,
-                                           bool normalization=true)
+        bool normalization = true)
     {
         float r = filter.GetRadius();
         reallocLut(r);
         unsigned i;
-        unsigned pivot = GetDiameter() << (ImgSubpixelShift - 1);
+        // 核心修改：显式转换枚举为int
+        unsigned pivot = GetDiameter() << (static_cast<int>(ImgSubpixelShift) - 1);
         for (i = 0; i < pivot; i++)
         {
-            float x = float(i) / float(ImgSubpixelScale);
+            // 可选：枚举转int
+            float x = float(i) / float(static_cast<int>(ImgSubpixelScale));
             float y = filter.GetWeight(x);
-            WeightArray[pivot + i] = 
-            WeightArray[pivot - i] = SInt16(Alg::IRound(y * ImgFilterScale));
+            WeightArray[pivot + i] =
+                WeightArray[pivot - i] = SInt16(Alg::IRound(y * static_cast<float>(ImgFilterScale)));;
         }
-        unsigned end = (GetDiameter() << ImgSubpixelShift) - 1;
+        // 核心修改：显式转换枚举为int
+        unsigned end = (GetDiameter() << static_cast<int>(ImgSubpixelShift)) - 1;
         WeightArray[0] = WeightArray[end];
-        if (normalization) 
+        if (normalization)
             Normalize();
     }
 

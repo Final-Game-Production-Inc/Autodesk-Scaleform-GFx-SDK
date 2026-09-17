@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -264,31 +265,44 @@ template <> const TFunc_Classes_IMEEx_GetCompositionString::TMethod TFunc_Classe
 
 namespace ClassTraits { namespace fl_gfx
 {
-    const ThunkInfo IMEEx::ti[IMEEx::ThunkInfoNum] = {
-        {TFunc_Classes_IMEEx_getIMECandidateListStyle::Func, &AS3::fl_gfx::IMECandidateListStyleTI, "getIMECandidateListStyle", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_IMEEx_setIMECandidateListStyle::Func, NULL, "setIMECandidateListStyle", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_IMEEx_SendLangBarMessage::Func, NULL, "SendLangBarMessage", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Classes_IMEEx_GetOSVersion::Func, &AS3::fl::StringTI, "GetOSVersion", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_IMEEx_GetCompositionString::Func, &AS3::fl::StringTI, "GetCompositionString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+    // const UInt16 IMEEx::tito[IMEEx::ThunkInfoNum] = {
+    //    0, 1, 3, 7, 8, 
+    // };
+    const TypeInfo* IMEEx::tit[9] = {
+        &AS3::fl_gfx::IMECandidateListStyleTI, 
+        NULL, &AS3::fl_gfx::IMECandidateListStyleTI, 
+        NULL, &AS3::fl_display::SpriteTI, &AS3::fl::StringTI, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
     };
-    IMEEx::IMEEx(VM& vm)
-    : Traits(vm, AS3::fl_gfx::IMEExCI)
+    const ThunkInfo IMEEx::ti[IMEEx::ThunkInfoNum] = {
+        {TFunc_Classes_IMEEx_getIMECandidateListStyle::Func, &IMEEx::tit[0], "getIMECandidateListStyle", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_IMEEx_setIMECandidateListStyle::Func, &IMEEx::tit[1], "setIMECandidateListStyle", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_IMEEx_SendLangBarMessage::Func, &IMEEx::tit[3], "SendLangBarMessage", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Classes_IMEEx_GetOSVersion::Func, &IMEEx::tit[7], "GetOSVersion", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_IMEEx_GetCompositionString::Func, &IMEEx::tit[8], "GetCompositionString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+    };
+
+    IMEEx::IMEEx(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::IMEEx::IMEEx()"
 //##protect##"ClassTraits::IMEEx::IMEEx()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::EventDispatcher(vm, AS3::fl_gfx::IMEExCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::IMEEx(*this));
 
     }
 
     Pickable<Traits> IMEEx::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) IMEEx(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) IMEEx(vm, AS3::fl_gfx::IMEExCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::IMEExCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -299,6 +313,11 @@ namespace fl_gfx
 {
     const TypeInfo IMEExTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::IMEEx::InstanceType),
+        ClassTraits::fl_gfx::IMEEx::ThunkInfoNum,
+        0,
+        0,
+        0,
         "IMEEx", "scaleform.gfx", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -306,10 +325,6 @@ namespace fl_gfx
     const ClassInfo IMEExCI = {
         &IMEExTI,
         ClassTraits::fl_gfx::IMEEx::MakeClassTraits,
-        ClassTraits::fl_gfx::IMEEx::ThunkInfoNum,
-        0,
-        0,
-        0,
         ClassTraits::fl_gfx::IMEEx::ti,
         NULL,
         NULL,

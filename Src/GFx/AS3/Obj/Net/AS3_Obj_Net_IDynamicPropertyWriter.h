@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -30,7 +31,14 @@ namespace fl_net
 {
     extern const TypeInfo IDynamicPropertyWriterTI;
     extern const ClassInfo IDynamicPropertyWriterCI;
+    extern const TypeInfo IDynamicPropertyOutputTI;
+    extern const ClassInfo IDynamicPropertyOutputCI;
 } // namespace fl_net
+namespace fl
+{
+    extern const TypeInfo ObjectTI;
+    extern const ClassInfo ObjectCI;
+} // namespace fl
 
 namespace ClassTraits { namespace fl_net
 {
@@ -56,17 +64,19 @@ namespace Classes { namespace fl_net
     
 namespace ClassTraits { namespace fl_net
 {
-    class IDynamicPropertyWriter : public Traits
+    class IDynamicPropertyWriter : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::IDynamicPropertyWriter"; }
 #endif
     public:
-        typedef Classes::fl_net::IDynamicPropertyWriter ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::Interface InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        IDynamicPropertyWriter(VM& vm);
+        IDynamicPropertyWriter(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

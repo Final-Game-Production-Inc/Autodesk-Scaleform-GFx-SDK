@@ -7,6 +7,7 @@ Created     :   May 5, 2003
 Authors     :   Michael Antonov, Andrew Reisse
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -88,7 +89,7 @@ public:
     {
     public:
         Mutex *pMutex;
-        Locker(Mutex *pmutex) { SF_UNUSED(pmutex); }
+        Locker(Mutex *pmutex) : pMutex(0) { SF_UNUSED(pmutex); }
     };
 };
 
@@ -330,7 +331,7 @@ protected:
             return *this;
         }
 
-        bool operator == (const HandlerStruct &src)
+        bool operator == (const HandlerStruct &src) const
         {
             return (Handler == src.Handler) && (pUserData==src.pUserData);
         }
@@ -862,7 +863,7 @@ public:
     //SF_EXPORT   virtual bool    TryAcquireCancel();
 
     // *** Debugging functionality
-#if (defined(SF_OS_WIN32) || defined(SF_OS_XBOX360)) && !defined(SF_OS_WINMETRO)
+#if ((defined(SF_OS_WIN32) || defined(SF_OS_XBOX360)) && !defined(SF_OS_WINMETRO)) || defined(SF_OS_ORBIS)
     virtual void    SetThreadName( const char* name );
 #else
     virtual void    SetThreadName( const char* name ) { SF_UNUSED(name); }

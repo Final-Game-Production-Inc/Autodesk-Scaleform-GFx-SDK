@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -578,8 +579,7 @@ bool TextPrimitiveBundle::addAndPinBatchLayers(TreeCacheText* textCache, TextMes
         // Create mask primitive and add entries to it.
         if (!pMaskPrimitive)
         {            
-            pMaskPrimitive = *SF_HEAP_AUTO_NEW(this)
-                MaskPrimitive(textCache->GetHAL(),  MaskPrimitive::Mask_Combinable);
+            pMaskPrimitive = *SF_HEAP_AUTO_NEW(this) MaskPrimitive();
         }
         if (pMaskPrimitive)
         {

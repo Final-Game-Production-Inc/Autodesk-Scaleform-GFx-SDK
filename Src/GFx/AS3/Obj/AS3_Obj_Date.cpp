@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -21,9 +22,9 @@ otherwise accompanies this software in either electronic or hard copy form.
 //##protect##"includes"
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX) || defined(SF_OS_XBOX360)
 #include <sys/timeb.h>
-# if defined(SF_OS_WIN32)
+#if defined(SF_OS_WIN32)
 #include <windows.h>
-# endif
+#endif
 #elif defined(SF_OS_PS3)
 #include <cell/rtc.h>
 #elif defined(SF_OS_WII)
@@ -37,6 +38,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include <sys/time.h>
 #endif
 
+#ifdef _DURANGO
+#include <time.h>
+#endif
+
 #include "Kernel/SF_MsgFormat.h"
 #include "GFx/GFx_ASUtils.h"
 #include "AS3_Obj_Namespace.h" // For namespace creation
@@ -48,12 +53,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl::Date, Instances::fl::Date::mid_AS3valueOf, Value::Number> TFunc_Instances_Date_AS3valueOf;
 typedef ThunkFunc1<Instances::fl::Date, Instances::fl::Date::mid_AS3setTime, Value::Number, Value::Number> TFunc_Instances_Date_AS3setTime;
 typedef ThunkFunc0<Instances::fl::Date, Instances::fl::Date::mid_AS3toString, ASString> TFunc_Instances_Date_AS3toString;
@@ -300,19 +299,19 @@ namespace Instances { namespace fl
     void Date::AS3getUTCMonth(Value::Number& result)
     {
 //##protect##"instance::Date::AS3getUTCMonth()"
-        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : MonthFromTime(TimeValue);
+        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : Value::Number(MonthFromTime(TimeValue));
 //##protect##"instance::Date::AS3getUTCMonth()"
     }
     void Date::AS3getUTCDate(Value::Number& result)
     {
 //##protect##"instance::Date::AS3getUTCDate()"
-        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : DateFromTime(TimeValue);
+        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : Value::Number(DateFromTime(TimeValue));
 //##protect##"instance::Date::AS3getUTCDate()"
     }
     void Date::AS3getUTCDay(Value::Number& result)
     {
 //##protect##"instance::Date::AS3getUTCDay()"
-        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : (Double)WeekDay(TimeValue);
+        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : Value::Number(WeekDay(TimeValue));
 //##protect##"instance::Date::AS3getUTCDay()"
     }
     void Date::AS3getUTCHours(Value::Number& result)
@@ -348,13 +347,13 @@ namespace Instances { namespace fl
     void Date::AS3getMonth(Value::Number& result)
     {
 //##protect##"instance::Date::AS3getMonth()"
-        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : MonthFromTime(LocalTime());
+        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : Value::Number(MonthFromTime(LocalTime()));
 //##protect##"instance::Date::AS3getMonth()"
     }
     void Date::AS3getDate(Value::Number& result)
     {
 //##protect##"instance::Date::AS3getDate()"
-        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : DateFromTime(LocalTime());
+        result = NumberUtil::IsNaN(TimeValue) ? TimeValue : Value::Number(DateFromTime(LocalTime()));
 //##protect##"instance::Date::AS3getDate()"
     }
     void Date::AS3getDay(Value::Number& result)
@@ -393,7 +392,7 @@ namespace Instances { namespace fl
         if (NumberUtil::IsNaN(TimeValue))        
             result = TimeValue;        
         else
-            result = (TimeValue - LocalTime()) / MsPerMinute;             
+            result = (TimeValue - LocalTime()) / static_cast<double>(MsPerMinute);
 //##protect##"instance::Date::AS3getTimezoneOffset()"
     }
     void Date::AS3getTime(Value::Number& result)
@@ -680,7 +679,7 @@ namespace Instances { namespace fl
     {
 //##protect##"instance::Date::timeSet()"
         SF_UNUSED1(result);
-        Value r;
+        Value::Number r;
         AS3setTime(r, value);
 //##protect##"instance::Date::timeSet()"
     }
@@ -737,8 +736,10 @@ namespace Instances { namespace fl
 
     Double Date::YearFromTime(Double time)
     {
-        int high = 1970 + (int) floor(time / (MsPerDay * 365.0));
-        int low  = 1970 + (int) floor(time / (MsPerDay * 366.0));        
+        constexpr double MsPerDay_Double = static_cast<double>(MsPerDay);
+
+        int high = 1970 + (int) floor(time / (MsPerDay_Double * 365.0));
+        int low  = 1970 + (int) floor(time / (MsPerDay_Double * 366.0));
         
         // Check if the date is negative (before 1970).
         if (high < low)
@@ -808,8 +809,12 @@ namespace Instances { namespace fl
     {
         if (NumberUtil::IsNaNOrInfinity(hour + minute + sec + ms))
             return NumberUtil::NaN();
-        Double time = toInt(hour) * MsPerHour + toInt(minute) * MsPerMinute +
-                      toInt(sec) * MsPerSecond + toInt(ms);   
+
+        // 核心修改：将枚举常量显式转换为 double 类型
+        Double time = toInt(hour) * static_cast<double>(MsPerHour) +
+            toInt(minute) * static_cast<double>(MsPerMinute) +
+            toInt(sec) * static_cast<double>(MsPerSecond) +
+            toInt(ms);
         return time;
     }
 
@@ -837,37 +842,37 @@ namespace Instances { namespace fl
 
     Double Date::TimeClip(Double time)
     {
-        if (NumberUtil::IsNaNOrInfinity(time) || (abs(time) > 8.64e15))
+        if (NumberUtil::IsNaNOrInfinity(time) || (fabs(time) > 8.64e15))
             return NumberUtil::NaN();
         return (time > 0.0) ? floor(time) : ceil(time);
     }
 
     Double Date::HourFromTime(Double time)
     {
-        Double val = fmod(floor(time / MsPerHour), 24);
+        Double val = fmod(floor(time / static_cast<double>(MsPerHour)), 24);
         if (val < 0)
-            val += HoursPerDay;
+            val += static_cast<double>(HoursPerDay);
         return val;
     }
     Double Date::MinFromTime(Double time)
     {
-        Double val = fmod(floor(time / MsPerMinute), MinutesPerHour);
+        Double val = fmod(floor(time / static_cast<double>(MsPerMinute)), MinutesPerHour);
         if (val < 0)
-            val += MinutesPerHour;
+            val += static_cast<double>(MinutesPerHour);
         return val;
     }
     Double Date::SecFromTime(Double time)
     {
-        Double val = fmod(floor(time / MsPerSecond), SecondsPerMinute);
+        Double val = fmod(floor(time / static_cast<double>(MsPerSecond)), SecondsPerMinute);
         if (val < 0)
-            val += SecondsPerMinute;
+            val += static_cast<double>(SecondsPerMinute);
         return val;
     }
     Double Date::MsFromTime(Double time)
     {
         Double val = fmod(time, MsPerSecond);
         if (val < 0)
-            val += MsPerSecond;
+            val += static_cast<double>(MsPerSecond);
         return val;
     }
 
@@ -877,7 +882,7 @@ namespace Instances { namespace fl
         Double  yearArg;
         if (!argv[0].Convert2Number(yearArg)) return 0;
 
-        Double  year   = (int(yearArg) > 99 || (int)yearArg < 0) ? yearArg : 1900.0 + yearArg;
+        Double  year   = (int(yearArg) > 99 || (int)yearArg < 0) ? yearArg : Double(1900.0) + yearArg;
         Double  month;
         if (!argv[1].Convert2Number(month)) return 0;
 
@@ -1085,6 +1090,13 @@ namespace Instances { namespace fl
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX) || defined(SF_OS_XBOX360)
             // Recalculate LocalTZA.
             // Daylight saving time IS reflected by LocalTZA.
+#ifdef _DURANGO
+            struct _timeb tm;
+            _ftime_s(&tm);
+            int daylight = 0;
+            _get_daylight(&daylight);
+            long bias = tm.timezone - daylight * 60;
+#else
             TIME_ZONE_INFORMATION tz;
             DWORD r = GetTimeZoneInformation(&tz);
             long bias = tz.Bias;
@@ -1094,7 +1106,7 @@ namespace Instances { namespace fl
             else if( r == TIME_ZONE_ID_DAYLIGHT)
                 bias += tz.DaylightBias; 
             // else leave the bias alone
-
+#endif
             localTZA = -MsPerMinute * bias;
 #endif
         }
@@ -1389,7 +1401,7 @@ parse_fail:
             {
                 Value arg;
 
-                if (!argv[0].Convert2PrimitiveValueUnsafe(arg, Value::hintString))
+                if (!argv[0].Convert2PrimitiveValueUnsafe(*GetStringManager().GetStringManager(), arg, Value::hintString))
                     // Exception.
                     return;
 
@@ -1425,22 +1437,24 @@ parse_fail:
         ftime(&t);
         TIME_ZONE_INFORMATION tz;
 
-#if 0
-        DWORD r = GetTimeZoneInformation(&tz);
-        long bias = tz.Bias;
+//#if 0
+        //DWORD r = GetTimeZoneInformation(&tz);
+        //long bias = tz.Bias;
 
-        if( r == TIME_ZONE_ID_STANDARD )
-            bias += tz.StandardBias; 
-        else if( r == TIME_ZONE_ID_DAYLIGHT)
-            bias += tz.DaylightBias; 
+         //  if( r == TIME_ZONE_ID_STANDARD )
+         //    bias += tz.StandardBias; 
+         //else if( r == TIME_ZONE_ID_DAYLIGHT)
+         //  bias += tz.DaylightBias; 
         // else leave the bias alone
+#ifdef _DURANGO
+        long bias = t.timezone;
 #else
         GetTimeZoneInformation(&tz);
         long bias = tz.Bias;
 #endif
 
-        *localTZA = -MsPerMinute * bias;
-        *timeValue= Double(t.time) * MsPerSecond + t.millitm;
+        *localTZA = -static_cast<int>(static_cast<double>(MsPerMinute) * bias);
+        *timeValue = static_cast<double>(t.time) * static_cast<double>(MsPerSecond) + t.millitm;
 
 #elif defined(SF_OS_PS3)
         CellRtcTick t, localt;
@@ -1476,7 +1490,7 @@ parse_fail:
         gettimeofday(&tv, &tz);
         long bias = tz.tz_minuteswest - (tz.tz_dsttime ? 60 : 0);
         *localTZA = -MsPerMinute * bias;
-        *timeValue= Double(tv.tv_sec) * MsPerSecond + (tv.tv_usec/1000);
+        *timeValue = double(tv.tv_sec) * MsPerSecond + (tv.tv_usec/1000);
         // SetDate(SInt64(tv.tv_sec) * 1000 + SInt64(tv.tv_usec/1000));
 
 #endif
@@ -1488,90 +1502,168 @@ parse_fail:
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 Date::tito[Date::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 48, 49, 51, 52, 54, 55, 57, 58, 60, 61, 63, 64, 66, 67, 69, 70, 72, 73, 75, 76, 78, 79, 81, 82, 84, 85, 87, 88, 89, 
+    // };
+    const TypeInfo* Date::tit[90] = {
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+    };
     const ThunkInfo Date::ti[Date::ThunkInfoNum] = {
-        {TFunc_Instances_Date_AS3valueOf::Func, &AS3::fl::NumberTI, "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3setTime::Func, &AS3::fl::NumberTI, "setTime", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Date_AS3toString::Func, &AS3::fl::StringTI, "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3toDateString::Func, &AS3::fl::StringTI, "toDateString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3toTimeString::Func, &AS3::fl::StringTI, "toTimeString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3toLocaleString::Func, &AS3::fl::StringTI, "toLocaleString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3toLocaleDateString::Func, &AS3::fl::StringTI, "toLocaleDateString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3toLocaleTimeString::Func, &AS3::fl::StringTI, "toLocaleTimeString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3toUTCString::Func, &AS3::fl::StringTI, "toUTCString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCFullYear::Func, &AS3::fl::NumberTI, "getUTCFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCMonth::Func, &AS3::fl::NumberTI, "getUTCMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCDate::Func, &AS3::fl::NumberTI, "getUTCDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCDay::Func, &AS3::fl::NumberTI, "getUTCDay", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCHours::Func, &AS3::fl::NumberTI, "getUTCHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCMinutes::Func, &AS3::fl::NumberTI, "getUTCMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCSeconds::Func, &AS3::fl::NumberTI, "getUTCSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getUTCMilliseconds::Func, &AS3::fl::NumberTI, "getUTCMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getFullYear::Func, &AS3::fl::NumberTI, "getFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getMonth::Func, &AS3::fl::NumberTI, "getMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getDate::Func, &AS3::fl::NumberTI, "getDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getDay::Func, &AS3::fl::NumberTI, "getDay", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getHours::Func, &AS3::fl::NumberTI, "getHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getMinutes::Func, &AS3::fl::NumberTI, "getMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getSeconds::Func, &AS3::fl::NumberTI, "getSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getMilliseconds::Func, &AS3::fl::NumberTI, "getMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getTimezoneOffset::Func, &AS3::fl::NumberTI, "getTimezoneOffset", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3getTime::Func, &AS3::fl::NumberTI, "getTime", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Date_AS3setFullYear::Func, &AS3::fl::NumberTI, "setFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 3},
-        {TFunc_Instances_Date_AS3setMonth::Func, &AS3::fl::NumberTI, "setMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_Date_AS3setDate::Func, &AS3::fl::NumberTI, "setDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Date_AS3setHours::Func, &AS3::fl::NumberTI, "setHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 4},
-        {TFunc_Instances_Date_AS3setMinutes::Func, &AS3::fl::NumberTI, "setMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 3},
-        {TFunc_Instances_Date_AS3setSeconds::Func, &AS3::fl::NumberTI, "setSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_Date_AS3setMilliseconds::Func, &AS3::fl::NumberTI, "setMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Date_AS3setUTCFullYear::Func, &AS3::fl::NumberTI, "setUTCFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 3},
-        {TFunc_Instances_Date_AS3setUTCMonth::Func, &AS3::fl::NumberTI, "setUTCMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_Date_AS3setUTCDate::Func, &AS3::fl::NumberTI, "setUTCDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Date_AS3setUTCHours::Func, &AS3::fl::NumberTI, "setUTCHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 4},
-        {TFunc_Instances_Date_AS3setUTCMinutes::Func, &AS3::fl::NumberTI, "setUTCMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 3},
-        {TFunc_Instances_Date_AS3setUTCSeconds::Func, &AS3::fl::NumberTI, "setUTCSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 2},
-        {TFunc_Instances_Date_AS3setUTCMilliseconds::Func, &AS3::fl::NumberTI, "setUTCMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Date_fullYearGet::Func, &AS3::fl::NumberTI, "fullYear", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_fullYearSet::Func, NULL, "fullYear", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_monthGet::Func, &AS3::fl::NumberTI, "month", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_monthSet::Func, NULL, "month", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_dateGet::Func, &AS3::fl::NumberTI, "date", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_dateSet::Func, NULL, "date", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_hoursGet::Func, &AS3::fl::NumberTI, "hours", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_hoursSet::Func, NULL, "hours", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_minutesGet::Func, &AS3::fl::NumberTI, "minutes", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_minutesSet::Func, NULL, "minutes", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_secondsGet::Func, &AS3::fl::NumberTI, "seconds", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_secondsSet::Func, NULL, "seconds", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_millisecondsGet::Func, &AS3::fl::NumberTI, "milliseconds", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_millisecondsSet::Func, NULL, "milliseconds", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_fullYearUTCGet::Func, &AS3::fl::NumberTI, "fullYearUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_fullYearUTCSet::Func, NULL, "fullYearUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_monthUTCGet::Func, &AS3::fl::NumberTI, "monthUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_monthUTCSet::Func, NULL, "monthUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_dateUTCGet::Func, &AS3::fl::NumberTI, "dateUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_dateUTCSet::Func, NULL, "dateUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_hoursUTCGet::Func, &AS3::fl::NumberTI, "hoursUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_hoursUTCSet::Func, NULL, "hoursUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_minutesUTCGet::Func, &AS3::fl::NumberTI, "minutesUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_minutesUTCSet::Func, NULL, "minutesUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_secondsUTCGet::Func, &AS3::fl::NumberTI, "secondsUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_secondsUTCSet::Func, NULL, "secondsUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_millisecondsUTCGet::Func, &AS3::fl::NumberTI, "millisecondsUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_millisecondsUTCSet::Func, NULL, "millisecondsUTC", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_timeGet::Func, &AS3::fl::NumberTI, "time", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_timeSet::Func, NULL, "time", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Date_timezoneOffsetGet::Func, &AS3::fl::NumberTI, "timezoneOffset", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_dayGet::Func, &AS3::fl::NumberTI, "day", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Date_dayUTCGet::Func, &AS3::fl::NumberTI, "dayUTC", NULL, Abc::NS_Public, CT_Get, 0, 0},
+        {TFunc_Instances_Date_AS3valueOf::Func, &Date::tit[0], "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3setTime::Func, &Date::tit[1], "setTime", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toString::Func, &Date::tit[3], "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toDateString::Func, &Date::tit[4], "toDateString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toTimeString::Func, &Date::tit[5], "toTimeString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toLocaleString::Func, &Date::tit[6], "toLocaleString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toLocaleDateString::Func, &Date::tit[7], "toLocaleDateString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toLocaleTimeString::Func, &Date::tit[8], "toLocaleTimeString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3toUTCString::Func, &Date::tit[9], "toUTCString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCFullYear::Func, &Date::tit[10], "getUTCFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCMonth::Func, &Date::tit[11], "getUTCMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCDate::Func, &Date::tit[12], "getUTCDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCDay::Func, &Date::tit[13], "getUTCDay", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCHours::Func, &Date::tit[14], "getUTCHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCMinutes::Func, &Date::tit[15], "getUTCMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCSeconds::Func, &Date::tit[16], "getUTCSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getUTCMilliseconds::Func, &Date::tit[17], "getUTCMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getFullYear::Func, &Date::tit[18], "getFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getMonth::Func, &Date::tit[19], "getMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getDate::Func, &Date::tit[20], "getDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getDay::Func, &Date::tit[21], "getDay", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getHours::Func, &Date::tit[22], "getHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getMinutes::Func, &Date::tit[23], "getMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getSeconds::Func, &Date::tit[24], "getSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getMilliseconds::Func, &Date::tit[25], "getMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getTimezoneOffset::Func, &Date::tit[26], "getTimezoneOffset", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3getTime::Func, &Date::tit[27], "getTime", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_AS3setFullYear::Func, &Date::tit[28], "setFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 3, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setMonth::Func, &Date::tit[29], "setMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 2, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setDate::Func, &Date::tit[30], "setDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setHours::Func, &Date::tit[31], "setHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 4, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setMinutes::Func, &Date::tit[32], "setMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 3, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setSeconds::Func, &Date::tit[33], "setSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 2, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setMilliseconds::Func, &Date::tit[34], "setMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCFullYear::Func, &Date::tit[35], "setUTCFullYear", NS_AS3, Abc::NS_Public, CT_Method, 0, 3, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCMonth::Func, &Date::tit[36], "setUTCMonth", NS_AS3, Abc::NS_Public, CT_Method, 0, 2, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCDate::Func, &Date::tit[37], "setUTCDate", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCHours::Func, &Date::tit[38], "setUTCHours", NS_AS3, Abc::NS_Public, CT_Method, 0, 4, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCMinutes::Func, &Date::tit[39], "setUTCMinutes", NS_AS3, Abc::NS_Public, CT_Method, 0, 3, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCSeconds::Func, &Date::tit[40], "setUTCSeconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 2, 1, 0, NULL},
+        {TFunc_Instances_Date_AS3setUTCMilliseconds::Func, &Date::tit[41], "setUTCMilliseconds", NS_AS3, Abc::NS_Public, CT_Method, 0, 1, 1, 0, NULL},
+        {TFunc_Instances_Date_fullYearGet::Func, &Date::tit[42], "fullYear", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_fullYearSet::Func, &Date::tit[43], "fullYear", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_monthGet::Func, &Date::tit[45], "month", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_monthSet::Func, &Date::tit[46], "month", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_dateGet::Func, &Date::tit[48], "date", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_dateSet::Func, &Date::tit[49], "date", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_hoursGet::Func, &Date::tit[51], "hours", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_hoursSet::Func, &Date::tit[52], "hours", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_minutesGet::Func, &Date::tit[54], "minutes", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_minutesSet::Func, &Date::tit[55], "minutes", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_secondsGet::Func, &Date::tit[57], "seconds", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_secondsSet::Func, &Date::tit[58], "seconds", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_millisecondsGet::Func, &Date::tit[60], "milliseconds", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_millisecondsSet::Func, &Date::tit[61], "milliseconds", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_fullYearUTCGet::Func, &Date::tit[63], "fullYearUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_fullYearUTCSet::Func, &Date::tit[64], "fullYearUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_monthUTCGet::Func, &Date::tit[66], "monthUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_monthUTCSet::Func, &Date::tit[67], "monthUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_dateUTCGet::Func, &Date::tit[69], "dateUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_dateUTCSet::Func, &Date::tit[70], "dateUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_hoursUTCGet::Func, &Date::tit[72], "hoursUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_hoursUTCSet::Func, &Date::tit[73], "hoursUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_minutesUTCGet::Func, &Date::tit[75], "minutesUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_minutesUTCSet::Func, &Date::tit[76], "minutesUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_secondsUTCGet::Func, &Date::tit[78], "secondsUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_secondsUTCSet::Func, &Date::tit[79], "secondsUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_millisecondsUTCGet::Func, &Date::tit[81], "millisecondsUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_millisecondsUTCSet::Func, &Date::tit[82], "millisecondsUTC", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_timeGet::Func, &Date::tit[84], "time", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_timeSet::Func, &Date::tit[85], "time", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Date_timezoneOffsetGet::Func, &Date::tit[87], "timezoneOffset", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_dayGet::Func, &Date::tit[88], "day", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Date_dayUTCGet::Func, &Date::tit[89], "dayUTC", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
     };
 
     Date::Date(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Date::Date()"
         SetTraitsType(Traits_Date);
 //##protect##"InstanceTraits::Date::Date()"
-        SetMemSize(sizeof(Instances::fl::Date));
 
     }
 
@@ -1649,29 +1741,42 @@ template <> const TFunc_Classes_Date_UTC::TMethod TFunc_Classes_Date_UTC::Method
 
 namespace ClassTraits { namespace fl
 {
-    const ThunkInfo Date::ti[Date::ThunkInfoNum] = {
-        {TFunc_Classes_Date_parse::Func, &AS3::fl::NumberTI, "parse", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_Date_UTC::Func, &AS3::fl::NumberTI, "UTC", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+    // const UInt16 Date::tito[Date::ThunkInfoNum] = {
+    //    0, 2, 
+    // };
+    const TypeInfo* Date::tit[10] = {
+        &AS3::fl::NumberTI, NULL, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
     };
-    Date::Date(VM& vm)
-    : Traits(vm, AS3::fl::DateCI)
+    const Abc::ConstValue Date::dva[6] = {
+        {Abc::CONSTANT_Double, 3}, {Abc::CONSTANT_Double, 0}, {Abc::CONSTANT_Double, 0}, {Abc::CONSTANT_Double, 0}, {Abc::CONSTANT_Double, 0}, {}, 
+    };
+    const ThunkInfo Date::ti[Date::ThunkInfoNum] = {
+        {TFunc_Classes_Date_parse::Func, &Date::tit[0], "parse", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_Date_UTC::Func, &Date::tit[2], "UTC", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 6, &Date::dva[0]},
+    };
+
+    Date::Date(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Date::Date()"
         SetTraitsType(Traits_Date);
 //##protect##"ClassTraits::Date::Date()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Date(vm, AS3::fl::DateCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::Date(*this));
 
     }
 
     Pickable<Traits> Date::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Date(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Date(vm, AS3::fl::DateCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::DateCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1682,6 +1787,11 @@ namespace fl
 {
     const TypeInfo DateTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject | TypeInfo::Final,
+        sizeof(ClassTraits::fl::Date::InstanceType),
+        ClassTraits::fl::Date::ThunkInfoNum,
+        0,
+        InstanceTraits::fl::Date::ThunkInfoNum,
+        0,
         "Date", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -1689,10 +1799,6 @@ namespace fl
     const ClassInfo DateCI = {
         &DateTI,
         ClassTraits::fl::Date::MakeClassTraits,
-        ClassTraits::fl::Date::ThunkInfoNum,
-        0,
-        InstanceTraits::fl::Date::ThunkInfoNum,
-        0,
         ClassTraits::fl::Date::ti,
         NULL,
         InstanceTraits::fl::Date::ti,

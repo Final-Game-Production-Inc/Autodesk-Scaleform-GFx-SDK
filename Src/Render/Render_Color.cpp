@@ -10,6 +10,7 @@ Notes       :   Several of the complex color model conversion
                 open source libraries with unrestrictive licenses
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -958,7 +959,7 @@ the perceptibility of color differences.
     v* =  13L* * ( v' - vn' )
     
 The quantities un' and vn'  refer to the reference white or the light source; for 
-the 2° observer and illuminant C,  un' = 0.2009, vn' = 0.4610 [ 1 ]. 
+the 2ï¿½ observer and illuminant C,  un' = 0.2009, vn' = 0.4610 [ 1 ]. 
   
 Equations for u' and v' are given below:
 
@@ -1035,7 +1036,7 @@ void        Color::ConvertLabToXYZ(Double l, Double a, Double b,
     if ( z3 > 0.008856 ) tZ = z3;
     else                 tZ = ( tZ - 16 / 116.0 ) / 7.787;
 
-    // Observer= 2°, Illuminant= D65
+    // Observer= 2ï¿½, Illuminant= D65
     *px =  95.047 * tX;
     *py = 100.000 * tY;
     *pz = 108.883 * tZ;
@@ -1063,7 +1064,7 @@ void        Color::ConvertXYZToLab(Double x, Double y, Double z,
     *pb = 200.0 * (yy - Color_CubeRoot(z / whitePointZ));
 
     /*
-    // Observer = 2°, Illuminant = D65
+    // Observer = 2ï¿½, Illuminant = D65
     Double tX = x /  95.047;
     Double tY = y / 100.000;
     Double tZ = z / 108.883;
@@ -1109,7 +1110,7 @@ void        Color::ConvertLuvToXYZ(Double l, Double u, Double v,
     if ( y3 > 0.008856 ) tY = y3;
     else                 tY = ( tY - 16 / 116.0 ) / 7.787;
 
-    // Observer= 2°, Illuminant= D65
+    // Observer= 2ï¿½, Illuminant= D65
     Double rX =  95.047;     
     Double rY = 100.000;
     Double rZ = 108.883;
@@ -1154,7 +1155,7 @@ void        Color::ConvertXYZToLuv(Double x, Double y, Double z,
     if ( tY > 0.008856 ) tY = pow(tY, (1.0/3.0));
     else                 tY = ( 7.787 * tY ) + ( 16.0 / 116.0 );
 
-    // Observer= 2°, Illuminant= D65
+    // Observer= 2ï¿½, Illuminant= D65
     Double rX =  95.047;
     Double rY = 100.000;
     Double rZ = 108.883;

@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -84,6 +85,7 @@ namespace Instances { namespace fl_utils
 
 //##protect##"instance$methods"
     public:
+        Dictionary(InstanceTraits::Traits& t, bool weakKeys);
         virtual ~Dictionary();
 
         virtual CheckResult SetProperty(const Multiname& prop_name, const Value& value);
@@ -101,6 +103,12 @@ namespace Instances { namespace fl_utils
         // This method will enumerate only dynamic properties.
         // Initial index should be invalid (for example -1)
         virtual GlobalSlotIndex GetNextDynPropIndex(GlobalSlotIndex ind) const;
+
+    public:
+        UPInt GetSize() const { return ValueH.GetSize(); }
+        bool IsWeakKeys() const { return WeakKeys; }
+
+        const ValueContainerType& GetContainer() const { return ValueH; }
 
     protected:
         virtual void AS3Constructor(unsigned argc, const Value* argv);
@@ -120,7 +128,7 @@ namespace Instances { namespace fl_utils
 
 namespace InstanceTraits { namespace fl_utils
 {
-    class Dictionary : public CTraits
+    class Dictionary : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -145,6 +153,10 @@ namespace InstanceTraits { namespace fl_utils
         virtual void MakeObject(Value& result, Traits& t);
 
 //##protect##"instance_traits$methods"
+        static Pickable<Instances::fl_utils::Dictionary> MakeInstance(Dictionary& t, bool weakKeys)
+        {
+            return Pickable<Instances::fl_utils::Dictionary>(new(t.Alloc()) Instances::fl_utils::Dictionary(t, weakKeys));
+        }
 //##protect##"instance_traits$methods"
 
 //##protect##"instance_traits$data"
@@ -156,17 +168,19 @@ namespace InstanceTraits { namespace fl_utils
     
 namespace ClassTraits { namespace fl_utils
 {
-    class Dictionary : public Traits
+    class Dictionary : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::Dictionary"; }
 #endif
     public:
-        typedef Classes::fl_utils::Dictionary ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_utils::Dictionary InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        Dictionary(VM& vm);
+        Dictionary(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

@@ -6,6 +6,7 @@ Created     :   April 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -15,6 +16,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render_BufferGeneric.h"
 #include "Kernel/SF_HeapNew.h"
+#include "Kernel/SF_Debug.h"
 
 namespace Scaleform { namespace Render { namespace RBGenericImpl {
 
@@ -103,7 +105,7 @@ bool RenderBufferManager::Initialize(TextureManager* manager,
     RequirePow2 = !manager->IsNonPow2Supported(format, ImageUse_RenderTarget);
 
     if (CtorReuseLimit == ReuseLimit_ScreenSize)
-        ReuseLimit = screenSize.IsNull() ? 0 : screenSize.Area() * 4 * 4;
+        ReuseLimit = screenSize.IsNull() ? 0 : screenSize.Area();
     else
         ReuseLimit = CtorReuseLimit;
 
@@ -122,8 +124,11 @@ void RenderBufferManager::EndFrame()
     evictOverReuseLimit(RBCL_Reuse_LRU);
     evictOverReuseLimit(RBCL_LRU);
 
-    SF_ASSERT(BufferCache[RBCL_Uncached].IsEmpty());
-    SF_ASSERT(BufferCache[RBCL_InUse].IsEmpty());
+    SF_DEBUG_ASSERT(BufferCache[RBCL_Uncached].IsEmpty(), "RenderBufferManager::EndFrame - there are render targets still 'uncached'.");
+    SF_DEBUG_ASSERT(BufferCache[RBCL_InUse].IsEmpty(), "RenderBufferManager::EndFrame - there are render targets still 'in-use'.");
+    if (!BufferCache[RBCL_Uncached].IsEmpty() || !BufferCache[RBCL_InUse].IsEmpty())
+        DumpUsage();
+    BufferCache[RBCL_ThisFrame].PushListToFront(BufferCache[RBCL_InUse]);
     BufferCache[RBCL_LRU].PushListToFront(BufferCache[RBCL_PrevFrame]);
     BufferCache[RBCL_PrevFrame].PushListToFront(BufferCache[RBCL_ThisFrame]);
     BufferCache[RBCL_Reuse_LRU].PushListToFront(BufferCache[RBCL_Reuse_ThisFrame]);
@@ -132,13 +137,26 @@ void RenderBufferManager::EndFrame()
 void RenderBufferManager::Reset()
 {
     // Clear out caches.
-    SF_ASSERT(BufferCache[RBCL_Uncached].IsEmpty());
-    SF_ASSERT(BufferCache[RBCL_InUse].IsEmpty());
+    SF_DEBUG_ASSERT(BufferCache[RBCL_Uncached].IsEmpty(), "RenderBufferManager::Reset - there are render targets still 'uncached'.");
+    SF_DEBUG_ASSERT(BufferCache[RBCL_InUse].IsEmpty(), "RenderBufferManager::Reset - there are render targets still 'in-use'.");
     evictAll(RBCL_ThisFrame);
     evictAll(RBCL_PrevFrame);
     evictAll(RBCL_LRU);
     evictAll(RBCL_Reuse_ThisFrame);
     evictAll(RBCL_Reuse_LRU);
+}
+
+void RenderBufferManager::DumpUsage()
+{
+    SF_DEBUG_MESSAGE(1,"RenderBufferManager::DumpUsage()\n");
+    for (unsigned i = 0; i < RBCL_ItemCount; ++i)
+    {
+        SF_DEBUG_MESSAGE1(1,"\tLIST(%d)\n", i);
+        const List<CacheData>& cacheList = BufferCache[i];
+        const CacheData* cacheData = 0;
+        for (cacheData = cacheList.GetFirst(); !cacheList.IsNull(cacheData); cacheData = cacheList.GetNext(cacheData) )
+            SF_DEBUG_MESSAGE3(1,"\t\tEntry: ptr=%p fmt=%d, size=%d\n", cacheData->pBuffer, cacheData->Format, cacheData->DataSize);
+    }
 }
 
 Render::RenderTarget*
@@ -191,14 +209,24 @@ RenderBufferManager::CreateTempRenderTarget(const ImageSize& size)
     switch(reserveSpace(&data, roundedSize, RBuffer_Temporary, format, requestSize))
     {
     case RS_Match:
+    {
         // Reuse this item.
         target = data->GetRenderTarget();
-        target->SetInUse(true); // Moves to RBCL_InUse; Status = InUse.
+        target->SetInUse(RTUse_InUse); // Moves to RBCL_InUse; Status = InUse.
         target->initViewRect(Rect<int>(size.Width, size.Height)); 
         target->AddRef();
+
+        // When reusing an old render target, make sure that the CacheID is unset. In rare circumstances,
+        // a primitive with the same address could be allocated, and match with its previous render target,
+        // causing it not to re-cache.
+        RenderBuffer::RenderTargetData* prt = target->GetRenderTargetData();
+        if (prt)
+            prt->CacheID = 0;
         break;
+    }
 
     case RS_Alloc:
+    {
         // Allocate new texture.
         {
             Ptr<Texture> texture = 
@@ -217,6 +245,7 @@ RenderBufferManager::CreateTempRenderTarget(const ImageSize& size)
             }
         }
         break;
+    }
 
     case RS_Fail:
         break;
@@ -227,7 +256,7 @@ RenderBufferManager::CreateTempRenderTarget(const ImageSize& size)
 
 
 Render::DepthStencilBuffer*
-RenderBufferManager::CreateDepthStencilBuffer(const ImageSize& size)
+RenderBufferManager::CreateDepthStencilBuffer(const ImageSize& size, bool temporary)
 {
     if (!pTextureManager)
         return 0;
@@ -237,7 +266,11 @@ RenderBufferManager::CreateDepthStencilBuffer(const ImageSize& size)
     ImageSize           roundedSize = (DepthStencilSizeMode == DSSM_Exact) ? size : RoundUpImageSize(size);
     UPInt               requestSize = roundedSize.Area() * 4;
 
-    switch(reserveSpace(&data, roundedSize, RBuffer_DepthStencil, Image_None, requestSize))
+    // If not temporary, do not attempt to match.
+    RenderBufferManager::ReserveSpaceResult reserveResult = temporary ? 
+        reserveSpace(&data, roundedSize, RBuffer_DepthStencil, Image_None, requestSize) : RS_Alloc;
+
+    switch(reserveResult)
     {
     case RS_Match:
         // Reuse this item.
@@ -254,13 +287,19 @@ RenderBufferManager::CreateDepthStencilBuffer(const ImageSize& size)
 
             if (surface)
             {
-                buffer = SF_HEAP_AUTO_NEW(this) DepthStencilBuffer(this, roundedSize);
+                buffer = SF_HEAP_AUTO_NEW(this) DepthStencilBuffer(this, roundedSize, temporary);
                 if (buffer)
                 {
                     buffer->initSurface(surface);
-                    pushFront(RBCL_InUse, buffer);
+
+                    // Only put into the 'in-use' list if it is temporary. If it is a user target, then
+                    // don't track it within the reuse lists. Also don't track it as allocated space.
+                    if (temporary)
+                    {
+                        pushFront(RBCL_InUse, buffer);
+                        AllocSize += requestSize;
+                    }
                     buffer->DataSize = requestSize;
-                    AllocSize += requestSize;
                 }
             }
         }
@@ -411,7 +450,7 @@ void RenderBufferManager::evict(CacheData* p)
     }
     else
     {
-        SF_ASSERT(0);
+        SF_DEBUG_ASSERT1(0, "Cannot evict buffers of type (%d)", p->pBuffer->GetType());
     }
 }
 
@@ -451,28 +490,33 @@ bool RenderBufferManager::evictUntilAvailable(RBCacheListType ltype, UPInt reque
 //------------------------------------------------------------------------
 // ***** RenderTarget
 
-void RenderTarget::SetInUse(bool inUse)
+void RenderTarget::SetInUse(RenderTargetUse inUse)
 {
-    if (inUse)
+    if (GetType() != RBuffer_Temporary)
     {
-        if (GetType() == RBuffer_Temporary)
-        {
-            SF_ASSERT(RTStatus != RTS_Lost);
-            getManager()->moveToFront(RBCL_InUse, this);
-        }
-        
-        RTStatus = RTS_InUse;
+        return;
     }
-    else
-    {
-        if (GetType() == RBuffer_Temporary)
-        {
-            SF_ASSERT(RTStatus != RTS_Lost);
-            if (ListType < RBCL_ThisFrame)
-                getManager()->moveToFront(RBCL_ThisFrame, this);
-        }
 
+    SF_DEBUG_ASSERT1(RTStatus != RTS_Lost, "Cannot call RenderTarget::SetInUse on a lost RenderTarget (ptr=%p)", this);
+
+    switch(inUse)
+    {
+    case RTUse_InUse:
+        SF_ASSERT(RTStatus != RTS_Lost);
+        getManager()->moveToFront(RBCL_InUse, this);
+        RTStatus = RTS_InUse;
+        break;
+
+    case RTUse_Unused:
+    case RTUse_Unused_Cacheable:
+        if (ListType < RBCL_ThisFrame)
+            getManager()->moveToFront(RBCL_ThisFrame, this);
         RTStatus = RTS_Available;
+        break;
+
+    default:
+        SF_DEBUG_ASSERT1(0, "Unexpected RenderTargetUse type (%d)", inUse);
+        break;
     }
 }
 
@@ -502,8 +546,8 @@ void RenderTarget::Release()
 
 void RenderTarget::onEvict()
 {
-    SF_ASSERT(GetType() == RBuffer_Temporary);
-    SF_ASSERT(RTStatus == RTS_Available);
+    SF_DEBUG_ASSERT1(GetType() == RBuffer_Temporary, "Cannot evict a non-temporary RenderTarget (type=%d).", GetType());
+    SF_DEBUG_ASSERT1(RTStatus == RTS_Available, "Can only evict a RenderTarget that is available (current status=%d)", RTStatus);
 
     // Release texture.
     initTexture(0);
@@ -530,15 +574,25 @@ void DepthStencilBuffer::Release()
     if (RefCount > 0)
         return;
 
-    RBCacheListType newList = (ListType <= RBCL_ThisFrame) ?
-                              RBCL_Reuse_ThisFrame : RBCL_Reuse_LRU;
-    getManager()->moveToFront(newList, this);
+    if (Type == RBuffer_DepthStencil)
+    {
+        // If it is temporary, save it for potential reuse.
+        RBCacheListType newList = (ListType <= RBCL_ThisFrame) ?
+                                  RBCL_Reuse_ThisFrame : RBCL_Reuse_LRU;
+        getManager()->moveToFront(newList, this);
+    }
+    else
+    {
+        // Destroy it.
+        SF_DEBUG_ASSERT(Type == RBuffer_UserDepthStencil, "Should only be destroying UserDepthStencil surfaces here.");
+        delete this;
+    }
 }
 
 void DepthStencilBuffer::onEvict()
 {
-    SF_ASSERT(GetType() == RBuffer_DepthStencil);
-    SF_ASSERT(RefCount == 0);   
+    SF_DEBUG_ASSERT(GetType() == RBuffer_DepthStencil, "Can only evict a temporary DepthStencilBuffer.");
+    SF_DEBUG_ASSERT(RefCount == 0, "Can only evict a non-referenced DepthStencilBuffer.");   
     delete this;
 }
 

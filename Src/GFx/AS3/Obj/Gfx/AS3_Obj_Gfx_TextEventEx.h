@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -97,7 +98,7 @@ namespace Instances { namespace fl_gfx
 
 namespace InstanceTraits { namespace fl_gfx
 {
-    class TextEventEx : public CTraits
+    class TextEventEx : public fl_events::TextEvent
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -135,7 +136,7 @@ namespace InstanceTraits { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class TextEventEx : public Traits
+    class TextEventEx : public fl_events::TextEvent
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -143,9 +144,11 @@ namespace ClassTraits { namespace fl_gfx
 #endif
     public:
         typedef Classes::fl_gfx::TextEventEx ClassType;
+        typedef InstanceTraits::fl_gfx::TextEventEx InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        TextEventEx(VM& vm);
+        TextEventEx(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 2 };
         static const MemberInfo mi[MemberInfoNum];

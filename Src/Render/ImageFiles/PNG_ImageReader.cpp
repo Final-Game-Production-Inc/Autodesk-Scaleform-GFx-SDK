@@ -6,6 +6,7 @@ Created     :   February 2010
 Authors     :   Michael Antonov, Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,7 +23,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifdef SF_ENABLE_LIBPNG
 
 #ifdef SF_OS_WIN32
-#include "../3rdParty/libpng-1.5.13/png.h"
+#include "../3rdParty/libpng-1.6.53/png.h"
 
 #else
 #include <png.h>
@@ -332,12 +333,12 @@ public:
                 }
 
                 // no longjmps beyond this point expected.
-                ImageScanlineBuffer<1024*4> scanline(readFormat, Context.width, format);
+                ImageScanlineBuffer<1024*4> imgScanline(readFormat, Context.width, format);
                 for (unsigned y = 0; y < Context.height; y++)
                 {
-                    memcpy(scanline.GetReadBuffer(), ppbRowPointers[y], scanline.GetReadSize());
+                    memcpy(imgScanline.GetReadBuffer(), ppbRowPointers[y], imgScanline.GetReadSize());
                     UByte* destScanline = pdest->GetScanline(y);
-                    scanline.ConvertReadBuffer(destScanline, 0, copyScanline, arg);
+                    imgScanline.ConvertReadBuffer(destScanline, 0, copyScanline, arg);
                 }
                 SF_FREE(ppbRowPointers);
             }
@@ -347,6 +348,56 @@ public:
         }
         png_destroy_read_struct(&Context.png_ptr, &Context.info_ptr, NULL);
         IsInitialized = false;
+
+#if defined(SF_FIX_PNG_ALPHA) && SF_FIX_PNG_ALPHA
+        // Do a post-process on the final image data, to correct zero-alpha regions of the image.
+        for (unsigned y = 0; y < pdest->GetHeight(); ++y)
+        {
+            UByte* destScanline = pdest->GetScanline(y);
+            for (unsigned x = 0; x < pdest->GetWidth(); ++x)
+            {
+                Color c = pdest->GetPixelInScanline(destScanline, x);
+                if (c.GetAlpha() == 0)
+                {
+                    // Do a kernel around this pixel, to make it blend out nicely.
+                    unsigned pixelColor[3]; // 3 = RGB.
+                    unsigned contributingPixels = 0;
+                    const int kernelSize = 1;
+
+                    memset(pixelColor, 0, sizeof pixelColor);
+                    for (int kernelY = (int)y-kernelSize; kernelY <= (int)y+kernelSize; kernelY++)
+                    {
+                        if (kernelY < 0 || kernelY >= (int)pdest->GetHeight())
+                            continue;
+                        UByte* kernelScanline = pdest->GetScanline(kernelY);
+                        for (int kernelX = (int)x-kernelSize; kernelX <= (int)x+kernelSize; kernelX++)
+                        {
+                            if (kernelX < 0 || kernelX >= (int)pdest->GetWidth())
+                                continue;
+                            Color c = pdest->GetPixelInScanline(kernelScanline, kernelX);
+                            if (c.GetAlpha() != 0)
+                            {
+                                pixelColor[0] += c.GetRed();
+                                pixelColor[1] += c.GetGreen();
+                                pixelColor[2] += c.GetBlue();
+                                contributingPixels++;
+                            }
+                        }
+                    }
+
+                    Color finalColor(Color::Black|Color::Alpha0);
+                    if (contributingPixels > 0)
+                    {
+                        finalColor.SetRed((UByte)Alg::Min<int>(255,pixelColor[0]/contributingPixels));
+                        finalColor.SetGreen((UByte)Alg::Min<int>(255,pixelColor[1]/contributingPixels));
+                        finalColor.SetBlue((UByte)Alg::Min<int>(255,pixelColor[2]/contributingPixels));
+                    }
+                    pdest->SetPixelInScanline(destScanline, x, finalColor.ToColor32()); 
+                }
+            }
+        }
+#endif
+
         return success;
     }
 

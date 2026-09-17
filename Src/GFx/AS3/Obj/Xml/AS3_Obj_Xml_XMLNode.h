@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -111,7 +112,7 @@ namespace Instances { namespace fl_xml
 
 namespace InstanceTraits { namespace fl_xml
 {
-    class XMLNode : public CTraits
+    class XMLNode : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -139,6 +140,8 @@ namespace InstanceTraits { namespace fl_xml
         static const MemberInfo mi[MemberInfoNum];
         enum { ThunkInfoNum = 14 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[21];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -151,17 +154,19 @@ namespace InstanceTraits { namespace fl_xml
     
 namespace ClassTraits { namespace fl_xml
 {
-    class XMLNode : public Traits
+    class XMLNode : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::XMLNode"; }
 #endif
     public:
-        typedef Classes::fl_xml::XMLNode ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_xml::XMLNode InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        XMLNode(VM& vm);
+        XMLNode(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

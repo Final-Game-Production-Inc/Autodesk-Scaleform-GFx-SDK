@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -194,8 +195,8 @@ void ComplexPrimitiveBundle::EmitToHAL(RenderQueueItem& item, RenderQueueProcess
 // ***** MaskBundle
 
 // Insertions & removals should manipulate the Primitive and Matrices
-MaskBundle::MaskBundle(HAL* hal, MaskPrimitive::MaskAreaType maskType)
- : Bundle(0), Prim(hal, maskType)
+MaskBundle::MaskBundle()
+ : Bundle(0), Prim()
 {
 }
 
@@ -203,7 +204,7 @@ void MaskBundle::InsertEntry(UPInt index, BundleEntry* entry)
 {
     Bundle::InsertEntry(index, entry);
     // Obtains "Mask Clear" matrix rectangle.
-    MaskEffect* maskEffect = entry->pSourceNode->Effects.GetMaskEffect();
+    MaskEffect* maskEffect = entry->pSourceNode->Effects.GetEffectOfType<MaskEffect, State_MaskNode>();
     SF_ASSERT(maskEffect);
     Prim.Insert(index, maskEffect->GetBoundsMatrix());
 }
@@ -218,15 +219,15 @@ void MaskBundle::RemoveEntries(UPInt index, UPInt count)
 // ***** FilterBundle
 
 // Insertions & removals should manipulate the Primitive and Matrices
-FilterBundle::FilterBundle(HAL* hal, FilterSet* filters, bool maskPresent)
- : Bundle(0), Prim(hal, filters, maskPresent)
+FilterBundle::FilterBundle(FilterSet* filters, bool maskPresent)
+ : Bundle(0), Prim(filters, maskPresent)
 {
 }
 
 void FilterBundle::InsertEntry(UPInt index, BundleEntry* entry)
 {
     Bundle::InsertEntry(index, entry);
-    FilterEffect* filterEffect = entry->pSourceNode->Effects.GetFilterEffect();
+    FilterEffect* filterEffect = entry->pSourceNode->Effects.GetEffectOfType<FilterEffect,State_Filter>();
     SF_ASSERT(filterEffect);
     Prim.Insert(index, filterEffect->GetBoundsMatrix());
 }
@@ -237,13 +238,35 @@ void FilterBundle::RemoveEntries(UPInt index, UPInt count)
     Bundle::RemoveEntries(index, count);
 }
 
+//--------------------------------------------------------------------
+// ***** BlendModeBundle
+
+// Insertions & removals should manipulate the Primitive and Matrices
+BlendModeBundle::BlendModeBundle(BlendMode mode, bool maskPresent)
+ : Bundle(0), Prim(mode, maskPresent)
+{
+}
+
+void BlendModeBundle::InsertEntry(UPInt index, BundleEntry* entry)
+{
+    Bundle::InsertEntry(index, entry);
+    BlendModeEffect* blendEffect = entry->pSourceNode->Effects.GetEffectOfType<BlendModeEffect, State_BlendMode>();
+    SF_ASSERT(blendEffect);
+    Prim.Insert(index, blendEffect->GetBoundsMatrix());
+}
+
+void BlendModeBundle::RemoveEntries(UPInt index, UPInt count)
+{
+    Prim.Remove((unsigned)index, (unsigned)count);
+    Bundle::RemoveEntries(index, count);
+}
 
 //--------------------------------------------------------------------
 // ***** ViewMatrix3DBundle
 
 // Insertions & removals should manipulate the Primitive and Matrices
-ViewMatrix3DBundle::ViewMatrix3DBundle(HAL* hal, Matrix3FRef* pvm)
-: Bundle(0), Prim(hal)
+ViewMatrix3DBundle::ViewMatrix3DBundle(Matrix3FRef* pvm)
+: Bundle(0), Prim()
 {
     if (pvm)
         Prim.SetViewMatrix3D(pvm->M);
@@ -253,8 +276,8 @@ ViewMatrix3DBundle::ViewMatrix3DBundle(HAL* hal, Matrix3FRef* pvm)
 // ***** ProjectionMatrix3DBundle
 
 // Insertions & removals should manipulate the Primitive and Matrices
-ProjectionMatrix3DBundle::ProjectionMatrix3DBundle(HAL* hal, Matrix4FRef *ppm)
-: Bundle(0), Prim(hal)
+ProjectionMatrix3DBundle::ProjectionMatrix3DBundle(Matrix4FRef *ppm)
+: Bundle(0), Prim()
 {
     if (ppm)
         Prim.SetProjectionMatrix3D(ppm->M);
@@ -262,8 +285,8 @@ ProjectionMatrix3DBundle::ProjectionMatrix3DBundle(HAL* hal, Matrix4FRef *ppm)
 
 //--------------------------------------------------------------------
 // ***** UserDataBundle
-UserDataBundle::UserDataBundle(HAL* hal, UserDataState::Data* data) :
-    Bundle(0), Prim(hal, data)
+UserDataBundle::UserDataBundle(UserDataState::Data* data) :
+    Bundle(0), Prim(data)
 {
 
 }
@@ -372,19 +395,14 @@ public:
     { }
 
     static SKI_MaskStart Combinable_Instance;
-    static SKI_MaskStart Clipped_Instance;
 
     virtual bool UpdateBundleEntry(SortKeyData, BundleEntry* p,
-                                   TreeCacheRoot* tr, Renderer2DImpl* r,
+                                   TreeCacheRoot* tr, Renderer2DImpl*,
                                    const BundleIterator&)
     {
         if (!p->pBundle)
         {
-            MaskPrimitive::MaskAreaType maskType = 
-                (Type == SortKey_MaskStartClipped) ?
-                MaskPrimitive::Mask_Clipped : MaskPrimitive::Mask_Combinable;
-
-            Ptr<MaskBundle> bundle = *SF_HEAP_AUTO_NEW(tr) MaskBundle(r->GetHAL(), maskType);
+            Ptr<MaskBundle> bundle = *SF_HEAP_AUTO_NEW(tr) MaskBundle();
             p->SetBundle(bundle, 0);
         }
         return p->pBundle.GetPtr() != 0;
@@ -461,7 +479,6 @@ public:
 // Static SortKeyInterface instances for masks.
 SKI_MaskStart SKI_MaskStart::Combinable_Instance(SortKey_MaskStart,
                                                 SKF_MatchNoOverlap|SKF_RangeStart);
-SKI_MaskStart SKI_MaskStart::Clipped_Instance(SortKey_MaskStartClipped, SKF_RangeStart);
 SKI_MaskEnd   SKI_MaskEnd::Instance(SortKey_MaskEnd, SKF_MatchNoOverlap);
 
 SKI_MaskEnd::RQII_EndMask SKI_MaskEnd::RQII_Instance;
@@ -469,7 +486,6 @@ SKI_MaskEnd::RQII_EndMask SKI_MaskEnd::RQII_Instance;
 static SortKeyInterface* SortKeyMaskInterfaces[SortKeyMask_Item_Count] =
 {
     &SKI_MaskStart::Combinable_Instance,
-    &SKI_MaskStart::Clipped_Instance,
     &SKI_MaskEnd::Instance,
     &SKI_MaskEnd::Instance
 };
@@ -480,10 +496,41 @@ SortKey::SortKey(SortKeyMaskType maskType)
 
     // Checks for array above.
     SF_COMPILER_ASSERT(SortKeyMask_Push == 0);
-    SF_COMPILER_ASSERT(SortKeyMask_Pop == 3);
+    SF_COMPILER_ASSERT(SortKeyMask_Pop == 2);
 }
 
-
+// This function simply provides a method to check within a range if a mask is present. This is used
+// by CacheableSKIs, to determine whether a depth/stencil target is required for the masking.
+bool isMaskPresentInsideRange(const BundleIterator& ibundles, SortKeyType startKey, SortKeyType endKey)
+{
+    // Iterator through the remainder of the bundles, and see if masks are present.
+    bool maskPresent = false;
+    BundleIterator ib = ibundles;
+    int cachedPrimLevel = 0;
+    while(ib)
+    {
+        if (cachedPrimLevel == 1 &&
+            (ib->Key.GetType() == SortKey_MaskStart ||
+            ib->Key.GetType() == SortKey_MaskEnd ||
+            ib->Key.GetType() == SortKey_Text))    // NOTE: textfields may have text clipping, which acts as a 'real' mask.
+        {
+            maskPresent = true;
+            break;
+        }
+        else if (ib->Key.GetType() == endKey)
+        {
+            cachedPrimLevel--;
+            if ( cachedPrimLevel <= 0 )
+                break;
+        }
+        else if (ib->Key.GetType() == startKey)
+        {
+            cachedPrimLevel++;
+        }
+        ib++;
+    }
+    return maskPresent;
+}
 
 //--------------------------------------------------------------------
 // ***** SortKey Interfaces for BlendMode
@@ -494,26 +541,8 @@ public:
     SKI_BlendMode(SortKeyType type, unsigned flags) : SortKeyInterface(type, flags)
     { }
 
-    class RQII_BlendMode : public RenderQueueItem::Interface
-    {
-    public:
-        virtual void EmitToHAL(RenderQueueItem& item, RenderQueueProcessor& qp)
-        {
-            if ( qp.GetQueueEmitFilter() != RenderQueueProcessor::QPF_All )
-                return;
-            HAL* hal = qp.GetHAL();
-            UPInt      data = (UPInt)item.GetData();
-
-            // Push/Pop blend mode.
-            if (data == 0xFFFFFFFF)
-                hal->PopBlendMode();
-            else
-                hal->PushBlendMode((BlendMode)data);
-        }
-    };
-
-    static RQII_BlendMode RQII_Instance;
     static SKI_BlendMode  Start_Instance;
+    static SKI_BlendMode  StartCacheable_Instance;
     static SKI_BlendMode  End_Instance;
 
     virtual SortKeyTransition GetRangeTransition(SortKeyData, const SortKey& other)
@@ -523,32 +552,57 @@ public:
         return SKT_Skip;
     }
 
-    virtual void DrawBundleEntry(SortKeyData data, BundleEntry*, Renderer2DImpl* r2d)
+    virtual bool UpdateBundleEntry(SortKeyData d, BundleEntry* p,
+        TreeCacheRoot* tr, Renderer2DImpl*,
+        const BundleIterator& ibundles)
+    {
+        if (!p->pBundle)
+        {
+            BlendMode mode = (BlendMode)reinterpret_cast<UPInt>(d);
+            // Only need to check if the mask is present if the blend mode requires a target.
+            Ptr<BlendModeBundle> bundle = *SF_HEAP_AUTO_NEW(tr) BlendModeBundle(mode, 
+                BlendState::IsTargetAllocationNeededForBlendMode(mode) ? 
+                isMaskPresentInsideRange(ibundles, SortKey_BlendModeStart, SortKey_BlendModeEnd) : false);
+            p->SetBundle(bundle, 0);
+        }
+        return p->pBundle.GetPtr() != 0;
+    }
+
+    virtual void DrawBundleEntry(SortKeyData, BundleEntry*p, Renderer2DImpl* r2d)
     {
         SF_AMP_SCOPE_RENDER_TIMER("SKI_BlendMode::DrawBundleEntry", Amp_Profile_Level_High);
-        RenderQueueItem rqi(&RQII_Instance, data);
-        r2d->GetHAL()->Draw(rqi);
+        if (p->pBundle)
+        {
+            BlendModeBundle*bundle = (BlendModeBundle*)p->pBundle.GetPtr();
+            bundle->Draw(r2d->GetHAL());
+        }
     }
 };
 
 
 // Keys
-SKI_BlendMode SKI_BlendMode::Start_Instance(SortKey_BlendModeStart, SKF_RangeStart|
-                                                                    SKF_MatchNoOverlap|SKF_MatchSingleOverlap);
-SKI_BlendMode SKI_BlendMode::End_Instance(SortKey_BlendModeEnd, SKF_MatchNoOverlap|SKF_MatchSingleOverlap);
+SKI_BlendMode SKI_BlendMode::Start_Instance(SortKey_BlendModeStart, SKF_RangeStart|SKF_MatchNoOverlap);
+SKI_BlendMode SKI_BlendMode::StartCacheable_Instance(SortKey_BlendModeStart, SKF_RangeStart|SKF_MatchNever);
+SKI_BlendMode SKI_BlendMode::End_Instance(SortKey_BlendModeEnd, SKF_MatchNoOverlap);
 
-SKI_BlendMode::RQII_BlendMode SKI_BlendMode::RQII_Instance;
-
-
-// Blend Mode SortKey constructor.
+// Blend Mode SortKey constructor (non-cacheable blends).
 SortKey::SortKey(SortKeyType blendKeyType, BlendMode mode)
 {    
-    SF_ASSERT((blendKeyType == SortKey_BlendModeStart) || (blendKeyType == SortKey_BlendModeEnd));
+    SF_DEBUG_ASSERT1((blendKeyType == SortKey_BlendModeStart) || (blendKeyType == SortKey_BlendModeEnd),
+        "Unexpected blendKeyType (%d) - should be either SortKey_BlendModeStart or SortKey_BlendModeEnd", blendKeyType);
     
     if (blendKeyType == SortKey_BlendModeStart)
-        initKey(&SKI_BlendMode::Start_Instance, (SortKeyData)mode);
+    {
+        // Use a SKI that will never match, if it is a blend mode that requires target. These currently cannot batch.
+        if (BlendState::IsTargetAllocationNeededForBlendMode(mode))
+            initKey(&SKI_BlendMode::StartCacheable_Instance, (SortKeyData)mode);
+        else
+            initKey(&SKI_BlendMode::Start_Instance, (SortKeyData)mode);
+    }
     else
-        initKey(&SKI_BlendMode::End_Instance, (SortKeyData)0xFFFFFFFF);
+    {
+        initKey(&SKI_BlendMode::End_Instance, (SortKeyData)mode);
+    }
 }
 
 //--------------------------------------------------------------------
@@ -571,40 +625,13 @@ public:
     }
 
     virtual bool UpdateBundleEntry(SortKeyData d, BundleEntry* p,
-                                   TreeCacheRoot* tr, Renderer2DImpl* r,
+                                   TreeCacheRoot* tr, Renderer2DImpl*,
                                    const BundleIterator& ibundles)
     {
         if (!p->pBundle)
         {
-            // Iterator through the remainder of the bundles, and see if masks are present.
-            bool maskPresent = false;
-            BundleIterator ib = ibundles;
-            int filterLevel = 0;
-            while(ib)
-            {
-                if (filterLevel == 1 &&
-                    (ib->Key.GetType() == SortKey_MaskStart ||
-                     ib->Key.GetType() == SortKey_MaskStartClipped ||
-                     ib->Key.GetType() == SortKey_MaskEnd ))
-                {
-                    maskPresent = true;
-                    break;
-                }
-                else if (ib->Key.GetType() == SortKey_FilterEnd)
-                {
-                    filterLevel--;
-                    if ( filterLevel <= 0 )
-                        break;
-                }
-                else if (ib->Key.GetType() == SortKey_FilterStart)
-                {
-                    filterLevel++;
-                }
-                ib++;
-            }
-
-            Ptr<FilterBundle> bundle = *SF_HEAP_AUTO_NEW(tr) FilterBundle(
-                r->GetHAL(), (FilterSet*)d, maskPresent );
+            Ptr<FilterBundle> bundle = *SF_HEAP_AUTO_NEW(tr) FilterBundle((FilterSet*)d, 
+                isMaskPresentInsideRange(ibundles, SortKey_FilterStart, SortKey_FilterEnd));
             p->SetBundle(bundle, 0);
         }
         return p->pBundle.GetPtr() != 0;
@@ -657,11 +684,11 @@ public:
     }
 
     virtual bool UpdateBundleEntry(SortKeyData d, BundleEntry* p, TreeCacheRoot* tr, 
-                                   Renderer2DImpl* r, const BundleIterator&)
+                                   Renderer2DImpl*, const BundleIterator&)
     {
         if (!p->pBundle)
         {
-            Ptr<ViewMatrix3DBundle> bundle = *SF_HEAP_AUTO_NEW(tr) ViewMatrix3DBundle(r->GetHAL(), (Matrix3FRef*)d);
+            Ptr<ViewMatrix3DBundle> bundle = *SF_HEAP_AUTO_NEW(tr) ViewMatrix3DBundle((Matrix3FRef*)d);
             p->SetBundle(bundle, 0);
         }
         return p->pBundle.GetPtr() != 0;
@@ -714,11 +741,11 @@ public:
     }
 
     virtual bool UpdateBundleEntry(SortKeyData d, BundleEntry* p, TreeCacheRoot* tr, 
-                                   Renderer2DImpl* r, const BundleIterator&)
+                                   Renderer2DImpl*, const BundleIterator&)
     {
         if (!p->pBundle)
         {
-            Ptr<ProjectionMatrix3DBundle> bundle = *SF_HEAP_AUTO_NEW(tr) ProjectionMatrix3DBundle(r->GetHAL(), (Matrix4FRef*)d);
+            Ptr<ProjectionMatrix3DBundle> bundle = *SF_HEAP_AUTO_NEW(tr) ProjectionMatrix3DBundle((Matrix4FRef*)d);
             p->SetBundle(bundle, 0);
         }
         return p->pBundle.GetPtr() != 0;
@@ -772,11 +799,11 @@ public:
     }
 
     virtual bool UpdateBundleEntry(SortKeyData d, BundleEntry* p, TreeCacheRoot* tr, 
-        Renderer2DImpl* r, const BundleIterator&)
+        Renderer2DImpl*, const BundleIterator&)
     {
         if (!p->pBundle)
         {
-            Ptr<UserDataBundle> bundle = *SF_HEAP_AUTO_NEW(tr) UserDataBundle(r->GetHAL(), (UserDataState::Data*)d);
+            Ptr<UserDataBundle> bundle = *SF_HEAP_AUTO_NEW(tr) UserDataBundle((UserDataState::Data*)d);
             p->SetBundle(bundle, 0);
         }
         return p->pBundle.GetPtr() != 0;

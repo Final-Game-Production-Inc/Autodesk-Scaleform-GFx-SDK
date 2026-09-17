@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -58,12 +59,24 @@ namespace Instances
         class Loader;
     }
 
+	namespace fl_external
+    {
+        class ExtensionContext;
+    }
+
     namespace fl_net
     {
         class URLRequest;
         class URLLoader;
         class Socket;
     }
+
+    namespace fl_sensors
+    {
+        class Accelerometer;
+        class Geolocation;
+    }
+
     namespace fl_utils
     {
         class ByteArray;
@@ -291,11 +304,15 @@ public:
 #endif
     SPtr<Class>         StageOrientationEventClass;
     SPtr<Class>         AppLifecycleEventClass;
+	SPtr<Class>         StatusEventClass;
+    SPtr<Class>         AccelerometerEventClass;
+    SPtr<Class>         GeolocationEventClass;
     SPtr<Class>         PointClass;
     SPtr<Class>         RectangleClass;
     SPtr<Class>         TextFormatClass;
     SPtr<Class>         EventDispatcherClass;
     SPtr<Class>         Vector3DClass;
+    SPtr<Object>        GeneralClipboard;
 
     bool                ExtensionsEnabled;
 
@@ -318,14 +335,14 @@ private:
     bool                    _constructInstance(SPtr<Object> &pobj, Object* classObj,
                                                unsigned argc, const Value* argv);
 public:
-    ASVM(MovieRoot* pmr, FlashUI& _ui, FileLoader& loader, AS3::StringManager& sm, ASRefCountCollector& gc);
+    ASVM(MovieRoot* pmr, FlashUI& _ui, AS3::StringManager& sm, ASRefCountCollector& gc);
 
     MovieRoot*              GetMovieRoot() const { return pMovieRoot; }
     inline GFx::MovieImpl*  GetMovieImpl() const;
 
     inline MemoryHeap*      GetHeap() const;
     
-    virtual AMP::ViewStats* GetAdvanceStats() const;
+    SF_AMP_CODE(virtual AMP::ViewStats* GetAdvanceStats() const;)
     inline Log*             GetLog() const;
     inline LogState*        GetLogState() const;
 
@@ -394,7 +411,8 @@ public:
 // is stored inside of MovieImpl.
 class MovieRoot :   public ASMovieRootBase, 
                     public FlashUI, 
-                    public KeyboardState::IListener
+                    public KeyboardState::IListener,
+                    public MovieDefImpl::ReleaseNotifier
 {
     friend class AvmSprite;
     friend class Stage;
@@ -629,10 +647,10 @@ protected:
 
     struct LoadedMovieDefInfo
     {
-        Ptr<MovieDefImpl>   pMovieDef;
-        unsigned            UseCnt;
+        //MovieDefImpl*   pMovieDef;
+        unsigned        UseCnt;
 
-        LoadedMovieDefInfo(MovieDefImpl* def) : pMovieDef(def), UseCnt(1) {}
+        LoadedMovieDefInfo() : UseCnt(1) {}
     };
     HashIdentityLH<MovieDefImpl*, LoadedMovieDefInfo> LoadedMovieDefs;
 
@@ -644,7 +662,8 @@ protected:
 
     // Net Socket support
 #ifdef SF_ENABLE_SOCKETS
-    ArrayLH<Ptr<SocketThreadMgr> > Sockets;   // Need to keep a list of these here for event notifications
+    ArrayLH<Ptr<SocketThreadMgr> >  Sockets;   // Need to keep a list of these here for event notifications
+    SocketImplFactory*              SocketFactory;
 #endif
 
 public:
@@ -727,7 +746,8 @@ public:
     // net socket support
 #ifdef SF_ENABLE_SOCKETS
     void                CheckSocketMessages();
-    SocketThreadMgr*    AddSocket(bool initSockLib, AMP::SocketImplFactory* socketImplFactory, Instances::fl_net::Socket* sock);
+    SocketThreadMgr*    AddSocket(bool initSockLib, Instances::fl_net::Socket* sock);
+    void                SetSocketImplFactory(SocketImplFactory* factory);
 #endif
     // FlashUI methods
     virtual void Output(FlashUI::OutputMessageType type, const char* msg);    
@@ -783,6 +803,11 @@ public:
 #ifdef GFX_ENABLE_ANALOG_GAMEPAD
     virtual void        NotifyGamePadAnalogEvent(const EventId* id);
 #endif
+	virtual void        NotifyStatusEvent(const EventId* id);
+
+    virtual void        NotifyAccelerometerEvent(const EventId* id, int evtIdAcc);
+	virtual void		BroadcastGeolocationStatusEvent(const EventId* id);
+    virtual void        NotifyGeolocationEvent(const EventId* id, int evtIdGeo);
 
     // invoked when whole movie view gets or loses focus
     virtual void        OnMovieFocus(bool set);
@@ -808,6 +833,8 @@ public:
     virtual void        PrintObjectsReport(UInt32 flags = 0, 
                                            Log* log = NULL,  
                                            const char* swfName = NULL);
+    virtual void        GetObjectsTree(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap);
+    AmpMovieObjectDesc* GetDisplayObjectsTree(MemoryHeap* heap) const;
 
     virtual void        ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* pls);
     virtual void        ProcessLoadVarsMT
@@ -828,10 +855,8 @@ public:
     // Value conversion for external communication
     void                GFxValue2ASValue(const GFx::Value& gfxVal, Value* pdestVal);
     void                ASValue2GFxValue(const Value& value, GFx::Value* pdestVal) const;
-#ifdef GFX_AS_ENABLE_USERDATA
     bool                CreateObjectValue(GFx::Value* pvalue, GFx::Value::ObjectInterface* pobjifc, 
                                           void* pdata, bool isdobj);
-#endif
 
     // External API
     virtual void        CreateString(GFx::Value* pvalue, const char* pstring);
@@ -909,6 +934,25 @@ public:
         mEventChains.QueueEvents(evtId);
     }
 
+    // accelerometer
+    void AddToAccelerometers(Instances::fl_sensors::Accelerometer* pAccelerometer);
+    UPInt FindAccelerometer(Instances::fl_sensors::Accelerometer* pAccelerometer);
+    void RemoveFromAccelerometers(Instances::fl_sensors::Accelerometer* pAccelerometer);
+    AutoPtr<ArrayLH<Instances::fl_sensors::Accelerometer*> > AccelerometerArray;
+
+    // geolocation
+    void AddToGeolocations(Instances::fl_sensors::Geolocation* pGeolocation);
+    UPInt FindGeolocation(Instances::fl_sensors::Geolocation* pGeolocation);
+    void RemoveFromGeolocations(Instances::fl_sensors::Geolocation* pGeolocation);
+    AutoPtr<ArrayLH<Instances::fl_sensors::Geolocation*> > GeolocationArray;
+
+	// extension contexts
+	void AddToExtensionContexts(Instances::fl_external::ExtensionContext* pExtensionContext);
+    UPInt FindExtensionContexts(Instances::fl_external::ExtensionContext* pExtensionContext);
+	UPInt FindExtensionContexts(const ASString& extensionID, const ASString& contextType);
+	void RemoveFromExtensionContexts(Instances::fl_external::ExtensionContext* pExtensionContext);
+	AutoPtr<ArrayLH<Instances::fl_external::ExtensionContext*> > ExtensionContextArray;
+
     // forces RENDER events to fire up
     void                InvalidateStage() { StageInvalidated = true; }
     void                ValidateStage()   { StageInvalidated = false; }
@@ -923,6 +967,8 @@ public:
     // "stop" - used for unloadAndStop;
     // "gc"   - executes GC afterwards. 
     void                UnloadMovie(Instances::fl_display::Loader* ploader, bool stop = false, bool gc = false);
+    // cancels loading movie by ploader. Returns false if no active loadings found.
+    bool                CancelMovieLoading(Instances::fl_display::Loader* ploader);
 
     // adds/removes a moviedefimpl to/from holding hash table
     void                AddLoadedMovieDef(MovieDefImpl*);
@@ -946,11 +992,23 @@ protected:
     void                ParseValueArguments(Array<Value>& arr, const char* pmethodName, 
                                             const char* pargFmt, va_list args) const;
 
+    virtual void        OnMovieDefRelease(MovieDefImpl*);
+
 #if defined(SF_OBJ_COLLECTOR_ENABLED)
+private:
+    class CollectorProcessHelper
+    {
+    public:
+        CollectorProcessHelper(MovieRoot* mov);
+        ~CollectorProcessHelper();
+    private:
+        MovieRoot* MovRoot;
+    };
 public:
     void                CollectObjects(UInt32 flags, 
                                        Log* log,  
                                        const char* swfName);
+    void                CollectObjects(Array<Ptr<AmpMovieObjectDesc> >* rootObjects, MemoryHeap* heap);
     ObjectCollector     Collector;
 #endif
 };
@@ -1051,7 +1109,7 @@ SF_INLINE MovieRoot* ToAS3Root(Sprite* spr)
 
 SF_INLINE MovieRoot* ToAS3Root(GFx::MovieImpl* pm)
 {
-    SF_ASSERT(pm->pASMovieRoot && pm->pASMovieRoot->GetAVMVersion() == 2);
+    SF_ASSERT(pm && pm->pASMovieRoot && pm->pASMovieRoot->GetAVMVersion() == 2);
     return static_cast<MovieRoot*>(pm->pASMovieRoot.GetPtr());
 }
 

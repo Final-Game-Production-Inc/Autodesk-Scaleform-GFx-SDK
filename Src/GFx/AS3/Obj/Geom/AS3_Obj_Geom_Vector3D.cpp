@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,12 +35,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 		return (diff<tol);
 	}
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_geom::Vector3D, Instances::fl_geom::Vector3D::mid_lengthGet, Value::Number> TFunc_Instances_Vector3D_lengthGet;
 typedef ThunkFunc0<Instances::fl_geom::Vector3D, Instances::fl_geom::Vector3D::mid_lengthSquaredGet, Value::Number> TFunc_Instances_Vector3D_lengthSquaredGet;
 typedef ThunkFunc1<Instances::fl_geom::Vector3D, Instances::fl_geom::Vector3D::mid_xSet, const Value, Value::Number> TFunc_Instances_Vector3D_xSet;
@@ -406,39 +401,67 @@ namespace Instances { namespace fl_geom
 
 namespace InstanceTraits { namespace fl_geom
 {
+    // const UInt16 Vector3D::tito[Vector3D::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 23, 26, 28, 32, 33, 34, 35, 37, 39, 
+    // };
+    const TypeInfo* Vector3D::tit[40] = {
+        &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        NULL, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl::NumberTI, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::Vector3DTI, &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl::BooleanTI, &AS3::fl_geom::Vector3DTI, &AS3::fl::NumberTI, &AS3::fl::BooleanTI, 
+        NULL, 
+        &AS3::fl::NumberTI, 
+        NULL, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo Vector3D::ti[Vector3D::ThunkInfoNum] = {
-        {TFunc_Instances_Vector3D_lengthGet::Func, &AS3::fl::NumberTI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector3D_lengthSquaredGet::Func, &AS3::fl::NumberTI, "lengthSquared", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector3D_xSet::Func, NULL, "x", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Vector3D_xGet::Func, &AS3::fl::NumberTI, "x", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector3D_ySet::Func, NULL, "y", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Vector3D_yGet::Func, &AS3::fl::NumberTI, "y", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector3D_zSet::Func, NULL, "z", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Vector3D_zGet::Func, &AS3::fl::NumberTI, "z", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector3D_wSet::Func, NULL, "w", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Vector3D_wGet::Func, &AS3::fl::NumberTI, "w", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Vector3D_add::Func, &AS3::fl_geom::Vector3DTI, "add", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_clone::Func, &AS3::fl_geom::Vector3DTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector3D_crossProduct::Func, &AS3::fl_geom::Vector3DTI, "crossProduct", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_decrementBy::Func, NULL, "decrementBy", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_dotProduct::Func, &AS3::fl::NumberTI, "dotProduct", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_equals::Func, &AS3::fl::BooleanTI, "equals", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Vector3D_incrementBy::Func, NULL, "incrementBy", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_nearEquals::Func, &AS3::fl::BooleanTI, "nearEquals", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_Vector3D_negate::Func, NULL, "negate", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector3D_normalize::Func, &AS3::fl::NumberTI, "normalize", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector3D_project::Func, NULL, "project", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Vector3D_scaleBy::Func, NULL, "scaleBy", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_subtract::Func, &AS3::fl_geom::Vector3DTI, "subtract", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Vector3D_toString::Func, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_Vector3D_lengthGet::Func, &Vector3D::tit[0], "length", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_lengthSquaredGet::Func, &Vector3D::tit[1], "lengthSquared", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_xSet::Func, &Vector3D::tit[2], "x", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_xGet::Func, &Vector3D::tit[4], "x", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_ySet::Func, &Vector3D::tit[5], "y", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_yGet::Func, &Vector3D::tit[7], "y", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_zSet::Func, &Vector3D::tit[8], "z", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_zGet::Func, &Vector3D::tit[10], "z", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_wSet::Func, &Vector3D::tit[11], "w", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_wGet::Func, &Vector3D::tit[13], "w", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_add::Func, &Vector3D::tit[14], "add", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_clone::Func, &Vector3D::tit[16], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_crossProduct::Func, &Vector3D::tit[17], "crossProduct", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_decrementBy::Func, &Vector3D::tit[19], "decrementBy", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_dotProduct::Func, &Vector3D::tit[21], "dotProduct", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_equals::Func, &Vector3D::tit[23], "equals", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_incrementBy::Func, &Vector3D::tit[26], "incrementBy", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_nearEquals::Func, &Vector3D::tit[28], "nearEquals", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_negate::Func, &Vector3D::tit[32], "negate", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_normalize::Func, &Vector3D::tit[33], "normalize", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_project::Func, &Vector3D::tit[34], "project", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_scaleBy::Func, &Vector3D::tit[35], "scaleBy", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_subtract::Func, &Vector3D::tit[37], "subtract", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Vector3D_toString::Func, &Vector3D::tit[39], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Vector3D::Vector3D(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Vector3D::Vector3D()"
 //##protect##"InstanceTraits::Vector3D::Vector3D()"
-        SetMemSize(sizeof(Instances::fl_geom::Vector3D));
 
     }
 
@@ -507,28 +530,38 @@ namespace ClassTraits { namespace fl_geom
         {"Z_AXIS", NULL, OFFSETOF(Classes::fl_geom::Vector3D, Z_AXIS), Abc::NS_Public, SlotInfo::BT_ObjectCpp, 1},
     };
 
-    const ThunkInfo Vector3D::ti[Vector3D::ThunkInfoNum] = {
-        {TFunc_Classes_Vector3D_angleBetween::Func, &AS3::fl::NumberTI, "angleBetween", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Classes_Vector3D_distance::Func, &AS3::fl::NumberTI, "distance", NULL, Abc::NS_Public, CT_Method, 2, 2},
+    // const UInt16 Vector3D::tito[Vector3D::ThunkInfoNum] = {
+    //    0, 3, 
+    // };
+    const TypeInfo* Vector3D::tit[6] = {
+        &AS3::fl::NumberTI, &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        &AS3::fl::NumberTI, &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
     };
-    Vector3D::Vector3D(VM& vm)
-    : Traits(vm, AS3::fl_geom::Vector3DCI)
+    const ThunkInfo Vector3D::ti[Vector3D::ThunkInfoNum] = {
+        {TFunc_Classes_Vector3D_angleBetween::Func, &Vector3D::tit[0], "angleBetween", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Classes_Vector3D_distance::Func, &Vector3D::tit[3], "distance", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+    };
+
+    Vector3D::Vector3D(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Vector3D::Vector3D()"
 //##protect##"ClassTraits::Vector3D::Vector3D()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_geom::Vector3D(vm, AS3::fl_geom::Vector3DCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_geom::Vector3D(*this));
 
     }
 
     Pickable<Traits> Vector3D::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Vector3D(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Vector3D(vm, AS3::fl_geom::Vector3DCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_geom::Vector3DCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -539,6 +572,11 @@ namespace fl_geom
 {
     const TypeInfo Vector3DTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_geom::Vector3D::InstanceType),
+        ClassTraits::fl_geom::Vector3D::ThunkInfoNum,
+        ClassTraits::fl_geom::Vector3D::MemberInfoNum,
+        InstanceTraits::fl_geom::Vector3D::ThunkInfoNum,
+        0,
         "Vector3D", "flash.geom", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -546,10 +584,6 @@ namespace fl_geom
     const ClassInfo Vector3DCI = {
         &Vector3DTI,
         ClassTraits::fl_geom::Vector3D::MakeClassTraits,
-        ClassTraits::fl_geom::Vector3D::ThunkInfoNum,
-        ClassTraits::fl_geom::Vector3D::MemberInfoNum,
-        InstanceTraits::fl_geom::Vector3D::ThunkInfoNum,
-        0,
         ClassTraits::fl_geom::Vector3D::ti,
         ClassTraits::fl_geom::Vector3D::mi,
         InstanceTraits::fl_geom::Vector3D::ti,

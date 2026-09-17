@@ -7,6 +7,7 @@ Created     :   July 18, 2001
 Authors     :   Brendan Iribe, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -59,7 +60,7 @@ namespace Scaleform {
 //             be handled more gracefully). Assert conditions will not be checked for in
 //             the release build and will most likely cause a crash.
 
-enum LogMessageType
+enum LogMessageType : int
 {    
     LogMessage_Text    = 0x00000, // No prefix, no newline.
     LogMessage_Warning = 0x20000, // "Warning: %s\n". For unexpected conditions handled gracefully.
@@ -120,15 +121,15 @@ public:
 enum LogConstants
 {
     // General I/O errors and warnings
-    Log_Message      = LogChannel_General | LogMessage_Text,
-    Log_Warning      = LogChannel_General | LogMessage_Warning,
-    Log_Error        = LogChannel_General | LogMessage_Error,
+    Log_Message      = static_cast<int>(LogChannel_General) | static_cast<int>(LogMessage_Text),
+    Log_Warning      = static_cast<int>(LogChannel_General) | static_cast<int>(LogMessage_Warning),
+    Log_Error        = static_cast<int>(LogChannel_General) | static_cast<int>(LogMessage_Error),
     
     // Debug-only messages (not generated in release build)
-    Log_DebugMessage = LogChannel_Debug | LogMessage_Text,
-    Log_DebugWarning = LogChannel_Debug | LogMessage_Warning,
-    Log_DebugError   = LogChannel_Debug | LogMessage_Error,
-    Log_DebugAssert  = LogChannel_Debug | LogMessage_Assert
+    Log_DebugMessage = static_cast<int>(LogChannel_Debug) | static_cast<int>(LogMessage_Text),
+    Log_DebugWarning = static_cast<int>(LogChannel_Debug) | static_cast<int>(LogMessage_Warning),
+    Log_DebugError   = static_cast<int>(LogChannel_Debug) | static_cast<int>(LogMessage_Error),
+    Log_DebugAssert  = static_cast<int>(LogChannel_Debug) | static_cast<int>(LogMessage_Assert)
 };
 
 

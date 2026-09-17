@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov, Prasad Silva
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -24,12 +25,18 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_MsgFormat.h"
 #include "GFx/AS3/Obj/AS3_Obj_Array.h"
 #include "GFx/AS3/Obj/Net/AS3_Obj_Net_URLRequest.h"
+#include "GFx/AS3/Obj/Net/AS3_Obj_Net_URLRequestHeader.h"
 #include "GFx/AS3/Obj/Net/AS3_Obj_Net_URLLoader.h"
+#include "GFx/AS3/Obj/Net/AS3_Obj_Net_URLVariables.h"
+#include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_ByteArray.h"
 #include "GFx/AS3/AS3_AvmBitmap.h"
-#include "GFx/AS3/Obj/Gfx/AS3_Obj_Gfx_MouseCursorEvent.h"
+#include "GFx/AS3/Obj/GFx/AS3_Obj_Gfx_MouseCursorEvent.h"
 #include "GFx/AS3/Obj/Events/AS3_Obj_Events_Event.h"
 #include "GFx/AS3/Obj/Utils/AS3_Obj_Utils_ByteArray.h"
 #include "GFx/AS3/Obj/System/AS3_Obj_System_ApplicationDomain.h"
+#include "GFx/AS3/Obj/Sensors/AS3_Obj_Sensors_Accelerometer.h"
+#include "GFx/AS3/Obj/Sensors/AS3_Obj_Sensors_Geolocation.h"
+#include "GFx/AS3/Obj/External/AS3_Obj_External_ExtensionContext.h"
 
 #include "Kernel/SF_AmpInterface.h"
 #include "GFx/AS3/AS3_SocketThreadMgr.h"
@@ -39,8 +46,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 namespace Scaleform { namespace GFx { namespace AS3 {
 ///
 
-ASVM::ASVM(MovieRoot* pmr, FlashUI& _ui, FileLoader& loader, AS3::StringManager& sm, ASRefCountCollector& gc)
-: VM(_ui, loader, sm, gc SF_AOTC_ARG(NULL) SF_AOTC2_ARG(NULL))
+ASVM::ASVM(MovieRoot* pmr, FlashUI& _ui, AS3::StringManager& sm, ASRefCountCollector& gc)
+: VM(_ui, sm, gc SF_AOTC_ARG(NULL) SF_AOTC2_ARG(NULL))
 , pMovieRoot(pmr)
 , ExtensionsEnabled(false)
 {
@@ -82,6 +89,10 @@ ASVM::ASVM(MovieRoot* pmr, FlashUI& _ui, FileLoader& loader, AS3::StringManager&
     AppLifecycleEventClass = GetClass("flash.events.AppLifecycleEvent", GetCurrentAppDomain());
     StageOrientationEventClass = GetClass("flash.events.StageOrientationEvent", GetCurrentAppDomain());
 #endif
+	StatusEventClass = GetClass("flash.events.StatusEvent", GetCurrentAppDomain());
+
+    AccelerometerEventClass = GetClass("flash.events.AccelerometerEvent", GetCurrentAppDomain());
+    GeolocationEventClass = GetClass("flash.events.GeolocationEvent", GetCurrentAppDomain());
 
     PointClass = GetClass("flash.geom.Point", GetCurrentAppDomain());
     RectangleClass = GetClass("flash.geom.Rectangle", GetCurrentAppDomain());
@@ -128,6 +139,9 @@ ASVM::ASVM(MovieRoot* pmr, FlashUI& _ui, FileLoader& loader, AS3::StringManager&
     SF_ASSERT(StageOrientationEventClass);
 #endif
 
+	SF_ASSERT(StatusEventClass);
+    SF_ASSERT(AccelerometerEventClass);
+    SF_ASSERT(GeolocationEventClass);
     SF_ASSERT(PointClass);
     SF_ASSERT(RectangleClass);
     SF_ASSERT(TextFormatClass);
@@ -135,14 +149,12 @@ ASVM::ASVM(MovieRoot* pmr, FlashUI& _ui, FileLoader& loader, AS3::StringManager&
     SF_ASSERT(Vector3DClass);
 }
 
+#ifdef SF_AMP_SERVER
 AMP::ViewStats* ASVM::GetAdvanceStats() const
 {
-#ifdef SF_AMP_SERVER
-    return pMovieRoot->GetMovieImpl()->AdvanceStats;
-#else
-    return NULL;
-#endif
+    return &pMovieRoot->GetMovieImpl()->GetAdvanceStats();
 }
+#endif
 
 
 bool ASVM::_constructInstance(SPtr<Object> &pobj, Object* classObj,
@@ -217,6 +229,9 @@ MovieRoot::MovieRoot(MemoryContextImpl* memContext, MovieImpl* pmovie, ASSupport
     pmovie->SetDisableFocusRolloverEvent(true);
 
     MainLoaderInfoEventsState = 0;
+#ifdef SF_ENABLE_SOCKETS
+    SocketFactory = Socket::GetAs3DefaultFactory();
+#endif //SF_ENABLE_SOCKETS
 }
 
 MovieRoot::~MovieRoot()
@@ -244,6 +259,13 @@ void MovieRoot::Shutdown()
     for (UPInt i = 0; i < sizeof(mMouseState)/sizeof(mMouseState[0]); ++i)
     {
         mMouseState[i].Clear();
+    }
+
+    HashIdentityLH<MovieDefImpl*, LoadedMovieDefInfo>::Iterator it = LoadedMovieDefs.Begin();
+    for (; it != LoadedMovieDefs.End(); ++it)
+    {
+        if (it->First)
+            it->First->RemoveReleaseNotifier(this);
     }
 
     // traverse all RootNodes and cleanup VMAbcFile ptrs there.
@@ -305,28 +327,7 @@ bool MovieRoot::CheckAvm()
         }
         SetState(FlashUI::sStep);
 
-        class Loader : public FileLoader 
-        {
-            UPInt GetSize() const { return 0; }
-
-            const Ptr<Abc::File>& GetFile(UPInt)
-            {
-                static const Ptr<Abc::File> empty;
-                return empty;
-            }
-
-            const AS3::Abc::File* GetFile(const ASString&)
-            {
-                return NULL;
-            }
-            void AddFile(Ptr<AS3::Abc::File>& file)
-            {
-                SF_UNUSED(file);
-            }
-
-        } l;
-
-        pAVM = SF_HEAP_NEW(GetMovieHeap()) ASVM(this, *this, l, *GetStringManager(), *(MemContext->ASGC));
+        pAVM = SF_HEAP_NEW(GetMovieHeap()) ASVM(this, *this, *GetStringManager(), *(MemContext->ASGC));
         pAVM->ExecuteCode();
     }
     return (pAVM.GetPtr() != NULL);
@@ -421,22 +422,7 @@ void MovieRoot::Output(FlashUI::OutputMessageType type, const char* msg)
     default:
         logId = Log_Message;
     }
-    char    buffStr[2000];
-    size_t  len = SFstrlen(msg);
-    size_t  szToCopy = (len < sizeof(buffStr)) ? len : sizeof(buffStr) - 1;
-
-    // replace '\r' by '\n'
-    SFstrncpy(buffStr, sizeof(buffStr), msg, szToCopy);
-    buffStr[szToCopy] = '\0';
-    //     for (char* p = buffStr; *p != 0; ++p)
-    //     {
-    //         if (*p == '\r')
-    //             *p = '\n';
-    //     }
-    if (len < sizeof(buffStr))
-        log->LogMessageById(logId, "%s", buffStr);
-    else
-        log->LogMessageById(logId, "%s ...<truncated>", buffStr);
+    log->LogMessageById(logId, "%s", msg);
 }
 
 
@@ -503,9 +489,16 @@ void    MovieRoot::GenerateMouseEvents(unsigned mouseIndex)
         {
             // See test_mouseOver_out_while_dragging_mouseDisabled.swf
             if (!st.pCharacter->IsMouseDisabledFlagSet())
-                TopmostEntity = st.pCharacter;
-            //printf("tp %s, ntp %s\n", (TopmostEntity) ? TopmostEntity->GetName().ToCStr() : "<null>", 
-            //    st.pCharacter->GetName().ToCStr());
+            {
+                //@DBG
+                //printf("!! %s  tm= %s  ac= %s\n", 
+                // st.pCharacter->GetName().ToCStr(), (TopmostEntity)?TopmostEntity->GetName().ToCStr():"...", 
+                // (ActiveEntity)?ActiveEntity->GetName().ToCStr():"...");
+                if (!st.pTopmostEntity || !ToAvmInteractiveObj(st.pTopmostEntity)->IsStageAccessible())
+                    pMovieImpl->SetDragStateTopmostEntity(mouseIndex, TopmostEntity);
+                else
+                    TopmostEntity = st.pTopmostEntity;
+            }
         }
     }
 
@@ -673,7 +666,7 @@ void    MovieRoot::GenerateMouseEvents(unsigned mouseIndex)
         }
     }
 
-    bool trackAsMenu = (ActiveEntity) ? ActiveEntity->GetTrackAsMenu() : false;
+    // bool trackAsMenu = (ActiveEntity) ? ActiveEntity->GetTrackAsMenu() : false;
     if (ms.GetWheelDelta() != 0)
     {
         ButtonEventId evt(EventId::Event_MouseWheel, mouseIndex);
@@ -684,6 +677,7 @@ void    MovieRoot::GenerateMouseEvents(unsigned mouseIndex)
 
     if (ms.IsMouseMoved())
     {
+        //printf("tp %s, \n", topmostEntitySafe->GetName().ToCStr());
         ButtonEventId evt(EventId::Event_MouseMove, mouseIndex);
         evt.KeysState       = keyMods;
         evt.MouseWheelDelta = (SInt8)ms.GetWheelDelta();
@@ -695,13 +689,19 @@ void    MovieRoot::GenerateMouseEvents(unsigned mouseIndex)
         // outside of the textfield.
         if (ms.GetMouseButtonDownEntity(0) && ms.GetMouseButtonDownEntity(0) != topmostEntitySafe)
         {
-            ButtonEventId evt(EventId::Event_MouseMove, mouseIndex, 0, 0);
-            evt.KeysState = keyMods;
-            ms.GetMouseButtonDownEntity(0)->PropagateMouseEvent(evt);
+            if (ms.GetMouseButtonDownEntity(0)->GetType() == CharacterDef::TextField)
+            {
+                ButtonEventId bevt(EventId::Event_MouseMove, mouseIndex, 0, 0);
+                bevt.KeysState = keyMods;
+                ms.GetMouseButtonDownEntity(0)->PropagateMouseEvent(bevt);
+            }
         }
     }
+
+    /*
     if (topmostEntitySafe->GetTrackAsMenu())
         trackAsMenu = true;
+    */
 
     //printf("%d %x %x %p %p\n", mouseIndex, ms.GetButtonsState(), ms.GetPrevButtonsState(), TopmostEntity.GetPtr(), ActiveEntity.GetPtr());
 
@@ -827,7 +827,12 @@ void MovieRoot::GenerateTouchEvents(unsigned mouseStateIndex)
         {
             // See test_mouseOver_out_while_dragging_mouseDisabled.swf
             if (!st.pCharacter->IsMouseDisabledFlagSet())
-                TopmostEntity = st.pCharacter;
+            {
+                if (!st.pTopmostEntity)
+                    pMovieImpl->SetDragStateTopmostEntity(mouseStateIndex, TopmostEntity);
+                else
+                    TopmostEntity = st.pTopmostEntity;
+            }
         }
     }
 
@@ -1020,6 +1025,7 @@ void MovieRoot::GenerateTouchEvents(unsigned mouseStateIndex)
                 }
             }
 
+			/*
             // check if we can generate pressAndTap and twoFingerTap gesture events
             if (mtMode & MovieImpl::MTI_Gesture)
             {
@@ -1059,6 +1065,8 @@ void MovieRoot::GenerateTouchEvents(unsigned mouseStateIndex)
                     }
                 }
             }
+			*/
+			
         }
     }
     ms.SetActiveEntity(ActiveEntity);
@@ -1205,12 +1213,18 @@ void MovieRoot::CheckSocketMessages()
     }
 }
 
-SocketThreadMgr* MovieRoot::AddSocket(bool initSockLib, AMP::SocketImplFactory* socketImplFactory, Instances::fl_net::Socket* sock)
+SocketThreadMgr* MovieRoot::AddSocket(bool initSockLib, Instances::fl_net::Socket* sock)
 {
-    Ptr<SocketThreadMgr> newSocket = *SF_HEAP_AUTO_NEW(this) SocketThreadMgr(initSockLib, socketImplFactory, sock);
+    Ptr<SocketThreadMgr> newSocket = *SF_HEAP_AUTO_NEW(this) SocketThreadMgr(initSockLib, SocketFactory, sock);
     Sockets.PushBack(newSocket);
     return newSocket;
 }
+
+void MovieRoot::SetSocketImplFactory(SocketImplFactory* factory)
+{
+    SocketFactory = factory;
+}
+
 #endif  // SF_ENABLE_SOCKETS
 
 
@@ -1607,7 +1621,7 @@ void    MovieRoot::ResolveStickyVariables(InteractiveObject *pch)
     //AvmCharacter* pcharacter = ToAvmCharacter(pch);
     Object* pobj = ToAvmInteractiveObj(pch)->GetAS3Obj();
 
-    if (pMovieImpl->StickyVariables.Get(path, &_pnode))
+    if (pobj != NULL && pMovieImpl->StickyVariables.Get(path, &_pnode))
     {       
         pnode = static_cast<StickyVarNode*>(_pnode);
         // If found, add variables.     
@@ -1770,7 +1784,7 @@ bool MovieRoot::GetASVariableAtPath(Value* pval, const char* ppathToVar) const
         const StringDataPtr& token = pt.NextToken();
         // Get property of current root element
         ASString propName = GetBuiltinsMgr().CreateString(token.ToCStr(), token.GetSize());
-        Multiname prop(pAVM->GetPublicNamespace(), Value(propName));
+        Multiname propMulti(pAVM->GetPublicNamespace(), Value(propName));
         Value subVal;
         Object* presolvedObj = resolvedVal.GetObject();
         if (!presolvedObj)
@@ -1779,7 +1793,7 @@ bool MovieRoot::GetASVariableAtPath(Value* pval, const char* ppathToVar) const
             if (pAVM->IsException()) pAVM->OutputAndIgnoreException();
             return false;
         }
-        if (!presolvedObj->GetProperty(prop, subVal))
+        if (!presolvedObj->GetProperty(propMulti, subVal))
         {
             // If property not found, element may be in display list
             // Check if object is a display object container
@@ -2270,7 +2284,7 @@ bool MovieRoot::Invoke(const char* pmethodName, GFx::Value *presult,
     // Destruct elements in AS3::Value params array
     for (unsigned i = 0, n = numArgs; i < n; ++i)
         pargArray[i].~Value();
-    if (numArgs > sizeof(argArrayOnStack)/sizeof(argArrayOnStack[0]))
+    if (numArgs > NumValuesOnStack)
         SF_FREE(pargArray);
 
     return retVal;
@@ -2738,6 +2752,224 @@ void MovieRoot::AddScriptableMovieClip(DisplayObjContainer* pspr)
     }
 }
 
+void MovieRoot::AddToExtensionContexts(Instances::fl_external::ExtensionContext* pExtensionContext)
+{
+	if (!ExtensionContextArray)
+        ExtensionContextArray = SF_HEAP_NEW(GetMovieHeap()) ArrayLH<Instances::fl_external::ExtensionContext*>();
+    
+    if (FindExtensionContexts(pExtensionContext) == SF_MAX_UPINT)
+        ExtensionContextArray->PushBack(pExtensionContext);
+}
+
+void MovieRoot::RemoveFromExtensionContexts(Instances::fl_external::ExtensionContext* pExtensionContext)
+{
+	UPInt i = FindExtensionContexts(pExtensionContext);
+    if (i != SF_MAX_UPINT)
+    {
+        (*ExtensionContextArray)[i] = NULL;
+    }
+}
+
+UPInt MovieRoot::FindExtensionContexts(Instances::fl_external::ExtensionContext* pExtensionContext)
+{
+    if (ExtensionContextArray)
+    {
+        for (UPInt i = 0; i < ExtensionContextArray->GetSize(); ++i)
+        {
+			if ((*ExtensionContextArray)[i] == pExtensionContext)
+                return i;
+        }
+    }
+
+    return SF_MAX_UPINT;
+}
+
+UPInt MovieRoot::FindExtensionContexts(const ASString& extensionID, const ASString& contextType)
+{
+    if (ExtensionContextArray)
+    {
+        for (SPInt i = ExtensionContextArray->GetSize() - 1; i >= 0;  --i)
+        {
+			Instances::fl_external::ExtensionContext* pTempExtCtx = (*ExtensionContextArray)[i];
+			if (pTempExtCtx == NULL)
+			{
+                ExtensionContextArray->RemoveAt(i);
+                continue;
+            }
+			if (extensionID == pTempExtCtx->ExtensionID)
+			{
+				/* valid cases: contextType is "" and pTempExtCtx->ContextID is null or "" */
+				if ((contextType == pTempExtCtx->ContextID) || (contextType.IsEmpty() && pTempExtCtx->ContextID.IsNull()))
+					return i;
+			}
+        }
+    }
+
+    return SF_MAX_UPINT;
+}
+
+void MovieRoot::NotifyStatusEvent(const EventId* id)
+{
+	const GFx::StatusEventId& seid = static_cast<const GFx::StatusEventId&>(*id);
+	//SF_DEBUG_MESSAGE4(1, "NotifyStatusEvent %p %s %s (%s)\n", seid.ExtensionId, seid.ExtensionId->ToCStr(), seid.Code->ToCStr(), seid.Level->ToCStr());
+
+	// Status event from geolocation.
+	if (seid.ExtensionId == NULL)
+		this->BroadcastGeolocationStatusEvent(id);
+	else
+	{
+		ASString extensionId = GetStringManager()->CreateString(*seid.ExtensionId); 
+		ASString contextId = GetStringManager()->CreateString(*seid.ContextId);
+
+		UPInt i = this->FindExtensionContexts(extensionId, contextId);
+		if (i != SF_MAX_UPINT)
+			(*ExtensionContextArray)[i]->Dispatch(*id, NULL);
+
+		delete seid.ExtensionId;
+		delete seid.ContextId;
+	}
+
+	// Release event strings
+	delete seid.Code;
+	delete seid.Level;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void MovieRoot::NotifyAccelerometerEvent(const EventId* id, int evtIdAcc)
+{
+    if (AccelerometerArray)
+    {
+        for (SPInt i = AccelerometerArray->GetSize() - 1; i >= 0;  --i)
+        {
+            Instances::fl_sensors::Accelerometer* pAcc = (*AccelerometerArray)[i];
+            if (pAcc == NULL)
+            {
+                // remove empty entries
+                AccelerometerArray->RemoveAt(i);
+                continue;
+            }
+
+            if (pAcc->AccelerometerId == evtIdAcc)
+            {
+                pAcc->Dispatch(*id, NULL);
+                return;
+            }
+        }
+    }
+}
+
+void MovieRoot::AddToAccelerometers(Instances::fl_sensors::Accelerometer* pAccelerometer)
+{
+    if (!AccelerometerArray)
+        AccelerometerArray = SF_HEAP_NEW(GetMovieHeap()) ArrayLH<Instances::fl_sensors::Accelerometer* >();
+    
+    if (FindAccelerometer(pAccelerometer) == SF_MAX_UPINT)
+        AccelerometerArray->PushBack(pAccelerometer);
+}
+
+
+UPInt MovieRoot::FindAccelerometer(Instances::fl_sensors::Accelerometer* pAccelerometer)
+{
+    if (AccelerometerArray)
+    {
+        for (UPInt i = 0; i < AccelerometerArray->GetSize(); ++i)
+        {
+            if ((*AccelerometerArray)[i] == pAccelerometer)
+                return i;
+        }
+    }
+
+    return SF_MAX_UPINT;
+}
+
+void MovieRoot::RemoveFromAccelerometers(Instances::fl_sensors::Accelerometer* pAccelerometer)
+{
+    UPInt i = FindAccelerometer(pAccelerometer);
+    if (i != SF_MAX_UPINT)
+    {
+        (*AccelerometerArray)[i] = NULL;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void MovieRoot::NotifyGeolocationEvent(const EventId* id, int evtIdGeo)
+{
+    if (GeolocationArray)
+    {
+        for (SPInt i = GeolocationArray->GetSize() - 1; i >= 0;  --i)
+        {
+            Instances::fl_sensors::Geolocation* pGeo = (*GeolocationArray)[i];
+            if (pGeo == NULL)
+            {
+                // remove empty entries
+                GeolocationArray->RemoveAt(i);
+                continue;
+            }
+
+            if (pGeo->GeolocationId == evtIdGeo)
+            {
+                pGeo->Dispatch(*id, NULL);
+                return;
+            }
+        }
+    }
+}
+
+void MovieRoot::BroadcastGeolocationStatusEvent(const EventId* id)
+{
+    if (GeolocationArray)
+    {
+        for (SPInt i = GeolocationArray->GetSize() - 1; i >= 0;  --i)
+        {
+            Instances::fl_sensors::Geolocation* pGeo = (*GeolocationArray)[i];
+            if (pGeo == NULL)
+            {
+                // remove empty entries
+                GeolocationArray->RemoveAt(i);
+                continue;
+            }
+
+			pGeo->Dispatch(*id, NULL);
+        }
+    }
+}
+
+
+void MovieRoot::AddToGeolocations(Instances::fl_sensors::Geolocation* pGeolocation)
+{
+    if (!GeolocationArray)
+        GeolocationArray = SF_HEAP_NEW(GetMovieHeap()) ArrayLH<Instances::fl_sensors::Geolocation* >();
+    
+    if (FindGeolocation(pGeolocation) == SF_MAX_UPINT)
+        GeolocationArray->PushBack(pGeolocation);
+}
+
+
+UPInt MovieRoot::FindGeolocation(Instances::fl_sensors::Geolocation* pGeolocation)
+{
+    if (GeolocationArray)
+    {
+        for (UPInt i = 0; i < GeolocationArray->GetSize(); ++i)
+        {
+            if ((*GeolocationArray)[i] == pGeolocation)
+                return i;
+        }
+    }
+
+    return SF_MAX_UPINT;
+}
+
+void MovieRoot::RemoveFromGeolocations(Instances::fl_sensors::Geolocation* pGeolocation)
+{
+    UPInt i = FindGeolocation(pGeolocation);
+    if (i != SF_MAX_UPINT)
+    {
+        (*GeolocationArray)[i] = NULL;
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////
 void EventChains::AddToChain(EventId::IdCode evtId, DisplayObject* obj)
 {
@@ -2882,29 +3114,6 @@ LoadQueueEntryMT_LoadMovie::LoadQueueEntryMT_LoadMovie(
     BytesLoaded         = 0;
 
     bool stripped       = false;
-    /*if (pqueueEntry->pCharacter)
-    {
-        // This is loadMovie, not level.
-        SF_ASSERT(qe->Level == -1);
-        SF_ASSERT(!(qe->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag));
-
-        // Make sure we have character targets and parents.
-        Ptr<DisplayObject> poldChar = pqueueEntry->pCharacter->ResolveCharacter(pMovieRoot);
-        if (poldChar)
-            stripped = (poldChar->GetResourceMovieDef()->GetSWFFlags() 
-            & MovieInfo::SWF_Stripped) != 0;
-    }
-    else if (pqueueEntry->Level != -1)
-    {
-        MovieRoot* as2mr = static_cast<MovieRoot*>(pMovieRoot->pASMovieRoot);
-        SF_ASSERT(qe->Type & GFxAS2LoadQueueEntry::LTF_LevelFlag);
-        if (as2mr->GetLevelMovie(qe->Level))
-            stripped = ((as2mr->GetLevelMovie(qe->Level)->GetResourceMovieDef()->GetSWFFlags()
-            & MovieInfo::SWF_Stripped) != 0);
-        else if (as2mr->GetLevelMovie(0))
-            stripped = ((as2mr->GetLevelMovie(0)->GetResourceMovieDef()->GetSWFFlags()
-            & MovieInfo::SWF_Stripped) != 0);
-    }*/
     MovieRoot* root = ToAS3Root(pMovieImpl);
     if (root->GetMainContainer())
     {
@@ -3000,7 +3209,8 @@ bool LoadQueueEntryMT_LoadMovie::LoadFinished()
             }
 
             // when we loaded the first frame process its actions.
-            if (!FirstFrameLoaded && ((pdefImpl->pBindData->GetBindState() & MovieDefImpl::BSF_Frame1Loaded) != 0))
+            if (!FirstFrameLoaded && 
+                (pdefImpl->pBindData->GetBindStateFlags() & MovieDefImpl::BSF_Frame1Loaded) != 0)
             {
                 // First frame is loaded.
                 if (pdefImpl->GetDataDef()->MovieType == MovieDataDef::MT_Flash)
@@ -3038,6 +3248,15 @@ bool LoadQueueEntryMT_LoadMovie::LoadFinished()
                         //!AB: need to run just InitActions here, it will initialize Abc by
                         // executing DoAbc tag. All further actions will be executed by 
                         // CreateASInstance, from "super" call.
+                        Instances::fl_display::LoaderInfo* info = qe->mLoader->GetContentLoaderInfo();
+                        if (info != NULL)
+                        {
+                            SPtr<Instances::fl_system::ApplicationDomain> appDomain = info->applicationDomainGet();
+                            if (appDomain)
+                            {
+                                avmSpr->SetAppDomain(appDomain->GetAppDomain());
+                            }
+                        }
                         avmSpr->ExecuteInitActionFrameTags(0);
 
                         // Allocate a default PerspectiveDataType object and set fieldOfView.
@@ -3074,12 +3293,14 @@ bool LoadQueueEntryMT_LoadMovie::LoadFinished()
             }
             //printf("!!! LoadFinished! %s\n", qe->mURLRequest->GetUrl().ToCStr());
 
-            // If the movie is not completely loaded yet try it on the next iteration.
-            if ((pdefImpl->pBindData->GetBindState() 
-                & (MovieDefImpl::BS_InProgress | MovieDefImpl::BS_Finished)) < MovieDefImpl::BS_Finished)
-                return false;
-            if (pdefImpl->pBindData->GetBindState() & MovieDefImpl::BS_Finished)
+            switch (pdefImpl->pBindData->GetBindStateType())
             {
+            case MovieDefImpl::BS_NotStarted:
+            case MovieDefImpl::BS_InProgress:
+                // If the movie is not completely loaded yet try it on the next iteration.
+                return false;
+                break;
+            case MovieDefImpl::BS_Finished:
                 //printf("!!! Finished! %d == %d\n", pdefImpl->GetDataDef()->MovieType, MovieDataDef::MT_Image);
                 if (pdefImpl->GetDataDef()->MovieType == MovieDataDef::MT_Image)
                 {
@@ -3106,7 +3327,6 @@ bool LoadQueueEntryMT_LoadMovie::LoadFinished()
                         }
                     }
 
-                    ToAvmDisplayObjContainer(pparent)->AddChild(pnewChar);
                     AvmDisplayObj* avmObj = ToAvmDisplayObj(pnewChar);
                     if (!avmObj->HasAS3Obj())
                     {
@@ -3116,18 +3336,24 @@ bool LoadQueueEntryMT_LoadMovie::LoadFinished()
                             avmObj->CallCtor(true);
                         }
                     }
+                    ToAvmDisplayObjContainer(pparent)->AddChild(pnewChar);
+
                     // Fire "init" event
                     qe->mLoader->QueueInitEvent(pnewChar, qe->NotifyLoadInitCInterface);
                 }
 
                 // fire "complete" event
                 qe->mLoader->QueueCompleteEvent();
-            } 
-            else 
-            {
+                break;
+            case MovieDefImpl::BS_Canceled:
+            case MovieDefImpl::BS_Error:
                 // A error happened during the movie loading 
                 qe->mLoader->ExecuteErrorEvent(qe->mURLRequest->GetUrl().ToCStr());
                 qe->FirstExec = false;
+                break;
+            default:
+                SF_ASSERT(false);
+                break;
             }
         }
 error_exit:
@@ -3155,13 +3381,13 @@ bool LoadQueueEntryMT_LoadMovie::IsPreloadingFinished()
 void    MovieRoot::AddLoadQueueEntryMT(LoadQueueEntry* pentry)
 {
     LoadQueueEntryMT* pentryMT = NULL;
-    if (pentry->Type & LoadQueueEntry::LTF_VarsFlag)
+    if (static_cast<uint32_t>(pentry->Type) & static_cast<uint32_t>(LoadQueueEntry::LTF_VarsFlag))
     {
 #ifdef GFX_AS2_ENABLE_LOADVARS
         pentryMT = SF_HEAP_NEW(GetMovieHeap()) LoadQueueEntryMT_LoadVars(pentry, pMovieImpl);
 #endif
     }
-    else if (pentry->Type & LoadQueueEntry::LTF_BinaryFlag)
+    else if (static_cast<uint32_t>(pentry->Type) & static_cast<uint32_t>(LoadQueueEntry::LTF_BinaryFlag))
     {
 #ifdef GFX_AS2_ENABLE_LOADVARS
         pentryMT = SF_HEAP_NEW(GetMovieHeap()) LoadQueueEntryMT_LoadBinary(pentry, pMovieImpl);
@@ -3360,7 +3586,93 @@ void MovieRoot::ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* p
 
             // File loading protocol
             Ptr<File> pfile;
-            pfile = *pls->OpenFile(fileName.ToCStr());
+            Array<UByte> bytes;
+            if (URLBuilder::IsProtocol(fileName))
+            {
+#ifdef SF_ENABLE_HTTP_LOADING
+                URLBuilder::UrlMethod sendUrlRequest = URLBuilder::Url_Method_None;
+                switch (entry.Method)
+                {
+                case LoadQueueEntry::LM_Get:
+                    sendUrlRequest = URLBuilder::Url_Method_Get;
+                    break;
+                case LoadQueueEntry::LM_Post:
+                    sendUrlRequest = URLBuilder::Url_Method_Post;
+                    break;
+                case LoadQueueEntry::LM_Put:
+                    sendUrlRequest = URLBuilder::Url_Method_Put;
+                    break;
+                case LoadQueueEntry::LM_Delete:
+                    sendUrlRequest = URLBuilder::Url_Method_Delete;
+                    break;
+                case LoadQueueEntry::LM_None:
+                    break;
+                default:
+                    SF_ASSERT(false); // Unsupported method
+                    break;
+                }
+
+                if (sendUrlRequest != URLBuilder::Url_Method_None)
+                {
+                    ASString dataFields(GetBuiltinsMgr().GetBuiltin(AS3Builtin_empty_));
+                    GlobalSlotIndex slotIdx(0);
+                    Value data = entry.mURLRequest->dataGet();
+                    if (data.IsObject())
+                    {
+                        SPtr<Object> dataObj = data.GetObject();
+                        if (dataObj->GetName() == "URLVariables")
+                        {
+                            Instances::fl_net::URLVariables* varData = static_cast<Instances::fl_net::URLVariables*>(dataObj.GetPtr());
+                            varData->toString(dataFields);
+                            if (sendUrlRequest == URLBuilder::Url_Method_Get)
+                            {
+                                fileName.AppendChar('?');
+                                fileName.AppendString(dataFields.ToCStr());
+                                dataFields.Clear();
+                            }
+                        }
+                        else if (dataObj->GetTraits().GetTraitsType() == Traits_ByteArray && dataObj->GetTraits().IsInstanceTraits())
+                        {
+                            Instances::fl_utils::ByteArray* arrData = static_cast<Instances::fl_utils::ByteArray*>(dataObj.GetPtr());
+                            arrData->toString(dataFields);
+                        }
+                        else
+                        {
+                            SF_ASSERT(false);
+                        }
+                    }
+                    else if (data.IsString())
+                    {
+                        dataFields = data.AsString();
+                    }
+
+                    Array<String> headers;
+                    SPtr<Instances::fl::Array> reqHeaders = entry.mURLRequest->requestHeadersGet();
+                    if (reqHeaders)
+                    {
+                        for (UPInt i = 0; i < reqHeaders->GetSize(); ++i)
+                        {
+
+                            Instances::fl_net::URLRequestHeader* header = static_cast<Instances::fl_net::URLRequestHeader*>(reqHeaders->At(i).GetObject());
+                            String headerValue(header->name.ToCStr());
+                            headerValue += ": ";
+                            headerValue += header->value.ToCStr();
+                            headers.PushBack(headerValue);
+                        }
+                    }
+
+                    if (URLBuilder::SendURLRequest(&bytes, fileName, sendUrlRequest, dataFields.ToCStr(), (int)dataFields.GetLength(), &headers, entry.mURLRequest->contentTypeGet().ToCStr())
+                        && !bytes.IsEmpty())
+                    {
+                        pfile = *SF_NEW MemoryFile(fileName, bytes.GetDataPtr(), (int)bytes.GetSize());
+                    }
+                }
+#endif
+            }
+            else
+            {
+                pfile = *pls->OpenFile(fileName.ToCStr());
+            }
             if (pfile)
             {
                 if (entry.mURLLoader->IsLoadingVariables())
@@ -3406,7 +3718,7 @@ void MovieRoot::ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* p
         LogState*           plog = pls->GetLogState();
         Ptr<MovieDefImpl>   pmovieDef;
         unsigned            loadFlags = GetMovieDefImpl()->GetLoadFlags();
-        int                 filelength = 0;
+        // int                 filelength = 0;
 
         if (GetMainContainer())
         {
@@ -3443,18 +3755,24 @@ void MovieRoot::ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* p
                             url.ToCStr(), pls);
                     }
                 }
-                else if (plog)
+                else
                 {
-                    plog->LogScriptWarning(
-                        "ImageCreator::LoadProtocolImage failed to load image \"%s\"", url.ToCStr());
+                    if (plog)
+                    {
+                        plog->LogScriptWarning(
+                            "ImageCreator::LoadProtocolImage failed to load image \"%s\"", url.ToCStr());
+                    }
                     entry.mLoader->ExecuteErrorEvent(url.ToCStr());
                     goto error_exit;
                 }
             }
-            else if (plog)
+            else
             {
-                plog->LogScriptWarning(
-                    "ImageCreator is not installed, failed to load image \"%s\"", url.ToCStr());
+                if (plog)
+                {
+                    plog->LogScriptWarning(
+                        "ImageCreator is not installed, failed to load image \"%s\"", url.ToCStr());
+                }
                 entry.mLoader->ExecuteErrorEvent(url.ToCStr());
             }
         }
@@ -3516,7 +3834,7 @@ void MovieRoot::ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* p
                 {
                     // Record file length for progress report below. Once we do
                     // threaded loading this will change.
-                    filelength = pmovieDef->GetFileBytes();
+                    // filelength = pmovieDef->GetFileBytes();
                 }
             }
             else 
@@ -3563,8 +3881,6 @@ void MovieRoot::ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* p
                 }
             }
 
-            ToAvmDisplayObjContainer(pparent)->AddChild(pnewBmpChar);
-
             AvmDisplayObj* avmObj = ToAvmDisplayObj(pnewBmpChar);
             if (!avmObj->HasAS3Obj())
             {
@@ -3574,6 +3890,7 @@ void MovieRoot::ProcessLoadQueueEntry(GFx::LoadQueueEntry *pentry, LoadStates* p
                     avmObj->CallCtor(true);
                 }
             }
+            ToAvmDisplayObjContainer(pparent)->AddChild(pnewBmpChar);
 
             pnewChar = pnewBmpChar;
         }
@@ -3737,6 +4054,42 @@ void MovieRoot::ProcessLoadBinaryMT
     }
 }
 
+bool MovieRoot::CancelMovieLoading(Instances::fl_display::Loader* ploader)
+{
+    bool rv = false;
+
+    // if we unloading a movieclip we need to go over the list of loading queue which 
+    // and cancel all items which are going to load into the same level or target
+    // Note, we need to cancel ONLY entries, inserted BEFORE the "unloadMovie" entry!
+    LoadQueueEntryMT *plentry = pMovieImpl->pLoadQueueMTHead;
+    while(plentry)
+    {
+        LoadQueueEntry* plqentry = static_cast<LoadQueueEntry*>(plentry->GetQueueEntry());
+        if (plqentry->mLoader == ploader)
+        {
+            plqentry->Canceled = true;
+            rv = true;
+        }
+
+        plentry = plentry->GetNext();
+    }
+
+    // non-progressive loading queue
+    LoadQueueEntry *plqentry = static_cast<LoadQueueEntry*>(pMovieImpl->pLoadQueueHead);
+    while(plqentry)
+    {
+        if (plqentry->mLoader == ploader)
+        {
+            plqentry->Canceled = true;
+            rv = true;
+        }
+
+        plqentry = static_cast<LoadQueueEntry*>(plqentry->GetNext());
+    }
+
+    return rv;
+}
+
 // if "stop" parameter is true then the method does the following:
 // Tries to unload a child SWF and stops the execution from loaded SWFs. 
 // Tries to remove references to EventDispatcher, NetConnection, Timer, Sound, 
@@ -3767,33 +4120,16 @@ void MovieRoot::UnloadMovie(Instances::fl_display::Loader* ploader, bool stop, b
         SPtr<Instances::fl_events::Event> evt = loaderInfo->CreateEventObject
             (GetStringManager()->CreateConstString("unload"), false, false);
         loaderInfo->Dispatch(evt.GetPtr(), loaderInfo->GetContentDispObj());
+
+        // remove app domain if nothing else is in it
+        loaderInfo->VerifyAppDomain();
     }
 
     // release a ptr to the loaded content
     ploader->ResetContent();
 
-    // if we unloading a movieclip we need to go over the list of loading queue which 
-    // and cancel all items which are going to load into the same level or target
-    // Note, we need to cancel ONLY entries, inserted BEFORE the "unloadMovie" entry!
-    LoadQueueEntryMT *plentry = pMovieImpl->pLoadQueueMTHead;
-    while(plentry)
-    {
-        LoadQueueEntry* plqentry = static_cast<LoadQueueEntry*>(plentry->GetQueueEntry());
-        if (plqentry->mLoader == ploader)
-            plqentry->Canceled = true;
+    CancelMovieLoading(ploader);
 
-        plentry = plentry->GetNext();
-    }
-
-    // non-progressive loading queue
-    LoadQueueEntry *plqentry = static_cast<LoadQueueEntry*>(pMovieImpl->pLoadQueueHead);
-    while(plqentry)
-    {
-        if (plqentry->mLoader == ploader)
-            plqentry->Canceled = true;
-
-        plqentry = static_cast<LoadQueueEntry*>(plqentry->GetNext());
-    }
     // just remove all children from the loader object.
     GFx::DisplayObjContainer* doc = ploader->GetDisplayObjContainer();
 
@@ -3841,7 +4177,11 @@ void MovieRoot::UnloadMovie(Instances::fl_display::Loader* ploader, bool stop, b
                         }
                     }
                     // Remove stage listeners
-                    ToAvmDisplayObjContainer(GetStage())->GetAS3Obj()->RemoveListenersForMovieDef(defimpl);
+                    Instances::fl_display::DisplayObject* as3obj = ToAvmDisplayObjContainer(GetStage())->GetAS3Obj();
+                    if (as3obj != NULL)
+                    {
+                        as3obj->RemoveListenersForMovieDef(defimpl);
+                    }
 
                     // Remove timers
                     GetMovieImpl()->ShutdownTimersForMovieDef(defimpl);
@@ -3907,28 +4247,28 @@ void MovieRoot::UnloadMovie(Instances::fl_display::Loader* ploader, bool stop, b
 
     if (gc)
         GetAVM()->GetGC().ScheduleCollect(Movie::GCF_Full); //? should it be full collect here?
-
-    // Release text caches since they can hold a moviedatadef (via font ref)
-    if (MemContext->TextAllocator)
-    {
-        MemContext->TextAllocator->FlushTextFormatCache();
-        MemContext->TextAllocator->FlushParagraphFormatCache();
-    }
 #endif
+}
+
+void MovieRoot::OnMovieDefRelease(MovieDefImpl* defImpl)
+{
+    LoadedMovieDefs.Remove(defImpl); 
 }
 
 void MovieRoot::AddLoadedMovieDef(MovieDefImpl* defImpl)
 {
+    SF_UNUSED(defImpl);
     SF_ASSERT(defImpl);
+    defImpl->AddReleaseNotifier(this);
     LoadedMovieDefInfo* info = LoadedMovieDefs.Get(defImpl);
     if (info)
     {
-        SF_ASSERT(info->pMovieDef == defImpl);
+        //SF_ASSERT(info->pMovieDef == defImpl);
         ++info->UseCnt;
     }
     else
     {
-        LoadedMovieDefs.Add(defImpl, LoadedMovieDefInfo(defImpl));
+        LoadedMovieDefs.Add(defImpl, LoadedMovieDefInfo());
     }
 }
 
@@ -3938,10 +4278,11 @@ bool MovieRoot::RemoveLoadedMovieDef(MovieDefImpl* defImpl)
     LoadedMovieDefInfo* info = LoadedMovieDefs.Get(defImpl);
     if (info)
     {
-        SF_ASSERT(info->pMovieDef == defImpl);
+        //SF_ASSERT(info->pMovieDef == defImpl);
         if (--info->UseCnt == 0)
         {
             LoadedMovieDefs.Remove(defImpl); 
+            defImpl->RemoveReleaseNotifier(this);
             return true;
         }
     }
@@ -4054,6 +4395,19 @@ void MovieRoot::GetMouseCursorType(ASString& result, UInt32 mouseIndex)
     GetMouseCursorTypeString(result, ms->GetPresetCursorType());
 }
 
+AmpMovieObjectDesc* MovieRoot::GetDisplayObjectsTree(MemoryHeap* heap) const
+{
+    AmpMovieObjectDesc* objectDesc = NULL;
+    DisplayObjContainer* dispObject = GetMainContainer();
+    if (dispObject != NULL)
+    {
+        objectDesc = SF_HEAP_NEW(heap) AmpMovieObjectDesc();
+        objectDesc->Description = dispObject->GetName().ToCStr();
+        dispObject->GetChildDescTree(objectDesc, heap);        
+    }
+    return objectDesc;
+}
+
 /*
 OnExceedLimit and OnFreeSegment are used to control MovieView's memory heap growth.
 OnExceedLimit is called then the pre-set heap limit it exceeded.
@@ -4103,38 +4457,50 @@ bool MemoryContextImpl::HeapLimit::OnExceedLimit(MemoryHeap* heap, UPInt overLim
     if (allocsSinceLastCollect >= (SPInt)(footprint * HeapLimitMultiplier) ||
         (UserLevelLimit != 0 && newLimit > UserLevelLimit))
     {
-        Collect(heap);
-
-        if (UserLevelLimit != 0 && newLimit > UserLevelLimit)
+        if (IsInsideAlloc())
         {
-            // check, if user limit is specified. If so, and if it is exceeded
-            // then increase the limit just for absolutely required delta to minimize
-            // the heap growth.
-            SF_ASSERT(LastCollectionFootprint <= footprint);
-            if (overLimit > (footprint - LastCollectionFootprint))
+            // if called from realloc then just schedule collection. Otherwise,
+            // it possible that collection modifies/frees the memory block currently 
+            // being reallocated.
+            MemContext->ASGC->ScheduleCollect(ASRefCountCollector::Collect_Emergency);
+
+            LastCollectionFootprint = footprint;
+        }
+        else
+        {
+            Collect(heap);
+
+            if (UserLevelLimit != 0 && newLimit > UserLevelLimit)
             {
-                CurrentLimit = heapLimit + (overLimit - (footprint - LastCollectionFootprint));
-                heap->SetLimit(CurrentLimit);
+                // check, if user limit is specified. If so, and if it is exceeded
+                // then increase the limit just for absolutely required delta to minimize
+                // the heap growth.
+                SF_ASSERT(LastCollectionFootprint <= footprint);
+                if (overLimit > (footprint - LastCollectionFootprint))
+                {
+                    CurrentLimit = heapLimit + (overLimit - (footprint - LastCollectionFootprint));
+                    heap->SetLimit(CurrentLimit);
 
 #ifdef SF_TRACE_COLLECTIONS        
-                printf("-        UserLimit exceeded. increasing limit up to: %u (%u)\n", 
-                    (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
+                    printf("-        UserLimit exceeded. increasing limit up to: %u (%u)\n", 
+                        (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
 #endif
 
-                CurrentLimit = heap->GetLimit(); // take an actual value of the limit
-            }
-            else
-            {
-                // even though limit is not changed - set it to heap again to make sure
-                // the acutual heap's limit is set correctly.
-                heap->SetLimit(CurrentLimit);
+                    CurrentLimit = heap->GetLimit(); // take an actual value of the limit
+                }
+                else
+                {
+                    // even though limit is not changed - set it to heap again to make sure
+                    // the acutual heap's limit is set correctly.
+                    heap->SetLimit(CurrentLimit);
 
 #ifdef SF_TRACE_COLLECTIONS        
-                printf("-        no limit increase is necessary. Current limit is %u (%u)\n", 
-                    (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
+                    printf("-        no limit increase is necessary. Current limit is %u (%u)\n", 
+                        (unsigned)CurrentLimit, (unsigned)heap->GetLimit());
 #endif
 
-                CurrentLimit = heap->GetLimit(); // take an actual value of the limit
+                    CurrentLimit = heap->GetLimit(); // take an actual value of the limit
+                }
             }
         }
     }

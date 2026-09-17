@@ -6,6 +6,7 @@ Created     :   September 3, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -17,6 +18,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render_GlyphCache.h"
 
 #include "Kernel/SF_HeapNew.h"
+#include "Kernel/SF_MemItem.h"
 
 extern unsigned BundlePatternFrameId;
 
@@ -274,7 +276,7 @@ void    Renderer2DImpl::EntryChanges(Context& context, Context::ChangeBuffer& cb
 
             TreeCacheRoot* root = pcache->pRoot;
 
-            if (change.ChangeBits & (Change_AproxBounds|Change_Visible|Change_IsMask|
+            if (change.ChangeBits & (Change_AproxBounds|Change_Visible|Change_IsMask|Change_3D|
                                      Change_State_Effect_Mask))
             {
                 unsigned updateFlags = 0;
@@ -298,6 +300,9 @@ void    Renderer2DImpl::EntryChanges(Context& context, Context::ChangeBuffer& cb
                     pcache->UpdateFlags |= (change.ChangeBits & Change_State_Effect_Mask);
                     updateFlags |= Update_Pattern;
                 }
+                if (change.ChangeBits & Change_3D)
+                    updateFlags |= Update_Pattern;
+
                 if (root && updateFlags && pcache->GetParent())
                     root->AddToUpdate(pcache->GetParent(), updateFlags);
             }
@@ -376,6 +381,22 @@ void Renderer2DImpl::ForceUpdateImages(Context* pcontext)
         proot->UpdateTreeData();
     }
 }
+
+#ifdef SF_AMP_SERVER
+void Renderer2DImpl::GetExternalMemory(MemItem* root)
+{
+    UInt32 nextId = root->GetMaxId();
+    MemItem* externalItem = root->AddChild(++nextId, "External Memory");
+    UInt32 externalTotalMemory = 0;
+
+    // TO DO: implement external memory reporting
+    // Loop through memory categories, and add them like this:
+    // externalItem->AddChild(++nextId, "CategoryName", categoryMemory);
+    // externalTotalMemory += categoryMemory;
+
+    externalItem->SetValue(externalTotalMemory);
+}
+#endif
 
 void Renderer2DImpl::OnHALEvent(HALNotifyType type)
 {

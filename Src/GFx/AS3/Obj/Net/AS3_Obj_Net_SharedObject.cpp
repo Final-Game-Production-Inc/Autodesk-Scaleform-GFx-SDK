@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -241,6 +242,7 @@ void ASSharedObjectLoader::End()
 
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -281,6 +283,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_net::SharedObject, Instances::fl_net::SharedObject::mid_clientGet, SPtr<Instances::fl::Object> > TFunc_Instances_SharedObject_clientGet;
 typedef ThunkFunc1<Instances::fl_net::SharedObject, Instances::fl_net::SharedObject::mid_clientSet, const Value, const Value&> TFunc_Instances_SharedObject_clientSet;
 typedef ThunkFunc0<Instances::fl_net::SharedObject, Instances::fl_net::SharedObject::mid_dataGet, SPtr<Instances::fl::Object> > TFunc_Instances_SharedObject_dataGet;
@@ -664,30 +668,52 @@ namespace Instances { namespace fl_net
 
 namespace InstanceTraits { namespace fl_net
 {
+    // const UInt16 SharedObject::tito[SharedObject::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 8, 9, 11, 12, 13, 14, 17, 19, 20, 22, 
+    // };
+    const TypeInfo* SharedObject::tit[25] = {
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::ObjectTI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::uintTI, 
+        NULL, &AS3::fl::uintTI, 
+        &AS3::fl::uintTI, 
+        NULL, 
+        NULL, 
+        NULL, &AS3::fl_net::NetConnectionTI, &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, &AS3::fl::int_TI, 
+        NULL, 
+        NULL, &AS3::fl::StringTI, 
+        NULL, &AS3::fl::StringTI, &AS3::fl::ObjectTI, 
+    };
+    const Abc::ConstValue SharedObject::dva[1] = {
+        {Abc::CONSTANT_Null, 0}, 
+    };
     const ThunkInfo SharedObject::ti[SharedObject::ThunkInfoNum] = {
-        {TFunc_Instances_SharedObject_clientGet::Func, &AS3::fl::ObjectTI, "client", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SharedObject_clientSet::Func, NULL, "client", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SharedObject_dataGet::Func, &AS3::fl::ObjectTI, "data", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SharedObject_defaultObjectEncodingSet::Func, NULL, "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SharedObject_fpsSet::Func, NULL, "fps", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SharedObject_objectEncodingGet::Func, &AS3::fl::uintTI, "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SharedObject_objectEncodingSet::Func, NULL, "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_SharedObject_sizeGet::Func, &AS3::fl::uintTI, "size", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_SharedObject_clear::Func, NULL, "clear", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_SharedObject_close::Func, NULL, "close", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_SharedObject_connect::Func, NULL, "connect", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_SharedObject_flush::Func, &AS3::fl::StringTI, "flush", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_SharedObject_send::Func, NULL, "send", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_SharedObject_setDirty::Func, NULL, "setDirty", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_SharedObject_setProperty::Func, NULL, "setProperty", NULL, Abc::NS_Public, CT_Method, 1, 2},
+        {TFunc_Instances_SharedObject_clientGet::Func, &SharedObject::tit[0], "client", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_clientSet::Func, &SharedObject::tit[1], "client", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_dataGet::Func, &SharedObject::tit[3], "data", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_defaultObjectEncodingSet::Func, &SharedObject::tit[4], "defaultObjectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_fpsSet::Func, &SharedObject::tit[6], "fps", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_objectEncodingGet::Func, &SharedObject::tit[8], "objectEncoding", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_objectEncodingSet::Func, &SharedObject::tit[9], "objectEncoding", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_sizeGet::Func, &SharedObject::tit[11], "size", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_clear::Func, &SharedObject::tit[12], "clear", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_close::Func, &SharedObject::tit[13], "close", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_connect::Func, &SharedObject::tit[14], "connect", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 1, &SharedObject::dva[0]},
+        {TFunc_Instances_SharedObject_flush::Func, &SharedObject::tit[17], "flush", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_send::Func, &SharedObject::tit[19], "send", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_SharedObject_setDirty::Func, &SharedObject::tit[20], "setDirty", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_SharedObject_setProperty::Func, &SharedObject::tit[22], "setProperty", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
     };
 
     SharedObject::SharedObject(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::SharedObject::SharedObject()"
 //##protect##"InstanceTraits::SharedObject::SharedObject()"
-        SetMemSize(sizeof(Instances::fl_net::SharedObject));
 
     }
 
@@ -802,28 +828,42 @@ template <> const TFunc_Classes_SharedObject_getRemote::TMethod TFunc_Classes_Sh
 
 namespace ClassTraits { namespace fl_net
 {
-    const ThunkInfo SharedObject::ti[SharedObject::ThunkInfoNum] = {
-        {TFunc_Classes_SharedObject_getLocal::Func, &AS3::fl_net::SharedObjectTI, "getLocal", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Classes_SharedObject_getRemote::Func, &AS3::fl_net::SharedObjectTI, "getRemote", NULL, Abc::NS_Public, CT_Method, 1, 4},
+    // const UInt16 SharedObject::tito[SharedObject::ThunkInfoNum] = {
+    //    0, 4, 
+    // };
+    const TypeInfo* SharedObject::tit[9] = {
+        &AS3::fl_net::SharedObjectTI, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::BooleanTI, 
+        &AS3::fl_net::SharedObjectTI, &AS3::fl::StringTI, &AS3::fl::StringTI, &AS3::fl::ObjectTI, &AS3::fl::BooleanTI, 
     };
-    SharedObject::SharedObject(VM& vm)
-    : Traits(vm, AS3::fl_net::SharedObjectCI)
+    const Abc::ConstValue SharedObject::dva[5] = {
+        {Abc::CONSTANT_Null, 0}, {Abc::CONSTANT_False, 0}, 
+        {Abc::CONSTANT_Null, 0}, {false}, {Abc::CONSTANT_False, 0}, 
+    };
+    const ThunkInfo SharedObject::ti[SharedObject::ThunkInfoNum] = {
+        {TFunc_Classes_SharedObject_getLocal::Func, &SharedObject::tit[0], "getLocal", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 2, &SharedObject::dva[0]},
+        {TFunc_Classes_SharedObject_getRemote::Func, &SharedObject::tit[4], "getRemote", NULL, Abc::NS_Public, CT_Method, 1, 4, 0, 3, &SharedObject::dva[2]},
+    };
+
+    SharedObject::SharedObject(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::SharedObject::SharedObject()"
 //##protect##"ClassTraits::SharedObject::SharedObject()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_net::SharedObject(vm, AS3::fl_net::SharedObjectCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_net::SharedObject(*this));
 
     }
 
     Pickable<Traits> SharedObject::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) SharedObject(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) SharedObject(vm, AS3::fl_net::SharedObjectCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_net::SharedObjectCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -834,6 +874,11 @@ namespace fl_net
 {
     const TypeInfo SharedObjectTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_net::SharedObject::InstanceType),
+        ClassTraits::fl_net::SharedObject::ThunkInfoNum,
+        0,
+        InstanceTraits::fl_net::SharedObject::ThunkInfoNum,
+        0,
         "SharedObject", "flash.net", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -841,10 +886,6 @@ namespace fl_net
     const ClassInfo SharedObjectCI = {
         &SharedObjectTI,
         ClassTraits::fl_net::SharedObject::MakeClassTraits,
-        ClassTraits::fl_net::SharedObject::ThunkInfoNum,
-        0,
-        InstanceTraits::fl_net::SharedObject::ThunkInfoNum,
-        0,
         ClassTraits::fl_net::SharedObject::ti,
         NULL,
         InstanceTraits::fl_net::SharedObject::ti,

@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -38,10 +39,10 @@ bool VertexShader::Init(Render::HAL* phal, const VertexShaderDesc* pd)
         return false;
 
     // The following block uses D3DX9 reflection to determine if the shader inputs match the descriptors.
-    // D3DX0 is not available in VC2011+, so just assume that they are in the correct positions.
-#if SF_CC_MSVC < 1700
+    // D3DX is not available in VC2011+, so just assume that they are in the correct positions. Also, only do this in debug.
+#if SF_CC_MSVC < 1700 && defined(SF_BUILD_DEBUG)
     Ptr<ID3DXConstantTable> constantTable = 0;
-    if ( FAILED( D3DXGetShaderConstantTable((const DWORD*)pDesc->pBinary, &constantTable.GetRawRef())))
+    if ( FAILED( D3DXGetShaderConstantTableEx((const DWORD*)pDesc->pBinary, D3DXCONSTTABLE_LARGEADDRESSAWARE, &constantTable.GetRawRef())))
         return false;
 
     for (unsigned i = 0; i < Uniform::SU_Count; i++)
@@ -83,10 +84,10 @@ bool FragShader::Init(Render::HAL* phal, const FragShaderDesc* pd)
         return false;
 
     // The following block uses D3DX9 reflection to determine if the shader inputs match the descriptors.
-    // D3DX0 is not available in VC2011+, so just assume that they are in the correct positions.
-#if SF_CC_MSVC < 1700
+    // D3DX is not available in VC2011+, so just assume that they are in the correct positions. Also, only do this in debug.
+#if SF_CC_MSVC < 1700 && defined(SF_BUILD_DEBUG)
     Ptr<ID3DXConstantTable> constantTable = 0;
-    if ( FAILED( D3DXGetShaderConstantTable((const DWORD*)pDesc->pBinary, &constantTable.GetRawRef())))
+    if ( FAILED( D3DXGetShaderConstantTableEx((const DWORD*)pDesc->pBinary, D3DXCONSTTABLE_LARGEADDRESSAWARE, &constantTable.GetRawRef())))
         return false;
 
     for (unsigned i = 0; i < Uniform::SU_Count; i++)
@@ -135,12 +136,14 @@ struct D3DVertexDeclBuilder
 {
     static const unsigned   MaxElements = 8;
     D3DVERTEXELEMENT9       Elements[MaxElements];
-    WORD                    Size[2], Count;
+    WORD                    Size[2], Count, Unused;
     const VertexShaderDesc* VertexDesc;
 
 
-    D3DVertexDeclBuilder(const VertexShaderDesc* vdesc) : Count(0), VertexDesc(vdesc)
-    { Size[0] = Size[1] = 0; }
+    D3DVertexDeclBuilder(const VertexShaderDesc* vdesc) : Count(0), Unused(0), VertexDesc(vdesc)
+    { 
+        Size[0] = Size[1] = 0; 
+    }
 
     void    Add(int, unsigned attr, int, int)
     {
@@ -151,14 +154,24 @@ struct D3DVertexDeclBuilder
             if ( (VertexDesc->Attributes[attrIndex].Attr&(VET_Usage_Mask|VET_Index_Mask)) == (attr&(VET_Usage_Mask|VET_Index_Mask)))
                 break;
         }
-        SF_DEBUG_ASSERT(attrIndex < VertexDesc->NumAttribs, "Unexpected attribute");
+
+        // Allow missing vertex attributes
+        unsigned usage  = D3DDECLUSAGE_TEXCOORD;
+        BYTE usageIndex = (BYTE)(7 - Unused);
+        if (attrIndex < VertexDesc->NumAttribs)
+        {
+            usage = VertexDesc->Attributes[attrIndex].Usage;
+            usageIndex = (BYTE)VertexDesc->Attributes[attrIndex].UsageIndex;
+        }
+        else
+            Unused++;
 
         unsigned type = D3DDECLTYPE_UNUSED;
         WORD byteSize = 0;
         WORD stream = 0;
         getD3DType(attr, type, byteSize, stream);
 
-        AddD3DElement(stream, type, byteSize, VertexDesc->Attributes[attrIndex].Usage, (BYTE)VertexDesc->Attributes[attrIndex].UsageIndex );
+        AddD3DElement(stream, type, byteSize, usage, usageIndex );
     }
 
 
@@ -298,9 +311,7 @@ struct ShaderConstantRange
 
 void ShaderInterface::Finish(unsigned meshCount)
 {
-    // Mesh count is unneeded - the constant registers that have been updated are tracked,
-    // which includes any registers set for batching.
-    SF_UNUSED(meshCount);
+    ShaderInterfaceBase::Finish(meshCount);
 
     IDirect3DDevice9* pdevice = pHal->GetDevice();
     ShaderConstantRange shaderConstantRangeFS(pdevice, UniformData);

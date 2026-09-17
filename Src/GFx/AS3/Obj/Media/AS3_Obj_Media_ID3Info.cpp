@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_media
 {
@@ -72,11 +67,10 @@ namespace InstanceTraits { namespace fl_media
 
 
     ID3Info::ID3Info(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::ID3Info::ID3Info()"
 //##protect##"InstanceTraits::ID3Info::ID3Info()"
-        SetMemSize(sizeof(Instances::fl_media::ID3Info));
 
     }
 
@@ -93,24 +87,27 @@ namespace InstanceTraits { namespace fl_media
 
 namespace ClassTraits { namespace fl_media
 {
-    ID3Info::ID3Info(VM& vm)
-    : Traits(vm, AS3::fl_media::ID3InfoCI)
+
+    ID3Info::ID3Info(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::ID3Info::ID3Info()"
 //##protect##"ClassTraits::ID3Info::ID3Info()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_media::ID3Info(vm, AS3::fl_media::ID3InfoCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> ID3Info::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) ID3Info(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) ID3Info(vm, AS3::fl_media::ID3InfoCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_media::ID3InfoCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -121,6 +118,11 @@ namespace fl_media
 {
     const TypeInfo ID3InfoTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject | TypeInfo::Final | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_media::ID3Info::InstanceType),
+        0,
+        0,
+        0,
+        InstanceTraits::fl_media::ID3Info::MemberInfoNum,
         "ID3Info", "flash.media", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -128,10 +130,6 @@ namespace fl_media
     const ClassInfo ID3InfoCI = {
         &ID3InfoTI,
         ClassTraits::fl_media::ID3Info::MakeClassTraits,
-        0,
-        0,
-        0,
-        InstanceTraits::fl_media::ID3Info::MemberInfoNum,
         NULL,
         NULL,
         NULL,

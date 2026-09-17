@@ -6,6 +6,7 @@ Created     :   June 2, 2009
 Authors     :   Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -90,17 +91,34 @@ public:
     bool IsConsole() const { return pApp->IsConsole(); }
     Size<unsigned> GetViewSize() const { return pApp->GetViewSize(); }
 
+    virtual void OnPadStick(unsigned controllerIndex, PadKeyCode padCode,
+        float xpos, float ypos)
+    {
+        pApp->OnPadStick(controllerIndex, padCode, xpos, ypos);
+    }
+
     virtual void OnKey(unsigned controllerIndex, KeyCode keyCode,
         unsigned wcharCode, bool downFlag, KeyModifiers mods)
-    { pApp->OnKey(controllerIndex, keyCode, wcharCode, downFlag, mods); }
+    {
+        pApp->OnKey(controllerIndex, keyCode, wcharCode, downFlag, mods);
+    }
+    
     virtual void OnPad(unsigned controllerIndex, PadKeyCode padCode, bool downFlag)
-    { pApp->OnPad( controllerIndex, padCode, downFlag ); }
+    {
+        pApp->OnPad( controllerIndex, padCode, downFlag );
+    }
+    
     virtual void OnMouseButton(unsigned mouseIndex, unsigned button, bool downFlag, 
         const Point<int>& mousePos, KeyModifiers mods)
-    { pApp->OnMouseButton(mouseIndex, button, downFlag, mousePos, mods); }
+    {
+        pApp->OnMouseButton(mouseIndex, button, downFlag, mousePos, mods);
+    }
+    
     virtual void OnMouseMove(unsigned mouseIndex,
         const Point<int>& mousePos, KeyModifiers mods)
-    { pApp->OnMouseMove(mouseIndex, mousePos, mods); }
+    {
+        pApp->OnMouseMove(mouseIndex, mousePos, mods);
+    }
 
 protected:
     AppBase* pApp;

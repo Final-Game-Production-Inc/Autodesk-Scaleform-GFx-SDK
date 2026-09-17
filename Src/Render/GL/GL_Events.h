@@ -27,13 +27,19 @@ namespace Scaleform { namespace Render { namespace GL {
 class RenderEvent : public Render::RenderEvent
 {
 public:
+    RenderEvent() : HasExtension(false), ExtensionChecked(false) { }
     virtual ~RenderEvent() { }
 
-    virtual void Begin( String eventName )
+    virtual void Begin( const char* eventName )
     {
 #ifdef GL_GREMEDY_string_marker
-        if (pHAL->Has_glStringMarkerGREMEDY())
-            glStringMarkerGREMEDY(0, (String("Begin-") + eventName).ToCStr());
+        if (!ExtensionChecked)
+        {
+            HasExtension = pHAL->CheckExtension("GL_GREMEDY_string_marker");
+            ExtensionChecked = true;
+        }
+        if (HasExtension)
+            glStringMarkerGREMEDY(0, eventName);
 #else
         SF_UNUSED(eventName);
 #endif
@@ -41,7 +47,7 @@ public:
     virtual void End()
     {
 #ifdef GL_GREMEDY_string_marker
-        if (pHAL->Has_glStringMarkerGREMEDY())
+        if (HasExtension)
             glStringMarkerGREMEDY(0, "End");
 #endif
     }
@@ -49,6 +55,8 @@ protected:
     friend class Render::GL::HAL;
     HAL* pHAL;
     HAL* GetHAL() const { return pHAL; }
+    bool HasExtension;
+    bool ExtensionChecked;
 };
 
 }}} // Scaleform::Render::GL

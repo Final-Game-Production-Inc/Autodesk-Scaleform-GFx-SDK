@@ -7,6 +7,7 @@ Created     :   Jan, 2011
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -156,34 +157,53 @@ namespace ClassTraits { namespace fl_gfx
         {"REPORT_ONLY_ANON_OBJ_ADDRESSES", NULL, OFFSETOF(Classes::fl_gfx::SystemEx, REPORT_ONLY_ANON_OBJ_ADDRESSES), Abc::NS_Public, SlotInfo::BT_UInt, 1},
     };
 
-    const ThunkInfo SystemEx::ti[SystemEx::ThunkInfoNum] = {
-        {TFunc_Classes_SystemEx_actionVerboseSet::Func, NULL, "actionVerbose", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Classes_SystemEx_actionVerboseGet::Func, &AS3::fl::BooleanTI, "actionVerbose", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Classes_SystemEx_setBackgroundAlpha::Func, NULL, "setBackgroundAlpha", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_SystemEx_getStackTrace::Func, &AS3::fl::StringTI, "getStackTrace", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_SystemEx_getCodeFileName::Func, &AS3::fl::StringTI, "getCodeFileName", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_SystemEx_getCodeFileNames::Func, &AS3::fl::ArrayTI, "getCodeFileNames", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Classes_SystemEx_describeType::Func, &AS3::fl::StringTI, "describeType", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Classes_SystemEx_printObjectsReport::Func, NULL, "printObjectsReport", NULL, Abc::NS_Public, CT_Method, 0, 3},
+    // const UInt16 SystemEx::tito[SystemEx::ThunkInfoNum] = {
+    //    0, 2, 3, 5, 6, 7, 8, 10, 
+    // };
+    const TypeInfo* SystemEx::tit[14] = {
+        NULL, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::ArrayTI, 
+        &AS3::fl::StringTI, NULL, 
+        NULL, &AS3::fl::BooleanTI, &AS3::fl::uintTI, &AS3::fl::StringTI, 
     };
-    SystemEx::SystemEx(VM& vm)
-    : Traits(vm, AS3::fl_gfx::SystemExCI)
+    const Abc::ConstValue SystemEx::dva[3] = {
+        {Abc::CONSTANT_True, 0}, {Abc::CONSTANT_UInt, 7}, {Abc::CONSTANT_Null, 0}, 
+    };
+    const ThunkInfo SystemEx::ti[SystemEx::ThunkInfoNum] = {
+        {TFunc_Classes_SystemEx_actionVerboseSet::Func, &SystemEx::tit[0], "actionVerbose", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_actionVerboseGet::Func, &SystemEx::tit[2], "actionVerbose", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_setBackgroundAlpha::Func, &SystemEx::tit[3], "setBackgroundAlpha", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_getStackTrace::Func, &SystemEx::tit[5], "getStackTrace", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_getCodeFileName::Func, &SystemEx::tit[6], "getCodeFileName", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_getCodeFileNames::Func, &SystemEx::tit[7], "getCodeFileNames", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_describeType::Func, &SystemEx::tit[8], "describeType", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Classes_SystemEx_printObjectsReport::Func, &SystemEx::tit[10], "printObjectsReport", NULL, Abc::NS_Public, CT_Method, 0, 3, 0, 3, &SystemEx::dva[0]},
+    };
+
+    SystemEx::SystemEx(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::SystemEx::SystemEx()"
 //##protect##"ClassTraits::SystemEx::SystemEx()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Object(vm, AS3::fl_gfx::SystemExCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_gfx::SystemEx(*this));
 
     }
 
     Pickable<Traits> SystemEx::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) SystemEx(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) SystemEx(vm, AS3::fl_gfx::SystemExCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::SystemExCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -194,6 +214,11 @@ namespace fl_gfx
 {
     const TypeInfo SystemExTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::SystemEx::InstanceType),
+        ClassTraits::fl_gfx::SystemEx::ThunkInfoNum,
+        ClassTraits::fl_gfx::SystemEx::MemberInfoNum,
+        0,
+        0,
         "SystemEx", "scaleform.gfx", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -201,10 +226,6 @@ namespace fl_gfx
     const ClassInfo SystemExCI = {
         &SystemExTI,
         ClassTraits::fl_gfx::SystemEx::MakeClassTraits,
-        ClassTraits::fl_gfx::SystemEx::ThunkInfoNum,
-        ClassTraits::fl_gfx::SystemEx::MemberInfoNum,
-        0,
-        0,
         ClassTraits::fl_gfx::SystemEx::ti,
         ClassTraits::fl_gfx::SystemEx::mi,
         NULL,

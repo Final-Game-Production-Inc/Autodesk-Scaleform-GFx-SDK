@@ -6,6 +6,7 @@ Created     :   April 29, 2008
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,6 +37,36 @@ UPInt HTMLImageTagDesc::GetHash() const
 //////////////////////////////////
 // TextFormat
 //
+TextFormat::TextFormat(MemoryHeap* pheap)
+: pAllocator(NULL), RefCount(1), FontList((pheap)?pheap:Memory::GetGlobalHeap()), 
+Url((pheap) ? pheap : Memory::GetGlobalHeap()),
+ColorV(0xFF000000u), LetterSpacing(0), FontSize(0), FormatFlags(0), PresentMask(0) 
+{ 
+}
+
+TextFormat::TextFormat(Allocator* allocator)
+: pAllocator(allocator), RefCount(1), FontList((allocator)?allocator->GetHeap() : Memory::GetGlobalHeap()), 
+Url((allocator)?allocator->GetHeap() : Memory::GetGlobalHeap()),
+ColorV(0xFF000000u), LetterSpacing(0), FontSize(0), FormatFlags(0), PresentMask(0) 
+{ 
+}
+
+TextFormat::TextFormat(const TextFormat& srcfmt, Allocator* allocator)
+: pAllocator(allocator), RefCount(1), FontList(srcfmt.GetHeap(), srcfmt.FontList),
+Url(srcfmt.GetHeap(), srcfmt.Url),
+pImageDesc(srcfmt.pImageDesc), pFontHandle(srcfmt.pFontHandle),
+ColorV(srcfmt.ColorV), LetterSpacing(srcfmt.LetterSpacing),
+FontSize(srcfmt.FontSize), FormatFlags(srcfmt.FormatFlags), PresentMask(srcfmt.PresentMask)
+{
+}
+
+TextFormat::~TextFormat() 
+{
+    //SF_ASSERT(!pFontHandle || !pFontHandle->GetFont() || pFontHandle->GetFont()->GetFont());
+    if (pAllocator)
+        pAllocator->Remove(this);
+}
+
 void TextFormat::SetFontList(const String& fontList)
 {
     if (IsFontHandleSet())
@@ -312,7 +343,7 @@ TextFormat TextFormat::Merge(const TextFormat& fmt) const
 
 TextFormat TextFormat::Intersection(const TextFormat& fmt) const
 {
-    TextFormat result(fmt.FontList.GetHeap());
+    TextFormat result(fmt.GetHeap());
     if (IsBoldSet() && fmt.IsBoldSet() && IsBold() == fmt.IsBold())
         result.SetBold(fmt.IsBold());
     if (IsItalicSet() && fmt.IsItalicSet() && IsItalic() == fmt.IsItalic())
@@ -355,23 +386,46 @@ void TextFormat::InitByDefaultValues()
 
 }
 
-UPInt TextFormat::HashFunctor::operator()(const TextFormat& data) const
+UPInt TextFormat::HashFunctor::CalcHash(const TextFormat& data)
 {
-    UPInt v[] = { 0, 0, 0, 0};
-    if (data.IsColorSet() || data.IsAlphaSet()) v[0] |= data.ColorV;
-    if (data.IsLetterSpacingSet())  v[1] |= data.LetterSpacing;
-    if (data.IsFontSizeSet())       v[1] |= ((UPInt)data.FontSize << 16);
-    v[0] |= UPInt(data.FormatFlags) << 24;
-    v[1] |= UPInt(data.PresentMask) << 24;
+    union LetterSpacingUnion
+    {
+        UPInt AsInt;
+        float AsFloat;
+    };
+    UPInt v[] = { 0, 0, 0, 0, 0};
+    if (data.IsColorSet() || data.IsAlphaSet())
+    {
+        v[0] = data.ColorV;
+    }
+    LetterSpacingUnion letterSpacing;
+    letterSpacing.AsInt = 0; // just in case float is smaller than UPInt
+    letterSpacing.AsFloat = data.LetterSpacing;
+    if (data.IsLetterSpacingSet())
+    {
+        v[1] = letterSpacing.AsInt;
+    }
+    v[2] = data.FormatFlags;
+    if (data.IsFontSizeSet())
+    {
+        v[2] |= data.FontSize << 8;
+    }
     //!AB: do not use font handle ptr for hash code since it might be different
     // for the same font. TextFormat::operator== compares internals of font handle.
     // We will just set a bit: 0 - if font handle is set, 1 - if not.
     //if (data.IsFontHandleSet())
     //    v[2] = (UPInt)data.pFontHandle.GetPtr();
     if (data.pFontHandle.GetPtr())
-        v[2] |= 1;
+    {
+        v[2] |= UInt32(1) << 24; 
+    }
+
+    v[3] = data.PresentMask;
+
     if (data.IsImageDescSet() && data.pImageDesc)
-        v[3] = (UPInt)data.pImageDesc->GetHash();
+    {
+        v[4] = data.pImageDesc->GetHash();
+    }
     UPInt hash = FixedSizeHash<int>::SDBM_Hash(&v, sizeof(v));
     if (data.IsFontListSet())
     {
@@ -387,6 +441,13 @@ UPInt TextFormat::HashFunctor::operator()(const TextFormat& data) const
 //////////////////////////////////
 // ParagraphFormat
 //
+ParagraphFormat::~ParagraphFormat()
+{
+    if (pAllocator)
+        pAllocator->Remove(this);
+    FreeTabStops();
+}
+
 ParagraphFormat ParagraphFormat::Merge(const ParagraphFormat& fmt) const
 {
     ParagraphFormat result(*this);
@@ -558,7 +619,7 @@ ParagraphFormat& ParagraphFormat::operator=(const ParagraphFormat& src)
     return *this;
 }
 
-UPInt  ParagraphFormat::HashFunctor::operator()(const ParagraphFormat& data) const
+UPInt  ParagraphFormat::HashFunctor::CalcHash(const ParagraphFormat& data)
 {
     UPInt hash = 0;
     if (data.IsTabStopsSet() && data.pTabStops)
@@ -584,18 +645,18 @@ TextFormat* Allocator::AllocateTextFormat(const TextFormat& srcfmt)
 {
     if (!srcfmt.IsImageDescSet())
     {
-        TextFormatPtr* ppfmt = TextFormatStorage.Get(&srcfmt);
+        PtrCompare<TextFormat*>* ppfmt = TextFormatStorage.Get(&srcfmt);
         if (ppfmt)
         {
-            ppfmt->GetPtr()->AddRef();
-            return ppfmt->GetPtr();
+            (*ppfmt)->AddRef();
+            return (*ppfmt);
         }
         // check if we need to flush format cache
         if (TextFormatStorage.GetSize() >= TextFormatStorageCap)
             FlushTextFormatCache();
     }
 
-    TextFormat* pfmt = SF_HEAP_NEW(pHeap) TextFormat(srcfmt, pHeap);
+    TextFormat* pfmt = SF_HEAP_NEW(pHeap) TextFormat(srcfmt, this);
     if (Flags & Flags_Global && pfmt->IsFontHandleSet())
     {
         // do not save font handles, since they might be destroyed eventually.
@@ -608,17 +669,17 @@ TextFormat* Allocator::AllocateTextFormat(const TextFormat& srcfmt)
 
 ParagraphFormat* Allocator::AllocateParagraphFormat(const ParagraphFormat& srcfmt)
 {
-    ParagraphFormatPtr* ppfmt = ParagraphFormatStorage.Get(&srcfmt);
+    PtrCompare<ParagraphFormat*>* ppfmt = ParagraphFormatStorage.Get(&srcfmt);
     if (ppfmt)
     {
-        ppfmt->GetPtr()->AddRef();
-        return ppfmt->GetPtr();
+        (*ppfmt)->AddRef();
+        return (*ppfmt);
     }
     // check if we need to flush format cache
     if (ParagraphFormatStorage.GetSize() >= ParagraphFormatStorageCap)
         FlushParagraphFormatCache();
 
-    ParagraphFormat* pfmt = SF_HEAP_NEW(pHeap) ParagraphFormat(srcfmt);
+    ParagraphFormat* pfmt = SF_HEAP_NEW(pHeap) ParagraphFormat(srcfmt, this);
     ParagraphFormatStorage.Set(pfmt);
     return pfmt;
 }
@@ -628,8 +689,8 @@ void Allocator::VisitTextFormatCache(TextFormatVisitor& visitor)
     TextFormatStorageType::Iterator it = TextFormatStorage.Begin();
     for (;it != TextFormatStorage.End(); ++it)
     {
-        TextFormatPtr& fmt = *it;
-        if (!fmt.GetPtr() || !visitor.Visit(*fmt.GetPtr()))
+        PtrCompare<TextFormat*>& fmt = *it;
+        if (!fmt || !visitor.Visit(*fmt))
             it.Remove();
     }
 }
@@ -637,17 +698,7 @@ void Allocator::VisitTextFormatCache(TextFormatVisitor& visitor)
 bool Allocator::FlushTextFormatCache(bool noAllocationsAllowed)
 {
     UPInt tfSize = TextFormatStorage.GetSize();
-    TextFormatStorageType::Iterator it = TextFormatStorage.Begin();
-    for (;it != TextFormatStorage.End(); ++it)
-    {
-        TextFormatPtr& fmt = *it;
-        if (fmt.GetPtr()->GetRefCount() == 1)
-        {
-            // we can delete this format, since it is not used.
-            //fmt.pFormat = NULL;
-            it.Remove();
-        }
-    }
+
     // SetCapacity may allocate new memory; if no new allocations are allowed
     // (for example, when Flush... is called from OnExceedLimit handler) then
     // don't set new capacity.
@@ -666,17 +717,7 @@ bool Allocator::FlushTextFormatCache(bool noAllocationsAllowed)
 bool Allocator::FlushParagraphFormatCache(bool noAllocationsAllowed)
 {
     UPInt pfSize = ParagraphFormatStorage.GetSize();
-    ParagraphFormatStorageType::Iterator it = ParagraphFormatStorage.Begin();
-    for (;it != ParagraphFormatStorage.End(); ++it)
-    {
-        ParagraphFormatPtr& fmt = *it;
-        if (fmt.GetPtr()->GetRefCount() == 1)
-        {
-            // we can delete this format, since it is not used.
-            //fmt.pFormat = NULL;
-            it.Remove();
-        }
-    }
+
     // SetCapacity may allocate new memory; if no new allocations are allowed
     // (for example, when Flush... is called from OnExceedLimit handler) then
     // don't set new capacity.
@@ -691,4 +732,14 @@ bool Allocator::FlushParagraphFormatCache(bool noAllocationsAllowed)
 
     return (pfSize != ParagraphFormatStorage.GetSize());
 }
+
+void Allocator::Remove(TextFormat* pfmt)
+{
+    TextFormatStorage.Remove(pfmt);
+}
+void Allocator::Remove(ParagraphFormat* pfmt)
+{
+    ParagraphFormatStorage.Remove(pfmt);
+}
+
 }}} // Scaleform::Render::Text

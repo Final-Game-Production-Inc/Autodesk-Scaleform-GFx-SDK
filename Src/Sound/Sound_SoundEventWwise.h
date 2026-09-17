@@ -7,6 +7,7 @@ Created     :   March 2010
 Authors     :   Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -118,6 +119,14 @@ public:
         SF_ASSERT(AK::SoundEngine::IsInitialized());
 
         ObjectID = (AkGameObjectID)this;
+        AKRESULT res = AK::SoundEngine::RegisterGameObj(ObjectID);
+        SF_ASSERT(res == AK_Success);
+        SF_UNUSED(res);
+	}
+    SoundEventWwise(AkGameObjectID objectId) : ObjectID(objectId), PlayingID(AK_INVALID_PLAYING_ID)
+    {
+        SF_ASSERT(AK::SoundEngine::IsInitialized());
+
         AKRESULT res = AK::SoundEngine::RegisterGameObj(ObjectID);
         SF_ASSERT(res == AK_Success);
         SF_UNUSED(res);

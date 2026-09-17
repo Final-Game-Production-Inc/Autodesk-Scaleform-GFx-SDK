@@ -1,0 +1,34 @@
+{
+  "renderers": {
+    "d3d11":  { "exe": "CaptureD3D11" },
+    "vulkan": { "exe": "CaptureVulkan" }
+  },
+  "comparisons": [
+    { "reference": "d3d11", "test": "vulkan" }
+  ],
+  "defaultResolution": { "width": 1024, "height": 768 },
+  "defaultFrames": [1, 10, 30, 60],
+  "tests": [
+    { "name": "Window_AS2",         "swf": "AS2/Samples/Window.swf" },
+    { "name": "ScaleformLogo_AS2",  "swf": "AS2/Samples/ScaleformLogo.swf" },
+    { "name": "FiltersExample",     "swf": "AS2/Samples/filters_example.swf" },
+    { "name": "TextFilterEffects",  "swf": "AS2/Samples/text_filter_effects.swf" },
+    { "name": "Mask_AS2",           "swf": "AS2/Samples/Mask.swf" },
+    { "name": "FishImage_AS2",      "swf": "AS2/Samples/FishImage.swf" },
+    { "name": "FishVector_AS2",     "swf": "AS2/Samples/FishVector.swf" },
+    { "name": "ScaleformLogo_AS3",  "swf": "AS3/Samples/ScaleformLogo.swf" },
+    { "name": "Mask_AS3",           "swf": "AS3/Samples/Mask.swf" },
+    { "name": "FishImage_AS3",      "swf": "AS3/Samples/FishImage.swf" },
+    { "name": "FishVector_AS3",    "swf": "AS3/Samples/FishVector.swf" },
+    { "name": "GFx_GDC_06",       "swf": "AS2/Samples/GFx_GDC_06.swf" },
+    { "name": "3DSquares_AS2",    "swf": "AS2/Samples/3DSquares.swf" },
+    { "name": "3DSquares_AS3",    "swf": "AS3/Samples/3DSquares.swf" },
+    { "name": "ImageDelegate_AS2","swf": "AS2/Samples/ImageDelegate.swf" },
+    { "name": "MMOPackedRender",  "swf": "AS2/Samples/MMO_PackedRenderDemo.swf" },
+    { "name": "GameCenter_AS2",   "swf": "AS2/Samples/GameCenterExample.swf" },
+    { "name": "GameCenter_AS3",   "swf": "AS3/Samples/GameCenterExample.swf" },
+    { "name": "PropertyModifier", "swf": "AS3/Samples/PropertyModifier.swf" },
+    { "name": "3DWindow_AS2",     "swf": "AS2/Samples/3DWindow.swf" },
+    { "name": "3DInventory_AS3",  "swf": "AS3/Samples/3DInventory_AS3.swf" }
+  ]
+}

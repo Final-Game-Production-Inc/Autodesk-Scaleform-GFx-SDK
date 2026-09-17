@@ -7,6 +7,7 @@ Created     :   May 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -187,8 +188,8 @@ public:
     // which must respect these filters on a case-by-case basis.
     enum QueueProcessFilter
     {
-        QPF_All,        // All rendering commands are processed.
-        QPF_Filters,    // Only filter (ie. FilterPrimitive) commands are processed.
+        QPF_All,              // All rendering commands are processed.
+        QPF_CacheableOnly,    // Only cacheables (ie. FilterPrimitive/BlendPrimitive) commands are processed.
     };
 
     HAL*               GetHAL() const       { return pHAL; }

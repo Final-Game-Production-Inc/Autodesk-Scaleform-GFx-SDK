@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -1334,8 +1335,9 @@ void GlobalContext::Init(MovieImpl* proot)
     AddBuiltinClassRegistry<ASBuiltin_SharedObject, SharedObjectCtorFunction>(sc, pGlobal);
 #endif
 
+#ifdef SF_AMP_SERVER
     AddBuiltinClassRegistry<ASBuiltin_Amp, AmpMarkerCtorFunction>(sc, pGlobal);
-
+#endif
     // classes from packages
     FlashGeomPackage = AddPackage(&sc, pGlobal, objProto, "flash.geom");
 #ifdef GFX_AS2_ENABLE_TRANSFORM
@@ -2561,7 +2563,7 @@ void ExecutionContext::Function1OpCode(ActionBuffer* pActions)
     if (AmpServer::GetInstance().IsEnabled() && !name.IsEmpty() && AmpServer::GetInstance().GetProfileLevel() >= Amp_Profile_Level_ActionScript)
     {
         // ActionScript profiling
-        pEnv->GetMovieImpl()->AdvanceStats->RegisterScriptFunction(pActions->GetBufferData()->GetSwdHandle(), 
+        pEnv->GetMovieImpl()->GetAdvanceStats().RegisterScriptFunction(pActions->GetBufferData()->GetSwdHandle(), 
             pActions->GetBufferData()->GetSWFFileOffset() + funcObj->GetStartPC(), 
             name.ToCStr(), funcObj->GetLength(), 2, false);
     }
@@ -2659,7 +2661,7 @@ void ExecutionContext::Function2OpCode(ActionBuffer* pActions)
         AmpServer::GetInstance().GetProfileLevel() >= Amp_Profile_Level_ActionScript)
     {
         // Actionscript profiling
-        pEnv->GetMovieImpl()->AdvanceStats->RegisterScriptFunction(pActions->GetBufferData()->GetSwdHandle(), 
+        pEnv->GetMovieImpl()->GetAdvanceStats().RegisterScriptFunction(pActions->GetBufferData()->GetSwdHandle(), 
             pActions->GetBufferData()->GetSWFFileOffset() + funcObj->GetStartPC(), 
             name.ToCStr(), funcObj->GetLength(), 2, false);
     }
@@ -2745,10 +2747,10 @@ void    ActionBuffer::Execute(
     Ptr<Object> pobj;
     union
     {
-        UInt64          timerMs;
-        Number       nargsf;
-        char            buf[8];
-        wchar_t         wbuf[4];
+        UInt64  timerMs;
+        double  nargsf;
+        char    buf[8];
+        wchar_t wbuf[4];
     };
     char tmpStr1Buf[sizeof(ASString)];
     char tmpStr2Buf[sizeof(ASString)];
@@ -2777,7 +2779,7 @@ void    ActionBuffer::Execute(
 
 #ifdef SF_AMP_SERVER
     ArrayLH<UInt64>* bufferTimes = NULL;
-    AMP::ViewStats* viewStats = env->GetMovieImpl()->AdvanceStats;
+    AMP::ViewStats& viewStats = env->GetMovieImpl()->GetAdvanceStats();
     UInt32 samplingPeriod = 0;
     bool shouldProfile = AmpServer::GetInstance().IsProfiling();
     if (AmpServer::GetInstance().IsInstructionSampling())
@@ -2786,19 +2788,19 @@ void    ActionBuffer::Execute(
     }
 
     // Function profiling
-    AMP::ScopeFunctionTimer funcTimer(shouldProfile ? viewStats : NULL, pBufferData->GetSwdHandle(), 
+    AMP::ScopeFunctionTimer funcTimer(shouldProfile ? &viewStats : NULL, pBufferData->GetSwdHandle(), 
         startPc + pBufferData->GetSWFFileOffset(), Amp_Profile_Level_ActionScript);
 
     if (shouldProfile)
     {
         if (AmpServer::GetInstance().IsInstructionProfiling())
         {
-            bufferTimes = &viewStats->LockBufferInstructionTimes(
+            bufferTimes = &viewStats.LockBufferInstructionTimes(
                 pBufferData->GetSwdHandle(), 
                 pBufferData->GetSWFFileOffset(), 
                 pBufferData->GetLength());
 
-            viewStats->GetInstructionTime(samplingPeriod);
+            viewStats.GetInstructionTime(samplingPeriod);
         }
     }
 
@@ -4943,44 +4945,6 @@ void    ActionBuffer::Execute(
                     {
                         // double
                         // wacky format: 45670123
-#ifdef SF_NO_DOUBLE
-                        union
-                        {
-                            float   F;
-                            UInt32  I;
-                        } u;
-
-                        // convert ieee754 64bit to 32bit for systems without proper double
-                        int    sign = (execContext.pBuffer[3 + i + 3] & 0x80) >> 7;
-                        int    expo = ((execContext.pBuffer[3 + i + 3] & 0x7f) << 4) + ((execContext.pBuffer[3 + i + 2] & 0xf0) >> 4);
-                        int    mant = ((execContext.pBuffer[3 + i + 2] & 0x0f) << 19) + (execContext.pBuffer[3 + i + 1] << 11) +
-                                      (execContext.pBuffer[3 + i + 0] << 3) + ((execContext.pBuffer[3 + i + 7] & 0xf8) >> 5);
-
-                        if (expo == 2047)
-                            expo = 255;
-                        else if (expo - 1023 > 127)
-                        {
-                            expo = 255;
-                            mant = 0;
-                        }
-                        else if (expo - 1023 < -126)
-                        {
-                            expo = 0;
-                            mant = 0;
-                        }
-                        else
-                            expo = expo - 1023 + 127;
-
-                        u.I = (sign << 31) + (expo << 23) + mant;
-                        i += 8;
-
-                        env->Push((Number)u.F);
-                        
-                        #ifdef GFX_AS2_VERBOSE
-                        if (execContext.VerboseAction) 
-                            execContext.LogF.LogAction("-------------- pushed double %f\n", u.F);
-                        #endif
-#else
                         union {
                             double  D;
                             UInt64  I;
@@ -5003,7 +4967,6 @@ void    ActionBuffer::Execute(
                         if (execContext.VerboseAction) 
                             execContext.LogF.LogAction("-------------- pushed double %f\n", u.D);
                         #endif
-#endif
                     }
                     else if (type == 7)
                     {
@@ -5244,7 +5207,7 @@ void    ActionBuffer::Execute(
         if (bufferTimes != NULL)
         {
             SF_ASSERT(execContext.PC < (int)bufferTimes->GetSize());
-            (*bufferTimes)[execContext.PC] += viewStats->GetInstructionTime(samplingPeriod);
+            (*bufferTimes)[execContext.PC] += viewStats.GetInstructionTime(samplingPeriod);
         }
 #endif
         execContext.PC = execContext.NextPC;
@@ -5259,7 +5222,7 @@ void    ActionBuffer::Execute(
     // Unlock the instruction times buffer
     if (bufferTimes)
     {
-        env->GetMovieImpl()->AdvanceStats->ReleaseBufferInstructionTimes();
+        env->GetMovieImpl()->GetAdvanceStats().ReleaseBufferInstructionTimes();
     }
 #endif
 
@@ -6764,10 +6727,10 @@ Object* Environment::OperatorNew(const FunctionRef& constructor, int nargs, int 
         }
         if (!res.IsUndefined())
         {
-            Object* pnewObj = res.ToObject(this);
-            if (pnewObj)
-                pnewObj->AddRef();
-            return pnewObj;
+            Object* pnewObjUnDefined = res.ToObject(this);
+            if (pnewObjUnDefined)
+                pnewObjUnDefined->AddRef();
+            return pnewObjUnDefined;
         }
     }
 
@@ -6814,14 +6777,14 @@ Object* Environment::OperatorNew(const FunctionRef& constructor, int nargs, int 
         pnewObj = result.ToObject(this);
         if (pnewObj)
         {
-            FunctionRef ctor = pnewObj->Get_constructor(GetSC());
-            if (ctor.IsNull() || ctor == constructor) // this is necessary for Object ctor that can return object of different type
+            FunctionRef ctorRef = pnewObj->Get_constructor(GetSC());
+            if (ctorRef.IsNull() || ctorRef == constructor) // this is necessary for Object ctor that can return object of different type
                                                       // depending on parameter (see ObjectProto::GlobalCtor) (!AB)
             {
-                Ptr<Object> prototype = prototypeVal.ToObject(this);
+                Ptr<Object> prototypeRef = prototypeVal.ToObject(this);
 
                 // if constructor returned an object - set __proto__ and __ctor__ for it
-                pnewObj->Set__proto__(GetSC(), prototype);
+                pnewObj->Set__proto__(GetSC(), prototypeRef);
                 pnewObj->Set__constructor__(GetSC(), constructor);
             }
         }
@@ -7261,39 +7224,6 @@ void    Disasm::LogDisasm(const unsigned char* InstructionData)
                 {
                     // double
                     // wacky format: 45670123
-#ifdef SF_NO_DOUBLE
-                    union
-                    {
-                        float   F;
-                        UInt32  I;
-                    } u;
-
-                    // convert ieee754 64bit to 32bit for systems without proper double
-                    int    sign = (InstructionData[3 + i + 3] & 0x80) >> 7;
-                    int    expo = ((InstructionData[3 + i + 3] & 0x7f) << 4) + ((InstructionData[3 + i + 2] & 0xf0) >> 4);
-                    int    mant = ((InstructionData[3 + i + 2] & 0x0f) << 19) + (InstructionData[3 + i + 1] << 11) +
-                                  (InstructionData[3 + i + 0] << 3) + ((InstructionData[3 + i + 7] & 0xf8) >> 5);
-
-                    if (expo == 2047)
-                        expo = 255;
-                    else if (expo - 1023 > 127)
-                    {
-                        expo = 255;
-                        mant = 0;
-                    }
-                    else if (expo - 1023 < -126)
-                    {
-                        expo = 0;
-                        mant = 0;
-                    }
-                    else
-                        expo = expo - 1023 + 127;
-
-                    u.I = (sign << 31) + (expo << 23) + mant;
-                    i += 8;
-
-                    LogF("(double) %f\n", u.F);
-#else
                     union {
                         double  D;
                         UInt64  I;
@@ -7310,7 +7240,6 @@ void    Disasm::LogDisasm(const unsigned char* InstructionData)
                     i += 8;
 
                     LogF("(double) %f\n", u.D);
-#endif
                 }
                 else if (type == 7)
                 {

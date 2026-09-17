@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy, Alex Mantzaris
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -31,12 +32,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl::XMLList, Instances::fl::XMLList::mid_prototypeGet, SPtr<Instances::fl::XMLList> > TFunc_Instances_XMLList_prototypeGet;
 typedef ThunkFunc1<Instances::fl::XMLList, Instances::fl::XMLList::mid_prototypeSet, const Value, const Value&> TFunc_Instances_XMLList_prototypeSet;
 typedef ThunkFunc0<Instances::fl::XMLList, Instances::fl::XMLList::mid_AS3length, SInt32> TFunc_Instances_XMLList_AS3length;
@@ -124,7 +119,9 @@ namespace Instances { namespace fl
     XMLList::XMLList(InstanceTraits::Traits& t)
     : Instances::fl::Object(t)
 //##protect##"instance::XMLList::XMLList()$data"
+#ifdef GFX_ENABLE_XML
     , TargetProperty(NULL)
+#endif
 //##protect##"instance::XMLList::XMLList()$data"
     {
 //##protect##"instance::XMLList::XMLList()$code"
@@ -134,7 +131,12 @@ namespace Instances { namespace fl
     void XMLList::prototypeGet(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::prototypeGet()"
+#ifdef GFX_ENABLE_XML
         result = MakeInstance();
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::prototypeGet()");
+#endif
 //##protect##"instance::XMLList::prototypeGet()"
     }
     void XMLList::prototypeSet(const Value& result, const Value& p)
@@ -146,12 +148,18 @@ namespace Instances { namespace fl
     void XMLList::AS3length(SInt32& result)
     {
 //##protect##"instance::XMLList::AS3length()"
+#ifdef GFX_ENABLE_XML
         result = static_cast<SInt32>(List.GetSize());
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3length()");
+#endif
 //##protect##"instance::XMLList::AS3length()"
     }
     void XMLList::AS3toString(ASString& result)
     {
 //##protect##"instance::XMLList::AS3toString()"
+#ifdef GFX_ENABLE_XML
         bool simple;
 
         AS3hasSimpleContent(simple);
@@ -176,6 +184,10 @@ namespace Instances { namespace fl
         }
         else
             AS3toXMLString(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3toString()");
+#endif
 //##protect##"instance::XMLList::AS3toString()"
     }
     void XMLList::AS3valueOf(SPtr<Instances::fl::XMLList>& result)
@@ -192,12 +204,14 @@ namespace Instances { namespace fl
         // 2. If x has a property with name ToString(P), return true
         // 3. Return false
 
+#ifdef GFX_ENABLE_XML
         if (argc > 0 && IsXMLListObject(_this))
         {
             XMLList* list = static_cast<XMLList*>(_this.GetObject());
             Multiname prop_name(vm, argv[0]);
 
-            const bool rc = list->HasProperty(prop_name);
+            // DO NOT check prototype.
+            const bool rc = list->HasProperty(prop_name, false);
 
             if (rc)
             {
@@ -207,11 +221,16 @@ namespace Instances { namespace fl
         }
 
         Instances::fl::Object::AS3hasOwnProperty(ti, vm, _this, result, argc, argv);
+#else
+        SF_UNUSED6(ti, vm, _this, result, argc, argv);
+        WARN_NOT_IMPLEMENTED_STATIC("XMLList::AS3hasOwnProperty()");
+#endif
 //##protect##"instance::XMLList::AS3hasOwnProperty()"
     }
     void XMLList::AS3propertyIsEnumerable(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XMLList::AS3propertyIsEnumerable()"
+#ifdef GFX_ENABLE_XML
         if (argc > 0 && !argv[0].IsNullOrUndefined())
         {
             Multiname prop_name(GetVM(), argv[0]);
@@ -226,6 +245,10 @@ namespace Instances { namespace fl
                 }
             }
         }
+#else
+        SF_UNUSED2(argc, argv);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3propertyIsEnumerable()");
+#endif
 
         result.SetBool(false);
 //##protect##"instance::XMLList::AS3propertyIsEnumerable()"
@@ -233,6 +256,7 @@ namespace Instances { namespace fl
     void XMLList::AS3attribute(SPtr<Instances::fl::XMLList>& result, const Value& arg)
     {
 //##protect##"instance::XMLList::AS3attribute()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
 
         if (arg.IsNullOrUndefined())
@@ -256,11 +280,16 @@ namespace Instances { namespace fl
                 // Exception.
                 return;
         }
+#else
+        SF_UNUSED2(result, arg);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3attribute()");
+#endif
 //##protect##"instance::XMLList::AS3attribute()"
     }
     void XMLList::AS3attributes(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::AS3attributes()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeInstance();
 
         result = list;
@@ -270,11 +299,16 @@ namespace Instances { namespace fl
             XML* xml = List[i];
             xml->GetAttributes(*list);
         }
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3attributes()");
+#endif
 //##protect##"instance::XMLList::AS3attributes()"
     }
     void XMLList::AS3child(SPtr<Instances::fl::XMLList>& result, const Value& propertyName)
     {
 //##protect##"instance::XMLList::AS3child()"
+#ifdef GFX_ENABLE_XML
         if (propertyName.IsNullOrUndefined())
             return GetVM().ThrowTypeError(VM::Error(VM::eInvalidArgumentError, GetVM() SF_DEBUG_ARG("propertyName")));
 
@@ -288,22 +322,32 @@ namespace Instances { namespace fl
             XML* xml = List[i];
             xml->GetChildren(*list, mn);
         }
+#else
+        SF_UNUSED2(result, propertyName);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3child()");
+#endif
 //##protect##"instance::XMLList::AS3child()"
     }
     void XMLList::AS3children(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::AS3children()"
+#ifdef GFX_ENABLE_XML
         result = MakeInstance();
 
         VM& vm = GetVM();
         const Multiname prop_name(vm);
 
         GetProperty(prop_name, *result).DoNotCheck();
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3children()");
+#endif
 //##protect##"instance::XMLList::AS3children()"
     }
     void XMLList::AS3comments(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::AS3comments()"
+#ifdef GFX_ENABLE_XML
         result = MakeInstance(*this, GetVM().GetStringManager().CreateNullString(), GetVM().GetPublicNamespace());
 
         const UPInt size = List.GetSize();
@@ -320,6 +364,10 @@ namespace Instances { namespace fl
                 }
             }
         }
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3comments()");
+#endif
 //##protect##"instance::XMLList::AS3comments()"
     }
     void XMLList::AS3contains(bool& result, const Value& value)
@@ -327,6 +375,7 @@ namespace Instances { namespace fl
 //##protect##"instance::XMLList::AS3contains()"
         result = false;
 
+#ifdef GFX_ENABLE_XML
         if (!IsXMLObject(value))
             return;
 
@@ -337,27 +386,42 @@ namespace Instances { namespace fl
             if (List[i]->Equals(*other))
                 result = true;
         }
+#else
+        SF_UNUSED1(value);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3contains()");
+#endif
 //##protect##"instance::XMLList::AS3contains()"
     }
     void XMLList::AS3copy(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::AS3copy()"
+#ifdef GFX_ENABLE_XML
         result = DeepCopy(NULL);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3copy()");
+#endif
 //##protect##"instance::XMLList::AS3copy()"
     }
     void XMLList::AS3descendants(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XMLList::AS3descendants()"
+#ifdef GFX_ENABLE_XML
         Multiname mn(GetVM().GetPublicNamespace(), argc == 0 ? Value(GetVM().GetStringManager().CreateConstString("*")) : argv[0]);
         Pickable<XMLList> list = MakeInstance();
         result = list;
 
         GetDescendants(*list, mn);
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3descendants()");
+#endif
 //##protect##"instance::XMLList::AS3descendants()"
     }
     void XMLList::AS3elements(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XMLList::AS3elements()"
+#ifdef GFX_ENABLE_XML
         Pickable<XMLList> list = MakeInstance();
         result = list;
 
@@ -369,18 +433,28 @@ namespace Instances { namespace fl
             XML* xml = List[i];
             xml->GetChildren(*list, mn);
         }
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3elements()");
+#endif
 //##protect##"instance::XMLList::AS3elements()"
     }
     void XMLList::AS3hasComplexContent(bool& result)
     {
 //##protect##"instance::XMLList::AS3hasComplexContent()"
+#ifdef GFX_ENABLE_XML
         AS3hasSimpleContent(result);
         result = !result;
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3hasComplexContent()");
+#endif
 //##protect##"instance::XMLList::AS3hasComplexContent()"
     }
     void XMLList::AS3hasSimpleContent(bool& result)
     {
 //##protect##"instance::XMLList::AS3hasSimpleContent()"
+#ifdef GFX_ENABLE_XML
         const UPInt size = List.GetSize();
 
         switch (size)
@@ -402,30 +476,44 @@ namespace Instances { namespace fl
                 }
             }
         }
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3hasSimpleContent()");
+#endif
 //##protect##"instance::XMLList::AS3hasSimpleContent()"
     }
     void XMLList::AS3name(SPtr<Instances::fl::QName>& result)
     {
 //##protect##"instance::XMLList::AS3name()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("name")))
             List[0]->AS3name(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3name()");
+#endif
 //##protect##"instance::XMLList::AS3name()"
     }
     void XMLList::AS3normalize(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::AS3normalize()"
         result = this;
+#ifdef GFX_ENABLE_XML
         const UPInt size = List.GetSize();
         for (UPInt i = 0; i < size; ++i)
         {
             XML* xml = List[i];
             xml->Normalize();
         }
+#else
+        WARN_NOT_IMPLEMENTED("XMLList::AS3normalize()");
+#endif
 //##protect##"instance::XMLList::AS3normalize()"
     }
     void XMLList::AS3parent(Value& result)
     {
 //##protect##"instance::XMLList::AS3parent()"
+#ifdef GFX_ENABLE_XML
         const UPInt size = List.GetSize();
 
         if (size == 0)
@@ -443,11 +531,16 @@ namespace Instances { namespace fl
             result = parent;
         else
             result.SetUndefined();
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3parent()");
+#endif
 //##protect##"instance::XMLList::AS3parent()"
     }
     void XMLList::AS3processingInstructions(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XMLList::AS3processingInstructions()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeInstance();
         result = list;
 
@@ -476,11 +569,16 @@ namespace Instances { namespace fl
                 }
             }
         }
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3processingInstructions()");
+#endif
 //##protect##"instance::XMLList::AS3processingInstructions()"
     }
     void XMLList::AS3text(SPtr<Instances::fl::XMLList>& result)
     {
 //##protect##"instance::XMLList::AS3text()"
+#ifdef GFX_ENABLE_XML
         Pickable<Instances::fl::XMLList> list = MakeInstance();
         result = list;
 
@@ -490,11 +588,16 @@ namespace Instances { namespace fl
             XML* xml = List[i];
             xml->GetChildren(*list, XML::kText);
         }
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3text()");
+#endif
 //##protect##"instance::XMLList::AS3text()"
     }
     void XMLList::AS3toXMLString(ASString& result)
     {
 //##protect##"instance::XMLList::AS3toXMLString()"
+#ifdef GFX_ENABLE_XML
         VM& vm = GetVM();
         const UPInt size = List.GetSize();
 
@@ -515,8 +618,8 @@ namespace Instances { namespace fl
 
                         if (nsh)
                         {
-                            const UPInt size = nsh->GetSize();
-                            for (UPInt i = 0; i < size; ++i)
+                            const UPInt sizeup = nsh->GetSize();
+                            for (UPInt i = 0; i < sizeup; ++i)
                             {
                                 Namespace& ns = *(*nsh)[i];
 
@@ -533,8 +636,8 @@ namespace Instances { namespace fl
                 {
                     XMLList* list = static_cast<XMLList*>(to);
 
-                    const UPInt size = list->GetSize();
-                    for (UPInt i = 0; i < size; ++i)
+                    const UPInt sizeup = list->GetSize();
+                    for (UPInt i = 0; i < sizeup; ++i)
                     {
                         XML* xml = list->List[i];
 
@@ -542,10 +645,10 @@ namespace Instances { namespace fl
 
                         if (nsh)
                         {
-                            const UPInt size = nsh->GetSize();
-                            for (UPInt i = 0; i < size; ++i)
+                            const UPInt sizeupi = nsh->GetSize();
+                            for (UPInt ui = 0; ui < sizeupi; ++ui)
                             {
-                                Namespace& ns = *(*nsh)[i];
+                                Namespace& ns = *(*nsh)[ui];
 
                                 if (ns != publicNS)
                                     na.Add(ns);
@@ -572,125 +675,214 @@ namespace Instances { namespace fl
         }
 
         result = vm.GetStringManager().CreateString(buf.ToCStr(), buf.GetSize());
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3toXMLString()");
+#endif
 //##protect##"instance::XMLList::AS3toXMLString()"
     }
     void XMLList::AS3addNamespace(SPtr<Instances::fl::XML>& result, const Value& ns)
     {
 //##protect##"instance::XMLList::AS3addNamespace()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("addNamespace")))
             List[0]->AS3addNamespace(result, ns);
+#else
+        SF_UNUSED2(result, ns);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3addNamespace()");
+#endif
 //##protect##"instance::XMLList::AS3addNamespace()"
     }
     void XMLList::AS3appendChild(SPtr<Instances::fl::XML>& result, const Value& child)
     {
 //##protect##"instance::XMLList::AS3appendChild()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("appendChild")))
             List[0]->AS3appendChild(result, child);
+#else
+        SF_UNUSED2(result, child);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3appendChild()");
+#endif
 //##protect##"instance::XMLList::AS3appendChild()"
     }
     void XMLList::AS3childIndex(SInt32& result)
     {
 //##protect##"instance::XMLList::AS3childIndex()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("childIndex")))
             List[0]->AS3childIndex(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3childIndex()");
+#endif
 //##protect##"instance::XMLList::AS3childIndex()"
     }
     void XMLList::AS3inScopeNamespaces(SPtr<Instances::fl::Array>& result)
     {
 //##protect##"instance::XMLList::AS3inScopeNamespaces()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("inScopeNamespaces")))
             List[0]->AS3inScopeNamespaces(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3inScopeNamespaces()");
+#endif
 //##protect##"instance::XMLList::AS3inScopeNamespaces()"
     }
     void XMLList::AS3insertChildAfter(Value& result, const Value& child1, const Value& child2)
     {
 //##protect##"instance::XMLList::AS3insertChildAfter()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("insertChildAfter")))
             List[0]->AS3insertChildAfter(result, child1, child2);
+#else
+        SF_UNUSED3(result, child1, child2);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3insertChildAfter()");
+#endif
 //##protect##"instance::XMLList::AS3insertChildAfter()"
     }
     void XMLList::AS3insertChildBefore(Value& result, const Value& child1, const Value& child2)
     {
 //##protect##"instance::XMLList::AS3insertChildBefore()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("insertChildBefore")))
             List[0]->AS3insertChildBefore(result, child1, child2);
+#else
+        SF_UNUSED3(result, child1, child2);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3insertChildBefore()");
+#endif
 //##protect##"instance::XMLList::AS3insertChildBefore()"
     }
     void XMLList::AS3nodeKind(ASString& result)
     {
 //##protect##"instance::XMLList::AS3nodeKind()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("nodeKind")))
             List[0]->AS3nodeKind(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3nodeKind()");
+#endif
 //##protect##"instance::XMLList::AS3nodeKind()"
     }
     void XMLList::AS3namespace_(Value& result, unsigned argc, const Value* const argv)
     {
 //##protect##"instance::XMLList::AS3namespace_()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("namespace")))
             List[0]->AS3namespace_(result, argc, argv);
+#else
+        SF_UNUSED3(result, argc, argv);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3namespace_()");
+#endif
 //##protect##"instance::XMLList::AS3namespace_()"
     }
     void XMLList::AS3localName(ASString& result)
     {
 //##protect##"instance::XMLList::AS3localName()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("localName")))
             List[0]->AS3localName(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3localName()");
+#endif
 //##protect##"instance::XMLList::AS3localName()"
     }
     void XMLList::AS3namespaceDeclarations(SPtr<Instances::fl::Array>& result)
     {
 //##protect##"instance::XMLList::AS3namespaceDeclarations()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("namespaceDeclarations")))
             List[0]->AS3namespaceDeclarations(result);
+#else
+        SF_UNUSED1(result);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3namespaceDeclarations()");
+#endif
 //##protect##"instance::XMLList::AS3namespaceDeclarations()"
     }
     void XMLList::AS3prependChild(SPtr<Instances::fl::XML>& result, const Value& value)
     {
 //##protect##"instance::XMLList::AS3prependChild()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("prependChild")))
             List[0]->AS3prependChild(result, value);
+#else
+        SF_UNUSED2(result, value);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3prependChild()");
+#endif
 //##protect##"instance::XMLList::AS3prependChild()"
     }
     void XMLList::AS3removeNamespace(SPtr<Instances::fl::XML>& result, const Value& ns)
     {
 //##protect##"instance::XMLList::AS3removeNamespace()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("removeNamespace")))
             List[0]->AS3removeNamespace(result, ns);
+#else
+        SF_UNUSED2(result, ns);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3removeNamespace()");
+#endif
 //##protect##"instance::XMLList::AS3removeNamespace()"
     }
     void XMLList::AS3replace(SPtr<Instances::fl::XML>& result, const Value& propertyName, const Value& value)
     {
 //##protect##"instance::XMLList::AS3replace()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("replace")))
             List[0]->AS3replace(result, propertyName, value);
+#else
+        SF_UNUSED3(result, propertyName, value);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3replace()");
+#endif
 //##protect##"instance::XMLList::AS3replace()"
     }
     void XMLList::AS3setChildren(SPtr<Instances::fl::XML>& result, const Value& value)
     {
 //##protect##"instance::XMLList::AS3setChildren()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("setChildren")))
             List[0]->AS3setChildren(result, value);
+#else
+        SF_UNUSED2(result, value);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3setChildren()");
+#endif
 //##protect##"instance::XMLList::AS3setChildren()"
     }
     void XMLList::AS3setLocalName(const Value& result, const Value& name)
     {
 //##protect##"instance::XMLList::AS3setLocalName()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("setLocalName")))
             List[0]->AS3setLocalName(result, name);
+#else
+        SF_UNUSED2(result, name);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3setLocalName()");
+#endif
 //##protect##"instance::XMLList::AS3setLocalName()"
     }
     void XMLList::AS3setName(const Value& result, const Value& name)
     {
 //##protect##"instance::XMLList::AS3setName()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("setName")))
             List[0]->AS3setName(result, name);
+#else
+        SF_UNUSED2(result, name);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3setName()");
+#endif
 //##protect##"instance::XMLList::AS3setName()"
     }
     void XMLList::AS3setNamespace(const Value& result, const Value& ns)
     {
 //##protect##"instance::XMLList::AS3setNamespace()"
+#ifdef GFX_ENABLE_XML
         if (HasOneItem(SF_DEBUG_CODE("setNamespace")))
             List[0]->AS3setNamespace(result, ns);
+#else
+        SF_UNUSED2(result, ns);
+        WARN_NOT_IMPLEMENTED("XMLList::AS3setNamespace()");
+#endif
 //##protect##"instance::XMLList::AS3setNamespace()"
     }
 
@@ -749,6 +941,7 @@ namespace Instances { namespace fl
         return result;
     }
 //##protect##"instance$methods"
+#ifdef GFX_ENABLE_XML
     XMLList::~XMLList()
     {
         if (TargetProperty)
@@ -801,6 +994,7 @@ namespace Instances { namespace fl
                 StringDataPtr s(str.ToCStr(), str.GetSize());
                 const Classes::fl::XML& cl_xml = static_cast<const Classes::fl::XML&>(vm.GetXMLSupport().GetITraitsXML()->GetClass());
                 const bool iw = cl_xml.ignoreWhitespace;
+                UPInt last_pos = 0;
 
                 while (!s.IsEmpty())
                 {
@@ -843,6 +1037,13 @@ namespace Instances { namespace fl
 
                         if (!parser.Parse(s, pos, true))
                         {
+                            if (last_pos != pos)
+                                last_pos = pos;
+                            else
+                                // Something is critically wrong.
+                                // We couldn't parse anything.
+                                return;
+
                             if (pos == 0)
                                 // Something is critically wrong.
                                 // We couldn't parse anything.
@@ -1094,9 +1295,9 @@ namespace Instances { namespace fl
                             {
                                 const NamespaceSet& nss = prop_name.GetNamespaceSet();
                                 const NamespaceSet::TContainer& namespaces = nss.GetNamespaces();
-                                const UPInt size = namespaces.GetSize();
+                                const UPInt sizeup = namespaces.GetSize();
 
-                                for(UPInt j = 0; j < size; ++j)
+                                for(UPInt j = 0; j < sizeup; ++j)
                                 {
                                     const Instances::fl::Namespace& ns = *namespaces[j];
                                     if (ns == child->GetNamespace())
@@ -1199,7 +1400,7 @@ namespace Instances { namespace fl
     }
 
     // 9.2.1.5 [[HasProperty]] (P)
-    bool XMLList::HasProperty(const Multiname& prop_name) const
+    bool XMLList::HasProperty(const Multiname& prop_name, bool check_prototype)
     {
         bool result = false;
 
@@ -1218,7 +1419,7 @@ namespace Instances { namespace fl
                 if (xml->GetKind() == XML::kElement)
                 {
                     XMLElement* el = static_cast<XMLElement*>(xml);;
-                    if (el->HasProperty(prop_name))
+                    if (el->HasProperty(prop_name, check_prototype))
                     {
                         result = true;
                         break;
@@ -1788,64 +1989,111 @@ namespace Instances { namespace fl
 
         value.SetUndefined();
     }
+#endif
+
 //##protect##"instance$methods"
 
 }} // namespace Instances
 
 namespace InstanceTraits { namespace fl
 {
+    // const UInt16 XMLList::tito[XMLList::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 5, 6, 8, 9, 11, 12, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 33, 34, 35, 38, 41, 42, 43, 44, 45, 47, 49, 52, 54, 56, 58, 
+    // };
+    const TypeInfo* XMLList::tit[60] = {
+        &AS3::fl::XMLListTI, 
+        NULL, &AS3::fl::ObjectTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::StringTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::XMLListTI, NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::BooleanTI, NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::QNameTI, 
+        &AS3::fl::XMLListTI, 
+        NULL, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::XMLListTI, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::int_TI, 
+        &AS3::fl::ArrayTI, 
+        NULL, NULL, NULL, 
+        NULL, NULL, NULL, 
+        &AS3::fl::StringTI, 
+        NULL, 
+        &AS3::fl::StringTI, 
+        &AS3::fl::ArrayTI, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLTI, NULL, 
+        &AS3::fl::XMLTI, NULL, NULL, 
+        &AS3::fl::XMLTI, NULL, 
+        NULL, NULL, 
+        NULL, NULL, 
+        NULL, NULL, 
+    };
     const ThunkInfo XMLList::ti[XMLList::ThunkInfoNum] = {
-        {TFunc_Instances_XMLList_prototypeGet::Func, &AS3::fl::XMLListTI, "prototype", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_XMLList_prototypeSet::Func, NULL, "prototype", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_XMLList_AS3length::Func, &AS3::fl::int_TI, "length", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3toString::Func, &AS3::fl::StringTI, "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3valueOf::Func, &AS3::fl::XMLListTI, "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {&Instances::fl::XMLList::AS3hasOwnProperty, &AS3::fl::BooleanTI, "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3propertyIsEnumerable::Func, &AS3::fl::BooleanTI, "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XMLList_AS3attribute::Func, &AS3::fl::XMLListTI, "attribute", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3attributes::Func, &AS3::fl::XMLListTI, "attributes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3child::Func, &AS3::fl::XMLListTI, "child", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3children::Func, &AS3::fl::XMLListTI, "children", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3comments::Func, &AS3::fl::XMLListTI, "comments", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3contains::Func, &AS3::fl::BooleanTI, "contains", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3copy::Func, &AS3::fl::XMLListTI, "copy", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3descendants::Func, &AS3::fl::XMLListTI, "descendants", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XMLList_AS3elements::Func, &AS3::fl::XMLListTI, "elements", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XMLList_AS3hasComplexContent::Func, &AS3::fl::BooleanTI, "hasComplexContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3hasSimpleContent::Func, &AS3::fl::BooleanTI, "hasSimpleContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3name::Func, &AS3::fl::QNameTI, "name", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3normalize::Func, &AS3::fl::XMLListTI, "normalize", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3parent::Func, NULL, "parent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3processingInstructions::Func, &AS3::fl::XMLListTI, "processingInstructions", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XMLList_AS3text::Func, &AS3::fl::XMLListTI, "text", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3toXMLString::Func, &AS3::fl::StringTI, "toXMLString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3addNamespace::Func, &AS3::fl::XMLTI, "addNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3appendChild::Func, &AS3::fl::XMLTI, "appendChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3childIndex::Func, &AS3::fl::int_TI, "childIndex", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3inScopeNamespaces::Func, &AS3::fl::ArrayTI, "inScopeNamespaces", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3insertChildAfter::Func, NULL, "insertChildAfter", NS_AS3, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_XMLList_AS3insertChildBefore::Func, NULL, "insertChildBefore", NS_AS3, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_XMLList_AS3nodeKind::Func, &AS3::fl::StringTI, "nodeKind", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3namespace_::Func, NULL, "namespace", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
-        {TFunc_Instances_XMLList_AS3localName::Func, &AS3::fl::StringTI, "localName", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3namespaceDeclarations::Func, &AS3::fl::ArrayTI, "namespaceDeclarations", NS_AS3, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_XMLList_AS3prependChild::Func, &AS3::fl::XMLTI, "prependChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3removeNamespace::Func, &AS3::fl::XMLTI, "removeNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3replace::Func, &AS3::fl::XMLTI, "replace", NS_AS3, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_XMLList_AS3setChildren::Func, &AS3::fl::XMLTI, "setChildren", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3setLocalName::Func, NULL, "setLocalName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3setName::Func, NULL, "setName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_XMLList_AS3setNamespace::Func, NULL, "setNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1},
+        {TFunc_Instances_XMLList_prototypeGet::Func, &XMLList::tit[0], "prototype", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_prototypeSet::Func, &XMLList::tit[1], "prototype", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3length::Func, &XMLList::tit[3], "length", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3toString::Func, &XMLList::tit[4], "toString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3valueOf::Func, &XMLList::tit[5], "valueOf", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {&Instances::fl::XMLList::AS3hasOwnProperty, &XMLList::tit[6], "hasOwnProperty", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3propertyIsEnumerable::Func, &XMLList::tit[8], "propertyIsEnumerable", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XMLList_AS3attribute::Func, &XMLList::tit[9], "attribute", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3attributes::Func, &XMLList::tit[11], "attributes", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3child::Func, &XMLList::tit[12], "child", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3children::Func, &XMLList::tit[14], "children", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3comments::Func, &XMLList::tit[15], "comments", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3contains::Func, &XMLList::tit[16], "contains", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3copy::Func, &XMLList::tit[18], "copy", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3descendants::Func, &XMLList::tit[19], "descendants", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XMLList_AS3elements::Func, &XMLList::tit[20], "elements", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XMLList_AS3hasComplexContent::Func, &XMLList::tit[21], "hasComplexContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3hasSimpleContent::Func, &XMLList::tit[22], "hasSimpleContent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3name::Func, &XMLList::tit[23], "name", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3normalize::Func, &XMLList::tit[24], "normalize", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3parent::Func, &XMLList::tit[25], "parent", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3processingInstructions::Func, &XMLList::tit[26], "processingInstructions", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XMLList_AS3text::Func, &XMLList::tit[27], "text", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3toXMLString::Func, &XMLList::tit[28], "toXMLString", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3addNamespace::Func, &XMLList::tit[29], "addNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3appendChild::Func, &XMLList::tit[31], "appendChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3childIndex::Func, &XMLList::tit[33], "childIndex", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3inScopeNamespaces::Func, &XMLList::tit[34], "inScopeNamespaces", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3insertChildAfter::Func, &XMLList::tit[35], "insertChildAfter", NS_AS3, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3insertChildBefore::Func, &XMLList::tit[38], "insertChildBefore", NS_AS3, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3nodeKind::Func, &XMLList::tit[41], "nodeKind", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3namespace_::Func, &XMLList::tit[42], "namespace", NS_AS3, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1, 0, NULL},
+        {TFunc_Instances_XMLList_AS3localName::Func, &XMLList::tit[43], "localName", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3namespaceDeclarations::Func, &XMLList::tit[44], "namespaceDeclarations", NS_AS3, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3prependChild::Func, &XMLList::tit[45], "prependChild", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3removeNamespace::Func, &XMLList::tit[47], "removeNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3replace::Func, &XMLList::tit[49], "replace", NS_AS3, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3setChildren::Func, &XMLList::tit[52], "setChildren", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3setLocalName::Func, &XMLList::tit[54], "setLocalName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3setName::Func, &XMLList::tit[56], "setName", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_XMLList_AS3setNamespace::Func, &XMLList::tit[58], "setNamespace", NS_AS3, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
     };
 
     XMLList::XMLList(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::XMLList::XMLList()"
         SetArrayLike();
         SetTraitsType(Traits_XMLList);
 //##protect##"InstanceTraits::XMLList::XMLList()"
-        SetMemSize(sizeof(Instances::fl::XMLList));
 
     }
 
@@ -1855,6 +2103,7 @@ namespace InstanceTraits { namespace fl
     }
 
 //##protect##"instance_traits$methods"
+#ifdef GFX_ENABLE_XML
     Pickable<Instances::fl::XMLList> XMLList::MakeInstance(Traits& t, Instances::fl::Object& target_obj, const ASString& target_prop, Instances::fl::Namespace& target_ns)
     {
         Pickable<Instances::fl::XMLList> list(new(t.Alloc()) Instances::fl::XMLList(t));
@@ -1865,9 +2114,9 @@ namespace InstanceTraits { namespace fl
         return list;
     }
 
-    void XMLList::toStringProto(const ThunkInfo& ti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
+    void XMLList::toStringProto(const ThunkInfo& cti, VM& vm, const Value& _this, Value& result, unsigned argc, const Value* argv)
     {
-        SF_UNUSED4(ti, _this, argc, argv);
+        SF_UNUSED4(cti, _this, argc, argv);
 
         if (_this.IsObject() && _this.GetObject() == &vm.GetXMLSupport().GetITraitsXMLList()->GetClass().GetPrototype())
             // This method is called on a prototype object.
@@ -1887,6 +2136,7 @@ namespace InstanceTraits { namespace fl
             result = str;
         }
     }
+#endif
 //##protect##"instance_traits$methods"
 
 }} // namespace InstanceTraits
@@ -1900,6 +2150,7 @@ namespace Classes { namespace fl
 //##protect##"class_::XMLList::XMLList()"
     }
 //##protect##"class_$methods"
+#ifdef GFX_ENABLE_XML
     void XMLList::Construct(Value& _this, unsigned argc, const Value* argv, bool extCall)
     {
         if (argc == 1)
@@ -1927,9 +2178,14 @@ namespace Classes { namespace fl
     }
 
     // Created manually.
+    const TypeInfo* XMLList::tit[2] = {
+        &AS3::fl::StringTI,
+        &AS3::fl::StringTI,
+    };
+
     const ThunkInfo XMLList::f[2] = {
-        {&InstanceTraits::fl::XMLList::toStringProto, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {&Instances::fl::XMLList::AS3hasOwnProperty, &AS3::fl::BooleanTI, "hasOwnProperty", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM},
+        {&InstanceTraits::fl::XMLList::toStringProto, &XMLList::tit[0], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {&Instances::fl::XMLList::AS3hasOwnProperty, &XMLList::tit[1], "hasOwnProperty", NULL, Abc::NS_Public, CT_Method, 0, SF_AS3_VARARGNUM, 1},
     };
 
     void XMLList::InitPrototype(AS3::Object& obj) const
@@ -1945,6 +2201,7 @@ namespace Classes { namespace fl
 
         AddConstructor(obj);
     }
+#endif
 //##protect##"class_$methods"
 
 }} // namespace Classes
@@ -1952,25 +2209,28 @@ namespace Classes { namespace fl
 
 namespace ClassTraits { namespace fl
 {
-    XMLList::XMLList(VM& vm)
-    : Traits(vm, AS3::fl::XMLListCI)
+
+    XMLList::XMLList(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::XMLList::XMLList()"
         SetTraitsType(Traits_XMLList);
 //##protect##"ClassTraits::XMLList::XMLList()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::XMLList(vm, AS3::fl::XMLListCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::XMLList(*this));
 
     }
 
     Pickable<Traits> XMLList::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) XMLList(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) XMLList(vm, AS3::fl::XMLListCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::XMLListCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -1981,6 +2241,11 @@ namespace fl
 {
     const TypeInfo XMLListTI = {
         TypeInfo::CompileTime | TypeInfo::DynamicObject | TypeInfo::Final,
+        sizeof(ClassTraits::fl::XMLList::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl::XMLList::ThunkInfoNum,
+        0,
         "XMLList", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -1988,10 +2253,6 @@ namespace fl
     const ClassInfo XMLListCI = {
         &XMLListTI,
         ClassTraits::fl::XMLList::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl::XMLList::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl::XMLList::ti,

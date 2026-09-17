@@ -7,6 +7,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -598,10 +599,8 @@ public:
 
     void                Value2ASValue(const GFx::Value& gfxVal, Value* pdestVal);
     void                ASValue2Value(Environment* penv, const Value& value, GFx::Value* pdestVal) const;    
-#ifdef GFX_AS_ENABLE_USERDATA
     bool                CreateObjectValue(GFx::Value* pvalue, GFx::Value::ObjectInterface* pobjifc, 
                                      void* pdata, bool isdobj);
-#endif
 
     // Take care of this frame's actions, by executing ActionList. 
     void                DoActions();

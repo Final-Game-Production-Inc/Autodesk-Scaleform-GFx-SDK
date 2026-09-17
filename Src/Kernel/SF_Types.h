@@ -11,6 +11,7 @@ Notes       :   This file represents all the standard types
                 independence from size of types.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -44,8 +45,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 //    PSVITA   - PSVITA handheld console
 //    WII      - Wii console
 //    3DS      - 3DS handheld console
-
-#if ( !defined(SF_OS_WIIU) ) // XXX HACK: WF Hack for WIIU until the sf sdk is fixed or we get a better way to do it
 
 #if (defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))) || defined(__MACOS__)
 #if (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) || defined(__IPHONE_OS_VERSION_MIN_REQUIRED))
@@ -81,6 +80,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 # define SF_OS_PSVITA
 #elif defined(NN_PLATFORM_CTR)
 # define SF_OS_3DS
+#elif defined(CAFE) && !defined (SF_OS_WIIU)
+# define SF_OS_WIIU
 #else
 # define SF_OS_OTHER
 #endif
@@ -89,7 +90,6 @@ otherwise accompanies this software in either electronic or hard copy form.
  # define SF_OS_ANDROID
 #endif
 
-#endif
 
 // ***** CPU Architecture
 //
@@ -110,7 +110,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #  define SF_64BIT_POINTERS
 #elif defined(__i386__) || (defined(SF_OS_WIN32) && !defined(_M_ARM_FP)) || defined(SF_OS_XBOX)
 #  define SF_CPU_X86
-#elif defined(__powerpc64__) || defined(SF_OS_PS3) || defined(SF_OS_XBOX360) || defined(SF_OS_WII)
+#elif defined(__powerpc64__) || defined(SF_OS_PS3) || defined(SF_OS_XBOX360) || defined(SF_OS_WII) || defined(SF_OS_WIIU)
 #  define SF_CPU_PPC64
 // Note: PS3, x360 and WII don't use 64-bit pointers.
 #elif defined(__ppc__)
@@ -190,6 +190,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 // MSVC 9.0 (VC2008)            = 1500
 // MSVC 10.0 (VC2010)           = 1600
 // MSVC 11.0 (VC2012)           = 1700
+// MSVC 12.0 (VC2013)           = 1800
 # define SF_CC_MSVC        _MSC_VER
 
 #elif defined(__MWERKS__)
@@ -299,8 +300,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 // overloads need to be done. Useful for platforms with poor/unavailable
 // Double support
 
-//# define SF_NO_DOUBLE
-
 
 // *****  Definitions
 //
@@ -406,12 +405,14 @@ typedef ptrdiff_t           SPInt;
 
 #else 
 
-#if (defined(BYTE_ORDER) && (BYTE_ORDER == BIG_ENDIAN))|| \
+#if defined (SF_OS_ANDROID)
+#define SF_BYTE_ORDER          SF_LITTLE_ENDIAN
+#elif (defined(BYTE_ORDER) && (BYTE_ORDER == BIG_ENDIAN))|| \
     (defined(_BYTE_ORDER) && (_BYTE_ORDER == _BIG_ENDIAN))
 #define SF_BYTE_ORDER          SF_BIG_ENDIAN
 #elif (defined(SF_OS_PS3) || defined(__ARMEB__) || defined(SF_CPU_PPC) || defined(SF_CPU_PPC64))
 #define SF_BYTE_ORDER          SF_BIG_ENDIAN
-#elif defined (SF_OS_WII)
+#elif defined (SF_OS_WII) || defined(SF_OS_WIIU)
 #define SF_BYTE_ORDER          SF_BIG_ENDIAN
 
 #else
@@ -484,15 +485,6 @@ typedef unsigned long       UInt32;
 typedef __int64             SInt64;
 typedef unsigned __int64    UInt64;
 
-// Floating point
-//typedef float               float;
-
-#ifdef SF_NO_DOUBLE
-typedef float               Double;
-#else
-typedef double              Double;
-#endif
-
 #elif defined(SF_OS_MAC) || defined(SF_OS_IPHONE)
 
 typedef int          SInt8  __attribute__((__mode__ (__QI__)));
@@ -550,6 +542,9 @@ typedef u64             UInt64;
 
 } // Scaleform
 #include <sys/types.h>
+#ifdef SF_OS_LINUX
+#include <cstdint>
+#endif
 namespace Scaleform {
 
 // 8 bit Integer (Byte)
@@ -571,15 +566,6 @@ typedef int64_t             SInt64;
 typedef uint64_t            UInt64;
 
 #endif
-
-// Floating point
-//typedef float               float;
-
-#ifdef SF_NO_DOUBLE
-typedef float               Double;
-#else
-typedef double              Double;
-#endif // SF_NO_DOUBLE
 
 //
 // ***** BaseTypes Namespace
@@ -604,8 +590,6 @@ namespace BaseTypes
     using Scaleform::SInt32;
     using Scaleform::UInt64;
     using Scaleform::SInt64;
-    //using Scaleform::float;
-    using Scaleform::Double;
 } // BaseTypes
 
 } // Scaleform
@@ -668,23 +652,15 @@ namespace BaseTypes
 
 
 
-// ***** Compiler Assert
-//
-//---------------------------------------------------------------------------
-// Compile-time assert.  Thanks to Jon Jagger (http://www.jaggersoft.com) for this trick.
-// Improved from stack overflow (http://stackoverflow.com/questions/807244/c-compiler-asserts-how-to-implement)
-#define SF_COMPILER_ASSERT(predicate) _impl_CASSERT_LINE(predicate,__LINE__,__FILE__)
-#define _impl_PASTE(a,b) a##b
-#define _impl_CASSERT_LINE(predicate, line, file) \
-    typedef char _impl_PASTE(assertion_failed_##file##_,line)[2*!!(predicate)-1];
-
 // Handy macro to quiet compiler warnings about unused parameters/variables.
 #if defined(SF_CC_GNU) || defined(SF_CC_CLANG)
+#define     SF_UNUSED_ATTR        __attribute__ ((unused))
 #define     SF_UNUSED(a)          do {__typeof__ (&a) __attribute__ ((unused)) __tmp = &a; } while(0)
 #define     SF_UNUSED2(a,b)       SF_UNUSED(a); SF_UNUSED(b)
 #define     SF_UNUSED3(a,b,c)     SF_UNUSED2(a,c); SF_UNUSED(b)
 #define     SF_UNUSED4(a,b,c,d)   SF_UNUSED3(a,c,d); SF_UNUSED(b)
 #else
+#define     SF_UNUSED_ATTR
 #define     SF_UNUSED(a)          (a)
 #define     SF_UNUSED2(a,b)       (a);(b)
 #define     SF_UNUSED3(a,b,c)     (a);(b);(c)
@@ -698,6 +674,16 @@ namespace BaseTypes
 #define     SF_UNUSED8(a1,a2,a3,a4,a5,a6,a7,a8) SF_UNUSED4(a1,a2,a3,a4); SF_UNUSED4(a5,a6,a7,a8)
 #define     SF_UNUSED9(a1,a2,a3,a4,a5,a6,a7,a8,a9) SF_UNUSED4(a1,a2,a3,a4); SF_UNUSED5(a5,a6,a7,a8,a9)
 
+
+// ***** Compiler Assert
+//
+//---------------------------------------------------------------------------
+// Compile-time assert.  Thanks to Jon Jagger (http://www.jaggersoft.com) for this trick.
+// Improved from stack overflow (http://stackoverflow.com/questions/807244/c-compiler-asserts-how-to-implement)
+#define SF_COMPILER_ASSERT(predicate) _impl_CASSERT_LINE(predicate,__LINE__,__FILE__)
+#define _impl_PASTE(a,b) a##b
+#define _impl_CASSERT_LINE(predicate, line, file) \
+    typedef char _impl_PASTE(assertion_failed_##file##_,line)[2*!!(predicate)-1] SF_UNUSED_ATTR;
 
 // ******** Variable range definitions
 //
@@ -763,15 +749,20 @@ namespace BaseTypes
 #define SF_MIN_FLOAT           float(FLT_MIN)               // 1.175494351e-38F
 #define SF_MAX_FLOAT           float(FLT_MAX)               // 3.402823466e+38F
 
-#ifdef SF_NO_DOUBLE
 // Minimum and maximum (positive) Double values
-#define SF_MIN_DOUBLE          Scaleform::Double(FLT_MIN)   // 1.175494351e-38F
-#define SF_MAX_DOUBLE          Scaleform::Double(FLT_MAX)   // 3.402823466e+38F
-#else
-// Minimum and maximum (positive) Double values
-#define SF_MIN_DOUBLE          Scaleform::Double(DBL_MIN)   // 2.2250738585072014e-308
-#define SF_MAX_DOUBLE          Scaleform::Double(DBL_MAX)   // 1.7976931348623158e+308
-#endif
+#define SF_MIN_DOUBLE          double(DBL_MIN)   // 2.2250738585072014e-308
+#define SF_MAX_DOUBLE          double(DBL_MAX)   // 1.7976931348623158e+308
+
+// ***** Double
+namespace Scaleform {
+
+    typedef double  Double;
+
+namespace BaseTypes {
+    using Scaleform::Double;
+}
+
+} // namespace Scaleform {
 
 
 // ***** Flags
@@ -793,9 +784,7 @@ SF_INLINE void*   operator new        (Scaleform::UPInt n, void *ptr)   { return
 SF_INLINE void    operator delete     (void *ptr, void *ptr2)           { return; SF_UNUSED2(ptr,ptr2); }
 #else
 // Needed for placement on many platforms including PSP.
-#ifndef WF_ENGINE
 #include <new>
-#endif
 #endif
 
 #endif // __PLACEMENT_NEW_INLINE

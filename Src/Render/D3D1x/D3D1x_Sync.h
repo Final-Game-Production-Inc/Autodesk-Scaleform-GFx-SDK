@@ -19,8 +19,115 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render/Render_Sync.h"
 #include "Kernel/SF_Threads.h"
+#include "Kernel/SF_Debug.h"
 
 namespace Scaleform { namespace Render { namespace D3D1x {
+
+// Wrapper class for a ID3D1x(Query), so that their allocations can be pooled.
+class FenceWrapper : public Render::FenceWrapper
+{
+public:
+    FenceWrapper(ID3D1x(Device)* pdevice, ID3D1x(DeviceContext)* pdeviceCtx) : Render::FenceWrapper()
+    {
+        SF_DEBUG_ASSERT(pdevice != nullptr, "NULL device in FenceWrapper constructor.");
+		SF_DEBUG_ASSERT(pdeviceCtx != nullptr, "NULL deviceCtx in FenceWrapper constructor.");
+
+#if !defined(SF_DURANGO_MONOLITHIC)
+        // D3D1x uses queries, create one for this entry in the wrapper list.
+        pQuery = 0;
+        D3D1x(QUERY_DESC) desc;
+        memset(&desc, 0, sizeof(D3D1x(QUERY_DESC)));
+        desc.Query = D3D1x(QUERY_EVENT);
+        HRESULT hr = pdevice->CreateQuery(&desc, &pQuery.GetRawRef());
+        SF_UNUSED(hr);
+        SF_DEBUG_ASSERT(SUCCEEDED(hr), "Failed to create ID3D1x(Query).");
+        pDeviceContext = pdeviceCtx;
+#else
+        FenceID = 0;
+        // Durango uses the InsertFence/IsFencePending API, not usual D3D1x queries. Save and cast the device context.
+        if (FAILED(pdeviceCtx->QueryInterface(IID_ID3D11DeviceContextX, (void**)&pDeviceContext.GetRawRef())) || !pDeviceContext)
+        {
+            SF_DEBUG_ASSERT(pDeviceContext, "Unexpected ID3D11DeviceContextX interface not available when SF_DURANGO_MONOLITHIC is defined.");
+        }
+
+        if (FAILED(pdevice->QueryInterface(IID_ID3D11DeviceX, (void**)&pDevice.GetRawRef())) || !pDevice)
+        {
+            SF_DEBUG_ASSERT(pDeviceContext, "Unexpected ID3D11DeviceX interface not available when SF_DURANGO_MONOLITHIC is defined.");
+        }
+#endif
+    } 
+
+    void InsertFence()
+    {
+#if !defined(SF_DURANGO_MONOLITHIC)
+        D3D1xEndAsynchronous(pDeviceContext, pQuery);
+#else
+		FenceID = pDeviceContext->InsertFence(D3D11_INSERT_FENCE_NO_KICKOFF);
+#endif
+    }
+
+    bool IsFencePending()
+    {
+#if !defined(SF_DURANGO_MONOLITHIC)
+        HRESULT hr = D3D1xGetDataAsynchronous(pDeviceContext, pQuery, 0, 0, D3D1x(ASYNC_GETDATA_DONOTFLUSH));
+        return hr != S_OK;
+#else
+		return pDevice->IsFencePending(FenceID) ? true : false;
+#endif
+    }
+
+    void WaitFence()
+    {
+#if !defined(SF_DURANGO_MONOLITHIC)
+        while ( D3D1xGetDataAsynchronous(pDeviceContext, pQuery, 0, 0, 0) != S_OK)
+#else
+        while (pDevice->IsFencePending(FenceID))
+#endif
+        {
+            // Perform useless commands to kickoff the command buffer (we don't use the GS currently, so just set its constants to NULL).
+            ID3D1x(Buffer)* nullBuffer = 0;
+            pDeviceContext->GSSetConstantBuffers(0, 1, &nullBuffer);
+        }
+    }
+
+    // Durango uses the InsertFence/WaitFence API, not usual D3D1x queries.
+#if !defined(SF_DURANGO_MONOLITHIC)
+    Ptr<ID3D1x(DeviceContext)>     pDeviceContext;
+    Ptr<ID3D1x(Query)>             pQuery;
+#else
+    Ptr<ID3D1x(DeviceX)>           pDevice;
+    Ptr<ID3D1x(DeviceContextX)>    pDeviceContext;
+	UINT64                         FenceID;
+#endif
+};
+
+// List class which manages a pool of FenceWrappers (ID3D1x(Query) wrappers).
+class FenceWrapperList : public Render::FenceWrapperList
+{
+public:
+    virtual void Shutdown()
+    {
+        SF_DEBUG_ASSERT(pDevice == 0, "Expected NULL device in FenceWrapperList::Shutdown");
+        pDevice = 0;
+        Render::FenceWrapperList::Shutdown();
+    }
+    void SetDevice(ID3D1x(Device)* pdevice, ID3D1x(DeviceContext)* pdeviceCtx)
+    {
+        pDevice = pdevice;
+		pDeviceCtx = pdeviceCtx;
+        if (!pDevice || !pDeviceCtx)
+            Shutdown();
+        else
+            Initialize();
+    }
+protected:
+    virtual Render::FenceWrapper* allocateWrapper()
+    {
+        return SF_NEW FenceWrapper(pDevice, pDeviceCtx);
+    }
+    Ptr<ID3D1x(Device)> pDevice;
+	Ptr<ID3D1x(DeviceContext)> pDeviceCtx;
+};
 
 class RenderSync : public Render::RenderSync
 {
@@ -36,7 +143,6 @@ public:
             pDevice = 0;
             pDeviceContext = 0;
             ReleaseOutstandingFrames();
-            return true;
         }
         else
         {
@@ -53,8 +159,12 @@ public:
                 pDevice = pdevice; 
                 pDeviceContext = pdeviceCtx;
             }
-            return SUCCEEDED(hr);
+            if (!SUCCEEDED(hr))
+                return false;
         }
+
+        QueryList.SetDevice(pdevice, pdeviceCtx);
+        return true;
     }
 
     virtual void    BeginFrame()
@@ -65,14 +175,7 @@ public:
         // Create a query object, but do not issue it; the fences that are inserted this frame
         // need to have a handle to their query object, but it must be issued after they are.
         SF_ASSERT(pNextEndFrameFence == 0);
-
-        D3D1x(QUERY_DESC) desc;
-        memset(&desc, 0, sizeof(D3D1x(QUERY_DESC)));
-        desc.Query = D3D1x(QUERY_EVENT);
-        HRESULT hr = pDevice->CreateQuery(&desc, &pNextEndFrameFence);
-        if ( FAILED(hr) )
-            pNextEndFrameFence = 0;
-
+        pNextEndFrameFence = *reinterpret_cast<FenceWrapper*>(QueryList.Alloc());
         Render::RenderSync::BeginFrame();
     }
 
@@ -85,11 +188,10 @@ public:
             return false;
 
         // Now issue the query from this frame.
-        if (pNextEndFrameFence)
-        {
-            D3D1xEndAsynchronous(pDeviceContext, pNextEndFrameFence);
-            pNextEndFrameFence->Release();
-        }
+         if (pNextEndFrameFence)
+         {
+             pNextEndFrameFence->InsertFence();
+         }		
         pNextEndFrameFence = 0;
         return true;
     }
@@ -106,13 +208,13 @@ protected:
     { 
         if ( pNextEndFrameFence )
             pNextEndFrameFence->AddRef();
-        return (UInt64)pNextEndFrameFence;
+        return (UInt64)(UPInt)pNextEndFrameFence.GetPtr();
     }
 
     virtual bool    IsPending(FenceType waitType, UInt64 handle, const FenceFrame& parent) 
     { 
         SF_UNUSED2(waitType, parent);
-        ID3D1x(Query)* pquery = (ID3D1x(Query)*)handle;
+        FenceWrapper* pquery = reinterpret_cast<FenceWrapper*>(handle);
         if ( pquery == 0 )
             return false;
 
@@ -126,13 +228,12 @@ protected:
         if ( pquery == pNextEndFrameFence )
             return true;
 
-        HRESULT hr = D3D1xGetDataAsynchronous(pDeviceContext, pquery, 0, 0, D3D1x(ASYNC_GETDATA_DONOTFLUSH));
-        return hr != S_OK;
+        return pquery->IsFencePending();
     }
     virtual void    WaitFence(FenceType waitType, UInt64 handle, const FenceFrame& parent)
     {
         SF_UNUSED2(waitType, parent);
-        ID3D1x(Query)* pquery = (ID3D1x(Query)*)handle;
+        FenceWrapper* pquery = reinterpret_cast<FenceWrapper*>(handle);
         if ( pquery == 0 )
             return;        
 
@@ -140,37 +241,26 @@ protected:
         // can scenario, as we will be waiting on a query that was just issued; causing a CPU/GPU sync.
         if ( pquery == pNextEndFrameFence )
         {
-            D3D1xEndAsynchronous(pDeviceContext, pNextEndFrameFence);
-            pquery = pNextEndFrameFence;
-
-            // Create another query for the (possibly) remaining items in this frame.
-            D3D1x(QUERY_DESC) desc;
-            memset(&desc, 0, sizeof(D3D1x(QUERY_DESC)));
-            desc.Query = D3D1x(QUERY_EVENT);
-            HRESULT hr = pDevice->CreateQuery(&desc, &pNextEndFrameFence);
-            if ( FAILED(hr) )
-                pNextEndFrameFence = 0;            
+            EndFrame();
+            BeginFrame();
         }
 
         // Poll until the data is ready.
-        while ( D3D1xGetDataAsynchronous(pDeviceContext, pquery, 0, 0, 0) != S_OK)
-            Thread::Sleep(0);
+        pquery->WaitFence();
     }
 
     virtual void    ReleaseFence(UInt64 handle)
     {
-        ID3D1x(Query)* pquery = (ID3D1x(Query)*)handle;
-        if ( pquery == 0 )
-            return;
-        pquery->Release();
+        QueryList.Free(reinterpret_cast<FenceWrapper*>(handle));
     }
 
     // No need to implement wraparound; D3D1x queries have no external ordering.
 
 private:
-    ID3D1x(Query)*              pNextEndFrameFence;
+    Ptr<FenceWrapper>           pNextEndFrameFence;
     Ptr<ID3D1x(Device)>         pDevice;
     Ptr<ID3D1x(DeviceContext)>  pDeviceContext;
+    FenceWrapperList            QueryList;
 };
 
 }}} // Scaleform::Render::D3D1x

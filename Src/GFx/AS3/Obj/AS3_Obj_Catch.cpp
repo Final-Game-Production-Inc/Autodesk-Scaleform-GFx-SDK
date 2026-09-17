@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl
 {
@@ -60,7 +55,6 @@ namespace InstanceTraits { namespace fl
 //##protect##"InstanceTraits::Catch::Catch()"
         SetTraitsType(Traits_Catch);
 //##protect##"InstanceTraits::Catch::Catch()"
-        SetMemSize(sizeof(Instances::fl::Catch));
 
     }
 
@@ -133,25 +127,28 @@ namespace Classes { namespace fl
 
 namespace ClassTraits { namespace fl
 {
-    Catch::Catch(VM& vm)
-    : Traits(vm, AS3::fl::CatchCI)
+
+    Catch::Catch(VM& vm, const ClassInfo& ci)
+    : Traits(vm, ci)
     {
 //##protect##"ClassTraits::Catch::Catch()"
         SetTraitsType(Traits_Catch);
 //##protect##"ClassTraits::Catch::Catch()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl::Catch(vm, AS3::fl::CatchCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl::Catch(*this));
 
     }
 
     Pickable<Traits> Catch::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Catch(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Catch(vm, AS3::fl::CatchCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl::CatchCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -162,6 +159,11 @@ namespace fl
 {
     const TypeInfo CatchTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl::Catch::InstanceType),
+        0,
+        0,
+        0,
+        0,
         "Catch", "", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -169,10 +171,6 @@ namespace fl
     const ClassInfo CatchCI = {
         &CatchTI,
         ClassTraits::fl::Catch::MakeClassTraits,
-        0,
-        0,
-        0,
-        0,
         NULL,
         NULL,
         NULL,

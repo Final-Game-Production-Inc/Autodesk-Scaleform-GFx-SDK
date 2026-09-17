@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -274,10 +275,6 @@ namespace ClassTraits
     {
         return File;
     }
-    VMAppDomain& UserDefined::GetAppDomain() const
-    {
-        return GetFile().GetAppDomain();
-    }
 
     void UserDefined::ForEachChild_GC(Collector* prcc, RefCountBaseGC<Mem_Stat>::GcOp op) const
     {
@@ -377,8 +374,6 @@ namespace InstanceTraits
                 *ot.GetParent() // Origination Traits. 
                 SF_DEBUG_ARG(GetName() + " instance constructor")
                 ); 
-
-            SF_ASSERT(GetName() != "MenuManager");
         }
     }
 
@@ -418,11 +413,6 @@ namespace InstanceTraits
     VMAbcFile* UserDefined::GetFilePtr() const
     {
         return &GetFile();
-    }
-
-    VMAppDomain& UserDefined::GetAppDomain() const
-    {
-        return GetFile().GetAppDomain();
     }
 
     CheckResult UserDefined::SetupSlotValues(AS3::Object& for_obj) const

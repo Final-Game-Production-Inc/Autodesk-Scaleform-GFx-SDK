@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -122,14 +123,21 @@ Render::TreeContainer* DisplayObjectBase::ConvertToTreeContainer()
         newnode->SetMatrix3D(GetMatrix3D());
         Matrix4F m4;
         if (GetProjectionMatrix3D(&m4))
+        {
             newnode->SetProjectionMatrix3D(m4);
+        }
         Matrix3F m3;
         if (GetViewMatrix3D(&m3))
+        {
             newnode->SetViewMatrix3D(m3);
+        }
+        pRenNode->SetMatrix3D(Matrix3F::Identity);
     }
     else
+    {
         newnode->SetMatrix(GetMatrix());
-    pRenNode->SetMatrix(Matrix2F::Identity);
+        pRenNode->SetMatrix(Matrix2F::Identity);
+    }
 
     newnode->SetCxform(GetCxform());
     pRenNode->SetCxform(Cxform::Identity);
@@ -227,7 +235,11 @@ bool DisplayObjectBase::GetViewMatrix3D(Matrix3F *m, bool bInherit) const
         return false;
     
     if (!pParent)
-    {  
+    {
+        MovieImpl * pmovie = GetMovieImpl();
+        if (pmovie)
+            return pmovie->GetRenderRoot()->GetViewMatrix3D(m);
+
         SF_ASSERT(false);
         return false;
     }
@@ -274,6 +286,11 @@ void DisplayObjectBase::SetViewMatrix3D(const Matrix3F& m)
     }
 }
 
+void DisplayObjectBase::ClearViewMatrix3D()
+{
+    GetRenderNode()->ClearViewMatrix3D();
+}
+
 bool DisplayObjectBase::GetProjectionMatrix3D(Matrix4F *m, bool bInherit) const
 { 
     if (pRenNode && pRenNode->GetProjectionMatrix3D(m))
@@ -283,7 +300,11 @@ bool DisplayObjectBase::GetProjectionMatrix3D(Matrix4F *m, bool bInherit) const
         return false;
 
     if (!pParent)
-    {  
+    {
+        MovieImpl * pmovie = GetMovieImpl();
+        if (pmovie)
+            return pmovie->GetRenderRoot()->GetProjectionMatrix3D(m);
+
         SF_ASSERT(false);
         return false;
     }
@@ -311,6 +332,11 @@ void DisplayObjectBase::SetProjectionMatrix3D(const Matrix4F& m)
     }
 }
 
+void DisplayObjectBase::ClearProjectionMatrix3D()
+{
+    GetRenderNode()->ClearProjectionMatrix3D();
+}
+
 void DisplayObjectBase::UpdateViewAndPerspective()
 {
     MovieImpl * pMovie = GetMovieImpl();
@@ -327,10 +353,27 @@ void DisplayObjectBase::UpdateViewAndPerspective()
             if (!NumberUtil::IsNaN(pPerspectiveData->ProjectionCenter.x) && !NumberUtil::IsNaN(pPerspectiveData->ProjectionCenter.y) )
             {
                 Center = pPerspectiveData->ProjectionCenter;
-                if (pGeomData)
+
+                // NOTE: the ProjectionCenter is only offset by the object's position if it is a 2D object, or its 
+                // parent has a projectionCenter. Otherwise, (eg. it is a 3D object) it is relative to the stage.                
+                bool is3D = GetRenderNode()->Is3D();
+                bool parentPC = false;
+                if (GetParent())
                 {
-                    Center.x += pGeomData->X;
-                    Center.y += pGeomData->Y;
+                    const PerspectiveDataType* parentPD = GetParent()->GetPerspectiveDataPtr();
+                    if (parentPD)
+                    {
+                        parentPC = !NumberUtil::IsNaN(parentPD->ProjectionCenter.x) && 
+                            !NumberUtil::IsNaN(parentPD->ProjectionCenter.y);
+                    }
+                }
+
+                if (pGeomData && (!is3D || parentPC))
+                {
+                    // Transform the ProjectionCenter by the object's world matrix, because
+					// it is apparently specified in world space, not in local space.
+                    const Matrix& world = GetWorldMatrix();                
+                    Center = world * Center;
                 }
             }
             else
@@ -370,7 +413,7 @@ void DisplayObjectBase::SetFOV(Double fovdeg)
 /// get perspective field of view
 Double DisplayObjectBase::GetFOV() const
 {
-    return pPerspectiveData ? pPerspectiveData->FieldOfView : 0;
+    return pPerspectiveData ? pPerspectiveData->FieldOfView : Double(0.0);
 }
 
 // set perspective focal length (in TWIPS)
@@ -394,7 +437,7 @@ void DisplayObjectBase::SetFocalLength(Double focalLength)
 // get perspective focal length (in TWIPS)
 Double DisplayObjectBase::GetFocalLength() const
 {
-    return pPerspectiveData ? pPerspectiveData->FocalLength : 0;
+    return pPerspectiveData ? pPerspectiveData->FocalLength : Double(0.0);
 }
 
 // set perspective center of projection (in TWIPS)
@@ -589,6 +632,8 @@ void DisplayObjectBase::Clear3D(bool bInherit)
 
     if (pRenNode) 
         pRenNode->Clear3D(); 
+
+    UpdateViewAndPerspective(); // Need to update children.
 }
 
 bool DisplayObjectBase::Is3D(bool bInherit) const     
@@ -1040,7 +1085,10 @@ void DisplayObjectBase::SetRotation(Double rotation)
         r -= 360;
     else if (r < -180)
         r += 360;
-    pGeomData->Rotation = r;
+    if (pASRoot->GetAVMVersion() == 1) // AS 1.0 & 2.0
+        pGeomData->Rotation = r;
+    else
+        pGeomData->Rotation = rotation;
 
     if (Is3D())
         UpdateTransform3D();
@@ -1078,12 +1126,17 @@ void DisplayObjectBase::SetXRotation(Double rotation)
     
     SF_ASSERT(pGeomData);
 
-    Double r = fmod((Double)rotation, (Double)360.);
-    if (r > 180)
-        r -= 360;
-    else if (r < -180)
-        r += 360;
-    pGeomData->XRotation = r;
+    if (pASRoot->GetAVMVersion() == 1) // AS 1.0 & 2.0
+    {
+        Double r = fmod((Double)rotation, (Double)360.);
+        if (r > 180)
+            r -= 360;
+        else if (r < -180)
+            r += 360;
+        pGeomData->XRotation = r;
+    }
+    else
+        pGeomData->XRotation = rotation;
     UpdateTransform3D();
 }
 
@@ -1100,12 +1153,17 @@ void DisplayObjectBase::SetYRotation(Double rotation)
     
     SF_ASSERT(pGeomData);
 
-    Double r = fmod((Double)rotation, (Double)360.);
-    if (r > 180)
-        r -= 360;
-    else if (r < -180)
-        r += 360;
-    pGeomData->YRotation = r;
+    if (pASRoot->GetAVMVersion() == 1) // AS 1.0 & 2.0
+    {
+        Double r = fmod((Double)rotation, (Double)360.);
+        if (r > 180)
+            r -= 360;
+        else if (r < -180)
+            r += 360;
+        pGeomData->YRotation = r;
+    }
+    else
+        pGeomData->YRotation = rotation;
     UpdateTransform3D();
 }
 
@@ -1282,15 +1340,46 @@ Double DisplayObjectBase::GetYRotation() const
 Double DisplayObjectBase::GetWidth() const
 {
     //!AB: width and height of nested movieclips returned in the coordinate space of its parent!
-    RectF  boundRect = GetBounds(GetMatrix());
-    return TwipsToPixels(floor((Double)boundRect.Width()));
+    RectF  boundRect;
+    if (Is3D(false))
+        boundRect = GetBoundsIn3D();
+    else
+        boundRect = GetBounds(GetMatrix());
+    return TwipsToPixels(floor((Double)boundRect.Width() + 0.5));
 }
 
 Double DisplayObjectBase::GetHeight() const
 {
     //!AB: width and height of nested movieclips returned in the coordinate space of its parent!
-    RectF  boundRect = GetBounds(GetMatrix());
-    return TwipsToPixels(floor((Double)boundRect.Height()));
+    RectF  boundRect;
+    if (Is3D(false))
+        boundRect = GetBoundsIn3D();
+    else
+        boundRect = GetBounds(GetMatrix());
+    return TwipsToPixels(floor((Double)boundRect.Height() + 0.5));
+}
+
+RectF DisplayObjectBase::GetBoundsIn3D() const   
+{ 
+    // !AB: I am not sure this is the exactly correct way to calculate
+    // bounds when a dispobj has 3D, but seems that what Flash does.
+    // Refer to test files at Test/AS3/DisplayObj/:
+    // test_width_height_in_3D_1.swf 
+    // test_width_height_in_3D_2.swf 
+    // test_width_height_in_3D_3.swf 
+    // test_width_height_in_3D_4.swf 
+    // test_width_height_in_3D_5.swf 
+    RectF r = GetBounds(Matrix::Identity);
+    PointF p1 = LocalToGlobal(r.TopLeft());
+    PointF p2 = LocalToGlobal(r.BottomRight());
+
+    if (GetParent())
+    {
+        p1 = GetParent()->GlobalToLocal(p1);
+        p2 = GetParent()->GlobalToLocal(p2);
+    }
+
+    return RectF(p1, SizeF(p2.x - p1.x, p2.y - p1.y));//t.EncloseTransform(GetBounds(Matrix::Identity));
 }
 
 Double DisplayObjectBase::GetAlpha() const
@@ -1322,19 +1411,19 @@ InteractiveObject*  DisplayObjectBase::GetTopMostMouseEntityDef
     if ((ClipDepth == 0) && pdef->DefPointTestLocal(p, 1, this))
     {
         // The mouse is inside the shape.
-        InteractiveObject* pParent = GetParent();
-        while (pParent && pParent->IsSprite())
+        InteractiveObject* pCurrentParent = GetParent();
+        while (pCurrentParent && pCurrentParent->IsSprite())
         {
-            Sprite* spr = pParent->CharToSprite_Unsafe();
+            Sprite* spr = pCurrentParent->CharToSprite_Unsafe();
             // Parent sprite would have to be in button mode to grab attention.
-            if (testAll || pParent->ActsAsButton() 
+            if (testAll || pCurrentParent->ActsAsButton()
                 || (spr->GetHitAreaHolder() && spr->GetHitAreaHolder()->ActsAsButton()))
             {
                 // Check if sprite should be ignored
-                if (!ignoreMC || (ignoreMC != pParent))
-                    return pParent;
+                if (!ignoreMC || (ignoreMC != pCurrentParent))
+                    return pCurrentParent;
             }
-            pParent = pParent->GetParent ();
+            pCurrentParent = pCurrentParent->GetParent();
         }
     }
     return 0;
@@ -1429,7 +1518,7 @@ Ptr<Render::TreeNode> DisplayObjectBase::SetIndirectTransform(Render::TreeNode* 
 }
 
 // Note: the render node should be already detached from its parent
-void DisplayObjectBase::RemoveIndirectTransform()
+void DisplayObjectBase::RemoveIndirectTransform(bool readdToDisplayList)
 {
     if (HasIndirectTransform())
     {
@@ -1453,7 +1542,7 @@ void DisplayObjectBase::RemoveIndirectTransform()
         // Find a pair
         MovieImpl::IndirectTransPair p = GetMovieImpl()->RemoveIndirectTransformPair(this);
 
-        if (p.OriginalParent)
+        if (readdToDisplayList && p.OriginalParent)
         {
             DisplayList& dl = p.OriginalParent->GetDisplayList();
             UPInt idx = dl.FindDisplayIndex(this);
@@ -1531,6 +1620,20 @@ bool DisplayObjectBase::IsBatchingDisabled()
     return renderNode->IsBatchingDisabled();
 }
 
+// 4.5.32 Function
+// Tutorial in https://help.autodesk.com/view/SCLFRM/ENU/?guid=__scaleform_help_as3_reference_displayobjectex_extensions_html
+
+void DisplayObjectBase::SetInvertedMask(bool b)
+{
+    Ptr<Render::TreeNode> renderNode = GetRenderNode();
+    return renderNode->SetInvertedMask(b);
+}
+
+bool DisplayObjectBase::GetInvertedMask()
+{
+    Ptr<Render::TreeNode> renderNode = GetRenderNode();
+    return renderNode->GetInvertedMask();
+}
 //////////////////////////////////////////////////////////////////////////
 DisplayObject::DisplayObject(ASMovieRootBase* pasRoot, InteractiveObject* pparent, ResourceId id)
 :   
@@ -1548,9 +1651,12 @@ DisplayObject::DisplayObject(ASMovieRootBase* pasRoot, InteractiveObject* pparen
 DisplayObject::~DisplayObject()
 {
     delete pScrollRect;
-    // free/reset mask
+
+    // Free/reset mask. Note that, the mask is only readded to the display list
+	// if it is a timeline mask, not if it was set programmatically.
     if (GetMask())
-        SetMask(NULL);
+        SetMask(NULL, GetClipDepth() != 0);
+
     DisplayObject* pmaskOwner = GetMaskOwner();
     if (pmaskOwner)
         pmaskOwner->SetMask(NULL);
@@ -1725,7 +1831,7 @@ void DisplayObject::ResetClipDepth()
     }
 }
 
-void DisplayObject::SetMask(DisplayObject* pmaskSprite) 
+void DisplayObject::SetMask(DisplayObject* pmaskSprite, bool readdMaskToDisplayList) 
 { 
     Ptr<Render::TreeNode> renNode = GetRenderNode();
 
@@ -1751,7 +1857,7 @@ void DisplayObject::SetMask(DisplayObject* pmaskSprite)
 
         // mask sprite is NULL: need to restore the maskNode at its 
         // original position in render tree.
-        poldMask->RemoveIndirectTransform();
+        poldMask->RemoveIndirectTransform(readdMaskToDisplayList);
     }
 
     // the sprite being masked cannot be a mask for another sprite

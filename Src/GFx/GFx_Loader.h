@@ -9,6 +9,7 @@ Authors     :   Michael Antonov
 Notes       :   Redesigned to use inherited state objects for GFx 2.0.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,7 +33,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "GFx/GFx_Resource.h"
 #include "GFx/GFx_PlayerStats.h"
 
-#include "GFx/GFx_WWHelper.h"
+#include "Render/Text/Text_WWHelper.h"
 #include "GFx/GFx_Tags.h"
 #include "GFx/GFx_CharacterDef.h"
 //#include "GFx/GFx_ASIMEManager.h" 
@@ -85,8 +86,11 @@ class   MemoryContext;
 // Externally declared states:
 class   LogState;
 class   ExternalInterface;
+class   ExtensionContextInterface;
 class   MultitouchInterface;
 class   VirtualKeyboardInterface;
+class   AccelerometerInterface;
+class   GeolocationInterface;
 class   ImportVisitor;
 class   TaskManager;
 class   FontLib;
@@ -116,6 +120,7 @@ struct  CharacterCreateInfo;
 namespace Text
 {
     using Render::Text::StyledText;
+    using Render::Text::WordWrapHelper;
 }
 
 #ifdef GFX_ENABLE_XML
@@ -153,8 +158,11 @@ public:
         State_UserEventHandler,
         State_FSCommandHandler,
         State_ExternalInterface,
-        State_MultitouchInterface,
+		State_MultitouchInterface,
+		State_ExtensionContextInterface,
         State_VirtualKeyboardInterface,
+		State_AccelerometerInterface,
+		State_GeolocationInterface,
 
         // *** Loading - related states.
         State_FileOpener,
@@ -170,7 +178,7 @@ public:
         State_FontProvider,
         State_FontMap,
         State_TaskManager,
-        State_TextClipboard,
+        State_Clipboard,
         State_TextKeyMap,
         State_IMEManager,
         State_XMLSupport,
@@ -201,9 +209,9 @@ public:
 };
 
 
-// ***** GFxTranslator
+// ***** Translator
 
-// GFxTranslator class is used for international language translation of dynamic
+// Translator class is used for international language translation of dynamic
 // text fields. Translation is performed through the Translate virtual function
 // which is expected to fill in a buffer with a translated string.
 
@@ -217,17 +225,20 @@ public:
         Cap_ReceiveHtml = 0x1,
         // Forces to strip all trailing new-line symbols before the text is passed
         // to Translate.
-        Cap_StripTrailingNewLines = 0x2
+        Cap_StripTrailingNewLines = 0x2,
+
+        // Enables support for bidirectional text. Method OnBidirectionalText will be called.
+        Cap_BidirectionalText     = 0x4
     };
     // Handling custom word-wrapping. To turn it on you need to enable custom word-wrapping
     // in GetCaps by adding Cap_CustomWordWrapping bit.
     enum WordWrappingTypes
     {
         WWT_Default       = 0,   // OnWordWrapping will not be invoked
-        WWT_Asian         = WordWrapHelper::WWT_Asian, // mostly Chinese
-        WWT_Prohibition   = WordWrapHelper::WWT_Prohibition, // Prohibits certain chars at start/end of line ("Japanese prohibition rule") 
-        WWT_NoHangulWrap  = WordWrapHelper::WWT_NoHangulWrap, // Korean-specific rule
-        WWT_Hyphenation   = (WordWrapHelper::WWT_Last<<1), // very simple hyphenation; for demo only
+        WWT_Asian         = Text::WordWrapHelper::WWT_Asian, // mostly Chinese
+        WWT_Prohibition   = Text::WordWrapHelper::WWT_Prohibition, // Prohibits certain chars at start/end of line ("Japanese prohibition rule") 
+        WWT_NoHangulWrap  = Text::WordWrapHelper::WWT_NoHangulWrap, // Korean-specific rule
+        WWT_Hyphenation   = (Text::WordWrapHelper::WWT_Last<<1), // very simple hyphenation; for demo only
         WWT_Custom        = 0x80, // user defined word-wrapping.
 
         WWT_Korean        = WWT_Prohibition | WWT_NoHangulWrap,
@@ -244,6 +255,8 @@ public:
     inline  bool     CanReceiveHtml() const  { return (GetCaps() & Cap_ReceiveHtml) != 0; }
     inline  bool     NeedStripNewLines() const { return (GetCaps() & Cap_StripTrailingNewLines) != 0; }
     inline  bool     HandlesCustomWordWrapping() const { return (WWMode != WWT_Default); }
+    inline  bool     HandlesBidirectionalText() const { return (GetCaps() & Cap_BidirectionalText) != 0; }
+
 
     // This class provides data to and from the 'Translate' method, such as original 
     // text, name of textfield's instance, resulting translated text.
@@ -268,8 +281,8 @@ public:
         const wchar_t*  GetKey() const          { return pKey; }
 
         // Returns true, if key (returned by 'GetKey()') is HTML. Note, this
-        // may happen only if flag GFxTranslator::Cap_ReceiveHtml is set in value
-        // returned by GFxTranslator::GetCaps(). If this flag is not set and textfield 
+        // may happen only if flag Translator::Cap_ReceiveHtml is set in value
+        // returned by Translator::GetCaps(). If this flag is not set and textfield 
         // contains HTML then HTML tags will be stripped out and IsKeyHtml() will return
         // 'false'.
         bool            IsKeyHtml() const { return (Flags & Flag_SourceHtml) != 0; }
@@ -332,14 +345,26 @@ public:
         };
         UInt8           Alignment;              // [in] alignment of the line
 
-        UPInt           ProposedWordWrapPoint;  // [in,out] text index of proposed word wrap pos,
+        UPInt           ProposedWordWrapPoint;  // [in,out] index in the line of proposed word wrap pos,
                                                 //          callback may change it to move wordwrap point
         bool            UseHyphenation;         // [out]    callback may set it to indicate to use hyphenation
     };
     // A virtual method, a callback, which is invoked once a necessity of 
     // word-wrapping for any text field is determined. This method is invoked only
-    // if custom word-wrapping is turned on by using the GFxTranslator(wwMode) constructor. 
+    // if custom word-wrapping is turned on by using the GFx::Translator(wwMode) constructor. 
     virtual bool OnWordWrapping(LineFormatDesc* pdesc);
+
+    // A callback that is called on bidirectional text enabled textfields. This method
+    // receives original text ('text'/'textLen' parameters) and pre-allocated buffers: 
+    //   'newText'  - new re-ordered text should be put there, do not overrun the length (the length is the same as 'textLen')
+    //   'indexMap' - a buffer for an array of unsigned integers, that should be filled with new indices of each char. For
+    //                example, if original char at index 0 was relocated to index 10, then indexMap[0] = 10.
+    //   'mirrorBits'- a buffer for an array of bools (length = 'textLen'), where index is an index of char in 'newText' and the value (true/false)
+    //                indicates necessity of the glyph mirroring (for example, for integral sign).
+    // Should return 'true' if method was successful and the core should use contents of the buffers; false, if no changes
+    // to the textfield should be applied.
+    virtual bool OnBidirectionalText(const wchar_t* text, UPInt textLen, wchar_t* newText, 
+                                     unsigned* indexMap, bool* mirrorBits);
 };
 
 
@@ -551,20 +576,23 @@ public:
         File_Sound
     };
 
+    enum UrlMethod
+    {
+        Url_Method_None,
+        Url_Method_Get,
+        Url_Method_Post,
+        Url_Method_Put,
+        Url_Method_Delete,
+    };
+
     struct LocationInfo
     {
         FileUse         Use;
         String         FileName;
         String         ParentPath;
 
-        LocationInfo(FileUse use, const String& filename)
-            : Use(use), FileName(filename) { }
-        LocationInfo(FileUse use, const char* pfilename)
-            : Use(use), FileName(pfilename) { }
-        LocationInfo(FileUse use, const String& filename, const String& path)
-            : Use(use), FileName(filename), ParentPath(path) { }
-        LocationInfo(FileUse use, const char* pfilename, const char* ppath)
-            : Use(use), FileName(pfilename), ParentPath(ppath) { }
+        LocationInfo(FileUse use, const String& filename = "", const String& parentPath = "")
+            : Use(use), FileName(filename), ParentPath(parentPath) { }
     };
 
     // Builds a new filename based on the provided filename and a parent path.
@@ -578,11 +606,25 @@ public:
     // Modifies path to not include the filename, leaves trailing '/'.
     static bool  SF_CDECL ExtractFilePath(String *ppath);
 
-    // TBD: IN the future, could handle 'http://', 'file://' prefixes and the like.
+    // Handle 'http://', 'file://' prefixes and the like.
+    static bool  SF_CDECL IsProtocol(const String& path);
+#ifdef SF_ENABLE_HTTP_LOADING
+    static bool SF_CDECL SendURLRequest(Array<UByte>* bytes, const String& path, UrlMethod method = Url_Method_Get, const char* data = NULL, int dataLength = 0, const Array<String>* headers = NULL, const char* contentType = NULL);
+#endif
 
     // Default implementation used by BuildURL.
     friend class LoadStates;    
     static void SF_CDECL DefaultBuildURL(String *ppath, const LocationInfo& loc); 
+private:
+#ifdef SF_ENABLE_HTTP_LOADING
+    struct PutData
+    {
+        const char* Data;
+        size_t DataLeft;
+    };
+    static size_t HttpWriteData(char* buffer, size_t size, size_t nmemb, void* userp);
+    static size_t HttpReadData(void* ptr, size_t size, size_t nmemb, void* userp);
+#endif 
 };
 
 // ***** ParseControl
@@ -890,8 +932,20 @@ public:
 // to retrieve data from the system clipboard (by default, it just returns 
 // internally stored data).
 
-class TextClipboard : public State
+class Clipboard : public State
 {
+public:
+    enum Formats // as in flash.desktop.ClipboardFormats
+    {
+        Format_None             = 0,
+        Format_Text             = 0x1,
+        Format_RichText         = 0x2,
+        Format_Bitmap           = 0x4,
+        Format_FileList         = 0x8,
+        Format_FilePromise_List = 0x10,
+        Format_Html             = 0x20,
+        Format_URL              = 0x40
+    };
 protected:
     WStringBuffer       PlainText;
     Text::StyledText*   pStyledText;
@@ -900,9 +954,12 @@ protected:
     void SetStyledText(class Text::StyledText*);
     void ReleaseStyledText();
 public:
-    TextClipboard();
-    virtual ~TextClipboard();
+    Clipboard();
+    virtual ~Clipboard();
 
+    virtual UInt32 GetSupportedFormats() {return 0;} //Formats supported by Clipboard implementation
+    virtual UInt32 GetAvailableFormats() {return 0;} //Formats currently available in the Clipboard
+    virtual bool   HasFormat(Formats format) { SF_UNUSED(format); return false;}
     // ** plain text storing
     // SetText methods save plain text inside the clipboard. OnTextStore callback
     // will be called to save data in system clipboard.
@@ -931,6 +988,8 @@ public:
     // the clipboard. This callback maybe used to store the data in a system
     // clipboard.
     virtual void OnTextStore(const wchar_t* ptext, UPInt len) { SF_UNUSED2(ptext, len); }
+    virtual void Clear() {}
+    virtual void ClearData(Formats format) {SF_UNUSED(format);}
 };
 
 #ifdef GFX_ENABLE_TEXT_INPUT
@@ -1178,7 +1237,7 @@ public:
     // which state is being cleared when null is passed.    
     virtual void        SetState(State::StateType state, State* pstate)
     {
-        StateBag* p = GetStateBagImpl();    
+        StateBag* p = GetStateBagImpl(); 
         SF_ASSERT((pstate == 0) ? 1 : (pstate->GetStateType() == state));
         if (p) p->SetState(state, pstate);
     }
@@ -1200,9 +1259,7 @@ public:
         if (p) p->GetStatesAddRef(pstateList, pstates, count);
     }
 
-
     // *** Inlines for convenient state access.
- 
 #ifdef GFX_ENABLE_SOUND
     inline void                 SetAudio(AudioBase* ptr);
     inline Ptr<AudioBase>       GetAudio() const;
@@ -1243,6 +1300,10 @@ public:
     inline void                 SetExternalInterface(ExternalInterface* p);
     inline Ptr<ExternalInterface> GetExternalInterface() const;
 
+	// Sets the extension context interface used - implemented in GFxPlayer.h.
+    inline void					SetExtensionContextInterface(ExtensionContextInterface* p);
+    inline Ptr<ExtensionContextInterface> GetExtensionContextInterface() const;
+
     // Sets the multitouch interface used - implemented in GFxPlayer.h.
     inline void                 SetMultitouchInterface(MultitouchInterface* p);
     inline Ptr<MultitouchInterface> GetMultitouchInterface() const;
@@ -1250,6 +1311,14 @@ public:
     // Sets the virtual keyboard interface used - implemented in GFxPlayer.h.
     inline void                 SetVirtualKeyboardInterface(VirtualKeyboardInterface* p);
     inline Ptr<VirtualKeyboardInterface> GetVirtualKeyboardInterface() const;
+
+    // Sets the accelerometer interface used - implemented in GFxPlayer.h.
+    inline void                 SetAccelerometerInterface(AccelerometerInterface* p);
+    inline Ptr<AccelerometerInterface> GetAccelerometerInterface() const;
+
+	// Sets the geolocation interface used - implemented in GFxPlayer.h.
+    inline void                 SetGeolocationInterface(GeolocationInterface* p);
+    inline Ptr<GeolocationInterface> GetGeolocationInterface() const;
 
     // Installs a callback function that is always used by GFxLoader
     // for opening various files based on a path or url string.
@@ -1309,8 +1378,8 @@ public:
     inline void                 SetTaskManager(TaskManager *ptr);
     inline Ptr<TaskManager>     GetTaskManager() const;
 
-    inline void                 SetTextClipboard(TextClipboard *ptr) { SetState(State::State_TextClipboard, ptr); }
-    inline Ptr<TextClipboard>   GetTextClipboard() const             { return *(TextClipboard*) GetStateAddRef(State::State_TextClipboard); }
+    inline void                 SetClipboard(Clipboard *ptr) { SetState(State::State_Clipboard, ptr); }
+    inline Ptr<Clipboard>       GetClipboard() const             { return *(Clipboard*) GetStateAddRef(State::State_Clipboard); }
 
     inline void                 SetTextKeyMap(TextKeyMap *ptr)       { SetState(State::State_TextKeyMap, ptr); }
     inline Ptr<TextKeyMap>      GetTextKeyMap() const                { return *(TextKeyMap*) GetStateAddRef(State::State_TextKeyMap); }

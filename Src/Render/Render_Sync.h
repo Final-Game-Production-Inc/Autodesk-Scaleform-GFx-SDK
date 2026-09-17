@@ -7,6 +7,7 @@ Created     :   Oct 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,6 +23,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_RefCount.h"
 #include "Kernel/SF_Array.h"
 #include "Kernel/SF_ListAlloc.h"
+
+#include "Render/Render_Stats.h"
 
 namespace Scaleform { namespace Render { 
 
@@ -141,7 +144,7 @@ class FenceFrame : public NewOverrideBase<Stat_Default_Mem>, public ListNode<Fen
     typedef ArrayLH<Ptr<Fence>, Stat_Default_Mem, FenceHandleArrayPolicy> FenceHandleArray;
 
 public:
-    FenceFrame() : ListNode<FenceFrame>(), WrappedAround(false), FrameEndFence(0) { }
+    FenceFrame() : ListNode<FenceFrame>(), RSContext(0), WrappedAround(false), FrameEndFence(0) { }
     ~FenceFrame();
 
     // Returns the end-of-frame fence. Can be 0, if the frame has not ended yet.
@@ -152,7 +155,7 @@ public:
 
 protected:    
 
-    RenderSync*         RSContext;  // Reference to implementation specific interface.
+    RenderSync*         RSContext;      // Reference to implementation specific interface.
     bool                WrappedAround;  // If true, subsequent frames have wrapped around implementation specific fence IDs.
     FenceHandleArray    Fences;         // List of fences that were inserted in this frame.
     Ptr<Fence>          FrameEndFence;  // The fence that indicates the end of this frame.
@@ -167,7 +170,7 @@ class RenderSync : public RefCountBase<RenderSync,Stat_Default_Mem>
     friend class Fence;
 public:
 
-    RenderSync( ) : NextFenceID(0), OutstandingFrames(0) { };
+    RenderSync( ) : NextFenceID(0), OutstandingFrames(0), WithinFrame(false) { };
     virtual ~RenderSync();
 
     // Signals that a new frame has begun. May be overridden, but base class function should also be called.
@@ -205,6 +208,77 @@ protected:
     ListAllocLH<Fence>          FenceAlloc;         // Paged allocator for Fence objects.
     UInt64                      NextFenceID;        // The value of the next fence ID.
     unsigned					OutstandingFrames;	// The number of outstanding FenceFrames
+    bool                        WithinFrame;        // Whether the RenderSync is between a BeginFrame/EndFrame pair.
+};
+
+// FenceWrapper is intended to be overridden in derived implementations. It is useful if the platform performs
+// better with pooled fence/sync/query objects, so there is minimal allocation of these objects.
+class FenceWrapper : public ListNode<FenceWrapper>, public RefCountBase<FenceWrapper, StatRender_Mem>
+{
+public:
+    FenceWrapper() : ListNode<FenceWrapper>() { }
+};
+
+// List class which manages a pool of FenceWrapper instances. This class is optionally used by derived RenderSync implementations.
+class FenceWrapperList
+{
+public:
+    FenceWrapperList(unsigned poolSize = 4) : ReservePoolSize(poolSize) { }
+    virtual ~FenceWrapperList() { }
+
+    // Allocates reserve queries.
+    virtual void Initialize()
+    {
+        for (unsigned i = 0; i < ReservePoolSize; ++i)
+        {
+            FenceWrapper* query = allocateWrapper();
+            WrapperList.PushBack(query);
+        }
+    }
+
+    // Destroys queries in the free list. It is assumed that there are no other outstanding FenceWrapper objects.
+    virtual void Shutdown()
+    {
+        while (!WrapperList.IsEmpty())
+        {
+            FenceWrapper* wrapper = WrapperList.GetFirst();
+            wrapper->RemoveNode();
+            wrapper->Release();
+        }
+    }
+
+    // Allocates an FenceWrapper, or returns an unused one from the pool. Handles reference counting internally.
+    FenceWrapper* Alloc()
+    {
+        if (WrapperList.IsEmpty())
+        {            
+            FenceWrapper * query = allocateWrapper();
+            // Extra reference to track when it should be moved to free list.
+            query->AddRef(); 
+            return query;
+        }
+        FenceWrapper* query = WrapperList.GetFirst();
+        query->RemoveNode();
+        query->AddRef();
+        return query;
+    }
+
+    // Free the given query. If the query is otherwise unused, it is added to the free list.
+    void Free(FenceWrapper* query)
+    {
+        if (query)
+        {
+            query->Release();
+            if (query->GetRefCount() == 1)
+                WrapperList.PushBack(query);
+        }    
+    }
+
+protected:
+    virtual FenceWrapper* allocateWrapper() = 0;
+
+    List<FenceWrapper>    WrapperList;
+    unsigned              ReservePoolSize;
 };
 
 }};

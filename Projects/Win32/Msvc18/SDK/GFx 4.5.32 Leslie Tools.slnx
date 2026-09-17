@@ -1,0 +1,101 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="D3D10_DebugOpt_Static" />
+    <BuildType Name="D3D10_Debug_Static" />
+    <BuildType Name="D3D10_Release_Static" />
+    <BuildType Name="D3D10_Shipping" />
+    <BuildType Name="D3D11_DebugOpt_Static" />
+    <BuildType Name="D3D11_Debug_Static" />
+    <BuildType Name="D3D11_Release_Static" />
+    <BuildType Name="D3D11_Shipping" />
+    <BuildType Name="D3D9_DebugOpt_Static" />
+    <BuildType Name="D3D9_Debug_Static" />
+    <BuildType Name="D3D9_Release_Static" />
+    <BuildType Name="D3D9_Shipping" />
+    <BuildType Name="GL_DebugOpt_Static" />
+    <BuildType Name="GL_Debug_Static" />
+    <BuildType Name="GL_Release_Static" />
+    <BuildType Name="GL_Shipping" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Tools/">
+    <Project Path="../../../../Apps/Tools/GFxShaderMaker/GFxShaderMaker.csproj">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Release" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Release" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Release" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="Release" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Release" />
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="../Tools/GFxExport/GFxExport.vcxproj" Id="4039bfd5-8e28-4d81-87b2-ff39506c1b8a">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt_Static" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug_Static" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release_Static" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt_Static" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug_Static" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release_Static" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt_Static" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug_Static" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release_Static" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt_Static" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug_Static" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release_Static" />
+      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+    </Project>
+  </Folder>
+  <Folder Name="/Tools/ScaleformVideoEncoder/">
+    <Project Path="../../../../Apps/Tools/ScaleformVideoEncoder/ScaleformVideoEncoder/ScaleformVideoEncoder.csproj">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Release" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Release" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Release" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="Release" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Release" />
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="../../../../Apps/Tools/ScaleformVideoEncoder/Sofdec2EncoderControl/Sofdec2EncoderControl.csproj">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Release" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Release" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Release" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="Release" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Release" />
+      <Platform Project="x64" />
+    </Project>
+  </Folder>
+</Solution>
+

@@ -97,7 +97,7 @@ namespace Instances { namespace fl_gfx
 
 namespace InstanceTraits { namespace fl_gfx
 {
-    class IMEEventEx : public CTraits
+    class IMEEventEx : public fl_events::Event
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -135,7 +135,7 @@ namespace InstanceTraits { namespace fl_gfx
     
 namespace ClassTraits { namespace fl_gfx
 {
-    class IMEEventEx : public Traits
+    class IMEEventEx : public fl_events::Event
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -143,9 +143,11 @@ namespace ClassTraits { namespace fl_gfx
 #endif
     public:
         typedef Classes::fl_gfx::IMEEventEx ClassType;
+        typedef InstanceTraits::fl_gfx::IMEEventEx InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        IMEEventEx(VM& vm);
+        IMEEventEx(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 8 };
         static const MemberInfo mi[MemberInfoNum];

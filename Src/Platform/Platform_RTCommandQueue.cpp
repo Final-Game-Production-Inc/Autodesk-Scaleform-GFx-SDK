@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -97,7 +98,7 @@ void CircularDataQueue::PopDataEnd(UPInt size)
 // ***** RTCommandQueue
 
 RTCommandQueue::RTCommandQueue(ThreadingType type)
-: TType(type), Queue(2048),
+: TType(type), Queue(64*1024),
   ProcessingStopped(false), ConsumerSleeping(false)
 {
     if (type == AutoDetectThreading)

@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GFx">
+      <UniqueIdentifier>{79f4d918-f210-4625-9a85-1e3d77de9541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3">
+      <UniqueIdentifier>{dd55b290-3478-4a3b-8136-85b8cbe0c4d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Abc">
+      <UniqueIdentifier>{95cf51ff-cf01-4a5d-9783-0dc000990c4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Audio">
+      <UniqueIdentifier>{9fa7c209-251d-4072-9af9-d613a6778dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\IME">
+      <UniqueIdentifier>{4ea5e806-d5ec-4509-8ded-c8a90ca8fced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj">
+      <UniqueIdentifier>{7da80aa1-1a0e-4f69-95a4-28a365373746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Vec">
+      <UniqueIdentifier>{ad8202db-a365-436a-9587-d95c0b824e12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Display">
+      <UniqueIdentifier>{123b3cdc-9f5e-4e8d-a3d6-b731ea90c5d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Errors">
+      <UniqueIdentifier>{21eadc2f-639b-4319-9eb7-eee8b7a2b66f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Events">
+      <UniqueIdentifier>{9554b738-01fb-4aec-abd3-4aca45061e05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Filters">
+      <UniqueIdentifier>{96289e8a-3e52-4481-9944-1ac26a2a5f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Geom">
+      <UniqueIdentifier>{6ec57962-c8a0-445f-a018-9ae3b34d37aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Media">
+      <UniqueIdentifier>{3fd0300e-6d35-4924-afaf-f06742ceb78f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Net">
+      <UniqueIdentifier>{50181290-302e-47cc-a7db-a1cf3a4dd9de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\System">
+      <UniqueIdentifier>{73443d65-50e3-4987-b171-cfcb3c7915b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Text">
+      <UniqueIdentifier>{17888b56-6a65-4325-8d2f-74880e87e9fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Ui">
+      <UniqueIdentifier>{7e034f02-da35-4211-984d-4d27ed3b0b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Utils">
+      <UniqueIdentifier>{6671df4d-e18a-418c-9762-f0642fa6127c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\External">
+      <UniqueIdentifier>{cf09fd0a-5b37-4ddf-ae6b-b9d565375370}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Accessibility">
+      <UniqueIdentifier>{95073b92-6846-4467-95d1-7c0533fabee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Security">
+      <UniqueIdentifier>{e4a0bbdd-780b-44a3-8ed6-1e096b3ef386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\Xml">
+      <UniqueIdentifier>{d978edeb-972c-478e-8f6f-6978d6922077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GFx\AS3\Obj\GFx">
+      <UniqueIdentifier>{5aac0884-ac11-42cf-b030-bde6b3dfa7bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_ConstPool.cpp">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc.cpp">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_Read.cpp">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Audio\AS3_SoundObject.cpp">
+		<Filter>GFx\AS3\Audio</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\IME\AS3_IMEManager.cpp">
+		<Filter>GFx\AS3\IME</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Accessibility\AS3_Obj_Accessibility_All.cpp">
+		<Filter>GFx\AS3\Obj\Accessibility</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Display\AS3_Obj_Display_All.cpp">
+		<Filter>GFx\AS3\Obj\Display</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Errors\AS3_Obj_Errors_All.cpp">
+		<Filter>GFx\AS3\Obj\Errors</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Events\AS3_Obj_Events_All.cpp">
+		<Filter>GFx\AS3\Obj\Events</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\External\AS3_Obj_External_All.cpp">
+		<Filter>GFx\AS3\Obj\External</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Filters\AS3_Obj_Filters_All.cpp">
+		<Filter>GFx\AS3\Obj\Filters</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Geom\AS3_Obj_Geom_All.cpp">
+		<Filter>GFx\AS3\Obj\Geom</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\GFx\AS3_Obj_GFx_All.cpp">
+		<Filter>GFx\AS3\Obj\GFx</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_All.cpp">
+		<Filter>GFx\AS3\Obj\Media</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_All.cpp">
+		<Filter>GFx\AS3\Obj\Net</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Security\AS3_Obj_Security_All.cpp">
+		<Filter>GFx\AS3\Obj\Security</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\System\AS3_Obj_System_All.cpp">
+		<Filter>GFx\AS3\Obj\System</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Text\AS3_Obj_Text_All.cpp">
+		<Filter>GFx\AS3\Obj\Text</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Ui\AS3_Obj_Ui_All.cpp">
+		<Filter>GFx\AS3\Obj\Ui</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Utils\AS3_Obj_Utils_All.cpp">
+		<Filter>GFx\AS3\Obj\Utils</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Vec\AS3_Obj_Vec_All.cpp">
+		<Filter>GFx\AS3\Obj\Vec</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Xml\AS3_Obj_Xml_All.cpp">
+		<Filter>GFx\AS3\Obj\Xml</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\AS3_Obj_All.cpp">
+		<Filter>GFx\AS3\Obj</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\AS3\AS3_All.cpp">
+		<Filter>GFx\AS3</Filter>
+	</ClCompile>
+	<ClCompile Include="..\..\..\..\..\Src\GFx\GFx_AS3Support.cpp">
+		<Filter>GFx</Filter>
+	</ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_ConstPool.h">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc.h">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Abc\AS3_Abc_Type.h">
+		<Filter>GFx\AS3\Abc</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Audio\AS3_SoundObject.h">
+		<Filter>GFx\AS3\Audio</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\AS3\IME\AS3_IMEManager.h">
+		<Filter>GFx\AS3\IME</Filter>
+	</ClInclude>
+	<ClInclude Include="..\..\..\..\..\Src\GFx\GFx_AS3Support.h">
+		<Filter>GFx</Filter>
+	</ClInclude>
+  </ItemGroup>
+</Project>

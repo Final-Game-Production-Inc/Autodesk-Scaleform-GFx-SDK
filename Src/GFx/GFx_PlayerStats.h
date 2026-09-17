@@ -7,6 +7,7 @@ Created     :   June 21, 2008
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,7 +19,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define INC_SF_GFX_PLAYERSTATS_H
 
 #include "GFxConfig.h"
-#include "Kernel/SF_Types.h"
 #include "GFx/GFx_Stats.h"
 
 namespace Scaleform { namespace GFx {
@@ -90,8 +90,9 @@ enum StatMovieView
         StatMV_Invoke_Tks,
           StatMV_InvokeAction_Tks,
       StatMV_Display_Tks,
-        StatMV_Tessellate_Tks,
+        StatMV_FontThrash_Tks,
         StatMV_GradientGen_Tks,
+        StatMV_FontMiss_Tks,
 
     // Counters.
     StatMV_Counters,

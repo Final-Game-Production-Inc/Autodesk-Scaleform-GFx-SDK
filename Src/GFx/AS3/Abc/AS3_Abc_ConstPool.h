@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,6 +20,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "AS3_Abc_Type.h"
 #include "../AS3_Index.h"
+#include <cstdint>
+#include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Forward declaration.
@@ -215,18 +218,24 @@ public:
 
     MultinameKindBits getNamespaceBits() const
     {
-        return (MultinameKindBits)(Kind & MN_NS_Mask);
+        // 先将 MultinameKind 转为底层整数，再与 MN_NS_Mask（转为整数）运算，最后转回 MultinameKindBits
+        using UnderlyingType = std::underlying_type_t<MultinameKindBits>;
+        return static_cast<MultinameKindBits>(
+            static_cast<UnderlyingType>(Kind) & static_cast<UnderlyingType>(MN_NS_Mask)
+        );
     }
 
     bool IsNameLate() const
     {
-        return (GetKind() & MN_NameLate) != 0;
+        using UnderlyingType = std::underlying_type_t<MultinameKind>;
+        return ( static_cast<UnderlyingType>(GetKind()) & static_cast<UnderlyingType>(MN_NameLate) ) != 0;
     }
 
     // Attributes are used with XML.
     bool IsAttr() const
     {
-        return (GetKind() & MN_Attr) != 0;
+        using UnderlyingType = std::underlying_type_t<MultinameKind>;
+        return ( static_cast<UnderlyingType>(GetKind()) & static_cast<UnderlyingType>(MN_Attr) ) != 0;
     }
 
     bool IsQName() const
@@ -304,6 +313,12 @@ public:
     }
 
 public:
+    bool IsBoolean(const ConstPool& cp) const;
+    bool IsInt(const ConstPool& cp) const;
+    bool IsUInt(const ConstPool& cp) const;
+    bool IsNumber(const ConstPool& cp) const;
+    bool IsString(const ConstPool& cp) const;
+
     bool IsFixedNumType(const ConstPool& cp) const;
     bool IsNumericType(const ConstPool& cp) const;
     bool IsPrimitiveType(const ConstPool& cp) const;

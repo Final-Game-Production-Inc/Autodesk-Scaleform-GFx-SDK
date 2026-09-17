@@ -7,6 +7,7 @@ Created     :   November, 2010
 Authors     :   Michael Antonov, Dmitry Polenur, Maxim Didenko, 
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -19,9 +20,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 //#include "Render/Render_Amp.h"
 #include "FxPlayerLog.h"
 #include "FxPlayerAutotest.h"
+#include "GFx/AMP/Amp_Message.h"
 
 #ifdef GFX_GESTURE_RECOGNIZE
-	#include "GFx/GFx_Gesture.h"
+    #include "GFx/GFx_Gesture.h"
 #endif
 
 #ifdef SF_OS_WIN32
@@ -68,6 +70,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/ImageFiles/PNG_ImageFile.h"
 #include "Render/ImageFiles/DDS_ImageFile.h"
 #include "Render/ImageFiles/SIF_ImageFile.h"
+//#include "Render/ImageFiles/KTX_ImageFile.h"
 #if defined (SF_OS_WIIU)
 #include "Render/ImageFiles/GTX_ImageFile.h"
 #endif
@@ -79,21 +82,27 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifdef GFX_ENABLE_VIDEO
 // Core video support
 #include "Video/Video_Video.h"
-#if   defined(SF_OS_WIN32)
+#if   defined(SF_OS_WIN32) && !defined(_DURANGO)
 #include "Video/Video_VideoPC.h"
 #elif defined(SF_OS_XBOX360)
 #include "Video/Video_VideoXbox360.h"
 #elif defined(SF_OS_PS3)
 //#define CRIMV_SPU_TRHEADS
 #include "Video/Video_VideoPS3.h"
+#elif defined(_DURANGO)
+#include "Video/Video_VideoXboxOne.h"
+#elif defined(SF_OS_ORBIS)
+#include "Video/Video_VideoPS4.h"
+#elif defined(SF_OS_WIIU)
+#include "Video/Video_VideoWiiU.h"
 #endif
 // Video system sound interfaces
 #ifdef GFX_VIDEO_USE_SYSTEM_SOUND
-#if   defined(SF_OS_WIN32)
+#if   defined(SF_OS_WIN32) && !defined(_DURANGO)
 #include "Video/Video_VideoSoundSystemDX8.h"
 #elif defined(SF_OS_MAC)
 #include "Video/Video_VideoSoundSystemMac.h"
-#elif defined(SF_OS_XBOX360)
+#elif defined(SF_OS_XBOX360) || defined(_DURANGO)
 #include "Video/Video_VideoSoundSystemXA2.h"
 #elif defined(SF_OS_PS3)
 #include "Video/Video_VideoSoundSystemPS3.h"
@@ -118,43 +127,86 @@ otherwise accompanies this software in either electronic or hard copy form.
 class TranslatorImpl : public GFx::Translator
 {
 public:
-    // wwMode can be GFxTranslator::WWT_NoHangulWrap (Korean),
-    // GFxTranslator::WWT_Prohibition (used in Japanese) or
-    // GFxTranslator::WWT_Asian (Chinese). Also GFxTranslator::WWT_Hyphenation
+    // wwMode can be GFx::Translator::WWT_Korean,
+    // GFx::Translator::WWT_Japanese or
+    // GFx::Translator::WWT_Chinese. Also GFx::Translator::WWT_Hyphenation
     // might be used for very simple hyphenation. OnWordWrapping virtual 
-    // method might be overridden to implement custom word-wrapping rules.
-    TranslatorImpl(unsigned wwMode = GFx::Translator::WWT_Default) :
-      GFx::Translator(wwMode) {}
+    // method might be overridden to implement custom word-wrapping rules
+    // (WWT_Custom should be used for wwMode then).
+    TranslatorImpl(unsigned wwMode = GFx::Translator::WWT_Default) : GFx::Translator(wwMode) 
+    {}
 
-      virtual unsigned GetCaps() const         
-      { 
-          return Cap_StripTrailingNewLines; 
-      }
-      virtual void     Translate(TranslateInfo* ptranslateInfo)
-      {
-          // Translated strings start with $$sign
-          const wchar_t* pkey = ptranslateInfo->GetKey();
-          if (pkey[0] == '$')
-          {
-              WStringBuffer buffer;
-              size_t l = SFwcslen(pkey);
-              buffer.Resize(l + 100);
-              wchar_t* pb = buffer.GetBuffer();
+    virtual unsigned GetCaps() const         
+    { 
+        return Cap_StripTrailingNewLines | Cap_BidirectionalText; 
+    }
+    virtual void     Translate(TranslateInfo* ptranslateInfo)
+    {
+        // Translated strings start with $$sign
+        const wchar_t* pkey = ptranslateInfo->GetKey();
+        if (pkey[0] == '$')
+        {
+            WStringBuffer buffer;
+            size_t l = SFwcslen(pkey);
+            buffer.Resize(l + 100);
+            wchar_t* pb = buffer.GetBuffer();
 
-              //SFwcscpy(pb, buffer.GetLength(), pkey+1);
-              //ptranslateInfo->SetResult(buffer.ToWStr());
+            //SFwcscpy(pb, buffer.GetLength(), pkey+1);
+            //ptranslateInfo->SetResult(buffer.ToWStr());
 
-              SFwcscpy(pb, buffer.GetLength(), L"<font color='#00FF33'>*TR[<font color='#FF3300'>");
-              SFwcscat(pb, buffer.GetLength(), pkey+1);
-              SFwcscat(pb, buffer.GetLength(), L"</font>]</font>");
-              ptranslateInfo->SetResultHtml(buffer.ToWStr());
-          }
-          // example of using GetInstanceName()
-          else if (SFstrcmp(ptranslateInfo->GetInstanceName(), "plainText") == 0)
-          {
-              ptranslateInfo->SetResult("PLAIN");
-          }
-      }
+            SFwcscpy(pb, buffer.GetLength(), L"<font color='#00FF33'>*TR[<font color='#FF3300'>");
+            SFwcscat(pb, buffer.GetLength(), pkey+1);
+            SFwcscat(pb, buffer.GetLength(), L"</font>]</font>");
+            ptranslateInfo->SetResultHtml(buffer.ToWStr());
+        }
+        // example of using GetInstanceName()
+        else if (SFstrcmp(ptranslateInfo->GetInstanceName(), "plainText") == 0)
+        {
+            ptranslateInfo->SetResult("PLAIN");
+        }
+    }
+
+    // an example of custom word wrapping
+    bool OnWordWrapping(LineFormatDesc* pdesc)
+    {
+        // check if we deal with Asian languages; if so, use
+        // the default implementation.
+        if (WWMode != WWT_Custom)
+            return Translator::OnWordWrapping(pdesc);
+        if (pdesc->NumCharsInLine == 0)
+            return false; // skip empty lines
+        // implementing word wrapping at spaces, dots, commas and dashes.
+        // start from NumCharsInLine.
+        // search for desired word breaker backward
+        UPInt linePos = pdesc->NumCharsInLine - 1;
+        UPInt textPos = pdesc->LineStartPos + linePos;
+        for (SPInt tpos = SPInt(textPos), lpos = SPInt(linePos); 
+             tpos >= 0 && lpos >= 0; 
+             --tpos, --lpos)
+        {
+            int isSpace = SFiswspace(pdesc->pParaText[tpos]) ? 1 : 0;
+            if (isSpace ||
+                pdesc->pParaText[tpos] == '.' ||
+                pdesc->pParaText[tpos] == ',' ||
+                pdesc->pParaText[tpos] == '-')
+            {
+                // found our spacer;
+                // check if width fits our textfield.
+                // we will want to exclude the whitespace from the
+                // widths, but include other spacers (so, they fit
+                // the line).
+                if (pdesc->pWidths[lpos + (1 - isSpace)] <= pdesc->VisibleRectWidth)
+                {
+                    // it fits, modify the ProposedWordWrapPoint and return true;
+                    // otherwise, continue.
+                    pdesc->ProposedWordWrapPoint = lpos + (1 - isSpace);
+                    return true;
+                }
+            }
+        }
+        // nothing was found, return false.
+        return false;
+    }
 };
 #endif
 
@@ -245,7 +297,7 @@ public:
                 params.pArgs[2].GetType() == Value::VT_Number)
             {
                 const String parameter = params.pArgs[1].GetString();
-                const Double paramvalue = params.pArgs[2].GetNumber();
+                const GFx::Double paramvalue = params.pArgs[2].GetNumber();
                 String filename;
                 if (params.ArgCount >= 2 && params.pArgs[3].GetType() == Value::VT_String)
                     filename = params.pArgs[3].GetString();  
@@ -255,7 +307,7 @@ public:
                     "\tParameter: %s\n" 
                     "\tParameter Value: %f\n"
                     "\tFilename: %s\n\n",
-                    parameter.ToCStr(), paramvalue, filename.ToCStr());
+                    parameter.ToCStr(), static_cast<double>(paramvalue), filename.ToCStr());
 
                 pSoundEvent->SetParam(parameter, (float)paramvalue, filename);
                 return true;
@@ -367,6 +419,8 @@ public:
         app->Wireframe = !app->Wireframe;
         app->GetRenderThread()->SetWireframe(app->Wireframe);
         app->GetRenderThread()->DrawFrame();
+        app->AmpDirty = true;
+
     }
     virtual String GetHelpString() const
     {
@@ -476,7 +530,7 @@ public:
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED2(controllerIdx, keyDown);
-		// MA TBD:
+        // MA TBD:
 
         Platform::ViewConfig config;
         app->GetViewConfig(&config);
@@ -653,40 +707,78 @@ public:
     FXPLAYERCOMMAND_GETCOMMANDNAME(StrokeMode);
 };
 
-class FxPlayerCommandToggleOverdrawProfile : public FxPlayerCommand
+template< Render::ProfilerModes ProfileMode >
+class FxPlayerCommandToggleProfileMode : public FxPlayerCommand
 {
 public:
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED2(controllerIdx, keyDown);
-        app->BatchProfile = 0;
-        app->OverdrawProfile = !app->OverdrawProfile;
-        app->GetRenderThread()->SetProfileMode(app->OverdrawProfile ? FxRenderThread::Profile_Overdraw : FxRenderThread::Profile_None);
+        if (app->ProfileMode != ProfileMode)
+        {
+            app->ProfileMode = ProfileMode;
+        }
+        else
+        {
+            app->ProfileMode = Render::Profile_None;
+        }
+        app->GetRenderThread()->SetProfileMode(app->ProfileMode);
         app->AmpDirty = true;
     }
     virtual String GetHelpString() const
     {
-        return "Overdraw Profile";
+        static const char* ProfileModeHelpStrings[Render::Profile_Count] =
+        {
+            "No Profiling (shouldn't be a command!)",
+            "Overdraw Profile",
+            "Batch Mode Profile",
+            "Blending Profile",
+            "Texture density Profile"
+        };
+        return ProfileModeHelpStrings[ProfileMode];
     }
-    FXPLAYERCOMMAND_GETCOMMANDNAME(ToggleOverdrawProfile);
+    virtual const char* GetCommandName() const
+    {
+        static const char* ProfileModeCommandName[Render::Profile_Count] =
+        {
+            "ThisShouldNotBeACommand",
+            "ToggleOverdrawProfileMode",
+            "ToggleBatchProfileMode",
+            "ToggleBlendingProfileMode"
+            "ToggleTextureDensityProfileMode"
+        };
+        return ProfileModeCommandName[ProfileMode];
+    }
 };
 
-class FxPlayerCommandToggleBatchesProfile : public FxPlayerCommand
+template< int IndexChange >
+class FxPlayerCommandChangeHighlightBatch : public FxPlayerCommand
 {
 public:
+    FxPlayerCommandChangeHighlightBatch() : FxPlayerCommand()
+    {
+        Format(HelpString, "Changes the highlighted batch index by {0}", IndexChange);
+        Format(CommandName, "ChangeHighlightBatch{0}", IndexChange);
+    }
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED2(controllerIdx, keyDown);
-        app->OverdrawProfile = 0;
-        app->BatchProfile = !app->BatchProfile;
-        app->GetRenderThread()->SetProfileMode(app->BatchProfile ? FxRenderThread::Profile_Batch : FxRenderThread::Profile_None);
+        app->BatchHighlight += IndexChange;
+        if (app->BatchHighlight < 0)
+            app->BatchHighlight = -1;
+        app->GetRenderThread()->SetBatchHighlight(app->BatchHighlight);
         app->AmpDirty = true;
-    }
+    }    
     virtual String GetHelpString() const
     {
-        return "Batches Profile";
+        return HelpString;
     }
-    FXPLAYERCOMMAND_GETCOMMANDNAME(ToggleBatchesProfile);
+    virtual const char* GetCommandName() const
+    {
+        return CommandName.ToCStr();
+    }
+    String HelpString;
+    String CommandName;
 };
 
 class FxPlayerCommandCycleProfile : public FxPlayerCommand
@@ -695,24 +787,12 @@ public:
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED2(controllerIdx, keyDown);
-        if (app->OverdrawProfile)
-        {
-            app->OverdrawProfile = 0;
-            app->BatchProfile = 1;
-            app->GetRenderThread()->SetProfileMode(FxRenderThread::Profile_Batch);
-        }
-        else if (app->BatchProfile)
-        {
-            app->OverdrawProfile = 0;
-            app->BatchProfile = 0;
-            app->GetRenderThread()->SetProfileMode(FxRenderThread::Profile_None);
-        }
-        else
-        {
-            app->OverdrawProfile = 1;
-            app->BatchProfile = 0;
-            app->GetRenderThread()->SetProfileMode(FxRenderThread::Profile_Overdraw);
-        }
+        unsigned profileMode = app->ProfileMode;
+        profileMode++;
+        if (profileMode >= Render::Profile_Count)
+            profileMode = 0;
+        app->ProfileMode = (Render::ProfilerModes)profileMode;
+        app->GetRenderThread()->SetProfileMode(app->ProfileMode);
         app->AmpDirty = true;
     }
     virtual String GetHelpString() const
@@ -722,20 +802,55 @@ public:
     FXPLAYERCOMMAND_GETCOMMANDNAME(CycleProfile);
 };
 
-class FxPlayerCommandToggleFilterCaching : public FxPlayerCommand
+template< Render::ProfilerFlags Flag>
+class FxPlayerCommandToggleProfilerFlag : public FxPlayerCommand
 {
 public:
+    FxPlayerCommandToggleProfilerFlag() : FxPlayerCommand()
+    {
+        switch(Flag)
+        {
+        case Render::ProfileFlag_NoFilterCaching:
+            HelpString  = "Toggles Filter Caching";
+            CommandName = "ToggleProfileFlag_FilterCaching";
+            ResetFile   = false;
+            break;
+        case Render::ProfileFlag_NoBatching:
+            HelpString  = "Toggles Batching";
+            CommandName = "ToggleProfileFlag_NoBatching";
+            ResetFile   = true;
+            break;
+        case Render::ProfileFlag_NoInstancing:
+            HelpString  = "Toggles Instancing";
+            CommandName = "ToggleProfileFlag_NoInstancing";
+            ResetFile   = true;
+            break;
+        case Render::ProfileFlag_NoBlendCaching:
+            HelpString  = "Toggles Blend Caching";
+            CommandName = "ToggleProfileFlag_BlendCaching";
+            ResetFile   = false;
+        }
+    }
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED3(app, controllerIdx, keyDown);
-        bool set = app->GetRenderThread()->GetProfileFlag(Render::ProfileViews::ProfileFlag_NoFilterCaching);
-        app->GetRenderThread()->SetProfileFlag(Render::ProfileViews::ProfileFlag_NoFilterCaching, !set);
+        bool set = app->GetRenderThread()->GetProfileFlag(Flag) ? true : false;
+        app->GetRenderThread()->SetProfileFlag(Flag, !set);
+
+        if (ResetFile)
+            app->SafeMovieRestart();
     }
     virtual String GetHelpString() const
     {
-        return "Toggles Filter Caching";
+        return HelpString;
     }
-    FXPLAYERCOMMAND_GETCOMMANDNAME(ToggleFilterCaching);
+    virtual const char* GetCommandName() const
+    {
+        return CommandName.ToCStr();
+    }
+    String HelpString;
+    String CommandName;
+    bool   ResetFile;   // If true, this command resets the file when it is toggled (for batching/instancing toggles).
 };
 
 class FxPlayerCommandMemReport : public FxPlayerCommand
@@ -969,7 +1084,7 @@ public:
             app->BackgroundColor = 0x555555; 
             break;
         }    
-		app->GetRenderThread()->SetBackgroundColor(app->BackgroundColor);
+        app->GetRenderThread()->SetBackgroundColor(app->BackgroundColor);
     }
 
     virtual String GetHelpString() const
@@ -985,10 +1100,10 @@ public:
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED2(controllerIdx, keyDown);
-        app->CurvePixelError = Alg::Min(500.0f, app->CurvePixelError + 1.0f);
+        app->CurvePixelError = Alg::Min(10.0f, app->CurvePixelError + 0.5f);
         Render::ToleranceParams params;
         app->GetRenderThread()->GetToleranceParams(&params);
-        params.CurveTolerance = app->CurvePixelError / 10.0f; // old tolerance, nominal was 10.0f, new tolerance nominal is 1.0f.
+        params.CurveTolerance = app->CurvePixelError;
         app->GetRenderThread()->SetToleranceParams(params);
         app->AmpDirty = true;
     }
@@ -1005,10 +1120,10 @@ public:
     virtual void Execute(FxPlayerAppBase* app, unsigned controllerIdx, bool keyDown) const
     {
         SF_UNUSED2(controllerIdx, keyDown);
-        app->CurvePixelError = Alg::Max(1.0f, app->CurvePixelError - 1.0f);
+        app->CurvePixelError = Alg::Max(0.5f, app->CurvePixelError - 0.5f);
         Render::ToleranceParams params;
         app->GetRenderThread()->GetToleranceParams(&params);
-        params.CurveTolerance = app->CurvePixelError / 10.0f; // old tolerance, nominal was 10.0f, new tolerance nominal is 1.0f.
+        params.CurveTolerance = app->CurvePixelError; 
         app->GetRenderThread()->SetToleranceParams(params);
         app->AmpDirty = true;
     }
@@ -1329,6 +1444,8 @@ FxPlayerAppBase::FxPlayerAppBase()
     Paused          = false;
     PausedState     = GFx::State_Playing;
 
+    StickMode       = PSM_StickAndPad;
+
     ArgResolution.Clear();
     ScaleX = ScaleY     = 1.0f;
     TexLodBias          = -0.5f;
@@ -1395,8 +1512,8 @@ FxPlayerAppBase::FxPlayerAppBase()
 #endif
 #endif
 
-    OverdrawProfile = 0;
-    BatchProfile = 0;
+    ProfileMode     = Render::Profile_None;
+    BatchHighlight  = -1; // Disabled
 
     KeyboardIndex = 0;
     ResIndex  = 1;
@@ -1405,7 +1522,9 @@ FxPlayerAppBase::FxPlayerAppBase()
     mMovieInfo.Clear();
 
 #if defined(SF_OS_WIN32) || defined(SF_OS_XBOX360) || defined(FXPLAYER_X11) || defined(SF_OS_MAC)
-	UInt32 ctrlMask = (KeyModifiers::Key_CtrlPressed << 16);
+    UInt32 ctrlMask = (KeyModifiers::Key_CtrlPressed << 16);
+    UInt32 altMask = (KeyModifiers::Key_AltPressed << 16);
+    
     KeyCommandMap.Set(Key::S | ctrlMask, *SF_NEW FxPlayerCommandScaledDisplay());
     KeyCommandMap.Set(Key::W | ctrlMask, *SF_NEW FxPlayerCommandWireframe());
     KeyCommandMap.Set(Key::A | ctrlMask, *SF_NEW FxPlayerCommandAntialiasingMode());
@@ -1424,9 +1543,16 @@ FxPlayerAppBase::FxPlayerAppBase()
     KeyCommandMap.Set(Key::Z | ctrlMask, *SF_NEW FxPlayerCommandResetUserMatrix());
     KeyCommandMap.Set(Key::O | ctrlMask, *SF_NEW FxPlayerCommandTriangleOptimization());
     KeyCommandMap.Set(Key::T | ctrlMask, *SF_NEW FxPlayerCommandStrokeMode());
-    KeyCommandMap.Set(Key::E | ctrlMask, *SF_NEW FxPlayerCommandToggleOverdrawProfile());
-    KeyCommandMap.Set(Key::J | ctrlMask, *SF_NEW FxPlayerCommandToggleBatchesProfile());
-    KeyCommandMap.Set(Key::F3 | ctrlMask, *SF_NEW FxPlayerCommandToggleFilterCaching());
+    KeyCommandMap.Set(Key::E | ctrlMask, *SF_NEW FxPlayerCommandToggleProfileMode<Render::Profile_Overdraw>());
+    KeyCommandMap.Set(Key::J | ctrlMask, *SF_NEW FxPlayerCommandToggleProfileMode<Render::Profile_Batch>());
+    KeyCommandMap.Set(Key::E | altMask|ctrlMask, *SF_NEW FxPlayerCommandToggleProfileMode<Render::Profile_TextureDensity>());
+    KeyCommandMap.Set(Key::J | altMask|ctrlMask, *SF_NEW FxPlayerCommandToggleProfileMode<Render::Profile_Blending>());
+    KeyCommandMap.Set(Key::Num1 | ctrlMask, *SF_NEW FxPlayerCommandChangeHighlightBatch<-1>()); // decrement highlight batch
+    KeyCommandMap.Set(Key::Num2 | ctrlMask, *SF_NEW FxPlayerCommandChangeHighlightBatch<+1>()); // increment highlight batch
+    KeyCommandMap.Set(Key::F3 | ctrlMask, *SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoFilterCaching>());
+    KeyCommandMap.Set(Key::F3 | ctrlMask | altMask, *SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoBlendCaching>());
+    KeyCommandMap.Set(Key::F4 | ctrlMask, *SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoBatching>());
+    KeyCommandMap.Set(Key::F5 | ctrlMask, *SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoInstancing>());
     KeyCommandMap.Set(Key::F6 | ctrlMask, *SF_NEW FxPlayerCommandMemReport());
     KeyCommandMap.Set(Key::F7 | ctrlMask, *SF_NEW FxPlayerCommandFunctionTiming());
     #ifdef GFX_ENABLE_SOUND
@@ -1452,7 +1578,7 @@ FxPlayerAppBase::FxPlayerAppBase()
 #endif
 #endif
 
-#if defined(SF_OS_XBOX360) || defined(SF_OS_WIN32)
+#if defined(SF_OS_XBOX360) || defined(SF_OS_WIN32) || defined(_DURANGO)
     PadKeyCommandMap.Set(SF::Pad_A, *SF_NEW FxPlayerCommandEnter());
     PadKeyCommandMap.Set(SF::Pad_B, *SF_NEW FxPlayerCommandEscape());
     PadKeyCommandMap.Set(SF::Pad_Y, *SF_NEW FxPlayerCommandRestart());
@@ -1464,7 +1590,7 @@ FxPlayerAppBase::FxPlayerAppBase()
     PadKeyCommandMap.Set(SF::Pad_L2, *SF_NEW FxPlayerCommandLoadPrevFile());
     PadKeyCommandMap.Set(SF::Pad_R2, *SF_NEW FxPlayerCommandLoadNextFile());
     PadKeyCommandMap.Set(SF::Pad_LT, *SF_NEW FxPlayerCommandFastForward());
-#if defined(SF_OS_XBOX360) 
+#if defined(SF_OS_XBOX360)  || defined(_DURANGO)
     PadKeyCommandMap.Set(SF::Pad_RT, *SF_NEW FxPlayerCommandShowMouseCursor());
 #endif
     PadPassthroughMap.Set(SF::Pad_A, Key::Return);
@@ -1508,8 +1634,8 @@ FxPlayerAppBase::FxPlayerAppBase()
     PadKeyCommandMap.Set(SF::Pad_Home, *SF_NEW FxPlayerCommandPause());
     PadKeyCommandMap.Set(SF::Pad_Z,  *SF_NEW FxPlayerPadPassThrough());
     PadKeyCommandMap.Set(SF::Pad_C, *SF_NEW FxPlayerCommandFastForward());
-	PadKeyCommandMap.Set(SF::Pad_Plus, *SF_NEW FxPlayerCommandLoadNextFile());
-	PadKeyCommandMap.Set(SF::Pad_Minus, *SF_NEW FxPlayerCommandLoadPrevFile());
+    PadKeyCommandMap.Set(SF::Pad_Plus, *SF_NEW FxPlayerCommandLoadNextFile());
+    PadKeyCommandMap.Set(SF::Pad_Minus, *SF_NEW FxPlayerCommandLoadPrevFile());
 
     PadPassthroughMap.Set(SF::Pad_A, Key::Return);
     PadPassthroughMap.Set(SF::Pad_B, Key::Escape);
@@ -1574,7 +1700,7 @@ void FxPlayerAppBase::InitializeSound()
     if (!pSoundFMODSystem->IsInitialized())
     {
         bool bIsInitFMOD = pSoundFMODSystem->Initialize(
-#ifdef SF_OS_PS3		
+#ifdef SF_OS_PS3        
             GetSpurs()
 #endif
             );
@@ -1591,7 +1717,7 @@ void FxPlayerAppBase::InitializeSound()
         bool bIsInitWwise = pSoundWwiseSystem->Initialize(
 #ifdef SF_OS_PS3
             GetSpurs()
-#endif			
+#endif          
             );
         if (!bIsInitWwise)
             xShutdownSound();
@@ -1626,12 +1752,12 @@ Sound::SoundRenderer* FxPlayerAppBase::GetSoundRenderer()
 }
 #endif // GFX_ENABLE_SOUND
 
-#if defined(SF_OS_WIN32)
+#if defined(SF_OS_WIN32) && !defined(_DURANGO)
 
 // Install system-specific clipboard implementation on Win32. If this is not done
 // the clipboard will still work in FxPlayer, but it will be impossible to paste
 // text to external applications.
-class FxPlayerTextClipboard : public TextClipboard
+class FxPlayerTextClipboard : public Clipboard
 {
 public:
     void OnTextStore(const wchar_t* ptext, UPInt len)
@@ -1671,7 +1797,21 @@ public:
             CloseClipboard();
         }
     }
+
+    UInt32 GetSupportedFormats() 
+    {
+        return Format_Text | Format_RichText | Format_Bitmap;
+    }
+
+    UInt32 GetAvailableFormats() 
+    {
+        UInt32 result = 0;
+        if (IsClipboardFormatAvailable(CF_TEXT)) 
+            result|= Format_Text;        
+        return result;
+    }
 };
+
 
 class FxPlayerMultitouchInterface : public MultitouchInterface
 {
@@ -1691,10 +1831,10 @@ public:
 
 void FxPlayerAppBase::InitArgDescriptions(Platform::Args* args)
 {
-	using namespace Platform;
+    using namespace Platform;
     BaseClass::InitArgDescriptions(args);
 
-	ArgDesc options []=
+    ArgDesc options []=
     {
         //      {"","--------------spacer example------------------\n","",FxCmdOption::Spacer,""},
         {"",    "FileName",            Args::StringOption | Args::Positional, NULL, //"gfx_cri.swf", 
@@ -1788,6 +1928,9 @@ String FxPlayerAppBase::GetFilePath() const
     return "FxPlayer/flash.swf";
 #elif defined (SF_OS_PSVITA) || defined(SF_OS_WIIU) || defined (SF_OS_ORBIS)
     return String(GetDefaultFilePath()) + "/flash.swf";
+#elif defined(_DURANGO)
+	// This can be removed once Directory service is implemented for Durango
+	return String(GetDefaultFilePath()) + "flash.swf";
 #else
     // return String(GetDefaultFilePath()) + "/flash.swf";
     return "";
@@ -1951,7 +2094,7 @@ bool FxPlayerAppBase::OnArgs(const Platform::Args& args, Platform::Args::ParseRe
 void FxPlayerAppBase::SetFileOpener()
 {
     // File callback.
-    Ptr<FileOpener> pfileOpener = *new FxPlayerFileOpener;	
+    Ptr<FileOpener> pfileOpener = *new FxPlayerFileOpener;  
     mLoader.SetFileOpener(pfileOpener);
 }
 
@@ -1959,7 +2102,7 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 {
     // Set the verbose flags.
     unsigned verboseFlags = 0;
-	const Platform::Args& args = GetArgs();
+    const Platform::Args& args = GetArgs();
 
     if (args.GetBool("VerboseParse"))//Settings.VerboseParse
         verboseFlags |= ParseControl::VerboseParse;
@@ -1970,24 +2113,8 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 
     SetFileOpener();
 
-    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry();
-#ifdef SF_ENABLE_LIBJPEG
-    pimgReg->AddHandler(&SF::Render::JPEG::FileReader::Instance);
-#endif
-#ifdef SF_ENABLE_LIBPNG
-    pimgReg->AddHandler(&SF::Render::PNG::FileReader::Instance);
-#endif
-    pimgReg->AddHandler(&SF::Render::TGA::FileReader::Instance);
-	pimgReg->AddHandler(&SF::Render::DDS::FileReader::Instance);
-    pimgReg->AddHandler(&SF::Render::SIF::FileReader::Instance);
-#if defined (SF_OS_WIIU)
-	pimgReg->AddHandler(&SF::Render::GTX::FileReader::Instance);
-#endif
-#if defined (SF_OS_PSVITA)
-	pimgReg->AddHandler(&SF::Render::GXT::FileReader::Instance);
-#endif
+    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry(SF::GFx::ImageFileHandlerRegistry::AddDefaultHandlers);
     mLoader.SetImageFileHandlerRegistry(pimgReg);
-
 
 #ifdef GFX_AS2_SUPPORT
     Ptr<ASSupport> pAS2Support = *new AS2Support();
@@ -2011,11 +2138,11 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
     if (args.GetBool("UseImagePacker"))
     {
         Ptr<ImagePackParams> ppacker = *new ImagePackParams();
-        ImagePackParams::TextureConfig config;
-        ppacker->GetTextureConfig(&config);
-        config.TextureHeight = config.TextureWidth = 1024;
-        config.SizeOptions = ImagePackParamsBase::PackSize_PowerOf2;
-        ppacker->SetTextureConfig(config);
+        ImagePackParams::TextureConfig tconfig;
+        ppacker->GetTextureConfig(&tconfig);
+        tconfig.TextureHeight = tconfig.TextureWidth = 1024;
+        tconfig.SizeOptions = ImagePackParamsBase::PackSize_PowerOf2;
+        ppacker->SetTextureConfig(tconfig);
 
         mLoader.SetImagePackParams(ppacker);
     }
@@ -2044,8 +2171,8 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
             mLoader.SetLog(Ptr<GFx::Log>(*new GFxPlayerLog()));
         }
     }
-#ifdef SF_OS_WIN32    
-    mLoader.SetTextClipboard(Ptr<TextClipboard>(*new FxPlayerTextClipboard()));
+#if defined (SF_OS_WIN32) && !defined(_DURANGO)
+    mLoader.SetClipboard(Ptr<Clipboard>(*new FxPlayerTextClipboard()));
 #endif    
     //mLoader.SetTranslator(Ptr<Translator>(*new TranslatorImpl()));
 
@@ -2160,7 +2287,7 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 
 #ifdef GFX_ENABLE_VIDEO
     // Core video support
-#if defined(SF_OS_WIN32)
+#if defined(SF_OS_WIN32) && !defined(_DURANGO)
     // The video player state for Windows has four initialization parameters
     // 1. ActionScript VM support: AS2, AS3 or all
     // 2. Priority of video decoding threads
@@ -2203,6 +2330,44 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
     Ptr<Video::Video> pvideo = *new Video::VideoPS3(Video::VideoVMSupportAll(),
         1, Thread::NormalPriority, 4, 128);
     #endif
+#elif defined(_DURANGO)
+    // The video player state for XboxOne has four initialization parameters:
+    // 1. ActionScript VM support: AS2, AS3 or all
+    // 2. Priority of video decoding threads
+    // 3. Number of video deciding threads (maximum is 5)
+    // 4. An array with affinity masks for each decoding thread
+    DWORD_PTR affinityMasks[] = {
+        Video::XboxOneAffinityMask::CPU2,
+        Video::XboxOneAffinityMask::CPU3 | Video::XboxOneAffinityMask::CPU4,
+        Video::XboxOneAffinityMask::AllCPUs
+    };
+    Ptr<Video::Video> pvideo = *new Video::VideoXboxOne(Video::VideoVMSupportAll(),
+        Thread::NormalPriority, 3, affinityMasks);
+#elif defined(SF_OS_ORBIS)
+    // The video player state for PS4 has four initialization parameters:
+    // 1. ActionScript VM support: AS2, AS3 or all
+    // 2. Priority of video decoding threads
+    // 3. Number of video deciding threads (maximum is 5)
+    // 4. An array with affinity masks for each decoding thread
+    SceKernelCpumask affinityMasks[] = {
+        Video::PS4AffinityMask::CPU2,
+        Video::PS4AffinityMask::CPU3 | Video::PS4AffinityMask::CPU4,
+        Video::PS4AffinityMask::AllCPUs
+    };
+    Ptr<Video::Video> pvideo = *new Video::VideoPS4(Video::VideoVMSupportAll(),
+        Thread::NormalPriority, 3, affinityMasks);
+#elif defined(SF_OS_WIIU)
+    // The video player state for Wii U has four initialization parameters:
+    // 1. ActionScript VM support: AS2, AS3 or all
+    // 2. Priority of video decoding threads
+    // 3. Number of video deciding threads (maximum is 2)
+    // 4. An array with affinity masks for each decoding thread
+    u16 affinityMasks[] = {
+        OS_THREAD_ATTR_AFFINITY_CORE1,
+        OS_THREAD_ATTR_AFFINITY_CORE2
+    };
+    Ptr<Video::Video> pvideo = *new Video::VideoWiiU(Video::VideoVMSupportAll(),
+        Thread::NormalPriority, 2, affinityMasks);
 #else
     // 1. ActionScript VM support: AS2, AS3 or all
     // 2. Priority of the video decoding thread
@@ -2212,11 +2377,11 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 
     // Video system sound interfaces
 #ifdef GFX_VIDEO_USE_SYSTEM_SOUND
-#if   defined(SF_OS_WIN32)
+#if   defined(SF_OS_WIN32)  && !defined(_DURANGO)
     pvideo->SetSoundSystem(Ptr<Video::VideoSoundSystem>(*new Video::VideoSoundSystemDX8(0)));
 #elif defined(SF_OS_MAC)
     pvideo->SetSoundSystem(Ptr<Video::VideoSoundSystem>(*new Video::VideoSoundSystemMac()));
-#elif defined(SF_OS_XBOX360)
+#elif defined(SF_OS_XBOX360) || defined(_DURANGO)
     pvideo->SetSoundSystem(Ptr<Video::VideoSoundSystem>(*new Video::VideoSoundSystemXA2(0,0)));
 #elif defined(SF_OS_PS3)
     pvideo->SetSoundSystem(Ptr<Video::VideoSoundSystem>(*new Video::VideoSoundSystemPS3(true, GetSpurs())));
@@ -2304,7 +2469,6 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 
 #endif
 
-
     if (loadMovie)
     {
         // Get info about the width & height of the movie.
@@ -2346,9 +2510,6 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
         MViewSize = Platform::Device::GetDefaultViewSize();
     }
 
-    if (AutoTest && !AutoTest->OnInit(config))
-        return false;
-
     // Add our custom commands to the autotest object.
     if (AutoTest)
     {
@@ -2370,10 +2531,16 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
         AutoTest->AddCommand(SF_NEW FxPlayerCommandResetUserMatrix());
         AutoTest->AddCommand(SF_NEW FxPlayerCommandTriangleOptimization());
         AutoTest->AddCommand(SF_NEW FxPlayerCommandStrokeMode());
-        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleOverdrawProfile());
-        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleBatchesProfile());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleProfileMode<Render::Profile_Overdraw>());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleProfileMode<Render::Profile_Batch>());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandChangeHighlightBatch<-1>);
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandChangeHighlightBatch<1>);
+
         AutoTest->AddCommand(SF_NEW FxPlayerCommandCycleProfile());
-        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleFilterCaching());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoBlendCaching>());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoFilterCaching>());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoBatching>());
+        AutoTest->AddCommand(SF_NEW FxPlayerCommandToggleProfilerFlag<Render::ProfileFlag_NoInstancing>());
         AutoTest->AddCommand(SF_NEW FxPlayerCommandMemReport());
         AutoTest->AddCommand(SF_NEW FxPlayerCommandFunctionTiming());
         AutoTest->AddCommand(SF_NEW FxPlayerCommandMute());
@@ -2397,6 +2564,9 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
         AutoTest->AddCommand(SF_NEW FxPlayerCommandTakeScreenshot());
     }
 
+    if (AutoTest && !AutoTest->OnInit(config))
+        return false;
+
     if (Rendering) 
     {
         bool           fsaa = (AAMode == AAMode_FSAA) ? true : false;
@@ -2410,7 +2580,7 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
             config.ViewFlags |= Platform::View_FullScreen;
             ScaleX = ((float)defSize.Width)  / MViewSize.Width;
             ScaleY = ((float)defSize.Height) / MViewSize.Height;
-			MViewSize = defSize;
+            MViewSize = defSize;
         }
         if (fsaa)
             config.ViewFlags |= Platform::View_FSAA;
@@ -2433,7 +2603,7 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
         // Size might be changed by OnInitHelper call above.
         if (GetViewSize() != appliedSize)
             UpdateViewSize();
-		GetRenderThread()->SetBackgroundColor(BackgroundColor);
+        GetRenderThread()->SetBackgroundColor(BackgroundColor);
 
 #ifdef GFX_ENABLE_VIDEO
         Render::TextureManager* ptexMan = GetRenderThread()->GetTextureManager();
@@ -2443,29 +2613,29 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
     }
 
 
-	Ptr<GFx::IMEManagerBase> pimemanager = 0;
+    Ptr<GFx::IMEManagerBase> pimemanager = 0;
     if (IsImeEnabled())
     {
 #if defined(SF_ENABLE_IME) && defined(SF_ENABLE_IME_WIN32)
         //!Create IMEManager after the application window has been set up since 
         
-	//	pimemanager = InitIME();
-		pimemanager = *new GFx::IME::GFxIMEManagerWin32((HWND)GetDeviceWindow()->GetHandle());
+    //  pimemanager = InitIME();
+        pimemanager = *new GFx::IME::GFxIMEManagerWin32((HWND)GetDeviceWindow()->GetHandle());
         if (pimemanager)
         {
             // For error logging. If error logging not desired, just pass null to Init. User must 
             // call Init though!
-			/*  Parameters:
-			1- Logger used to log IME messages. If not logging is desired, pass NULL
-			2- Fileopener necessary to open the ime.xml file that contains the list of supported IME's. If NULL, a default
-				list will be used instead
-			3- Path for the ime.xml file that contains a list of supported IMEs
-			4- Used to set if while loading the candidate list swf, IMEManager should check if the file exists in 
-			   current directory (where the parent swf is located) or not. If false, IMEManager will not check
-			   if the file exists, and if the file is eventually not found, an error message will be printed.
-			   This is useful if you have you own file management system and you want FileOpener::OpenFile to be
-			   called regardless. 
-			*/	
+            /*  Parameters:
+            1- Logger used to log IME messages. If not logging is desired, pass NULL
+            2- Fileopener necessary to open the ime.xml file that contains the list of supported IME's. If NULL, a default
+                list will be used instead
+            3- Path for the ime.xml file that contains a list of supported IMEs
+            4- Used to set if while loading the candidate list swf, IMEManager should check if the file exists in 
+               current directory (where the parent swf is located) or not. If false, IMEManager will not check
+               if the file exists, and if the file is eventually not found, an error message will be printed.
+               This is useful if you have you own file management system and you want FileOpener::OpenFile to be
+               called regardless. 
+            */  
             pimemanager->Init(NULL /*mLoader.GetLog()*/, mLoader.GetFileOpener(), "ime.xml", true);
             pimemanager->SetIMEMoviePath("IME.swf");
             mLoader.SetIMEManager(pimemanager);
@@ -2479,19 +2649,7 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 
 #ifdef SF_AMP_SERVER
     GFx::AMP::MessageAppControl caps;
-    caps.SetCurveToleranceDown(true);
-    caps.SetCurveToleranceUp(true);
-    caps.SetNextFont(true);
-    caps.SetRestartMovie(true);
-    caps.SetToggleAaMode(true);
-    caps.SetToggleAmpRecording(true);
-    caps.SetToggleFastForward(true);
-    caps.SetToggleInstructionProfile(true);
-    caps.SetToggleOverdraw(true);
-    caps.SetToggleBatch(true);
-    caps.SetToggleStrokeType(false);
-    caps.SetTogglePause(true);
-    caps.SetToggleWireframe(true);
+	GetAmpServerCapabilities(caps);
     AmpServer::GetInstance().SetAppControlCaps(&caps);
     AmpServer::GetInstance().SetAppControlCallback(this);
     if (args.GetBool("AmpWait"))
@@ -2535,14 +2693,38 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 #endif
     }
 
+	
 #ifdef GFX_GESTURE_RECOGNIZE
-	GestureRecognizer *gestureRecognizer = new GestureRecognizer(*this);
-	gestureRecognizer->setup();
+    GestureRecognizer *gestureRecognizer = new GestureRecognizer(*this);
+    gestureRecognizer->setup();
 	pGestureManager = gestureRecognizer;
+	SF_DEBUG_MESSAGE(1, "Gesture recognizer setup\n");
 #endif
+	
 
     return true;
 }
+
+#ifdef SF_AMP_SERVER
+void			FxPlayerAppBase::GetAmpServerCapabilities(GFx::AMP::MessageAppControl &caps) const
+{
+    caps.SetCurveToleranceDown(true);
+    caps.SetCurveToleranceUp(true);
+    caps.SetNextFont(true);
+    caps.SetRestartMovie(true);
+    caps.SetToggleAaMode(true);
+    caps.SetToggleAmpRecording(true);
+    caps.SetToggleFastForward(true);
+    caps.SetToggleInstructionProfile(true);
+    caps.SetToggleOverdraw(true);
+    caps.SetToggleBatch(true);
+    caps.SetToggleBlending(true);
+    caps.SetToggleTextureDensity(true);
+    caps.SetToggleStrokeType(false);
+    caps.SetTogglePause(true);
+    caps.SetToggleWireframe(true);
+}
+#endif
 
 void FxPlayerAppBase::OnRenderThreadCreated()
 {
@@ -2633,9 +2815,9 @@ void FxPlayerAppBase::SetMovieVariables(String& argString)
             : FontConfigs[FontConfigIndex]->ConfigName.ToCStr();
         pMovie->SetVariable("_global.gfxLanguage", Value(language));
     }
-	else if (pMovie->GetAVMVersion() == 2)
-	{
-		GFx::Value trueVal(true);
+    else if (pMovie->GetAVMVersion() == 2)
+    {
+        GFx::Value trueVal(true);
         GFx::Value arg("scaleform.gfx.Extensions");
         GFx::Value extensionsClass;
 
@@ -2643,7 +2825,7 @@ void FxPlayerAppBase::SetMovieVariables(String& argString)
         SF_ASSERT(extensionsClass.IsObject());
 
         extensionsClass.SetMember("isGFxPlayer", trueVal);
-	}
+    }
 }
 
 void FxPlayerAppBase::OnConfigurationChange(const Platform::ViewConfig& config)
@@ -2738,7 +2920,7 @@ void FxPlayerAppBase::OnUpdateFrame(bool needRepaint)
     // TBD: Make use of 'needRepaint' once refresh is conditional on change.
     SF_UNUSED(needRepaint);
 
-    HandleAmpAppMessages();
+    SF_AMP_CODE(HandleAmpAppMessages());
    
     // Update timing.
     UInt64 timer = Timer::GetTicks();
@@ -2881,7 +3063,7 @@ public:
             switch(args[i].GetType())
             {
             case Value::VT_String:	pLog->LogMessage("%s", args[i].GetString()); break;
-            case Value::VT_Number:	pLog->LogMessage("%f", args[i].GetNumber()); break;
+            case Value::VT_Number:	pLog->LogMessage("%f", static_cast<double>(args[i].GetNumber())); break;
 			case Value::VT_Int:		pLog->LogMessage("%d", args[i].GetInt()); break;
 			case Value::VT_UInt:	pLog->LogMessage("%u", args[i].GetUInt()); break;
             case Value::VT_Boolean: pLog->LogMessage("%s", (args[i].GetBool())?"true":"false"); break;
@@ -2941,7 +3123,7 @@ bool FxPlayerAppBase::LoadMovie( const String& filename)
     }
 
     unsigned loadConstants = Loader::LoadAll;
-	const Platform::Args& args = GetArgs();
+    const Platform::Args& args = GetArgs();
     /*
     Ptr<ImageCreator> imageCreator = *new CustomImageCreator;
     mLoader.SetImageCreator(imageCreator);
@@ -3058,12 +3240,19 @@ bool FxPlayerAppBase::LoadMovie( const String& filename)
     AccumFPS = 0.0f;
     AccumFPSSecondCount = 0;
 
+    // If you are using batch highlighting, reset the counter.
+    BatchHighlight = -1;
+    GetRenderThread()->SetBatchHighlight(BatchHighlight);
+
     // Update the view
     UpdateViewSize();
     AmpDirty = true;
 
-	if(pGestureManager)
+    if(pGestureManager)
+	{
 		pGestureManager->SetMovie(pMovie);
+		SF_DEBUG_MESSAGE(1, "Gesture recognizer setmovie\n");
+	}
 
     return 1;
 }
@@ -3199,9 +3388,9 @@ void FxPlayerAppBase::UpdateUserMatrix()
     UserMatrix = Render::Matrix2F::Scaling(Zoom);
     UserMatrix.AppendTranslation(Move.x, Move.y);
 
-    //	Render::Matrix2F m3d;
-    //	m3d.AppendScaling(Zoom);
-    //	m3d.AppendTranslation(Move.x * 2.f / MViewSize.Width, -Move.y * 2.f / MViewSize.Height);
+    //  Render::Matrix2F m3d;
+    //  m3d.AppendScaling(Zoom);
+    //  m3d.AppendTranslation(Move.x * 2.f / MViewSize.Width, -Move.y * 2.f / MViewSize.Height);
     pRenderThread->SetUserMatrix(UserMatrix);    
 }
 
@@ -3213,17 +3402,19 @@ void FxPlayerAppBase::UpdateUserMatrix()
 //    return scale;
 //}
 
+#ifdef SF_AMP_SERVER
 bool FxPlayerAppBase::HandleAmpRequest(const GFx::AMP::MessageAppControl* message)
 {
     Lock::Locker locker(&AmpCallbackLock);
     AmpAppControlMsgs.PushBack(const_cast<GFx::AMP::MessageAppControl*>(message));
     return true;
 }
+#endif
 
 
 void FxPlayerAppBase::SetRendererProfiling(bool on)
 {
-	SF_UNUSED(on);
+    SF_UNUSED(on);
 }
 
 bool FxPlayerAppBase::TakeScreenShot( const String& filename )
@@ -3319,6 +3510,7 @@ void FxPlayerAppBase::CycleFontConfig()
     }
 }
 
+#ifdef SF_AMP_SERVER
 void FxPlayerAppBase::HandleAmpAppMessages()
 {
     AmpCallbackLock.DoLock();
@@ -3332,15 +3524,51 @@ void FxPlayerAppBase::HandleAmpAppMessages()
         }
         if (msg->IsToggleOverdraw())
         {
-            OverdrawProfile = !OverdrawProfile;
-            BatchProfile = 0;
-            pRenderThread->SetProfileMode(OverdrawProfile ? FxRenderThread::Profile_Overdraw : FxRenderThread::Profile_None);
+            if (ProfileMode != Render::Profile_Overdraw)
+            {
+                ProfileMode = Render::Profile_Overdraw;
+            }
+            else
+            {
+                ProfileMode = Render::Profile_None;
+            }
+            pRenderThread->SetProfileMode(ProfileMode);
         }
         if (msg->IsToggleBatch())
         {
-            BatchProfile = !BatchProfile;
-            OverdrawProfile = 0;
-            pRenderThread->SetProfileMode(BatchProfile ? FxRenderThread::Profile_Batch : FxRenderThread::Profile_None);
+            if (ProfileMode != Render::Profile_Batch)
+            {
+                ProfileMode = Render::Profile_Batch;
+            }
+            else
+            {
+                ProfileMode = Render::Profile_None;
+            }
+            pRenderThread->SetProfileMode(ProfileMode);
+        }
+        if (msg->IsToggleBlending())
+        {
+            if (ProfileMode != Render::Profile_Blending)
+            {
+                ProfileMode = Render::Profile_Blending;
+            }
+            else
+            {
+                ProfileMode = Render::Profile_None;
+            }
+            pRenderThread->SetProfileMode(ProfileMode);
+        }
+        if (msg->IsToggleTextureDensity())
+        {
+            if (ProfileMode != Render::Profile_TextureDensity)
+            {
+                ProfileMode = Render::Profile_TextureDensity;
+            }
+            else
+            {
+                ProfileMode = Render::Profile_None;
+            }
+            pRenderThread->SetProfileMode(ProfileMode);
         }
         if (msg->IsTogglePause())
         {
@@ -3367,6 +3595,15 @@ void FxPlayerAppBase::HandleAmpAppMessages()
         {
             CycleFontConfig();
         }
+        if (msg->GetBatchChange() != 0)
+        {
+            BatchHighlight += msg->GetBatchChange();
+            if (BatchHighlight < 0)
+            {
+                BatchHighlight = -1;
+            }
+            pRenderThread->SetBatchHighlight(BatchHighlight);
+        }
 //         if (msg->IsCurveToleranceUp())
 //         {
 //             CurvePixelError = Alg::Min(10.0f, CurvePixelError + 0.5f);
@@ -3388,9 +3625,13 @@ void FxPlayerAppBase::HandleAmpAppMessages()
 
     UpdateAmpState();
 }
+#endif
 
 void    FxPlayerAppBase::SafeMovieRestart()
 {
+    if (!pMovie)
+        return;
+
     Paused = false;
     OnPause(Paused);
     pMovie->Restart(false);
@@ -3407,31 +3648,32 @@ void    FxPlayerAppBase::SafeMovieRestart()
     AdjustFrameTime();
 }
 
+#ifdef SF_AMP_SERVER
 void FxPlayerAppBase::UpdateAmpState()
 {
-#ifdef SF_AMP_SERVER
     if (AmpDirty)
     {
         Ptr<GFx::AMP::ServerState> ampState = *SF_NEW GFx::AMP::ServerState();
 
         ampState->StateFlags = AmpServer::GetInstance().GetCurrentState();
         ampState->ProfileLevel = AmpServer::GetInstance().GetProfileLevel();
-        if (OverdrawProfile)
+
+        // Map Profile types to AMP flags. 
+        static const unsigned ProfileModeFlags[Render::Profile_Count] =
         {
-            ampState->StateFlags |= GFx::AMP::Amp_RenderOverdraw;
-        }
-        else
+            0,
+            GFx::AMP::Amp_RenderOverdraw,
+            GFx::AMP::Amp_RenderBatch,
+            GFx::AMP::Amp_RenderBlending,
+            GFx::AMP::Amp_RenderTextureDensity
+        };
+        // Set the state with all flags disabled, then enable the one that is enabled now.
+        for (unsigned profileMode = 0; profileMode < Render::Profile_Count; ++profileMode)
         {
-            ampState->StateFlags &= ~GFx::AMP::Amp_RenderOverdraw;
+            ampState->StateFlags &= ~(ProfileModeFlags[profileMode]);
         }
-        if (BatchProfile)
-        {
-            ampState->StateFlags |= GFx::AMP::Amp_RenderBatch;
-        }
-        else
-        {
-            ampState->StateFlags &= ~GFx::AMP::Amp_RenderBatch;
-        }
+        ampState->StateFlags |= ProfileModeFlags[ProfileMode];
+
         if (Wireframe)
         {
             ampState->StateFlags |= GFx::AMP::Amp_App_Wireframe;
@@ -3517,8 +3759,8 @@ void FxPlayerAppBase::UpdateAmpState()
         AmpServer::GetInstance().UpdateState(ampState);
         AmpDirty = false;
     }
-#endif
 }
+#endif
 
 // Handle dropped file
 void FxPlayerAppBase::OnDropFiles(const String& path)
@@ -3624,7 +3866,7 @@ void FxPlayerAppBase::InstallHandlers()
     Ptr<CustomEIHandler> pei = *new CustomEIHandler();
     pMovie->SetExternalInterface(pei);
 
-#if defined(SF_OS_WIN32) && defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
+#if defined(SF_OS_WIN32) && defined(GFX_MULTITOUCH_SUPPORT_ENABLE) && !defined(_DURANGO)
     if (GetAppImpl()->IsMultitouchSupported())
         pMovie->SetMultitouchInterface(Ptr<MultitouchInterface>(*new FxPlayerMultitouchInterface()));
 #endif
@@ -3766,48 +4008,78 @@ bool FxPlayerAppBase::OnIMEEvent(unsigned message, UPInt wParam, UPInt lParam, U
 {
 #ifndef SF_NO_IME_SUPPORT
 
-	if (preprocess)
-	{
-		GFx::IMEWin32Event ev(GFx::IMEEvent::IME_PreProcessKeyboard, hWND, message, wParam, lParam, 0);
-		if (pMovie)
-		{
-			UInt32 handleEvtRetVal = pMovie->HandleEvent(ev);
-			return (handleEvtRetVal & Movie::HE_NoDefaultAction) != 0;
-		}
-		return Movie::HE_NotHandled;
-	}
-	GFx::IMEWin32Event ev(GFx::IMEEvent::IME_Default, hWND, message, wParam, lParam, true);
-	if (pMovie)
-	{
-		UInt32 handleEvtRetVal = pMovie->HandleEvent(ev);
-		return (handleEvtRetVal & Movie::HE_NoDefaultAction) != 0;
-	}
-	return Movie::HE_NotHandled;
-	//	ForwardEventToMovie(event);
-	//    return IMEHelper::OnEvent(event, pMovie);
+    if (preprocess)
+    {
+        GFx::IMEWin32Event ev(GFx::IMEEvent::IME_PreProcessKeyboard, hWND, message, wParam, lParam, 0);
+        if (pMovie)
+        {
+            UInt32 handleEvtRetVal = pMovie->HandleEvent(ev);
+            return (handleEvtRetVal & Movie::HE_NoDefaultAction) != 0;
+        }
+        return Movie::HE_NotHandled;
+    }
+    GFx::IMEWin32Event ev(GFx::IMEEvent::IME_Default, hWND, message, wParam, lParam, true);
+    if (pMovie)
+    {
+        UInt32 handleEvtRetVal = pMovie->HandleEvent(ev);
+        return (handleEvtRetVal & Movie::HE_NoDefaultAction) != 0;
+    }
+    return Movie::HE_NotHandled;
+    //  ForwardEventToMovie(event);
+    //    return IMEHelper::OnEvent(event, pMovie);
 #else
-	SF_UNUSED5(message, wParam, lParam, hWND, preprocess);
-	return false;
+    SF_UNUSED5(message, wParam, lParam, hWND, preprocess);
+    return false;
 #endif
+}
+
+void FxPlayerAppBase::OnPadStick(unsigned controllerIdx, PadKeyCode keyCode, float xpos, float ypos)
+{
+    if (StickMode == PSM_NoStick)
+    {
+        return;
+    }
+    
+    GamePadAnalogEvent event(keyCode, xpos, ypos, (Scaleform::UInt8)controllerIdx);
+    
+    if (pMovie)
+    {
+        pMovie->HandleEvent(event);
+    }
 }
 
 void FxPlayerAppBase::OnPad(unsigned controllerIdx, PadKeyCode keyCode, bool downFlag)
 {
     if (!pMovie)
+    {
         return;
+    }
+    
     switch(keyCode)
     {
     case SF::Pad_Left:
-        OnKeyEvent(controllerIdx, Key::Left, 0, downFlag);
+        if (StickMode != PSM_NoPad)
+        {
+            OnKeyEvent(controllerIdx, Key::Left, 0, downFlag);
+        }
         return;
     case SF::Pad_Right:
-        OnKeyEvent(controllerIdx, Key::Right, 0, downFlag);
+        if (StickMode != PSM_NoPad)
+        {
+            OnKeyEvent(controllerIdx, Key::Right, 0, downFlag);
+        }
         return;
     case SF::Pad_Up:
-        OnKeyEvent(controllerIdx, Key::Up, 0, downFlag);
+        if (StickMode != PSM_NoPad)
+        {
+            OnKeyEvent(controllerIdx, Key::Up, 0, downFlag);
+        }
         return;
     case SF::Pad_Down:
-        OnKeyEvent(controllerIdx, Key::Down, 0, downFlag);
+        if (StickMode != PSM_NoPad)
+        {
+            OnKeyEvent(controllerIdx, Key::Down, 0, downFlag);
+        }
         return;
     default:
         break;
@@ -3845,9 +4117,9 @@ void FxPlayerAppBase::OnKey(unsigned controllerIndex, KeyCode keyCode,
 
     bool ctrl = false;
 
-	UInt32 keyPlusMods = mods.States & (KeyModifiers::Key_CtrlPressed |
-								        KeyModifiers::Key_AltPressed |
-								        KeyModifiers::Key_ShiftPressed);
+    UInt32 keyPlusMods = mods.States & (KeyModifiers::Key_CtrlPressed |
+                                        KeyModifiers::Key_AltPressed |
+                                        KeyModifiers::Key_ShiftPressed);
     keyPlusMods <<= 16;
     keyPlusMods |= keyCode;
 
@@ -3929,7 +4201,7 @@ void FxPlayerAppBase::OnMouseButton(unsigned mouseIndex, unsigned button, bool d
     if (!pMovie)
         return;
     MousePrevPos = mousePos;
-	Render::PointF p = AdjustToViewPort(mousePos);
+    Render::PointF p = AdjustToViewPort(mousePos);
 
     Render::Matrix2F m;
     m.AppendScaling(Zoom);
@@ -3983,7 +4255,7 @@ void FxPlayerAppBase::OnMouseWheel(unsigned mouseIndex, float zdelta,
 {
     bool controlDown = mods.IsCtrlPressed();
 
-	Render::PointF p = AdjustToViewPort(mousePos);
+    Render::PointF p = AdjustToViewPort(mousePos);
 
     if (controlDown && !NoCtrlKey)// && MouseTracking == None)
     {
@@ -4050,7 +4322,7 @@ void FxPlayerAppBase::OnMouseMove(unsigned mouseIndex,
 
         dZoom -= Zoom;
         Render::PointF p = AdjustToViewPort(MouseDownPos);
-		Render::Matrix2F m;
+        Render::Matrix2F m;
         m.AppendScaling(ZoomStart);
         m.AppendTranslation(MoveStart.x, MoveStart.y);
 
@@ -4072,7 +4344,7 @@ void FxPlayerAppBase::OnMouseMove(unsigned mouseIndex,
         return;
     }
 
-	Render::PointF p = AdjustToViewPort(mousePos);
+    Render::PointF p = AdjustToViewPort(mousePos);
     Render::Matrix2F m;
     m.AppendScaling(Zoom);
     m.AppendTranslation(Move.x, Move.y);
@@ -4106,7 +4378,7 @@ void FxPlayerAppBase::OnMouseMove(unsigned mouseIndex,
 
 void FxPlayerAppBase::OnTouchBegin(unsigned, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary) 
 {
-	SF_UNUSED4(id, pos, contact, primary);
+    SF_UNUSED4(id, pos, contact, primary);
 #if defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
     if (!pMovie)
         return;
@@ -4126,13 +4398,17 @@ void FxPlayerAppBase::OnTouchBegin(unsigned, unsigned id, const Point<int>& pos,
     pMovie->HandleEvent(event);
 
     if (pGestureManager)
-        pGestureManager->ProcessDown(id, pos, p);
+	{
+		pGestureManager->SetMovie(pMovie);
+		pGestureManager->ProcessDown(id, pos, p);
+		//SF_DEBUG_MESSAGE(1, "Gesture recognizer ProcessDown\n");
+	}
 #endif
 }
 
 void FxPlayerAppBase::OnTouchEnd(unsigned, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary) 
 {
-	SF_UNUSED4(id, pos, contact, primary);
+    SF_UNUSED4(id, pos, contact, primary);
 #if defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
     if (!pMovie)
         return;
@@ -4152,13 +4428,17 @@ void FxPlayerAppBase::OnTouchEnd(unsigned, unsigned id, const Point<int>& pos, c
     pMovie->HandleEvent(event);
 
     if (pGestureManager)
+	{
+		pGestureManager->SetMovie(pMovie);
         pGestureManager->ProcessUp(id, pos, p);
+		//SF_DEBUG_MESSAGE(1, "Gesture recognizer ProcessUp\n");
+	}
 #endif
 }
 
 void FxPlayerAppBase::OnTouchMove(unsigned, unsigned id, const Point<int>& pos, const Point<int>& contact, bool primary) 
 {
-	SF_UNUSED4(id, pos, contact, primary);
+    SF_UNUSED4(id, pos, contact, primary);
 #if defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
     if (!pMovie)
         return;
@@ -4178,7 +4458,11 @@ void FxPlayerAppBase::OnTouchMove(unsigned, unsigned id, const Point<int>& pos, 
     pMovie->HandleEvent(event);
 
     if (pGestureManager)
-        pGestureManager->ProcessMove(id, pos, p);
+	{
+		pGestureManager->SetMovie(pMovie);
+		pGestureManager->ProcessMove(id, pos, p);
+		//SF_DEBUG_MESSAGE(1, "Gesture recognizer ProcessMove\n");
+	}
 #endif
 }
 
@@ -4187,7 +4471,7 @@ void FxPlayerAppBase::OnGestureBegin(unsigned, UInt32 gestureMask, const Point<i
                                           const PointF& scaleDelta,
                                           float rotationDelta)
 {
-	SF_UNUSED5(gestureMask, pos, translationDelta, scaleDelta, rotationDelta);
+    SF_UNUSED5(gestureMask, pos, translationDelta, scaleDelta, rotationDelta);
 #if defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
     if (!pMovie)
         return;
@@ -4199,7 +4483,7 @@ void FxPlayerAppBase::OnGestureBegin(unsigned, UInt32 gestureMask, const Point<i
 
     Render::PointF pp = m.TransformByInverse(translationDelta);
 
-	m.AppendTranslation(Move.x, Move.y);
+    m.AppendTranslation(Move.x, Move.y);
     p = m.TransformByInverse(p);
 
     GestureEvent event(GFx::Event::GestureBegin, gestureMask, p.x, p.y, pp.x, pp.y, 
@@ -4213,21 +4497,21 @@ void FxPlayerAppBase::OnGesture(unsigned, UInt32 gestureMask, const Point<int>& 
                                      const PointF& scaleDelta,
                                      float rotationDelta)
 {
-	SF_UNUSED5(gestureMask, pos, translationDelta, scaleDelta, rotationDelta);
+    SF_UNUSED5(gestureMask, pos, translationDelta, scaleDelta, rotationDelta);
 #if defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
     if (!pMovie)
         return;
-	//printf("!!! %d %d    %f %f\n", x,y,translationDeltaX,translationDeltaY);
+    //printf("!!! %d %d    %f %f\n", x,y,translationDeltaX,translationDeltaY);
     Render::PointF p = AdjustToViewPort(pos);
 
     Render::Matrix2F m;
     m.AppendScaling(Zoom);
 
-	Render::PointF pp = m.TransformByInverse(translationDelta);
+    Render::PointF pp = m.TransformByInverse(translationDelta);
 
-	m.AppendTranslation(Move.x, Move.y);
+    m.AppendTranslation(Move.x, Move.y);
     p = m.TransformByInverse(p);
-	//printf("!!! %f %f    %f %f\n", p.x,p.y,pp.x,pp.y);
+    //printf("!!! %f %f    %f %f\n", p.x,p.y,pp.x,pp.y);
 
     GestureEvent event(GFx::Event::Gesture, gestureMask, p.x, p.y, pp.x, pp.y, 
         scaleDelta.x, scaleDelta.y, rotationDelta);
@@ -4237,7 +4521,7 @@ void FxPlayerAppBase::OnGesture(unsigned, UInt32 gestureMask, const Point<int>& 
 
 void FxPlayerAppBase::OnGestureEnd(unsigned, UInt32 gestureMask, const Point<int>& pos)
 {
-	SF_UNUSED2(gestureMask, pos);
+    SF_UNUSED2(gestureMask, pos);
 #if defined(GFX_MULTITOUCH_SUPPORT_ENABLE)
     if (!pMovie)
         return;
@@ -4256,7 +4540,7 @@ void FxPlayerAppBase::OnGestureEnd(unsigned, UInt32 gestureMask, const Point<int
 
 void FxPlayerAppBase::OnUpdateCliboard(const wchar_t* text) 
 {
-    Ptr<TextClipboard> pclipBoard = mLoader.GetTextClipboard();
+    Ptr<Clipboard> pclipBoard = mLoader.GetClipboard();
     if (pclipBoard)
         pclipBoard->SetText(text);
 }
@@ -4309,8 +4593,8 @@ void FxPlayerAppBase::OnObjectsReport()
 Render::PointF FxPlayerAppBase::AdjustToViewPort(const Point<int>& pos)
 {
     Size<unsigned> szRemainder = GetViewSize() - MViewSize;
-	return Render::PointF (static_cast<float>(pos.x - (int)szRemainder.Width/2), 
-						   static_cast<float>(pos.y - (int)szRemainder.Height/2));  	
+    return Render::PointF (static_cast<float>(pos.x - (int)szRemainder.Width/2), 
+                           static_cast<float>(pos.y - (int)szRemainder.Height/2));      
 }
 
 // Scales coordinates in MovieDef space into the Movie's viewport space.

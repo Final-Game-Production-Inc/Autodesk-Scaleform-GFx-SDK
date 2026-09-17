@@ -6,6 +6,7 @@ Created     :   Dec 17, 2007
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,7 +28,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "GFx/AS3/Obj/Net/AS3_Obj_Net_URLRequest.h"
 #include "GFx/AS3/Obj/Display/AS3_Obj_Display_Loader.h"
 #include "GFx/AS3/IME/AS3_IMEManager.h"
-#include "GFx/AS3/Obj/Gfx/AS3_Obj_Gfx_IMEEventEx.h"
+#include "GFx/AS3/Obj/GFx/AS3_Obj_Gfx_IMEEventEx.h"
 #include "GFxConfig.h"
 #include "GFx/GFx_DisplayObject.h"
 
@@ -337,9 +338,11 @@ bool IMEManager::AcquireCandidateList()
 				else
 				{
 #if   defined(SF_OS_WIN32)
-					char workingDir[MAX_PATH];
-					GetCurrentDirectoryA(MAX_PATH, workingDir);
-					URLBuilder::LocationInfo loc(URLBuilder::File_Regular, CandidateSwfPath, String(workingDir));
+					wchar_t workingDir[MAX_PATH];
+					GetCurrentDirectoryW(MAX_PATH, workingDir);
+					char utf8workingDir[MAX_PATH];
+					UTF8Util::EncodeStringSafe(utf8workingDir, MAX_PATH, workingDir);
+					URLBuilder::LocationInfo loc(URLBuilder::File_Regular, CandidateSwfPath, String(utf8workingDir));
 					String path;
 					if (purlBuilder)
 						purlBuilder->BuildURL(&path, loc);
@@ -421,12 +424,12 @@ void IMEManager::DispatchEvent(const char* message, const char* messageType, con
 		{
 			AS3::Instances::fl_display::DisplayObject* as3obj = ((AvmDisplayObj*)avmDispObj)->GetAS3Obj();
 			const ASString& evtName = proot->GetStringManager()->CreateString(messageType);
-			if (as3obj->HasEventHandler(evtName, false))
+			if (as3obj != NULL && as3obj->HasEventHandler(evtName, false))
 			{
                 SPtr<Instances::fl_gfx::IMEEventEx> evt;
-				Value params[] = { Value(evtName), Value(true), Value(true) };
+				Value paramsValue[] = { Value(evtName), Value(true), Value(true) };
 				ASVM* asvm = proot->GetAVM();
-				asvm->ConstructInstance(evt, asvm->GetClass("scaleform.gfx.IMEEventEx", asvm->GetCurrentAppDomain()), 3, params);
+				asvm->ConstructInstance(evt, asvm->GetClass("scaleform.gfx.IMEEventEx", asvm->GetCurrentAppDomain()), 3, paramsValue);
 				SF_ASSERT(evt);
 				evt->Target = as3obj;
 				evt->SetMessage(message);
@@ -562,7 +565,7 @@ InteractiveObject* IMEManager::HandleFocus(Movie* pmovie,
                             || pobj->GetProperty(Multiname(avmSprite->GetAVM()->GetPublicNamespace(), 
                             avmSprite->GetAS3Root()->GetStringManager()->CreateString("IsStatusWindow")), result)
                             || pobj->GetProperty(Multiname(avmSprite->GetAVM()->GetPublicNamespace(), 
-                            avmSprite->GetAS3Root()->GetStringManager()->CreateString("IsLangBar")), result))
+                            avmSprite->GetAS3Root()->GetStringManager()->CreateString("isLanguageBar")), result))
 
                         {
                             return poldFocusedItem;
@@ -613,9 +616,15 @@ InteractiveObject* IMEManager::HandleFocus(Movie* pmovie,
 
      //   DoFinalize();
 
-        pimeManagerBase->EnableIME(pnewFocusingItem && 
-            pnewFocusingItem->GetType() == CharacterDef::TextField &&
-            static_cast<TextField*>(pnewFocusingItem)->IsIMEEnabled());
+        bool isIMEEnabled   = false; 
+        bool isTextField    = false;    
+
+		if (pnewFocusingItem)
+		{
+            isTextField  = pnewFocusingItem->GetType() == CharacterDef::TextField;
+			isIMEEnabled = isTextField ? static_cast<TextField*>(pnewFocusingItem)->IsIMEEnabled() : false;
+		}
+        pimeManagerBase->EnableIME(pnewFocusingItem && isIMEEnabled && isTextField);
 
     }
     return pnewFocusingItem;

@@ -6,6 +6,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -186,8 +187,8 @@ void Output(const VM& vm, FlashUI& ui, const Abc::File& file, const T* code, Abc
         }
         break;
     case Code::op_debugfile:
-    case Code::op_pushstring:
         {
+            // We do not store strings in byte code in case of op_debugfile.
             const StringDataPtr& s = cp.GetString(AbsoluteIndex(ReadU30(code, offset)));
             const String str(s.ToCStr(), s.GetSize());
 
@@ -196,17 +197,81 @@ void Output(const VM& vm, FlashUI& ui, const Abc::File& file, const T* code, Abc
             ui.Output(FlashUI::Output_Action, "'");
         }
         break;
+    case Code::op_pushstring:
+        {
+            const int ind = ReadU30(code, offset);
+
+            ui.Output(FlashUI::Output_Action, "'");
+
+            if (sizeof(T) == 1)
+            {
+                const StringDataPtr& s = cp.GetString(AbsoluteIndex(ind));
+                String str(s.ToCStr(), s.GetSize());
+                ui.Output(FlashUI::Output_Action, str);
+            }
+            else
+            {
+#if defined(SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE)
+                ASStringNode* sn = reinterpret_cast<ASStringNode*>((uintptr_t)ind);
+                ui.Output(FlashUI::Output_Action, sn->pData);
+#else
+                const StringDataPtr& s = cp.GetString(AbsoluteIndex(ind));
+                String str(s.ToCStr(), s.GetSize());
+                ui.Output(FlashUI::Output_Action, str);
+#endif
+            }
+
+            ui.Output(FlashUI::Output_Action, "'");
+        }
+        break;
     case Code::op_pushbyte:
         ui.Output(FlashUI::Output_Action, Scaleform::AsString(Read8(code, offset)));
         break;
     case Code::op_pushint:
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        ui.Output(FlashUI::Output_Action, Scaleform::AsString(ReadU30(code, offset)));
+#else
         ui.Output(FlashUI::Output_Action, Scaleform::AsString(cp.GetInt(ReadU30(code, offset))));
+#endif
         break;
     case Code::op_pushuint:
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        ui.Output(FlashUI::Output_Action, Scaleform::AsString(static_cast<UInt32>(ReadU30(code, offset))));
+#else
         ui.Output(FlashUI::Output_Action, Scaleform::AsString(cp.GetUInt(ReadU30(code, offset))));
+#endif
         break;
     case Code::op_pushdouble:
+#ifdef SF_AS3_STORE_PRIMITIVE_VALUES_IN_BYTECODE
+        if (sizeof(T) == 1)
+            ui.Output(FlashUI::Output_Action, Scaleform::AsString(cp.GetDouble(ReadU30(code, offset))));
+        else if (sizeof(Abc::TOpCode::ValueType) == sizeof(AS3::Value::Number))
+        {
+            // This case handles 64-bit platforms and SF_NO_DOUBLE.
+            union
+            {
+                TOpCode::ValueType  I;
+                Value::Number       D;
+            } u;
+
+            u.I = ReadUPInt(code, offset);
+            ui.Output(FlashUI::Output_Action, Scaleform::AsString(u.D));
+        }
+        else
+        {
+            union
+            {
+                UInt32  I[2];
+                double  D;
+            } u;
+
+            u.I[0] = ReadU30(code, offset);
+            u.I[1] = ReadU30(code, offset);
+            ui.Output(FlashUI::Output_Action, Scaleform::AsString(u.D));
+        }
+#else
         ui.Output(FlashUI::Output_Action, Scaleform::AsString(cp.GetDouble(ReadU30(code, offset))));
+#endif
         break;
     case Code::op_pushnamespace:
         ui.Output(FlashUI::Output_Action, AS3::AsString(cp.GetNamespace(ReadU30(code, offset))));

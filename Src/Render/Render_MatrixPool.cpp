@@ -7,6 +7,7 @@ Created     :   June 7, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -189,7 +190,7 @@ bool EntryHandleTable::allocEntryPage()
 {
     HandlePage* ppage =
         (HandlePage*)SF_HEAP_MEMALIGN(pHeap, Pool_HandlePageSize,
-                                      Pool_HandlePageAlign, StatRender_MatrixPoolHandle_Mem);
+                                      Pool_HandlePageAlign, StatRender_MatrixPool_Mem);
     if (!ppage) return false;
 
     ppage->pTable  = this;
@@ -314,6 +315,12 @@ EntryHandle       HMatrix::NullHandle = {{ &HMatrix_DefaultMatrixData.Data }};
 void HMatrix::SetMatrix2D(const Matrix2F& m)
 {
     SF_ASSERT(pHandle != &NullHandle);
+    if (Has3D())
+    {
+        if (m == Matrix3F::Identity)
+            return;
+        pHandle->ReallocToFormat(pHandle->pHeader->Format & ~Has_3D);
+    }
     *pHandle->GetMatrixPtr() = m;
 }
 

@@ -5,6 +5,7 @@ Created     :   2005-2006
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -186,6 +187,17 @@ ShapeMeshProvider::ShapeMeshProvider(ShapeDataInterface* shape, ShapeDataInterfa
     acquireShapeData();
 }
 
+//------------------------------------------------------------------------
+ShapeMeshProvider::~ShapeMeshProvider()
+{
+    // NOTE: If this mesh provider has a delegate key, this will clear it (inside lock). This is 
+    // important, because otherwise it is possible that the render thread will access this object 
+    // simultaneously after this destructor has exited, but after this derived class has destroyed
+    // its members.
+    releaseKeySet();
+
+    SF_AMP_CODE(clearStrokeCount();)
+}
 
 //------------------------------------------------------------------------
 void ShapeMeshProvider::AttachShape(ShapeDataInterface* shape, ShapeDataInterface* shapeMorph)
@@ -1375,7 +1387,7 @@ bool ShapeMeshProvider::tessellateStroke(const Scale9GridInfo* s9g,
     if ((meshGenFlags & Mesh_EdgeAA) == 0 || (meshGenFlags & Mesh_Mask) != 0)
     {
         edgeAAWidth = 0;
-        screenWidth = floor(screenWidth) + 1;
+        screenWidth = (float)(floor(screenWidth) + 1);
     }
 
     if (hinted)

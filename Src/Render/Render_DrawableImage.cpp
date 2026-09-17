@@ -8,6 +8,7 @@ Created     :   September 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,6 +37,8 @@ DrawableImageContext::DrawableImageContext(
   IDefaults(i)
 {
     RContext = new(RContextBacking) Context(Memory::GetHeapByAddress(getThis()));
+    Queue = *SF_HEAP_AUTO_NEW(this) DICommandQueue(this);
+
     if ( pControlContext )
         pControlContext->AddCaptureNotify(this);
 }
@@ -43,13 +46,28 @@ DrawableImageContext::~DrawableImageContext()
 {
     if (RContext)
     {
+        processTreeRootKillList();
         RContext->~Context();
         RContext = 0;
     }
 
     if ( pControlContext )
         pControlContext->RemoveCaptureNotify(this);
-    processTreeRootKillList();
+}
+
+
+void DrawableImageContext::GetRenderInterfacesRT( Interfaces* p )
+{
+    SF_DEBUG_ASSERT(pRTCommandQueue != NULL, "NULL pRTCommandQueue encountered, please ensure a valid ThreadCommandQueue is passed to MovieDef::CreateInstance before using BitmapData.\n");
+    pRTCommandQueue->GetRenderInterfaces(p);
+    if (IDefaults.pTextureManager)
+        p->pTextureManager = IDefaults.pTextureManager;
+    if (IDefaults.pHAL)
+        p->pHAL = IDefaults.pHAL;
+    if (IDefaults.pRenderer2D)
+        p->pRenderer2D = IDefaults.pRenderer2D;
+    if (IDefaults.RenderThreadID)
+        p->RenderThreadID = IDefaults.RenderThreadID;
 }
 
 // ContextCaptureNotify Implementation
@@ -57,53 +75,35 @@ void DrawableImageContext::OnCapture()
 {
     if (RContext)
         RContext->Capture();
+    if (Queue)
+        Queue->OnCapture();
 
-    // DICommandQueue can potentially be removed from the list here.
-    Ptr<DICommandQueue> queue = 0;
-    if (!QueueList.IsEmpty())
-    {
-        for (queue = QueueList.GetFirst(); ;)
-        {
-            DICommandQueue* queueNext = QueueList.GetNext(queue);
-            queue->OnCapture();
-            if (QueueList.IsNull(queueNext))
-                break;
-            queue = queueNext;
-        }
-    }
     processTreeRootKillList();
 }
 void DrawableImageContext::OnNextCapture(ContextImpl::RenderNotify* notify)
 {
-    ExecuteNextCapture(notify);
-
-    // DICommandQueue can potentially be removed from the list here.
-    for (DICommandQueue* queue = QueueList.GetFirst(); !QueueList.IsNull(queue);)
-    {
-        DICommandQueue* queueNext = QueueList.GetNext(queue);
-        queue->OnNextCapture(notify);
-        queue = queueNext;
-    }
+    if (RContext)
+        RContext->NextCapture(notify);
+    if (Queue)
+        Queue->OnNextCapture(notify);
 }
 
 void DrawableImageContext::OnShutdown(bool waitFlag)
 {
-    // Flush out all of our dependent queues, and remove them.
-    while (!QueueList.IsEmpty())
+    // Flush out the queue (or discard, if not waiting). Note that, the queue may be NULL because OnShutdown may be called multiple times.
+    if (Queue)
     {
-        Ptr<DICommandQueue> queue = QueueList.GetFirst();
-        RemoveCaptureNotify(queue);
-
         if (waitFlag)
         {
             // If we are allowed to wait, let all the currently queued commands execute.
-            queue->ExecuteCommandsAndWait();
+            Queue->ExecuteCommandsAndWait();
         }
         else
         {
             // If not, discard all the commands in the queue.
-            queue->DiscardCommands();
+            Queue->DiscardCommands();
         }
+        Queue.Clear();
     }
 
     pControlContext = 0;
@@ -114,7 +114,7 @@ void DrawableImageContext::OnShutdown(bool waitFlag)
         {
             RContext->~Context();
             RContext = 0;
-    }
+        }
         else
         {
             RContext->Shutdown(waitFlag);
@@ -126,24 +126,6 @@ void DrawableImageContext::ExecuteNextCapture(ContextImpl::RenderNotify* notify)
 {
     if (RContext)
         RContext->NextCapture(notify);
-}
-
-void DrawableImageContext::AddCaptureNotify(DICommandQueue* notify)
-{
-    Lock::Locker scopeLock(getLock());
-    //SF_ASSERT(notify->pDIContext == this);
-    QueueList.PushBack(notify);
-}
-
-void DrawableImageContext::RemoveCaptureNotify(DICommandQueue* notify)
-{
-    Lock::Locker scopeLock(getLock());
-    //SF_ASSERT(notify->pDIContext == this);
-    if (notify->pNext != 0 )
-    {
-        notify->RemoveNode();
-        notify->pNext = notify->pPrev = 0;
-    }
 }
 
 void DrawableImageContext::processTreeRootKillList()
@@ -209,60 +191,65 @@ DrawableImage::DrawableImage(ImageFormat format, ImageSize size, bool transparen
 }
 
 // This thread command is used when a DrawableImage is destroyed on the main thread, and must be unmapped.
-class UnmapTextureThreadCommand : public ThreadCommand
+class DestroyDrawableImageThreadCommand : public ThreadCommand
 {
 public:
-    UnmapTextureThreadCommand(Texture* ptex) :
-        pTexture(ptex) { }
+    DestroyDrawableImageThreadCommand(DrawableImage* pdi) :
+        pDrawableImage(pdi) { }
 
     virtual void Execute()
     {
-        if (pTexture)
-            pTexture->Unmap();
+        delete pDrawableImage;
     }
 private:
-    Ptr<Texture> pTexture;
+    DrawableImage* pDrawableImage;
 };
 
-DrawableImage::~DrawableImage()
+void DrawableImage::Release()
 {
-    // If the image is currently mapped, unmap it. This would cause the destructor for this
-    // object to be called again, on another thread, once the unmap command has executed.
-    // Instead, artificially increase and decrease refcount, so this doesn't happen. This should
-    // be valid, as we know we are in the destructor, refcount should already be zero.
-    if (isMapped())
+    // If we are not in the render thread, defer destruction of DrawableImages to the render thread.
+    // If we are on the Advance thread, we might not be able to destroy the DrawableImage immediately,
+    // as it may have DrawableImage commands still pending in the render thread. If we are in the render
+    // thread, we may be in DIQueue::updateModified[CPU|GPU]Images, and the render target resolve may
+    // not have completed yet on the GPU.
+    if ((AtomicOps<int>::ExchangeAdd_NoSync(&RefCount, -1) - 1) == 0)
     {
+        // Also release the delegate image, as it may have an ImageResource, which was allocated inside
+        // the movie heap that's being destroyed. If it persisted until the Render thread destroyed it,
+        // it might be already destroyed. Since this DrawableImage is being destroyed, nothing should be
+        // accessing or modifying it on another thread.
+        pDelegateImage.Clear();
+
         Interfaces rifs;
         pContext->GetRenderInterfacesRT(&rifs);
-        if ( rifs.RenderThreadID == GetCurrentThreadId() )
+        if (rifs.RenderThreadID != GetCurrentThreadId() && rifs.RenderThreadID != 0)
         {
-            // If we are in the RT, we can unmap immediately. Because we are being destroyed,
-            // we know that there should be no commands in our queue that reference us.
-            unmapTextureRT();
+            Ptr<DestroyDrawableImageThreadCommand> pcmd = *SF_NEW DestroyDrawableImageThreadCommand(this);
+            pContext->GetQueue()->PushThreadCommand(pcmd);
         }
         else
         {
-            // Need to push a thread command to unmap the texture. However, we can't flush the
-            // DrawableImage queue now, because we may be in the process of destruction within a Context::Capture(),
-            // while simultaneously trying to display the movie, and this would cause a deadlock.
-            Ptr<UnmapTextureThreadCommand> pcmd = *SF_NEW UnmapTextureThreadCommand(pTexture);
-            pContext->GetQueue()->PushThreadCommand(pcmd);
+            delete this;
         }
     }
+}
 
-    {
-        // Thread safety may be accomplished in a lighter method.
-        Lock::Locker lock(&pQueue->QueueLock);
-        RemoveNode(); // Remove from pQueue->ImageList
-    }
+DrawableImage::~DrawableImage()
+{
+    Interfaces rifs;
+    pContext->GetRenderInterfacesRT(&rifs);
+    SF_DEBUG_ASSERT(rifs.RenderThreadID == 0 || 
+        rifs.RenderThreadID == GetCurrentThreadId(), "DrawableImage::~DrawableImage not called on Render thread.");
+
+    // If the image is currently mapped, unmap it. 
+    if (isMapped())
+        unmapTextureRT();
 
     // If this DrawableImage has a fence associated with it, we must wait for it to complete. If we do not,
     // the memory for this image will be freed, but the GPU could subsequently write data into the freed memory,
     // thus corrupting some other (likely) texture data.
     if (pFence && pFence->IsPending(FenceType_Fragment))
         pFence->WaitFence(FenceType_Fragment);
-
-    pQueue.Clear();
 }
 
 // param rtMap needs to be set properly, and can only be true if this is executing on the RT.
@@ -286,7 +273,7 @@ bool DrawableImage::MapImageSource(ImageData* data, ImageBase* i)
     }
     else if (i->GetImageType() == Image::Type_RawImage)
     {
-        RawImage* image = (RawImage*)i;
+        RawImage* image = (RawImage*)(i->GetAsImage());
         if ((image->GetFormat() == Image_B8G8R8A8) ||
             (image->GetFormat() == Image_R8G8B8A8))
         {
@@ -322,14 +309,9 @@ void DrawableImage::initialize(ImageFormat format, const ImageSize &size,
     pCPUModifiedNext = 0;
     pGPUModifiedNext = 0;
 
-    // Only create a new queue if one does not already exist. One could exist, if we had a delegate
-    // image, but are being a 'real' DrawableImage. In this case, we want our queue to remain merged
-    // with the delegate's.
-    if (!pQueue)
-    {
-        pQueue = *SF_HEAP_AUTO_NEW(this) DICommandQueue(dicontext);
-        pQueue->ImageList.PushBack(this);
-    }
+    // Get the queue from the DrawableImageContext. This should be the one and only queue.
+    pQueue = dicontext->Queue;
+    SF_DEBUG_ASSERT(pQueue != 0, "Error, DrawableImageContext has NULL DICommandQueue.");
 
     // If the delegate image does not exist, create a new texture to hold the data.
     if (!pDelegateImage)
@@ -345,13 +327,12 @@ void DrawableImage::initialize(ImageFormat format, const ImageSize &size,
             addCommand(DICommand_CreateTexture(this));
         }
     }
-    else if (pDelegateImage->GetImageType() == Image::Type_DrawableImage)
-    {
-        // If we have a delegate that is a DrawableImage, merge our queues together. Note: this should
-        // never happen in the render thread.
-        SF_DEBUG_ASSERT(GetCurrentThreadId() != rifs.RenderThreadID, "Cannot merge queues on the render thread.");
-        mergeQueueWith(pDelegateImage->GetAsImage());
-    }
+}
+
+
+bool DrawableImage::isMapped() const
+{
+    return (AtomicOps<unsigned>::Load_Acquire(&DrawableImageState) & (DIState_Mapped|DIState_MappedRead)) != 0;
 }
 
 void DrawableImage::addToCPUModifiedList()
@@ -388,18 +369,6 @@ void DrawableImage::addToGPUModifiedListRT()
     }
 }
 
-static UInt32 UpperPowerOfTwo(UInt32 val)
-{
-	val--;
-	val |= val >> 1;
-	val |= val >> 2;
-	val |= val >> 4;
-	val |= val >> 8;
-	val |= val >> 16;
-	val++;
-	return val;
-}
-
 bool DrawableImage::createTextureFromManager(HAL* phal, TextureManager* tmanager)
 {
     // For image-source initialization, pDelegate image will be valid, so our Decode implementation will
@@ -417,8 +386,8 @@ bool DrawableImage::createTextureFromManager(HAL* phal, TextureManager* tmanager
     
 	if(forcePOT)
 	{
-		texSize.SetWidth(UpperPowerOfTwo(texSize.Width));
-		texSize.SetHeight(UpperPowerOfTwo(texSize.Height));
+        texSize.SetWidth(Alg::UpperPowerOfTwo(texSize.Width));
+		texSize.SetHeight(Alg::UpperPowerOfTwo(texSize.Height));
 	}
 
 	Texture* texture =
@@ -429,8 +398,10 @@ bool DrawableImage::createTextureFromManager(HAL* phal, TextureManager* tmanager
         return false;
     initTexture_NoAddRef(texture);
 
-    // TODOBM: needs depth/stencil?
-    pRT = *phal->CreateRenderTarget(texture, false);
+    // Because we do not know whether the user will call BitmapData.Draw, we must preallocate
+    // a depth/stencil target, in case it is required. TODOBM: allocate these targets on demand,
+    // because most of the time they will not be required.
+    pRT = *phal->CreateRenderTarget(texture, true);
     if (!pRT)
         return false;
 
@@ -446,6 +417,15 @@ Texture* DrawableImage::GetTexture(TextureManager* pmanager)
         // Upcast, but that should be fine, because we have checked GetImageType.
         // All our subclasses should be derived from Image.
         Image* pimage = (Image*)pDelegateImage.GetPtr();
+
+		// Make sure the Manager isn't NULL. If it is, obtain it from the DIContext.
+        if (pmanager == 0)
+        {
+            Interfaces rifs;
+            GetContext()->GetRenderInterfacesRT(&rifs);
+            pmanager = rifs.pTextureManager;
+        }
+        SF_DEBUG_ASSERT(pmanager, "Unexpected NULL TextureManager.");
         return pimage->GetTexture(pmanager);
     }
     return pTexture;
@@ -469,7 +449,7 @@ void DrawableImage::TextureLost(TextureLossReason reason)
     }
 }
 
-bool DrawableImage::mapTextureRT(bool readOnly, bool forceRemap)
+bool DrawableImage::mapTextureRT(bool readOnly)
 {
     // Thread safety may be accomplished in a lighter method.
     Lock::Locker lock(&pQueue->QueueLock);
@@ -500,11 +480,6 @@ bool DrawableImage::mapTextureRT(bool readOnly, bool forceRemap)
             DrawableImageState |= (DIState_Mapped|DIState_MappedRead);
         }
     }
-
-	if(forceRemap)
-	{
-		DrawableImageState |= DIState_ForceRemap;
-	}
 
     return isMapped();
 }
@@ -558,7 +533,7 @@ bool DrawableImage::ensureRenderableRT()
         rifs.pHAL->BeginScene();
 
         rifs.pHAL->PushRenderTarget(RectF(pRT->GetSize()), pRT, HAL::PRT_Resolve);
-        Matrix2F mvp = Matrix2F::Scaling(2,-2) * Matrix2F::Translation(-0.5f, -0.5f);
+        Matrix2F mvp = rifs.pHAL->GetMatrices()->GetFullViewportMatrix(pRT->GetSize());
         Matrix2F texgen;
         texgen.AppendScaling((Size<float>)(pRT->GetSize()) / pRT->GetBufferSize());
 
@@ -627,102 +602,20 @@ void DrawableImage::updateStagingTargetRT()
         // because on certain platforms, this may cause a resolve, which we need to wait for).
         if (rifs.pHAL->GetRenderSync())
             pFence = rifs.pHAL->GetRenderSync()->InsertFence();
-
-		// Set if the texture needs immediate access after staging update
-		if(DrawableImageState & DIState_ForceRemap)
-		{
-			DrawableImageState &= ~DIState_ForceRemap;
-			mapTextureRT(false);
-		}
     }
 }
-
-// Applies our queue to the 'other' image, which is typically
-// a command source.
-bool DrawableImage::mergeQueueWith(Image* other)
-{
-    DrawableImage* p = 0;
-
-    // Lock scope
-    {
-        // Thread safety may be accomplished in a lighter method.
-        Lock::Locker lock(&pQueue->QueueLock);
-
-        if (other->GetImageType() != Image::Type_DrawableImage)
-        {
-            SF_DEBUG_WARNING(1,"Attempting to merge a DrawableImage with another Image type.");
-            return true;
-        }
-
-        p = (DrawableImage*)other;
-        if (p->pQueue == pQueue)
-            return true;
-        if (p->pContext != pContext)
-        {
-            // TBD: Do raw copy through mapping if context doesn't match.
-            SF_DEBUG_ASSERT(0, "Merging DrawableImages between contexts is not supported.");
-            return false;
-        }
-    }
-
-    // Flush 'p'.
-    // TBD: A more efficient alternative in the future may involve queuing
-    // up p's internal queue as to-be-executed.
-    p->pQueue->ExecuteCommandsAndWait();
-
-    // Switch the image to use our queue to ensure synchronization
-    p->RemoveNode(); // From p->pQueue.ImageList
-
-    // Images should never be GPU modified at this point.
-    SF_DEBUG_ASSERT((p->DrawableImageState&DIState_GPUDirty)==0, "Unexpected GPU modified DrawableImage.");
-
-    // Remove the image from the old queue's CPU modified image list
-    if (p->DrawableImageState&DIState_CPUDirty)
-    {
-        if (p == p->pQueue->pCPUModifiedImageList)
-            p->pQueue->pCPUModifiedImageList = p->pCPUModifiedNext;
-        else
-        {
-            DrawableImage* pnext = p->pQueue->pCPUModifiedImageList;
-            while (p != pnext->pCPUModifiedNext)
-                pnext = pnext->pCPUModifiedNext;
-            pnext->pCPUModifiedNext = p->pCPUModifiedNext;
-        }
-    }
-
-    // Lock scope
-    {
-        Lock::Locker lock(&pQueue->QueueLock);
-        p->pQueue = pQueue;
-        pQueue->ImageList.PushBack(p);
-
-        // If the image is CPU modified, then add it to the new queue's list.
-        if (p->DrawableImageState&DIState_CPUDirty)
-        {
-            p->DrawableImageState &= ~DIState_CPUDirty;
-            p->addToCPUModifiedList();
-        }
-    }
-    return true;
-}
-
-
-
 template<class C>
 void DrawableImage::addCommand(const C& cmd)
 {
     if (pContext && pContext->GetControlContext())
         pContext->GetControlContext()->SetDIChangesRequired();
 
-    DISourceImages sources;
-    if (cmd.GetSourceImages(&sources))
-    {
-        if (sources[0] && !mergeQueueWith(sources[0]))
-            return;
-        if (sources[1] && !mergeQueueWith(sources[1]))
-            return;
-    }
+    // Try to execute the command immediately. This may succeed in the case of executing a command that
+    // returns a value to the VM, and it and all its sources are already mapped, with no pending commands.
+    if (cmd.ExecuteSWOnAddCommand(this))
+        return;
 
+    // We could not execute the command immediately, queue it for the render thread to execute.
     pQueue->AddCommand(cmd);
 
     // If the command requires a return value, wait for it to complete.
@@ -741,6 +634,24 @@ ImageData& DrawableImage::getMappedData()
         pFence->WaitFence(FenceType_Fragment);
     pFence = 0;
     return MappedData;
+}
+
+// Sets the 3D matrices on a node when the Draw command is used.
+void DrawableImage::setViewProj3DHelper( TreeNode* subtree, TreeRoot* root )
+{
+    TreeNode* node = subtree;
+    while (node && (!node->HasProjectionMatrix3D() && !node->HasViewMatrix3D()))
+        node = node->GetParent();
+
+    Matrix3F viewMatrix(Matrix3F::Identity);
+    Matrix4F projMatrix(Matrix4F::Identity);
+    if (node)
+    {
+        node->GetViewMatrix3D(&viewMatrix);
+        node->GetProjectionMatrix3D(&projMatrix);
+    }
+    root->SetViewMatrix3D(viewMatrix);
+    root->SetProjectionMatrix3D(projMatrix);
 }
 
 
@@ -825,6 +736,9 @@ void DrawableImage::Draw(TreeNode* subtree,
 
     root->SetViewport(vp);
     root->SetMatrix(matrix);
+
+    // In case the object is drawn is 3D, we must set the view/projection matrices.
+    setViewProj3DHelper(subtree, root);
 
     // "Subtree" need to be at the origin now, regardless of its position within its parent.
     childSubtree->SetMatrix(Matrix2F::Identity);

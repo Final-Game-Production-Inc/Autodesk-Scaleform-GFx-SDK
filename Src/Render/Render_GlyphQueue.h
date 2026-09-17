@@ -7,6 +7,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -153,6 +154,8 @@ public:
 //------------------------------------------------------------------------
 struct GlyphParamHash
 {
+    // Make sure the member variables stay with no padding
+    // Padding breaks the hash function that uses this struct as a key
     const GlyphParam* Param;
 
     GlyphParamHash() : Param(0) {}

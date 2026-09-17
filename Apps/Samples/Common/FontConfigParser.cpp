@@ -6,6 +6,7 @@ Created     :
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -73,7 +74,9 @@ ConfigParser::ConfigParser(const char* pfilename)
                 }
                 else
                 {
-                    SF_DEBUG_ASSERT1(0, "Unsupported wchar_t size (%d)\n", sizeof(wchar_t));
+					#ifndef SF_OS_WIIU
+                    SF_DEBUG_ASSERT1(0, "Unsupported wchar_t size (%ld)\n", sizeof(wchar_t));
+					#endif
                 }
             }
 
@@ -101,7 +104,9 @@ ConfigParser::ConfigParser(const char* pfilename)
                 }
                 else
                 {
-                    SF_DEBUG_ASSERT1(0, "Unsupported wchar_t size (%d)\n", sizeof(wchar_t));
+					#ifndef SF_OS_WIIU
+                    SF_DEBUG_ASSERT1(0, "Unsupported wchar_t size (%ld)\n", sizeof(wchar_t));
+					#endif
                 }            
             }
 

@@ -8,6 +8,7 @@ Authors     :   Maxim Shemanarev
 Notes       :   Scanline rasterizer with anti-aliasing
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -80,11 +81,15 @@ void Rasterizer::Clear()
 //------------------------------------------------------------------------
 void Rasterizer::setGamma(int idx, float g)
 {
-    for(int i = 0; i < AntiAliasScale; i++)
+    // 修复：将AntiAliasScale/AntiAliasMask枚举显式转为float
+    for (int i = 0; i < (int)AntiAliasScale; i++)
     {
-        GammaLut[idx][i] = UByte(pow(float(i) / AntiAliasMask, g) * AntiAliasMask + float(0.5));
+        GammaLut[idx][i] = UByte(
+            pow(float(i) / (float)AntiAliasMask, g) * (float)AntiAliasMask + 0.5f
+        );
     }
 }
+
 
 
 //------------------------------------------------------------------------
@@ -106,8 +111,9 @@ void Rasterizer::MoveTo(float x, float y)
 {
     LastXf = x;
     LastYf = y;
-    StartX = LastX = int(x * SubpixelScale);
-    StartY = LastY = int(y * SubpixelScale);
+    // 修复：SubpixelScale枚举转float后参与运算
+    StartX = LastX = int(x * (float)SubpixelScale);
+    StartY = LastY = int(y * (float)SubpixelScale);
 }
 
 //------------------------------------------------------------------------
@@ -115,8 +121,9 @@ void Rasterizer::LineTo(float x, float y)
 {
     LastXf = x;
     LastYf = y;
-    int xi = int(x * SubpixelScale);
-    int yi = int(y * SubpixelScale);
+    // 修复：SubpixelScale枚举转float后参与运算
+    int xi = int(x * (float)SubpixelScale);
+    int yi = int(y * (float)SubpixelScale);
     line(LastX, LastY, xi, yi);
     LastX = xi;
     LastY = yi;
@@ -136,10 +143,10 @@ void Rasterizer::ClosePath()
 //------------------------------------------------------------------------
 void Rasterizer::horLine(int ey, int x1, int y1, int x2, int y2)
 {
-    int ex1 = x1 >> SubpixelShift;
-    int ex2 = x2 >> SubpixelShift;
-    int fx1 = x1 &  SubpixelMask;
-    int fx2 = x2 &  SubpixelMask;
+    int ex1 = x1 >> (int)SubpixelShift;
+    int ex2 = x2 >> (int)SubpixelShift;
+    int fx1 = x1 & (int)SubpixelMask;
+    int fx2 = x2 & (int)SubpixelMask;
 
     int delta, p, first, dx;
     int incr, lift, mod, rem;
@@ -162,8 +169,8 @@ void Rasterizer::horLine(int ey, int x1, int y1, int x2, int y2)
 
     // OK, we'll have to render a run of adjacent cells 
     // on the same HorLine...
-    p     = (SubpixelScale - fx1) * (y2 - y1);
-    first = SubpixelScale;
+    p = ((int)SubpixelScale - fx1) * (y2 - y1);
+    first = (int)SubpixelScale;
     incr  = 1;
 
     dx = x2 - x1;
@@ -194,7 +201,7 @@ void Rasterizer::horLine(int ey, int x1, int y1, int x2, int y2)
 
     if(ex1 != ex2)
     {
-        p     = SubpixelScale * (y2 - y1 + delta);
+        p     = (int)SubpixelScale * (y2 - y1 + delta);
         lift  = p / dx;
         rem   = p % dx;
 
@@ -217,7 +224,7 @@ void Rasterizer::horLine(int ey, int x1, int y1, int x2, int y2)
             }
 
             CurrCell.Cover += delta;
-            CurrCell.Area  += SubpixelScale * delta;
+            CurrCell.Area  += (int)SubpixelScale * delta;
 
             y1  += delta;
             ex1 += incr;
@@ -226,7 +233,7 @@ void Rasterizer::horLine(int ey, int x1, int y1, int x2, int y2)
     }
     delta = y2 - y1;
     CurrCell.Cover += delta;
-    CurrCell.Area  += (fx2 + SubpixelScale - first) * delta;
+    CurrCell.Area  += (fx2 + (int)SubpixelScale - first) * delta;
 }
 
 //------------------------------------------------------------------------
@@ -234,12 +241,12 @@ void Rasterizer::line(int x1, int y1, int x2, int y2)
 {
     int dx  = x2 - x1;
     int dy  = y2 - y1;
-    int ex1 = x1 >> SubpixelShift;
-    int ey1 = y1 >> SubpixelShift;
-    int ex2 = x2 >> SubpixelShift;
-    int ey2 = y2 >> SubpixelShift;
-    int fy1 = y1 &  SubpixelMask;
-    int fy2 = y2 &  SubpixelMask;
+    int ex1 = x1 >> (int)SubpixelShift;
+    int ey1 = y1 >> (int)SubpixelShift;
+    int ex2 = x2 >> (int)SubpixelShift;
+    int ey2 = y2 >> (int)SubpixelShift;
+    int fy1 = y1 & (int)SubpixelMask;
+    int fy2 = y2 & (int)SubpixelMask;
 
     int xFrom, xTo;
     int p, rem, mod, lift, delta, first, incr;
@@ -269,11 +276,11 @@ void Rasterizer::line(int x1, int y1, int x2, int y2)
     incr  = 1;
     if(dx == 0)
     {
-        int ex = x1 >> SubpixelShift;
-        int twoFx = (x1 - (ex << SubpixelShift)) << 1;
+        int ex = x1 >> (int)SubpixelShift;
+        int twoFx = (x1 - (ex << (int)SubpixelShift)) << 1;
         int area;
 
-        first = SubpixelScale;
+        first = (int)SubpixelScale;
         if(dy < 0)
         {
             first = 0;
@@ -287,7 +294,7 @@ void Rasterizer::line(int x1, int y1, int x2, int y2)
         ey1 += incr;
         setCurrCell(ex, ey1);
    
-        delta = first + first - SubpixelScale;
+        delta = first + first - (int)SubpixelScale;
         area  = twoFx * delta;
         while(ey1 != ey2)
         {
@@ -297,15 +304,15 @@ void Rasterizer::line(int x1, int y1, int x2, int y2)
             setCurrCell(ex, ey1);
         }
 
-        delta = fy2 - SubpixelScale + first;
+        delta = fy2 - (int)SubpixelScale + first;
         CurrCell.Cover += delta;
         CurrCell.Area  += twoFx * delta;
         return;
     }
 
     // OK, we have to render several HorLines
-    p     = (SubpixelScale - fy1) * dx;
-    first = SubpixelScale;
+    p     = ((int)SubpixelScale - fy1) * dx;
+    first = (int)SubpixelScale;
 
     if(dy < 0)
     {
@@ -361,7 +368,7 @@ void Rasterizer::line(int x1, int y1, int x2, int y2)
             setCurrCell(xFrom >> SubpixelShift, ey1);
         }
     }
-    horLine(ey1, xFrom, SubpixelScale - first, x2, fy2);
+    horLine(ey1, xFrom, (int)SubpixelScale - first, x2, fy2);
 }
 
 //------------------------------------------------------------------------

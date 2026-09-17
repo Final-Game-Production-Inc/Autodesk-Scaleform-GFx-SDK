@@ -6,6 +6,7 @@ Created     :   July 14, 2008
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -138,6 +139,22 @@ void DebugStorage::CheckDataTail(UPInt addr, UPInt usable)
     DebugData* data = (DebugData*)AllocTree.FindEqual(addr);
     SF_HEAP_ASSERT(data);
     checkDataTail(data, usable);
+}
+
+//------------------------------------------------------------------------
+unsigned DebugStorage::GetStatId(UPInt parentAddr, const AllocInfo* info)
+{
+    AllocInfo i2 = info ? *info : AllocInfo();
+    if (i2.StatId != Stat_Default_Mem)
+    {
+        return i2.StatId;
+    }
+    DebugData* parent = (DebugData*)AllocTree.FindEqual(parentAddr);
+    if (parent == NULL)
+    {
+        return Stat_Default_Mem;
+    }
+    return parent->Info.StatId;
 }
 
 //------------------------------------------------------------------------
@@ -274,6 +291,7 @@ void DebugStorage::FreeAll()
 
 
 //------------------------------------------------------------------------
+#ifdef SF_ENABLE_STATS
 void DebugStorage::getStatNode(const DebugData* node, 
                                AllocEngine* allocator, 
                                StatBag* bag,
@@ -289,13 +307,13 @@ void DebugStorage::getStatNode(const DebugData* node,
         getStatNode(node->pNext, allocator, bag, count);
     }
 }
-
+#endif
 
 //------------------------------------------------------------------------
 void DebugStorage::GetStats(AllocEngine* allocator, StatBag* bag) const
 {
-    unsigned count = 0;
 #ifdef SF_ENABLE_STATS
+    unsigned count = 0;
     // Must be locked in GMemoryHeap.
     getStatNode(AllocTree.Root, allocator, bag, count);
 #else

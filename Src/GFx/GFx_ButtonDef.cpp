@@ -6,6 +6,7 @@ Created     :   Nov, 2009
 Authors     :   Michael Antonov, Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -159,7 +160,7 @@ static void SkipButtonSoundDef(LoadProcess* p)
         if (HasEnvelope)
         {
             int nPoints = in->ReadU8();
-            for (int i=0; i < nPoints; i++)
+            for (int i_inner=0; i_inner < nPoints; i_inner++)
             {
                 in->ReadU32();
                 in->ReadU16();

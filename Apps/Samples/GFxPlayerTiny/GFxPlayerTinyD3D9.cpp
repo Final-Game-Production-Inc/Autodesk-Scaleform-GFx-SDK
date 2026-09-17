@@ -6,6 +6,7 @@ Created     :   March 13, 2008
 Authors     :   Michael Antonov, Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -196,6 +197,7 @@ FxPlayerTiny::FxPlayerTiny(int argc, char *argv[])
 {
     pD3D            = Direct3DCreate9(D3D_SDK_VERSION);
     pDevice         = NULL; 
+    pCommandQueue   = 0;
 
     pWndClassName   = "Direct3D_Window_Class";
     hWnd            = 0;
@@ -313,15 +315,8 @@ int FxPlayerTiny::Run()
     }
 #endif // GFX_ENABLE_SOUND
 
-    SF::Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry();
-#ifdef SF_ENABLE_LIBJPEG
-    pimgReg->AddHandler(&SF::Render::JPEG::FileReader::Instance);
-#endif
-#ifdef SF_ENABLE_LIBPNG
-    pimgReg->AddHandler(&SF::Render::PNG::FileReader::Instance);
-#endif
-    pimgReg->AddHandler(&SF::Render::TGA::FileReader::Instance);
-    pimgReg->AddHandler(&SF::Render::DDS::FileReader::Instance);
+    // Image file handling registry (PNG, etc).
+    Ptr<GFx::ImageFileHandlerRegistry> pimgReg = *new GFx::ImageFileHandlerRegistry(GFx::ImageFileHandlerRegistry::AddDefaultHandlers);
     loader.SetImageFileHandlerRegistry(pimgReg);
 
     Ptr<ASSupport> pASSupport = *new GFx::AS3Support();
@@ -353,7 +348,7 @@ int FxPlayerTiny::Run()
 	hMovieDisplay = pMovie->GetDisplayHandle();
 
     // Create renderer.
-	pRenderHAL = *new Render::D3D9::HAL();
+	pRenderHAL = *new Render::D3D9::HAL(pCommandQueue);
     if (!(pRenderer = *new Render::Renderer2D(pRenderHAL.GetPtr())))
         return 1;
 
@@ -363,7 +358,7 @@ int FxPlayerTiny::Run()
 
     // Configure renderer in "Dependent mode", honoring externally
     // configured device settings.
-    if (!pRenderHAL->InitHAL(D3D9::HALInitParams(pDevice, PresentParams, 0)))
+    if (!pRenderHAL->InitHAL(D3D9::HALInitParams(pDevice, PresentParams, 0, Scaleform::GetCurrentThreadId())))
         return 1;
 
     // Set renderer on loader so that it is also applied to all children.
@@ -649,7 +644,7 @@ bool FxPlayerTiny::SetupWindow(const String& name)
     RECT r = { 100,100, 100 + Width, 100 + Height };
     ::AdjustWindowRect(&r, WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU, 0);
 
-    HWND hWnd = CreateWindow(pWndClassName, name.ToCStr(),
+    HWND hiWnd = CreateWindow(pWndClassName, name.ToCStr(),
         WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU,
         r.left, r.top, r.right-r.left, r.bottom - r.top,
         GetDesktopWindow(), NULL, wc.hInstance, (LPVOID) this );
@@ -669,7 +664,7 @@ bool FxPlayerTiny::SetupWindow(const String& name)
     //PresentParams.MultiSampleQuality        = D3DMULTISAMPLE_4_SAMPLES;
 
     // Create the D3DDevice
-    if (FAILED( pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+    if (FAILED( pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hiWnd,
         D3DCREATE_SOFTWARE_VERTEXPROCESSING,
         &PresentParams, &pDevice ) ))
     {

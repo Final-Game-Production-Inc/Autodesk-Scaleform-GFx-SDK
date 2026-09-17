@@ -6,6 +6,7 @@ Created     :   Feb 2012
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -54,6 +55,10 @@ bool HAL::InitHAL(const GL::HALInitParams& params)
     if (!initHAL(params))
         return false;
 
+    // Check versions and extensions immediately, to make sure they are initialized.
+    CheckExtension(0);
+    CheckGLVersion(0,0);
+
     int stencilBits, depthBits;
     glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
     glGetIntegerv(GL_DEPTH_BITS, &depthBits);
@@ -77,9 +82,6 @@ bool HAL::InitHAL(const GL::HALInitParams& params)
 
     pTextureManager->Initialize(this);
 
-    // Allocate our matrix state
-    Matrices = *SF_HEAP_AUTO_NEW(this) MatrixState(this);
-
 #ifdef SF_GL_RUNTIME_LINK
     Extensions::Init();
 #endif
@@ -94,20 +96,40 @@ bool HAL::InitHAL(const GL::HALInitParams& params)
     UByte data = 0;
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1, 1, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &data );
 
-    // Create 256 dummy textures for additive alpha hackery; if we don't use GL_TEXTURE1 in a given texenv config,
-    // and we have a texenv stage to spare, then it's possible to use these as a secondary "constant" register.
-    glGenTextures(256, AddAlphaTextureID);
-    SF_ASSERT( AddAlphaTextureID != 0 );
+    UByte alphaRamp[1024] = { 0 };
+
+    // Create 256 dummy textures for additive hack, using the texture as a secondary "constant" register.
+    glGenTextures(256, AddTextureID);
     for (int alphaIndex = 0; alphaIndex < 256; alphaIndex++)
     {
-        glBindTexture(GL_TEXTURE_2D, AddAlphaTextureID[alphaIndex]);
+        glBindTexture(GL_TEXTURE_2D, AddTextureID[alphaIndex]);
         UByte alphaValue = (UByte)alphaIndex;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1, 1, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &alphaValue );
+        UByte monoValues[4] = { alphaValue, alphaValue, alphaValue, alphaValue };
+        alphaRamp[alphaIndex*4 + 0] = (UByte)alphaValue;
+        alphaRamp[alphaIndex*4 + 1] = (UByte)alphaValue;
+        alphaRamp[alphaIndex*4 + 2] = (UByte)alphaValue;
+        alphaRamp[alphaIndex*4 + 3] = (UByte)alphaValue;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, monoValues );
     }
+    
+    // Create a texture containing an alpha ramp for EdgeAA.
+    glGenTextures(1, &EdgeAAID);
+    glBindTexture(GL_TEXTURE_2D, EdgeAAID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, alphaRamp );
     
     HALState|= HS_ModeSet;
     notifyHandlers(HAL_Initialize);
     return true;
+}
+
+void HAL::initMatrices()
+{
+    // Allocate our matrix state
+    Matrices = *SF_HEAP_AUTO_NEW(this) MatrixState(this);
 }
 
 // Returns back to original mode (cleanup)
@@ -127,6 +149,11 @@ bool HAL::ShutdownHAL()
     Cache.Reset();
 
     return true;
+}
+
+void HAL::FinishFrame()
+{
+    glFinish();
 }
 
 bool HAL::ResetContext()
@@ -295,14 +322,13 @@ void   HAL::MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFo
     case PrimFill_Texture: 
         break;
     case PrimFill_VColor:
+    case PrimFill_Texture_VColor:
         colors = true;
         break;
     case PrimFill_VColor_EAlpha: 
-        colors = true;
-        break;
     case PrimFill_Texture_VColor_EAlpha:
-    case PrimFill_Texture_VColor: 
         colors = true;
+        factors = true;
         break;
     case PrimFill_Texture_EAlpha: 
     case PrimFill_2Texture_EAlpha: 
@@ -347,6 +373,11 @@ void   HAL::MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFo
         // If we have factors, expand the weights to each RGB color channel.
         if (((pve->Attribute|pve[1].Attribute)&(VET_Usage_Mask|VET_Index_Mask)) == (VET_Color|VET_Index1|VET_Index2))
         {
+            pveo->Attribute = VET_FactorAlpha8;
+            pveo->Offset    = outFormat.Size;
+            pveo++;
+            outFormat.Size++;
+            
             for ( int i=0; i<3;++i)
             {
                 pveo->Attribute = VET_T0Weight8;
@@ -354,10 +385,7 @@ void   HAL::MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFo
                 pveo++;
             }
             outFormat.Size+=3;
-            pveo->Attribute = VET_FactorAlpha8;
-            pveo->Offset    = outFormat.Size;
-            outFormat.Size++;
-            pveo++;
+
             count += 4;
             pve++;
             continue;
@@ -389,7 +417,82 @@ void   HAL::MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFo
     *instanced  = 0;
 }
 
-bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pFormat, GLuint buffer, UByte* vertexOffset )
+bool HAL::CheckExtension(const char *name)
+{
+    if (Extensions.IsEmpty())
+    {
+        Extensions = (const char *) glGetString(GL_EXTENSIONS);
+        // Add space, just so we know it is initialized.
+        Extensions += " "; 
+    }
+    if (name == 0)
+        return false;
+    const char *p = strstr(Extensions.ToCStr(), name);
+    return (p && (p[strlen(name)] == 0 || p[strlen(name)] == ' '));
+}
+
+bool HAL::CheckGLVersion(unsigned reqMajor, unsigned reqMinor)
+{
+    if (MajorVersion == 0 && MinorVersion == 0)
+    {
+        const char* version = (const char*)glGetString(GL_VERSION);
+        SFsscanf(version, "%d.%d", &MajorVersion, &MinorVersion);
+    }
+    return (MajorVersion > reqMajor || (MajorVersion == reqMajor && MinorVersion >= reqMinor));
+}
+
+
+void HAL::SetFactorArray(const VertexFormat* pFormat, GLuint buffer, UByte* vertexOffset, int factorTexture)
+{
+    if (true)
+    {
+        //return;
+    }
+    
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    
+    const VertexElement* pve = pFormat->pElements;
+    for (; pve->Attribute != VET_None; pve++)
+    {
+        // Packed factors (RGB=> weight, A=> alpha)
+        if (pve->Attribute == VET_FactorAlpha8)
+        {
+            if (factorTexture >= 0)
+            {
+                glClientActiveTexture(GL_TEXTURE0 + factorTexture);
+                glTexCoordPointer(2, GL_SHORT, pFormat->Size, (void*)(vertexOffset + pve->Offset));
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                EnabledVertexArrays |= (1 << ((VET_TexCoord << factorTexture) >> VET_Usage_Shift));
+            }
+            pve += 3;
+            continue;
+        }
+    }
+
+    glActiveTexture(GL_TEXTURE0 + factorTexture);
+    ActiveTextures |= 1 << factorTexture;
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, EdgeAAID);
+        
+    glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,  GL_COMBINE);
+        
+    glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,       GL_REPLACE);
+    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,      GL_SRC_COLOR);
+    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,          GL_PREVIOUS);
+    
+    glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,     GL_MODULATE);
+    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,    GL_SRC_ALPHA);
+    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,    GL_SRC_ALPHA);
+    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,        GL_PREVIOUS);
+    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,        GL_TEXTURE);
+    
+    glActiveTexture(GL_TEXTURE0 + factorTexture);
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glScalex(256, 256, 1);
+}
+
+bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pFormat, GLuint buffer, UByte* vertexOffset, int textureBase)
 {
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
@@ -397,6 +500,7 @@ bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pForma
     GLuint posoffset = 0;
     const VertexElement* pve = pFormat->pElements;
     int vi = 0;
+    int ti = textureBase;
     for (; pve->Attribute != VET_None; pve++, vi++)
     {
         GLenum vet; bool norm;
@@ -417,10 +521,11 @@ bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pForma
         unsigned usage = pve->Attribute & VET_Usage_Mask;
 
         // Packed factors (RGB=> weight, A=> alpha)
-        if (((pve->Attribute|pve[1].Attribute|pve[2].Attribute|pve[3].Attribute) & (VET_Usage_Mask|VET_Index_Mask)) == (VET_Color | (3 << VET_Index_Shift)))
+        if (pve->Attribute == VET_FactorAlpha8)
         {
-            pve+=3;
-            usage = VET_Color;
+            // Skip, will be set later
+            pve += 3;
+            continue;
         }       
 
         switch( usage )
@@ -440,10 +545,11 @@ bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pForma
             break;
 
         case VET_TexCoord: 
-            glClientActiveTexture(GL_TEXTURE0);
+            glClientActiveTexture(GL_TEXTURE0 + ti);
             glTexCoordPointer( 2, vet, pFormat->Size, (void*)(vertexOffset + offset) ); 
             if ( !(EnabledVertexArrays & VET_TexCoord ))
                 glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            ti++;
             break;
         }
         EnabledVertexArrays |= (1 << (usage >> VET_Usage_Shift));      
@@ -452,19 +558,21 @@ bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pForma
     // If no texture coordinates are required, but there are textures, set it to the input positions.
     if ( fillType >= PrimFill_Texture && fillType < PrimFill_UVTexture && posvet != 0 )
     {
-        glClientActiveTexture(GL_TEXTURE0);
+        glClientActiveTexture(GL_TEXTURE0 + ti);
         glTexCoordPointer( 2, posvet, pFormat->Size, (void*)(vertexOffset + posoffset) ); 
         if ( !(EnabledVertexArrays & VET_TexCoord))
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         EnabledVertexArrays |= (1 << (VET_TexCoord >> VET_Usage_Shift)); 
+        ti++;
 
         if (fillType == PrimFill_2Texture || fillType == PrimFill_2Texture_EAlpha)
         {
-            glClientActiveTexture(GL_TEXTURE1);
+            glClientActiveTexture(GL_TEXTURE0 + ti);
             glTexCoordPointer( 2, posvet, pFormat->Size, (void*)(vertexOffset + posoffset) ); 
             if ( !(EnabledVertexArrays & (VET_TexCoord<<1)))
                 glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             EnabledVertexArrays |= (1 << ((VET_TexCoord<<1) >> VET_Usage_Shift)); 
+            ti++;
         }
     }
 
@@ -472,23 +580,20 @@ bool HAL::SetVertexArray( PrimitiveFillType fillType, const VertexFormat* pForma
         glDisableClientState(GL_VERTEX_ARRAY);
     if ( !(EnabledVertexArrays & (1 << (VET_Color >> VET_Usage_Shift) )))
         glDisableClientState(GL_COLOR_ARRAY);
-    if ( !(EnabledVertexArrays & (1 << (VET_TexCoord >> VET_Usage_Shift) )))
+    for (int tex = ti; tex < 4; tex++)
     {
-        glClientActiveTexture(GL_TEXTURE0);
+        if (!(EnabledVertexArrays & (1 << ((VET_TexCoord << tex) >> VET_Usage_Shift))))
+        {
+            glClientActiveTexture(GL_TEXTURE0 + tex);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
-    if ( !(EnabledVertexArrays & (1 << ((VET_TexCoord<<1) >> VET_Usage_Shift) )))
-    {
-        glClientActiveTexture(GL_TEXTURE1);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
     return true;
 }
 
 // Draws a range of pre-cached and preprocessed primitives
-void        HAL::DrawProcessedPrimitive(Primitive* pprimitive,
-                                        PrimitiveBatch* pstart, PrimitiveBatch *pend)
+void        HAL::DrawProcessedPrimitive(Primitive* pprimitive, PrimitiveBatch* pstart, PrimitiveBatch *pend)
 {
     SF_AMP_SCOPE_RENDER_TIMER("HAL::DrawProcessedPrimitive", Amp_Profile_Level_High);
     if (!checkState(HS_InDisplay, "DrawProcessedPrimitive") ||
@@ -530,17 +635,44 @@ void        HAL::DrawProcessedPrimitive(Primitive* pprimitive,
             if ( batchMeshCount > 0 )
                 fillFlags |= pprimitive->Meshes[0].M.Has3D() ? FF_3DProjection : 0;
 
-            SetPrimitiveFill(pprimitive->pFill, fillFlags, pbatch->Type, pbatch->pFormat, 
-                batchMeshCount, Matrices, &pprimitive->Meshes[meshIndex] );
+            // Check whether we have the identity color xform
+            for (unsigned i = 0; i < batchMeshCount; i++)
+            {
+                if (!(Profiler.GetCxform(pprimitive->Meshes[meshIndex+i].M.GetCxform()) == Cxform::Identity))
+                {
+                    fillFlags |= FF_Cxform;
+                    break;
+                }
+            }
+            
+            int textureBase = 0;
+            int currentStage = SetPrimitiveFill(pprimitive->pFill, fillFlags, pbatch->Type, pbatch->pFormat, batchMeshCount, Matrices, &pprimitive->Meshes[meshIndex], &textureBase);
 
             if ((HALState & HS_ViewValid) && 
-                SetVertexArray(pprimitive->pFill->GetType(), pbatch->pFormat, pmesh->pVertexBuffer->GetBuffer(), 
-                               pmesh->pVertexBuffer->GetBufferBase() + pmesh->VBAllocOffset))
+                SetVertexArray(pprimitive->pFill->GetType(), pbatch->pFormat, pmesh->pVertexBuffer->GetBuffer(), pmesh->pVertexBuffer->GetBufferBase() + pmesh->VBAllocOffset, textureBase))
             {
                 SF_ASSERT((pbatch->Type != PrimitiveBatch::DP_Failed) &&
                           (pbatch->Type != PrimitiveBatch::DP_Virtual) &&
                           (pbatch->Type != PrimitiveBatch::DP_Instanced));
 
+                bool EdgeAA = false;
+                switch(pprimitive->pFill->GetType())
+                {
+                    case PrimFill_VColor_EAlpha:
+                    case PrimFill_Texture_VColor_EAlpha:
+                    case PrimFill_Texture_EAlpha:
+                    case PrimFill_2Texture_EAlpha:
+                        EdgeAA = true;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (EdgeAA)
+                {
+                    SetFactorArray(pbatch->pFormat, pmesh->pVertexBuffer->GetBuffer(), pmesh->pVertexBuffer->GetBufferBase() + pmesh->VBAllocOffset, currentStage);
+                }
+                
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pmesh->pIndexBuffer->GetBuffer());
                 drawIndexedPrimitive(pmesh->IndexCount, pmesh->MeshCount, pmesh->pIndexBuffer->GetBufferBase() + pmesh->IBAllocOffset);
             }
@@ -609,20 +741,27 @@ void HAL::DrawProcessedComplexMeshes(ComplexMesh* complexMesh,
         bool WantCxform = (fillFlags & FF_Cxform);
         bool WantVertexColor = false;
         bool WantSolidColor = false;
+        bool WantUVTexture = false;
+        bool EdgeAA = false;
+        int baseStage = 0;
+        int textureBase = 0;
 
         // Apply fill.
         PrimitiveFillType fillType = Profiler.GetFillType(fr.pFill->GetType());
         SetFill(fillType, fillFlags, fr.pFormats[0] );
-        SetVertexArray(fr.pFill->GetType(), fr.pFormats[0], pmesh->pVertexBuffer->GetBuffer(), 
-            pmesh->pVertexBuffer->GetBufferBase() + pmesh->VBAllocOffset + fr.VertexByteOffset);
-
         UByte textureCount = fr.pFill->GetTextureCount();
-        for (unsigned i = 0; i < instanceCount; i++)
-        {            
-            const HMatrix& hm = matrices[startIndex + i];
 
-            unsigned currentStage = 0;
-            SetMatrix(MT_MVP, complexMesh->GetVertexMatrix(), hm, Matrices);
+        switch(fillType)
+        {            
+            case PrimFill_VColor_EAlpha:
+            case PrimFill_Texture_VColor_EAlpha:
+            case PrimFill_Texture_EAlpha:
+            case PrimFill_2Texture_EAlpha:
+                EdgeAA = true;
+                break;
+            default:
+                break;
+        }
 
             switch(fillType)
             {
@@ -634,55 +773,79 @@ void HAL::DrawProcessedComplexMeshes(ComplexMesh* complexMesh,
                     }
                     else
                     {
-                        SetColor(currentStage++, Profiler.GetColor(fr.pFill->GetSolidColor()));
+                    SetColor(baseStage++, Profiler.GetColor(fr.pFill->GetSolidColor()));
+                }
+                break;
+            case PrimFill_VColor:
+            case PrimFill_VColor_EAlpha:
+                if (WantCxform)
+                {
+                    WantVertexColor = true;
                     }
-                    if(textureCount > 0)
+                else
                     {
-                        SF_DEBUG_MESSAGE(1, "9w84efi98urhyviaesurgh");
+                    SetVertexColors(baseStage++);
                     }
                     break;
-                case PrimFill_VColor:
-                case PrimFill_VColor_EAlpha:
+            case PrimFill_UVTextureAlpha_VColor:
+            case PrimFill_UVTextureDFAlpha_VColor:
                     if (WantCxform)
                     {
                         WantVertexColor = true;
                     }
                     else
                     {
-                        SetVertexColors(currentStage++);
+                    SetVertexColors(baseStage++);
                     }
-                    if(textureCount > 0)
+                // Intentional fall-through
+            case PrimFill_UVTexture:
+                if (WantCxform)
                     {
-                        SF_DEBUG_MESSAGE(1, "kasdjflaikjflgkajdflgjadlgf");
+                    WantUVTexture = true;
                     }
-                    break;
+                // Intentional fall-through
                 case PrimFill_Texture_VColor:
                 case PrimFill_Texture_VColor_EAlpha:
-                case PrimFill_UVTextureAlpha_VColor:
-                case PrimFill_UVTextureDFAlpha_VColor:
                 case PrimFill_Texture:
                 case PrimFill_Texture_EAlpha:
                 case PrimFill_2Texture:
                 case PrimFill_2Texture_EAlpha:
-                case PrimFill_UVTexture:
+                textureBase = baseStage;
                     for (unsigned tm = 0; tm < textureCount; tm++)
                     {
                         SetMatrix(MT_Texture, textureMatrices[fr.FillMatrixIndex[tm]], tm);
                         Texture* ptex = (Texture*)fr.pFill->GetTexture(tm);
-                        SetTexture(fillType, currentStage, ptex, fr.pFill->GetFillMode(tm), WantCxform);
-                        currentStage += ptex->GetPlaneCount();
+                    SetTexture(fillType, baseStage, ptex, fr.pFill->GetFillMode(tm), WantCxform, WantUVTexture, WantVertexColor);
+                    baseStage += ptex->GetTextureStageCount();
                     }
                     break;
                 default:
                     break;
             }
             
+        SetVertexArray(fr.pFill->GetType(), fr.pFormats[0], pmesh->pVertexBuffer->GetBuffer(),
+            pmesh->pVertexBuffer->GetBufferBase() + pmesh->VBAllocOffset + fr.VertexByteOffset, textureBase);
+
+        for (unsigned i = 0; i < instanceCount; i++)
+        {            
+            const HMatrix& hm = matrices[startIndex + i];
+
+            unsigned currentStage = 0;
+            SetMatrix(MT_MVP, complexMesh->GetVertexMatrix(), hm, Matrices);
+            
             if (WantCxform)
             {
-                currentStage = SetComplexCombiners(WantVertexColor, WantSolidColor, textureCount, fr.pFill, Profiler.GetCxform(hm.GetCxform()));
-                DisableExtraStages(currentStage);
+                currentStage = SetComplexCombiners(WantVertexColor, WantSolidColor, WantUVTexture, textureCount, fr.pFill, Profiler.GetCxform(hm.GetCxform()));
             }
 
+            if (EdgeAA)
+            {
+                SetFactorArray(fr.pFormats[0], pmesh->pVertexBuffer->GetBuffer(), pmesh->pVertexBuffer->GetBufferBase() + pmesh->VBAllocOffset + fr.VertexByteOffset, baseStage + currentStage);
+                currentStage++;
+            }
+
+            DisableExtraStages(baseStage + currentStage);
+            
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pmesh->pIndexBuffer->GetBuffer());
             drawIndexedPrimitive(fr.IndexCount, 1, pmesh->pIndexBuffer->GetBufferBase() + pmesh->IBAllocOffset + sizeof(IndexType) * fr.IndexOffset);
         }
@@ -694,11 +857,11 @@ void HAL::DrawProcessedComplexMeshes(ComplexMesh* complexMesh,
 
 //--------------------------------------------------------------------
 // Background clear helper, expects viewport coordinates.
-void HAL::clearSolidRectangle(const Rect<int>& r, Color color)
+void HAL::clearSolidRectangle(const Rect<int>& r, Color color, bool blend)
 {
     color = Profiler.GetClearColor(color);
 
-    if (color.GetAlpha() == 0xFF)
+    if (!blend || color.GetAlpha() == 0xFF)
     {
         glEnable(GL_SCISSOR_TEST);
         
@@ -796,72 +959,7 @@ void HAL::PushMask_BeginSubmit(MaskPrimitive* prim)
 
     HALState |= HS_DrawingMask;
 
-    if (prim->IsClipped() && viewportValid)
-    {
-        Rect<int> boundClip;
-
-        // Apply new viewport clipping.
-        if (!Matrices->OrientationSet)
-        {
-            const Matrix2F& m = prim->GetMaskAreaMatrix(0).GetMatrix2D();
-
-            // Clipped matrices are always in View coordinate space, to allow
-            // matrix to be use for erase operation above. This means that we don't
-            // have to do an EncloseTransform.
-            SF_ASSERT((m.Shx() == 0.0f) && (m.Shy() == 0.0f));
-            boundClip = Rect<int>(VP.Left + (int)m.Tx(), VP.Top + (int)m.Ty(),
-                                  VP.Left + (int)(m.Tx() + m.Sx()), VP.Top + (int)(m.Ty() + m.Sy()));
-        }
-        else
-        {
-            Matrix2F m = prim->GetMaskAreaMatrix(0).GetMatrix2D();
-            m.Append(Matrices->Orient2D);
-
-            RectF rect = m.EncloseTransform(RectF(0,0,1,1));
-            boundClip = Rect<int>(VP.Left + (int)rect.x1, VP.Top + (int)rect.y1,
-                                  VP.Left + (int)rect.x2, VP.Top + (int)rect.y2);
-        }
-
-        if (!ViewRect.IntersectRect(&ViewRect, boundClip))
-        {
-            ViewRect.Clear();
-            HALState &= ~HS_ViewValid;
-            viewportValid = false;
-        }
-        updateViewport();
-        
-        // Clear full viewport area, which has been resized to our smaller bounds.
-        if ((MaskStackTop == 1) && viewportValid)
-        {
-            if(StencilAvailable)
-            {
-                glClearStencil(0);
-                glClear(GL_STENCIL_BUFFER_BIT);
-            }
-            else
-            {
-
-                glDisable(GL_SCISSOR_TEST);
-
-                glDepthMask(GL_TRUE);
-                glClearDepthf(1.0f);
-                glClear(GL_DEPTH_BUFFER_BIT);
-                
-                if (VP.Flags & Viewport::View_UseScissorRect)
-                {
-                    glEnable(GL_SCISSOR_TEST);
-                    glScissor(VP.ScissorLeft, VP.BufferHeight-VP.ScissorTop-VP.ScissorHeight, VP.ScissorWidth, VP.ScissorHeight);
-                }
-                else
-                {
-                    glDisable(GL_SCISSOR_TEST);
-                }
-                
-                glDepthMask(GL_FALSE);
-            }
-        }
-    }
-    else if ((MaskStackTop == 1) && viewportValid)
+    if ((MaskStackTop == 1) && viewportValid)
     {
         // Clear view rectangles.
         if (StencilAvailable)
@@ -980,18 +1078,6 @@ void HAL::PopMask()
     SF_ASSERT(MaskStackTop);
     MaskStackTop--;
 
-    if (MaskStack[MaskStackTop].pPrimitive->IsClipped())
-    {
-        // Restore viewport
-        ViewRect      = MaskStack[MaskStackTop].OldViewRect;
-
-        if (MaskStack[MaskStackTop].OldViewportValid)
-            HALState |= HS_ViewValid;
-        else
-            HALState &= ~HS_ViewValid;
-        updateViewport();
-    }
-
     if (StencilAvailable)
     {
         if (MaskStackTop == 0)
@@ -1036,6 +1122,14 @@ void HAL::drawMaskClearRectangles(const HMatrix* matrices, UPInt count)
 
 void HAL::applyBlendModeImpl(BlendMode mode, bool sourceAc, bool forceAc)
 {    
+    static const UInt32 BlendOps[BlendOp_Count] =
+    {
+        GL_FUNC_ADD,                // BlendOp_ADD
+        GL_MAX,                     // BlendOp_MAX
+        GL_MIN,                     // BlendOp_MIN
+        GL_FUNC_REVERSE_SUBTRACT,   // BlendOp_REVSUBTRACT
+    };
+
     static const UInt32 BlendFactors[BlendFactor_Count] = 
     {
         GL_ZERO,                // BlendFactor_ZERO
@@ -1055,41 +1149,33 @@ void HAL::applyBlendModeImpl(BlendMode mode, bool sourceAc, bool forceAc)
 
 //--------------------------------------------------------------------
 
-void HAL::SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatch::BatchType batchType, const VertexFormat* pformat, 
-                      unsigned meshCount, const MatrixState* mstate, const Primitive::MeshEntry* pmeshes )
+int HAL::SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatch::BatchType batchType, const VertexFormat* pformat, unsigned meshCount, const MatrixState* mstate, const Primitive::MeshEntry* pmeshes, int *textureBase)
 {
     PrimitiveFillType fillType = pfill->GetType();
-
-    // Check whether we have the identity color xform
-    for (unsigned i = 0; i < meshCount; i++)
-    {
-        if (!(Profiler.GetCxform(pmeshes[i].M.GetCxform()) == Cxform::Identity))
-        {
-            fillFlags |= FF_Cxform;
-            break;
-        }
-    }
 
     unsigned currentStage = 0;
     bool WantCxform = (fillFlags & FF_Cxform);
     bool WantVertexColor = false;
     bool WantSolidColor = false;
+    bool WantUVTexture = false;
     int TextureCount = 0;
 
     // Set vertex colors, or a solid color, if requested
     switch(fillType)
     {
+    case PrimFill_UVTexture:
+        WantUVTexture = true;
+        break;
+    case PrimFill_UVTextureAlpha_VColor:
+    case PrimFill_UVTextureDFAlpha_VColor:
+        WantUVTexture = true;
+        // Intentional fall-through
     case PrimFill_VColor:
     case PrimFill_VColor_EAlpha:
     case PrimFill_Texture_VColor:
     case PrimFill_Texture_VColor_EAlpha:
-    case PrimFill_UVTextureAlpha_VColor:
-    case PrimFill_UVTextureDFAlpha_VColor:
-        if (WantCxform)
-        {
             WantVertexColor = true;
-        }
-        else
+        if (!WantCxform)
         {
             SetVertexColors(currentStage++);
         }
@@ -1113,14 +1199,15 @@ void HAL::SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatc
     // Now set textures.
     if (fillType >= PrimFill_Texture)
     {
+        *textureBase = currentStage;
+        
         GL::Texture*  pt0 = (GL::Texture*)pfill->GetTexture(0);
         SF_ASSERT(pt0);
 
         ImageFillMode fm0 = pfill->GetFillMode(0);
 
         unsigned stage = 0;
-        SetTexture(fillType, stage, pt0, fm0, WantCxform);
-        stage += pt0->GetPlaneCount();
+        SetTexture(fillType, currentStage + stage, pt0, fm0, WantCxform, WantUVTexture, WantVertexColor);
         TextureCount++;
 
         Matrix2F m0;
@@ -1130,15 +1217,15 @@ void HAL::SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatc
             m.Append(pmeshes->M.GetTextureMatrix(0));
             m0 = m;
         }
-        SetMatrix(MT_Texture, m0, 0);
+        SetMatrix(MT_Texture, m0, currentStage + stage);
+        stage += pt0->GetTextureStageCount();
 
         if ((fillType == PrimFill_2Texture) || (fillType == PrimFill_2Texture_EAlpha))
         {
             GL::Texture* pt1 = (GL::Texture*)pfill->GetTexture(1);
             ImageFillMode  fm1 = pfill->GetFillMode(1);
 
-            SetTexture(fillType, stage, pt1, fm1, WantCxform);
-            stage += pt1->GetPlaneCount();
+            SetTexture(fillType, currentStage + stage, pt1, fm1, WantCxform, WantUVTexture, WantVertexColor);
             TextureCount++;
 
             Matrix2F m1;
@@ -1148,11 +1235,12 @@ void HAL::SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatc
                 m.Append(pmeshes->M.GetTextureMatrix(1));
                 m1 = m;
             }
-            SetMatrix(MT_Texture, m1, 1);
+            SetMatrix(MT_Texture, m1, currentStage + stage);
+            stage += pt1->GetTextureStageCount();
         }
         if (!WantCxform)
         {
-            currentStage = stage;
+            currentStage += stage;
         }
     }
 
@@ -1160,28 +1248,68 @@ void HAL::SetPrimitiveFill(PrimitiveFill* pfill, UInt32 fillFlags, PrimitiveBatc
 
     if (WantCxform)
     {
-        currentStage += SetComplexCombiners(WantVertexColor, WantSolidColor, TextureCount, pfill, Profiler.GetCxform(pmeshes->M.GetCxform()));
+        currentStage += SetComplexCombiners(WantVertexColor, WantSolidColor, WantUVTexture, TextureCount, pfill, Profiler.GetCxform(pmeshes->M.GetCxform()));
     }
 
     DisableExtraStages(currentStage);
+    
+    return currentStage;
 }
 
-// There's a bunch of duplicated setup code here, but for the time being it should be
-// left as-is, as the setup code is in a state of flux and might change.
-int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount, PrimitiveFill* pfill, const Cxform &cx)
+// This is a bit of a hacky function, so it bears describing for the purposes of future maintenance.
+//
+// The general principle of operation is that on ES 1.1 hardware, we only have one constant color
+// register, which is a problem, as full usage of the Color Effect tool in Flash requires both an
+// arbitrary multiplicative value as well as an arbitrary additive value. In practice, however,
+// this is only an issue if both the multiplicative and additive values' RGB channels are not
+// monochrome. If the multiplicative or additive value's three color channels are the same, it is
+// possible to skirt around the issue by making use of textures instead of constant colors.
+//
+// The ES 1.1 HAL creates a set of 256 1x1 textures on startup, each of which has its four RGBA
+// channels set to the value of its index. By binding one of these textures and modulating or
+// adding GL_TEXTURE instead of GL_CONSTANT, we can, in effect, use the texture as a constant
+// register.
+//
+// As luck would have it, it seems that most customers don't actually use the full Color Effect
+// functionality, and tend towards simply the Tint or Alpha functionality. This results in one
+// or more of the following conditions being met, allowing us to achieve accurate visual results
+// despite the constant register limitations:
+//
+// - Multiplicative color or alpha is zero, one, or monochrome
+// - Additive color or alpha is zero, one, or monochrome
+//
+// Lastly, a note on EdgeAA: GFx normally stores the EdgeAA factor as the alpha channel in a
+// secondary vertex color. This even works on the Wii, as its fixed-function pipeline supports
+// a secondary vertex color. ES 1.1 hardware does not - at least not with an ARB, and it's not
+// one that any Apple devices have, so we can't rely on that. However, again we can use a texture
+// as a bespoke second vertex color, using the following facts to our advantage:
+//
+// - The EdgeAA factor is exactly one byte in size
+// - The factor data in the VB is in line with 3 other bytes, representing texture blend weights
+// - We can't add a second 4-byte vertex color, but we can add an additional 2-short texcoord
+// - The EdgeAA texture is 256x1
+// - Using GL_REPEAT for S wrapping essentially masks off the upper 8 bits of U's short
+// - Using GL_REPEAT for T wrapping essentially ignores V entirely
+//
+// All of these facts taken together allow us to ignore the other 3 bytes interspersed with the
+// EdgeAA factor data, enabling us to get the appropriate alpha value indirectly via a texture.
+//
+// ~Ryan Holtz, 10/10/2012
+
+int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, bool uvTexture, int textureCount, PrimitiveFill* pfill, const Cxform &cx)
 {
     float modColors[4] = { cx.M[0][0], cx.M[0][1], cx.M[0][2], cx.M[0][3] };
     float addColors[4] = { cx.M[1][0], cx.M[1][1], cx.M[1][2], cx.M[1][3] };
     bool hasAdditive = false;
     bool hasAdditiveColor = false;
     bool hasAdditiveAlpha = false;
+    bool monoModColor = (cx.M[0][0] == cx.M[0][1] && cx.M[0][1] == cx.M[0][2]);
+    bool monoAddColor = (cx.M[1][0] == cx.M[1][1] && cx.M[1][1] == cx.M[1][2]);
     bool specialAdditive = false;
     bool skipColorModulate = false;
     bool skipAlphaModulate = false;
     GLenum cxformColorCombine = GL_MODULATE;
     GLenum cxformAlphaCombine = GL_MODULATE;
-    GLenum cxformColorOperand = GL_SRC_COLOR;
-    GLenum cxformAlphaOperand = GL_SRC_ALPHA;
     float cxformColorScale = 1.0f;
     float cxformAlphaScale = 1.0f;
     if (cx.M[1][3] > 0.0f)
@@ -1204,7 +1332,6 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
         if(addColors[0] < 0.0f || addColors[1] < 0.0f || addColors[2] < 0.0f)
         {
             cxformColorCombine = GL_SUBTRACT;
-            cxformColorOperand = GL_SRC_COLOR;
             modColors[0] = 0.0f - addColors[0];
             modColors[1] = 0.0f - addColors[1];
             modColors[2] = 0.0f - addColors[2];
@@ -1212,7 +1339,6 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
         else
         {
             cxformColorCombine = GL_ADD;
-            cxformColorOperand = GL_SRC_COLOR;
             modColors[0] = addColors[0];// * 0.5f + 0.5f;
             modColors[1] = addColors[1];// * 0.5f + 0.5f;
             modColors[2] = addColors[2];// * 0.5f + 0.5f;
@@ -1225,28 +1351,28 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
     {
         skipColorModulate = true;
         cxformColorCombine = GL_REPLACE;
-        cxformColorOperand = GL_SRC_COLOR;
         modColors[0] = addColors[0];
         modColors[1] = addColors[1];
         modColors[2] = addColors[2];
     }
     
-    if (cx.M[0][3] == 1.0f && cx.M[1][3] != 0.0f)
+    if (cx.M[0][3] == 1.0f)
     {
         skipAlphaModulate = true;
+        if (cx.M[1][3] != 0.0f)
+        {
         if(addColors[0] < 0.0f || addColors[1] < 0.0f || addColors[2] < 0.0f)
         {
             cxformColorCombine = GL_SUBTRACT;
-            cxformColorOperand = GL_SRC_COLOR;
             modColors[3] = 0.0f - addColors[3];// * 0.5f + 0.5f;
         }
         else
         {
             cxformColorCombine = GL_ADD;
-            cxformColorOperand = GL_SRC_COLOR;
             modColors[3] = addColors[3];// * 0.5f + 0.5f;
         }
         cxformAlphaScale = 1.0f;
+    }
     }
     
     if(hasAdditive && !skipColorModulate && !skipAlphaModulate)
@@ -1254,6 +1380,7 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
         specialAdditive = true;
     }
     
+    int stages = 0;
     switch(textureCount)
     {
         case 0: // No textures, our life is easy
@@ -1286,43 +1413,105 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                     glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,     rgba);
-                    return 1;
+                    
+                    stages = 1;
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           cxformColorCombine);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         cxformAlphaCombine);
-                    
-                    if (cxformColorCombine == GL_REPLACE)
+                    if (monoModColor && !skipColorModulate)
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          cxformColorOperand);
+                        int color = (int)(cx.M[0][0] * 255.0f);
+                        glBindTexture(GL_TEXTURE_2D, AddTextureID[color]);
+
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                    
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_MODULATE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_PRIMARY_COLOR);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PRIMARY_COLOR);
+                        
+                        int offset = 0;
+                        if (!skipAlphaModulate)
+                    {
+                            offset = 1;
+                            
+                            int alpha = (int)(cx.M[0][3] * 255.0f);
+                            glActiveTexture(GL_TEXTURE1);
+                            ActiveTextures |= 1 << 1;
+                            glEnable(GL_TEXTURE_2D);
+                            glBindTexture(GL_TEXTURE_2D, AddTextureID[alpha]);
+                            
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                            
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_REPLACE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PRIMARY_COLOR);
+                            
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_MODULATE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_TEXTURE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_PRIMARY_COLOR);
+                    }
+                        
+                        glActiveTexture(GL_TEXTURE1 + offset);
+                        ActiveTextures |= 1 << (1 + offset);
+                        glEnable(GL_TEXTURE_2D);
+                        glBindTexture(GL_TEXTURE_2D, DummyTextureID);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_ADD);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+
+                        glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,     addColors);
+                        
+                        if (cx.M[0][3] == 0.0f)
+                    {
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,     GL_REPLACE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,    GL_SRC_ALPHA);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
+                    }
+                    else
+                    {
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,     GL_ADD);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,    GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,        GL_PREVIOUS);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
+                    }
+                    
+                        stages = 2 + offset;
+                        break;
+                    }
+                    else
+                    {
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           cxformColorCombine);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         cxformAlphaCombine);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_PRIMARY_COLOR);
-                    }
-                    else
-                    {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          cxformColorOperand);
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PRIMARY_COLOR);
-                    }
-                    if (cxformAlphaCombine == GL_REPLACE)
-                    {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        cxformAlphaOperand);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_PRIMARY_COLOR);
-                    }
-                    else
-                    {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        cxformAlphaOperand);
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PRIMARY_COLOR);
-                    }
-                    
+                        
                     glTexEnvi(GL_TEXTURE_ENV,  GL_RGB_SCALE,             cxformColorScale);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_ALPHA_SCALE,           cxformAlphaScale);
 
@@ -1335,16 +1524,33 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                         glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,     cx.M[0]);
                     }
                     
-                    if(!skipAlphaModulate)
-                    {
                         int alpha = (int)(cx.M[1][3] * 255.0f);
+                        if (!hasAdditiveAlpha && monoAddColor)
+                    {
+                            alpha = (int)(cx.M[1][0] * 255.0f);
+                        }
+                        
                         glActiveTexture(GL_TEXTURE1);
                         ActiveTextures |= 1 << 1;
                         glEnable(GL_TEXTURE_2D);
-                        glBindTexture(GL_TEXTURE_2D, AddAlphaTextureID[alpha]);
+                        glBindTexture(GL_TEXTURE_2D, AddTextureID[alpha]);
                         
                         glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
                         
+                        if (!hasAdditiveAlpha && monoAddColor)
+                        {
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_ADD);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
+                            
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+                        }
+                        else
+                        {
                         glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_REPLACE);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
@@ -1354,19 +1560,17 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
-                        return 2;
+                    }
                     }
 
-                    return 1;
+                    stages = 2;
                 }
-
-                return 0;
             }
             else
             {
                 // Just call the original function if we don't need to do any song-and-dance
                 SetCxform(0, cx);
-                return 1;
+                stages = 1;
             }
             break;
             
@@ -1391,28 +1595,29 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                     
                     if (cxformColorCombine == GL_REPLACE)
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          cxformColorOperand);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
                     }
                     else
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          cxformColorOperand);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
                     }
+
                     if (cxformAlphaCombine == GL_REPLACE)
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        cxformAlphaOperand);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
                     }
                     else
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        cxformAlphaOperand);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_TEXTURE);
@@ -1445,7 +1650,7 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                         glActiveTexture(GL_TEXTURE1);
                         ActiveTextures |= 1 << 1;
                         glEnable(GL_TEXTURE_2D);
-                        glBindTexture(GL_TEXTURE_2D, AddAlphaTextureID[alpha]);
+                        glBindTexture(GL_TEXTURE_2D, AddTextureID[alpha]);
                         
                         glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
                         
@@ -1459,10 +1664,12 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
                         
-                        return 2;
+                        stages = 2;
                     }
-                    
-                    return 1;
+                    else
+                    {
+                        stages = 1;
+                }
                 }
                 else
                 {
@@ -1471,59 +1678,164 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                     glBindTexture(GL_TEXTURE_2D, ptex->pTextures[0].TexId);
 
                     glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                    
+                    if (uvTexture)
+                    {
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_REPLACE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PRIMARY_COLOR);
+                    }
+                    else
+                    {
                     glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_MODULATE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_PRIMARY_COLOR);
+                    }
+                    
                     glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_MODULATE);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_TEXTURE);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_PRIMARY_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_PRIMARY_COLOR);
 
                     glActiveTexture(GL_TEXTURE1);
                     glEnable(GL_TEXTURE_2D);
                     ActiveTextures |= 1 << 1;
+
+                    if (!skipColorModulate && monoModColor)
+                    {
+                        int color = (int)(cx.M[0][0] * 255.0f);
+                        glBindTexture(GL_TEXTURE_2D, AddTextureID[color]);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_MODULATE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
+                        
+                        if (cx.M[0][3] != 0.0f)
+                        {
+                            glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,     modColors);
+                            
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_MODULATE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
+                        }
+                        else
+                        {
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+                        }
+                    }
+                    else
+                    {
                     glBindTexture(GL_TEXTURE_2D, DummyTextureID);
 
                     glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                        
                     glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           cxformColorCombine);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         cxformAlphaCombine);
                     if (cxformColorCombine == GL_REPLACE)
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          cxformColorOperand);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_PREVIOUS);
                     }
+                        else if (skipColorModulate)
+                        {
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_REPLACE);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                        }
                     else
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          cxformColorOperand);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
                     }
+                        
                     if (cxformAlphaCombine == GL_REPLACE)
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        cxformAlphaOperand);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_PREVIOUS);
                     }
                     else
                     {
-                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        cxformAlphaOperand);
+                            glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
                         glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
                     }
                     glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,     modColors);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_RGB_SCALE,             cxformColorScale);
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_ALPHA_SCALE,           cxformAlphaScale);
+                        glTexEnvf(GL_TEXTURE_ENV,  GL_RGB_SCALE,             cxformColorScale);
+                        glTexEnvf(GL_TEXTURE_ENV,  GL_ALPHA_SCALE,           cxformAlphaScale);
                 }
                 
-                return 2;
+                    if (hasAdditive && monoAddColor)
+                    {
+                        int alpha = (int)(cx.M[1][3] * 255.0f);
+                        if (!hasAdditiveAlpha && monoAddColor)
+                        {
+                            alpha = (int)(cx.M[1][0] * 255.0f);
+                        }
+                    
+                        glActiveTexture(GL_TEXTURE2);
+                        ActiveTextures |= 1 << 2;
+                        glEnable(GL_TEXTURE_2D);
+                        glBindTexture(GL_TEXTURE_2D, AddTextureID[alpha]);
+                    
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                    
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_ADD);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+                        
+                        stages = 3;
+                        break;
+            }
+                    else if (!skipColorModulate && monoModColor)
+                    {
+                        glActiveTexture(GL_TEXTURE2);
+                        ActiveTextures |= 1 << 2;
+                        glEnable(GL_TEXTURE_2D);
+                        glBindTexture(GL_TEXTURE_2D, DummyTextureID);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_ADD);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
+                        
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                        glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+                        glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,     addColors);
+                        
+                        stages = 3;
+                        break;
+                    }
+                    
+                    stages = 2;
+                }
             }
             else
             {
@@ -1537,28 +1849,28 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                 
                 if (cxformColorCombine == GL_REPLACE)
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          cxformColorOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          cxformColorOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
                 }
                 if (cxformAlphaCombine == GL_REPLACE)
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        cxformAlphaOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        cxformAlphaOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_TEXTURE);
@@ -1568,13 +1880,35 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                 glTexEnvi(GL_TEXTURE_ENV,  GL_RGB_SCALE,         cxformColorScale);
                 glTexEnvi(GL_TEXTURE_ENV,  GL_ALPHA_SCALE,       cxformAlphaScale);
 
-                if(hasAdditive)
+                if(hasAdditiveColor && monoAddColor)
+                {
+                    int alpha = (int)(cx.M[1][0] * 255.0f);
+                    glActiveTexture(GL_TEXTURE1);
+                    ActiveTextures |= 1 << 1;
+                    glEnable(GL_TEXTURE_2D);
+                    glBindTexture(GL_TEXTURE_2D, AddTextureID[alpha]);
+                    
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
+                    
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,           GL_ADD);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_PREVIOUS);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
+                    
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,         GL_REPLACE);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
+                    
+                    stages = 2;
+                }
+                else if(hasAdditiveAlpha)
                 {
                     int alpha = (int)(cx.M[1][3] * 255.0f);
                     glActiveTexture(GL_TEXTURE1);
                     ActiveTextures |= 1 << 1;
                     glEnable(GL_TEXTURE_2D);
-                    glBindTexture(GL_TEXTURE_2D, AddAlphaTextureID[alpha]);
+                    glBindTexture(GL_TEXTURE_2D, AddTextureID[alpha]);
                     
                     glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,      GL_COMBINE);
                     
@@ -1588,10 +1922,12 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_PREVIOUS);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
                     
-                    return 2;
+                    stages = 2;
                 }
-
-                return 1;
+                else
+                {
+                    stages = 1;
+            }
             }
             break;
         }
@@ -1632,28 +1968,28 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
 
                 if (cxformColorCombine == GL_REPLACE)
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          cxformColorOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          cxformColorOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
                 }
                 if (cxformAlphaCombine == GL_REPLACE)
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        cxformAlphaOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        cxformAlphaOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_TEXTURE);
@@ -1693,28 +2029,28 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
                 
                 if (cxformColorCombine == GL_REPLACE)
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          cxformColorOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_TEXTURE);
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          cxformColorOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,          GL_SRC_COLOR);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_RGB,              GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,              GL_TEXTURE);
                 }
                 if (cxformAlphaCombine == GL_REPLACE)
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        cxformAlphaOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_TEXTURE);
                 }
                 else
                 {
-                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        cxformAlphaOperand);
+                    glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,        GL_SRC_ALPHA);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,            GL_CONSTANT);
                     glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,            GL_TEXTURE);
@@ -1744,7 +2080,8 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
             glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,    GL_SRC_ALPHA);
             glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,    GL_SRC_ALPHA);
 
-            return 2;
+            stages = 2;
+            break;
         }
             
         default: // More than two textures
@@ -1753,7 +2090,8 @@ int HAL::SetComplexCombiners(bool vertexColor, bool solidColor, int textureCount
             return 0;
         }
     }
-    return 1;
+    
+    return stages;
 }
 
 void HAL::SetFill(PrimitiveFillType filleType, unsigned fillFlags, const VertexFormat* vf )
@@ -1873,7 +2211,7 @@ void HAL::SetCxform(unsigned stage, const Cxform & cx, unsigned index, unsigned 
     glActiveTexture(GL_TEXTURE0 + stage + 1);
     ActiveTextures |= 1 << (stage+1);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, AddAlphaTextureID[(int)(cx.M[1][3] * 255.0f)]);
+    glBindTexture(GL_TEXTURE_2D, AddTextureID[(int)(cx.M[1][3] * 255.0f)]);
     
     glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,  GL_COMBINE);
     glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,       GL_ADD);
@@ -1923,7 +2261,7 @@ void HAL::SetVertexColors(unsigned stage)
     glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,    GL_SRC_ALPHA);   
 }
 
-void HAL::SetTexture(PrimitiveFillType fillType, unsigned stage, Texture* ptexture, ImageFillMode fm, bool deferredCombine)
+void HAL::SetTexture(PrimitiveFillType fillType, unsigned stage, Texture* ptexture, ImageFillMode fm, bool deferredCombine, bool uvTexture, bool vcolor)
 {
     GLint minfilter = (fm.GetSampleMode() == Sample_Point) ? GL_NEAREST : (ptexture->MipLevels>1 ? GL_LINEAR_MIPMAP_LINEAR  : GL_LINEAR);
     GLint magfilter = (fm.GetSampleMode() == Sample_Point) ? GL_NEAREST : GL_LINEAR;
@@ -1942,9 +2280,31 @@ void HAL::SetTexture(PrimitiveFillType fillType, unsigned stage, Texture* ptextu
 
         if (!deferredCombine)
         {
-            if (stage == 0)
+            if (uvTexture && vcolor)
             {
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,  GL_COMBINE);
+                
+                glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,       GL_REPLACE);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,      GL_SRC_COLOR);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,          GL_PRIMARY_COLOR);
+                
+                glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,     GL_MODULATE);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,    GL_SRC_ALPHA);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND1_ALPHA,    GL_SRC_ALPHA);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,        GL_TEXTURE);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_SRC1_ALPHA,        GL_PRIMARY_COLOR);
+            }
+            else if (stage == 0)
+            {
+                glTexEnvi(GL_TEXTURE_ENV,  GL_TEXTURE_ENV_MODE,  GL_COMBINE);
+                
+                glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_RGB,       GL_REPLACE);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_RGB,      GL_SRC_COLOR);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_RGB,          GL_TEXTURE);
+                
+                glTexEnvi(GL_TEXTURE_ENV,  GL_COMBINE_ALPHA,     GL_REPLACE);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_OPERAND0_ALPHA,    GL_SRC_ALPHA);
+                glTexEnvi(GL_TEXTURE_ENV,  GL_SRC0_ALPHA,        GL_TEXTURE);
             }
             else
             {
@@ -2005,22 +2365,6 @@ void HAL::DisableExtraStages(unsigned stage)
     }
 }
     
-bool HAL::CheckExtension(const char *name)
-{
-    if (Extensions.IsEmpty())
-    {
-        Extensions = (const char *) glGetString(GL_EXTENSIONS);
-        // Add space, just so we know it is initialized.
-        Extensions += " ";
-    }
-    
-    if (name == 0)
-        return false;
-    const char *p = strstr(Extensions.ToCStr(), name);
-    return (p && (p[strlen(name)] == 0 || p[strlen(name)] == ' '));
-}
-
-
 void HAL::drawPrimitive(unsigned indexCount, unsigned meshCount)
 {
     glDrawArrays(GL_TRIANGLES, 0, indexCount);

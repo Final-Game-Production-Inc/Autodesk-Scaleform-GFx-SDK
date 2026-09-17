@@ -6,6 +6,7 @@ Created     :
 Authors     :   
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -224,9 +225,7 @@ struct ShaderConstantRange
 
 void ShaderInterface::Finish(unsigned meshCount)
 {
-    // Mesh count is unneeded - the constant registers that have been updated are tracked,
-    // which includes any registers set for batching.
-    SF_UNUSED(meshCount);
+    ShaderInterfaceBase::Finish(meshCount);
 
     ShaderConstantRange shaderConstantRangeFS(pHal, UniformData);
     ShaderConstantRange shaderConstantRangeVS(pHal, UniformData);
@@ -299,8 +298,13 @@ ShaderManager::ShaderManager( ProfileViews* prof ) :
 
 bool ShaderManager::HasInstancingSupport() const
 {
+#if defined(_DURANGO)
+    // Durango has instancing.
+    return true;
+#else
     // Only FeatureLevel 10.0+ has instancing (but it always has it).
     return ShaderModel >= ShaderDesc::ShaderVersion_D3D1xFL10X;
+#endif
 }
 
 void ShaderManager::MapVertexFormat(PrimitiveFillType fill, const VertexFormat* sourceFormat,
@@ -368,6 +372,9 @@ bool ShaderManager::Initialize(HAL* phal)
     }
 #elif (SF_D3D_VERSION == 11)
     ShaderModel = ShaderDesc::ShaderVersion_D3D1xFL11X;
+
+    // Non-Durango can use lower feature levels.
+#if !defined(_DURANGO)
     switch(pDevice->GetFeatureLevel())
     {
     case D3D_FEATURE_LEVEL_9_1:
@@ -384,10 +391,13 @@ bool ShaderManager::Initialize(HAL* phal)
     default:
         break;
     }
+#endif
+
 #else
     #error SF_D3D_VERSION must be 10 or 11.
 #endif
 
+#if !defined(_DURANGO)
     if ( ShaderModel == ShaderDesc::ShaderVersion_D3D1xFL11X && !ShaderDesc::IsShaderVersionSupported(ShaderModel))
     {
         SF_DEBUG_MESSAGE(1, "Support for D3D_FEATURE_LEVEL_11_0+ was not included when running GFxShaderMaker. Trying D3D_FEATURE_LEVEL_10_0.");
@@ -408,6 +418,7 @@ bool ShaderManager::Initialize(HAL* phal)
         SF_DEBUG_MESSAGE(1, "Support for D3D_FEATURE_LEVEL_9_1 was not included when running GFxShaderMaker. Failing.");
         return false;
     }
+#endif
 
     // Now, initialize all the shaders that use our current ShaderModel version.
     for (unsigned i = 0; i < VertexShaderDesc::VSI_Count; i++)

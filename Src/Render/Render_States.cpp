@@ -7,6 +7,7 @@ Created     :   June 24, 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -16,6 +17,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render_States.h"
 #include "Render_TreeNode.h"
+#include "Render/Render_Filters.h"
 
 namespace Scaleform { namespace Render {
 
@@ -30,6 +32,28 @@ void StateData::InitDefaultStates_ForceLink()
 
 // ***** BlendState
 BlendState::Interface BlendState::InterfaceImpl(State_BlendMode);
+
+bool BlendState::IsTargetAllocationNeededForBlendMode(BlendMode mode)
+{
+    switch(mode)
+    {
+        default:
+            return false;
+
+        // These require sampling the target, or cannot be achieved through regular blending operations (at least, on most platforms)
+#if !defined(SF_RENDER_DARKEN_LIGHTEN_OLD_BEHAVIOR)
+        case Blend_Lighten:
+        case Blend_Darken:
+#endif
+        case Blend_Layer:
+        case Blend_Difference:
+        case Blend_Overlay:
+        case Blend_HardLight:
+            return true;
+
+
+    }
+}
 
 // ***** Scale9State
 Scale9State::Interface Scale9State::InterfaceImpl(State_Scale9);
@@ -78,6 +102,27 @@ Internal_MaskOwnerState::Interface Internal_MaskOwnerState::InterfaceImpl(State_
 // ***** FilterState
 FilterState::Interface FilterState::InterfaceImpl(State_Filter);
 
+// ***** OrigNodeBoundsState
+OrigNodeBoundsState::Interface OrigNodeBoundsState::InterfaceImpl(State_OrigNodeBounds);
 
+FilterState::FilterState( FilterSet* filters ) : State(&InterfaceImpl, (void*)filters)
+{
+    filters->Freeze();
+}
+
+const FilterSet* FilterState::GetFilters() const
+{
+    return (const FilterSet*)GetData();
+}
+
+Scaleform::UPInt FilterState::GetFilterCount() const
+{
+    return GetFilters()->GetFilterCount();
+}
+
+const Filter* FilterState::GetFilter( UPInt index ) const
+{
+    return GetFilters()->GetFilter(index);
+}
 
 }} // Scaleform::Render

@@ -6,6 +6,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -67,20 +68,20 @@ using Render::BlurFilterParams;
 
 
 //------------------------------------------------------------------------
-static inline UInt8 GFx_Fixed1616toFixed44U(UInt32 v)
-{
-    unsigned vi = v >> 16;
-    if (vi > 15) vi = 15;
-    return UInt8((vi << 4) | ((v >> 12) & 0xF));
-}
+// static inline UInt8 GFx_Fixed1616toFixed44U(UInt32 v)
+// {
+//     unsigned vi = v >> 16;
+//     if (vi > 15) vi = 15;
+//     return UInt8((vi << 4) | ((v >> 12) & 0xF));
+// }
 
 //------------------------------------------------------------------------
-static inline UInt8 GFx_Fixed88toFixed44U(UInt16 v)
-{
-    unsigned vi = v >> 8;
-    if (vi > 15) vi = 15;
-    return UInt8((vi << 4) | ((v >> 4) & 0xF));
-}
+// static inline UInt8 GFx_Fixed88toFixed44U(UInt16 v)
+// {
+//     unsigned vi = v >> 8;
+//     if (vi > 15) vi = 15;
+//     return UInt8((vi << 4) | ((v >> 4) & 0xF));
+// }
 
 
 //------------------------------------------------------------------------
@@ -115,7 +116,8 @@ enum BlurFilterReaderConstants
     BFR_Color0          = 0x01,
     BFR_Color1          = 0x02,
     BFR_AngleDistance   = 0x04,
-    BFR_Strength        = 0x08
+    BFR_Strength        = 0x08,
+    BFR_Gradient        = 0x10,
 };
 
 template <class T>
@@ -123,6 +125,30 @@ void ReadBlurFilter(T* ps, BlurFilterParams* params,
                     float* angle, float* distance,
                     unsigned readConstants, Render::FilterType type, unsigned passesMask)
 {
+    if (readConstants & BFR_Gradient)
+    {
+        UInt16 numGradientEntries = ps->ReadU8();
+        Ptr<Render::GradientData> gradData = *SF_NEW Render::GradientData(Render::GradientLinear, numGradientEntries, false);
+        for (unsigned gradent = 0; gradent < numGradientEntries; ++gradent)
+        {
+            Render::GradientRecord& record = gradData->At(static_cast<unsigned>(gradent));
+            Color c;
+            c.SetRed(ps->ReadU8());
+            c.SetGreen(ps->ReadU8());
+            c.SetBlue(ps->ReadU8());
+            c.SetAlpha(ps->ReadU8());
+            record.ColorV = c;
+        }
+
+        for (unsigned gradent = 0; gradent < numGradientEntries; ++gradent)
+        {
+            UByte ratio = ps->ReadU8();
+            Render::GradientRecord& record = gradData->At(static_cast<unsigned>(gradent));
+            record.Ratio = (UByte)ratio;
+        }
+        params->Gradient = gradData;
+    }
+
     if (readConstants & BFR_Color0)
     {
         ps->ReadRgba(&params->Colors[0]);
@@ -222,8 +248,15 @@ unsigned LoadFilters(T* ps, Render::FilterSet* filters)
             break;
 
         case FlashFilter_GradientGlow:
-            numBytes = 19 + ps->ReadU8()*5; 
+        case FlashFilter_GradientBevel:
+        {           
+            Render::FilterType type = filterType == FlashFilter_GradientGlow ? Render::Filter_GradientGlow : Render::Filter_GradientBevel;
+            ReadBlurFilter(ps, &params, &angle, &distance,
+                           BFR_AngleDistance|BFR_Strength|BFR_Gradient,
+                           type, 0xF);
+            filter = *SF_HEAP_NEW(filtersHeap) Render::GradientFilter(type, params, angle, distance);
             break;
+        }
 
         case FlashFilter_Convolution:
             {
@@ -246,10 +279,6 @@ unsigned LoadFilters(T* ps, Render::FilterSet* filters)
                     (*cmFilter)[i] *= 1.f/255.f;
                 numFilters++;
             }
-            break;
-
-        case FlashFilter_GradientBevel:
-            numBytes = 19 + ps->ReadU8()*5;
             break;
         }
 

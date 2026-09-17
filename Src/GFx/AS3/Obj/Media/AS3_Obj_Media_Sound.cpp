@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,6 +35,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -42,10 +44,12 @@ namespace Impl
     SF_INLINE
     Value::Number GetMethodDefArg<Instances::fl_media::Sound, Instances::fl_media::Sound::mid_play, 0, Value::Number>(AS3::StringManager&)
     {
-        return 0;
+        return 0.0;
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_media::Sound, Instances::fl_media::Sound::mid_bytesLoadedGet, UInt32> TFunc_Instances_Sound_bytesLoadedGet;
 typedef ThunkFunc0<Instances::fl_media::Sound, Instances::fl_media::Sound::mid_bytesTotalGet, SInt32> TFunc_Instances_Sound_bytesTotalGet;
 typedef ThunkFunc0<Instances::fl_media::Sound, Instances::fl_media::Sound::mid_id3Get, SPtr<Instances::fl_media::ID3Info> > TFunc_Instances_Sound_id3Get;
@@ -154,6 +158,7 @@ namespace Instances { namespace fl_media
         if (pSoundObject)
         {
             pSoundObject->Stop();
+            pSoundObject->Close();
             pSoundObject = NULL;
         }
 #else
@@ -303,24 +308,40 @@ namespace Instances { namespace fl_media
 
 namespace InstanceTraits { namespace fl_media
 {
+    // const UInt16 Sound::tito[Sound::ThunkInfoNum] = {
+    //    0, 1, 2, 3, 4, 5, 6, 7, 10, 
+    // };
+    const TypeInfo* Sound::tit[14] = {
+        &AS3::fl::uintTI, 
+        &AS3::fl::int_TI, 
+        &AS3::fl_media::ID3InfoTI, 
+        &AS3::fl::BooleanTI, 
+        &AS3::fl::NumberTI, 
+        &AS3::fl::StringTI, 
+        NULL, 
+        NULL, &AS3::fl_net::URLRequestTI, &AS3::fl_media::SoundLoaderContextTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::int_TI, &AS3::fl_media::SoundTransformTI, 
+    };
+    const Abc::ConstValue Sound::dva[3] = {
+        {Abc::CONSTANT_Double, 0}, {Abc::CONSTANT_Int, 0}, {Abc::CONSTANT_Null, 0}, 
+    };
     const ThunkInfo Sound::ti[Sound::ThunkInfoNum] = {
-        {TFunc_Instances_Sound_bytesLoadedGet::Func, &AS3::fl::uintTI, "bytesLoaded", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sound_bytesTotalGet::Func, &AS3::fl::int_TI, "bytesTotal", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sound_id3Get::Func, &AS3::fl_media::ID3InfoTI, "id3", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sound_isBufferingGet::Func, &AS3::fl::BooleanTI, "isBuffering", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sound_lengthGet::Func, &AS3::fl::NumberTI, "length", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sound_urlGet::Func, &AS3::fl::StringTI, "url", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Sound_close::Func, NULL, "close", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Sound_load::Func, NULL, "load", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Sound_play::Func, NULL, "play", NULL, Abc::NS_Public, CT_Method, 0, 3},
+        {TFunc_Instances_Sound_bytesLoadedGet::Func, &Sound::tit[0], "bytesLoaded", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_bytesTotalGet::Func, &Sound::tit[1], "bytesTotal", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_id3Get::Func, &Sound::tit[2], "id3", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_isBufferingGet::Func, &Sound::tit[3], "isBuffering", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_lengthGet::Func, &Sound::tit[4], "length", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_urlGet::Func, &Sound::tit[5], "url", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_close::Func, &Sound::tit[6], "close", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Sound_load::Func, &Sound::tit[7], "load", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 0, NULL},
+        {TFunc_Instances_Sound_play::Func, &Sound::tit[10], "play", NULL, Abc::NS_Public, CT_Method, 0, 3, 0, 3, &Sound::dva[0]},
     };
 
     Sound::Sound(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"InstanceTraits::Sound::Sound()"
 //##protect##"InstanceTraits::Sound::Sound()"
-        SetMemSize(sizeof(Instances::fl_media::Sound));
 
     }
 
@@ -337,24 +358,27 @@ namespace InstanceTraits { namespace fl_media
 
 namespace ClassTraits { namespace fl_media
 {
-    Sound::Sound(VM& vm)
-    : Traits(vm, AS3::fl_media::SoundCI)
+
+    Sound::Sound(VM& vm, const ClassInfo& ci)
+    : fl_events::EventDispatcher(vm, ci)
     {
 //##protect##"ClassTraits::Sound::Sound()"
 //##protect##"ClassTraits::Sound::Sound()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_media::Sound(vm, AS3::fl_media::SoundCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Sound::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Sound(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Sound(vm, AS3::fl_media::SoundCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_media::SoundCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -365,6 +389,11 @@ namespace fl_media
 {
     const TypeInfo SoundTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_media::Sound::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_media::Sound::ThunkInfoNum,
+        0,
         "Sound", "flash.media", &fl_events::EventDispatcherTI,
         TypeInfo::None
     };
@@ -372,10 +401,6 @@ namespace fl_media
     const ClassInfo SoundCI = {
         &SoundTI,
         ClassTraits::fl_media::Sound::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_media::Sound::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_media::Sound::ti,

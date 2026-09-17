@@ -6,6 +6,7 @@ Created     :   January 15, 2008
 Authors     :   Michael Antonov, Andrew Reisse, Maxim Didenko
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -29,7 +30,7 @@ using namespace Scaleform;
 
 // We support color-formatted log only on PC/MAC/Linux platforms,
 // on consoles we use regular log through vprintf.
-#if defined (SF_OS_WIN32) || defined(SF_OS_LINUX) || defined(SF_OS_UNIX) || defined(SF_OS_MAC)
+#if (defined (SF_OS_WIN32) && !defined(_DURANGO)) || defined(SF_OS_LINUX) || defined(SF_OS_UNIX) || defined(SF_OS_MAC)
 
 #if !defined(SF_OS_WIN32)
 #include <unistd.h> // Because of isatty().
@@ -194,7 +195,7 @@ public:
             else
                 pbuf = (wchar_t*)SF_ALLOC(sizeof(buf[0])*(length + 1), Stat_Default_Mem);
 
-            length = (unsigned)UTF8Util::DecodeString(pbuf, buff, length);
+            length = (unsigned)UTF8Util::DecodeStringSafe(pbuf, length + 1, buff, length);
             DWORD ret;
             WriteConsoleW(hConsoleOutput, pbuf, length, &ret, NULL);
 

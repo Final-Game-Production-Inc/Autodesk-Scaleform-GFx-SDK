@@ -7,6 +7,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -95,12 +96,51 @@ template <typename T>   SF_INLINE const T Abs(const T v)
 // 'Aligns' a value (with a literal/const) and other version with a parameter
 template <int alignment, typename T>   SF_INLINE const T Align(const T v)
 {
-    return v + (alignment-1) & ~(alignment-1);
+    return (v + (alignment-1)) & ~(alignment-1);
 }
 template <typename T> SF_INLINE const T Align(const T v, UInt32 alignment)
 {
-    return v + (alignment-1) & ~(alignment-1);
+    return (v + (T)(alignment - 1)) & ~(T)(alignment - 1);
 }
+
+// Returns whether val is a power of two.
+template<typename T> bool IsPowerOfTwo(T val)
+{
+    return (val & (val-1)) == 0;
+}
+
+// Returns the next highest power-of-two of val, or val if it is already a power-of-two.
+template <typename T> SF_INLINE const T UpperPowerOfTwo(T val)
+{
+    T n(1);
+    while (n < val)
+        n *= T(2);
+    return n;
+}
+
+// Explicit specialization for UInt32
+template<>
+SF_INLINE const UInt32 UpperPowerOfTwo(UInt32 val)
+{
+	val--;
+	val |= val >> 1;
+	val |= val >> 2;
+	val |= val >> 4;
+	val |= val >> 8;
+	val |= val >> 16;
+	val++;
+	return val;
+}
+
+
+// Returns the next lower power-of-two of val, or val if it is already a power-of-two.
+template <typename T> SF_INLINE const T LowerPowerOfTwo(T val)
+{
+    if (IsPowerOfTwo(val))
+        return val;
+    return UpperPowerOfTwo(val) >> 1;
+}
+
 // ***** OperatorLess
 //
 //------------------------------------------------------------------------
@@ -894,18 +934,16 @@ namespace ByteUtil {
         return u.p;
     }
 
-#ifndef SF_NO_DOUBLE
     inline Double   SwapOrder(Double p)
     { 
         union {
-            Double p;
+            double p;
             UInt64 v;
         } u;
         u.p = p;
         u.v = SwapOrder(u.v);
         return u.p;
     }
-#endif
     
     // *** Byte-order conversion
 
@@ -920,9 +958,7 @@ namespace ByteUtil {
     inline UInt64   LEToSystem(UInt64 v)    { return v; }
     inline SInt64   LEToSystem(SInt64 v)    { return v; }
     inline float    LEToSystem(float  v)    { return v; }
-#ifndef SF_NO_DOUBLE
     inline Double   LEToSystem(Double v)    { return v; }
-#endif
     // Big Endian to System (LE)
     inline UInt8    BEToSystem(UInt8  v)    { return SwapOrder(v); }
     inline SInt8    BEToSystem(SInt8  v)    { return SwapOrder(v); }
@@ -933,9 +969,7 @@ namespace ByteUtil {
     inline UInt64   BEToSystem(UInt64 v)    { return SwapOrder(v); }
     inline SInt64   BEToSystem(SInt64 v)    { return SwapOrder(v); }
     inline float    BEToSystem(float  v)    { return SwapOrder(v); }
-#ifndef SF_NO_DOUBLE
     inline Double   BEToSystem(Double v)    { return SwapOrder(v); }
-#endif
     // System (LE) to Little Endian
     inline UInt8    SystemToLE(UInt8  v)    { return v; }
     inline SInt8    SystemToLE(SInt8  v)    { return v; }
@@ -946,9 +980,7 @@ namespace ByteUtil {
     inline UInt64   SystemToLE(UInt64 v)    { return v; }
     inline SInt64   SystemToLE(SInt64 v)    { return v; }
     inline float    SystemToLE(float  v)    { return v; }
-#ifndef SF_NO_DOUBLE
     inline Double   SystemToLE(Double v)    { return v; }   
-#endif
     // System (LE) to Big Endian
     inline UInt8    SystemToBE(UInt8  v)    { return SwapOrder(v); }
     inline SInt8    SystemToBE(SInt8  v)    { return SwapOrder(v); }
@@ -959,9 +991,7 @@ namespace ByteUtil {
     inline UInt64   SystemToBE(UInt64 v)    { return SwapOrder(v); }
     inline SInt64   SystemToBE(SInt64 v)    { return SwapOrder(v); }
     inline float    SystemToBE(float  v)    { return SwapOrder(v); }
-#ifndef SF_NO_DOUBLE
     inline Double   SystemToBE(Double v)    { return SwapOrder(v); }
-#endif
 
 #elif (SF_BYTE_ORDER == SF_BIG_ENDIAN)
     // Little Endian to System (BE)
@@ -974,9 +1004,7 @@ namespace ByteUtil {
     inline UInt64   LEToSystem(UInt64 v)    { return SwapOrder(v); }
     inline SInt64   LEToSystem(SInt64 v)    { return SwapOrder(v); }
     inline float    LEToSystem(float  v)    { return SwapOrder(v); }
-#ifndef SF_NO_DOUBLE
     inline Double   LEToSystem(Double v)    { return SwapOrder(v); }
-#endif
     // Big Endian to System (BE)
     inline UInt8    BEToSystem(UInt8  v)    { return v; }
     inline SInt8    BEToSystem(SInt8  v)    { return v; }
@@ -987,9 +1015,7 @@ namespace ByteUtil {
     inline UInt64   BEToSystem(UInt64 v)    { return v; }
     inline SInt64   BEToSystem(SInt64 v)    { return v; }
     inline float    BEToSystem(float  v)    { return v; }
-#ifndef SF_NO_DOUBLE
     inline Double   BEToSystem(Double v)    { return v; }
-#endif
     // System (BE) to Little Endian
     inline UInt8    SystemToLE(UInt8  v)    { return SwapOrder(v); }
     inline SInt8    SystemToLE(SInt8  v)    { return SwapOrder(v); }
@@ -1000,9 +1026,7 @@ namespace ByteUtil {
     inline UInt64   SystemToLE(UInt64 v)    { return SwapOrder(v); }
     inline SInt64   SystemToLE(SInt64 v)    { return SwapOrder(v); }
     inline float    SystemToLE(float  v)    { return SwapOrder(v); }
-#ifndef SF_NO_DOUBLE
     inline Double   SystemToLE(Double v)    { return SwapOrder(v); }
-#endif
     // System (BE) to Big Endian
     inline UInt8    SystemToBE(UInt8  v)    { return v; }
     inline SInt8    SystemToBE(SInt8  v)    { return v; }
@@ -1013,9 +1037,7 @@ namespace ByteUtil {
     inline UInt64   SystemToBE(UInt64 v)    { return v; }
     inline SInt64   SystemToBE(SInt64 v)    { return v; }
     inline float    SystemToBE(float  v)    { return v; }
-#ifndef SF_NO_DOUBLE
     inline Double   SystemToBE(Double v)    { return v; }
-#endif
 
 #else
     #error "SF_BYTE_ORDER must be defined to SF_LITTLE_ENDIAN or SF_BIG_ENDIAN"

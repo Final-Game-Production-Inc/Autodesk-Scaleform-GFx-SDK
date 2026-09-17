@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -290,6 +291,192 @@ void AvmSprite::SetHitAreaNotify(Sprite* phitArea)
             GetAS2Root()->SpritesWithHitArea.RemoveAt(haIndex);
     }
 
+}
+
+DisplayObject::TopMostResult
+AvmSprite::GetTopMostEntity(const Render::PointF &localPt, TopMostDescr* pdescr,
+                            const ArrayPOD<UByte>& hitTest)
+{
+    Sprite* const _this = GetSprite();
+    Sprite* phitAreaHolder = _this->GetHitAreaHolder();
+    Sprite* phitArea = _this->GetHitArea();
+    TopMostDescr    savedDescr;
+    TopMostResult   savedTe = DisplayObjectBase::TopMost_FoundNothing;
+    bool            foundButMouseDisabled = false;
+
+    // Go backwards, to check higher objects first.
+    SPInt i, n;
+    n = (SPInt)GetDisplayList().GetCount();
+    for (i = n - 1; i >= 0; i--)
+    {
+        DisplayObjectBase* ch = GetDisplayList().GetDisplayObject(i);
+
+        if (hitTest.GetSize() && (!hitTest[i] || ch->GetClipDepth()>0))
+            continue;
+
+        if (ch->IsTopmostLevelFlagSet()) // do not check children w/topmostLevel
+            continue;
+
+        // MA: This should consider submit masks in the display list,
+        // such masks can obscure/clip out buttons for the purpose of
+        // hit-testing as well.
+
+        if (ch != NULL)
+        {           
+            TopMostResult te = ch->GetTopMostMouseEntity(localPt, pdescr);
+
+            if (te == DisplayObjectBase::TopMost_Found)
+            {
+                //if (IsMouseChildrenDisabledFlagSet() || (pdescr->pResult && pdescr->pResult->IsMouseDisabledFlagSet()))
+                if (_this->IsMouseChildrenDisabledFlagSet())
+                    pdescr->pResult = _this;
+                // AS3 may have a hitarea with mouseEnabled = false: still should go through regular
+                // hitArea checks. AS3/test_hitArea_mouseDisabled4.swf
+                if (pdescr->pResult && pdescr->pResult->IsMouseDisabledFlagSet())
+                {
+                    pdescr->pResult = _this;
+                    foundButMouseDisabled = true;
+                    //return TopMost_Continue;
+                    continue;
+                }
+                if (pdescr->TestAll) 
+                    te = DisplayObjectBase::TopMost_Found;
+            }
+            else if (te == DisplayObjectBase::TopMost_Continue && pdescr->pResult)
+            {
+                // if continue,
+                savedTe     = DisplayObjectBase::TopMost_Found;
+                savedDescr  = *pdescr;
+            }
+
+            // If we found anything and we are in button mode, _this refers to us.
+            if (ActsAsButton() || (phitAreaHolder && (pdescr->TestAll || phitAreaHolder->ActsAsButton())))
+            {   
+                // It is either child or us; no matter - button mode takes precedence.
+                // Note, if both - the hitArea and the holder of hitArea have button handlers
+                // then the holder (parent) takes precedence; otherwise, if only the hitArea has handlers
+                // it should be returned.
+                if (te == DisplayObjectBase::TopMost_Found || savedTe == DisplayObjectBase::TopMost_Found)
+                {
+                    // In AS3, allow hitArea and hitArea's children to receive mouse
+                    // events (unless they are disabled implicitly).
+                    // See AS3/test_hitArea_mouseDisabledN.swfs
+                    // However, the change conflicts with AS3/test_hitArea4.swf, disabling for now.
+                    if (phitAreaHolder && (pdescr->TestAll || phitAreaHolder->ActsAsButton()))
+                    {
+                        pdescr->pResult = phitAreaHolder;               
+                        pdescr->pHitArea = _this;
+                        return DisplayObjectBase::TopMost_Found;
+                    }
+                    else 
+                    {
+                        // Sprites with hit area also shouldn't receive mouse events if _this hit area is not the sprite's child
+                        // We need to check here if a hit area is our child  
+                        if (phitArea)
+                        {
+                            InteractiveObject* parent = phitArea;
+                            do {
+                                parent = parent->GetParent();
+                            } while (parent && parent != _this);
+                            if (!parent)
+                            {
+                                // hit area is not our child so we should not receive mouse events
+                                pdescr->pResult = NULL;
+                                return DisplayObjectBase::TopMost_FoundNothing;
+                            }
+                            if (phitArea == pdescr->pHitArea)
+                            {
+                                pdescr->pResult = _this;
+                                return DisplayObjectBase::TopMost_Found;
+                            }
+                            else
+                            {
+                                pdescr->pResult = NULL;
+                                savedTe = DisplayObjectBase::TopMost_FoundNothing;
+                                continue;
+                            }
+                        }
+                        else
+                        { 
+                            pdescr->pResult = _this;
+                            return DisplayObjectBase::TopMost_Found;
+                        }
+                    }
+                }
+                if (te == DisplayObjectBase::TopMost_Found && pdescr->TestAll) 
+                    return te;
+            }
+            else 
+            {
+                if (te == DisplayObjectBase::TopMost_Found && pdescr->TestAll) 
+                    return te;
+
+                if (te == DisplayObjectBase::TopMost_Found && pdescr->pResult != _this)
+                {
+                    // Found one.
+                    // @@ TU: GetVisible() needs to be recursive here!
+
+                    // character could be _root, in which case it would have no parent.
+                    if (pdescr->pResult->GetParent() && pdescr->pResult->GetParent()->GetVisible())
+                        //if (te->GetVisible()) // TODO move _this check to the base case(s) only
+                    {
+                        // @@
+                        // Vitaly suggests "return ch" here, but it breaks
+                        // samples/test_button_functions.swf
+                        //
+                        // However, it fixes samples/clip_as_button.swf
+                        //
+                        // What gives?
+                        //
+                        // Answer: a button event must be passed up to parent until
+                        // somebody handles it.
+                        //
+                        return te;
+                    }
+                    else
+                    {
+                        pdescr->pResult = NULL;
+                        return DisplayObjectBase::TopMost_FoundNothing;
+                    }
+                }           
+            }
+        }
+    }
+    // if we are here then we are going to return 'Continue'. But first, check
+    // if there is a hitArea, and if there is one check if we hit into it. Otherwise,
+    // return 'NotFound'. Refer to AS3 test_hitArea1.swf,test_hitArea2.swf,test_hitArea3.swf.
+    if (phitArea)
+    {
+        // hitArea must be ignored if hit occurred on a child that is InteractiveObject.
+        // In this case the child still should get the event (test_hitarea_and_child_mc.swf).
+        if (!pdescr->pResult || pdescr->pResult == _this || !pdescr->pResult->IsInteractiveObject())
+        {
+            if (phitArea == pdescr->pHitArea)
+            {
+                pdescr->pResult = _this;
+                return DisplayObjectBase::TopMost_Found;
+            }
+            else
+            {
+                pdescr->pResult = NULL;
+                return DisplayObjectBase::TopMost_FoundNothing;
+            }
+        }
+    }
+    if (savedTe == DisplayObjectBase::TopMost_Found)
+    {
+        *pdescr = savedDescr;
+        return DisplayObjectBase::TopMost_Found;
+    }
+    pdescr->LocalPt = localPt;
+    if (foundButMouseDisabled)
+    {
+        pdescr->pResult = _this;
+        return DisplayObjectBase::TopMost_Found;
+    }
+    else
+        pdescr->pResult = NULL;
+    return DisplayObjectBase::TopMost_Continue;
 }
 
 void    AvmSprite::OnEventUnload()
@@ -727,8 +914,8 @@ unsigned AvmSprite::OnAddingDisplayObject(const CharacterCreateInfo& ccinfo,
                 // schedule "construct" event, if any
                 //if (hasConstructEvent) //!AB, fire onConstruct always, since it is impossible
                 {                        // to check whether onConstruct method exists or not
-                    MovieRoot::ActionEntry* pe = asroot->InsertEmptyAction(MovieRoot::AP_Construct);
-                    if (pe) pe->SetAction(pscriptCh, EventId::Event_Construct);
+                    MovieRoot::ActionEntry* ape = asroot->InsertEmptyAction(MovieRoot::AP_Construct);
+                    if (ape) ape->SetAction(pscriptCh, EventId::Event_Construct);
                     hasConstructEvent = false;
                 }
 
@@ -740,8 +927,8 @@ unsigned AvmSprite::OnAddingDisplayObject(const CharacterCreateInfo& ccinfo,
                     v.SetAsObjectInterface
                         (const_cast<ObjectInterface*>(reinterpret_cast<const ObjectInterface*>(pinitSource)));
                     params.PushBack(v);
-                    MovieRoot::ActionEntry* pe = asroot->InsertEmptyAction(MovieRoot::AP_Construct);
-                    if (pe) pe->SetAction(pscriptCh, InitObjectMembers, &params);
+                    MovieRoot::ActionEntry* ape = asroot->InsertEmptyAction(MovieRoot::AP_Construct);
+                    if (ape) ape->SetAction(pscriptCh, InitObjectMembers, &params);
                 }
                 initSourceUsed = true;
 
@@ -832,10 +1019,6 @@ void    AvmSprite::AdvanceFrame(bool nextFrame, float framePos)
         return;
 
     SF_ASSERT(GetDef() && GetMovieImpl() != NULL);
-
-    // Adjust x,y of this character if it is being dragged.
-    if (GetMovieImpl()->IsMouseSupportEnabled())
-        spr->DisplayObjContainer::DoMouseDrag(0);
 
     if (nextFrame)
     {   
@@ -1148,15 +1331,15 @@ bool    AvmSprite::SetStandardMember(StandardMember member, const Value& origVal
     case M_scale9Grid:
         if (GetASEnvironment()->GetVersion() >= 8)
         {
-            Environment* penv = GetASEnvironment();
-            Object* pobj = val.ToObject(penv);
+            Environment* penvGrid = GetASEnvironment();
+            Object* pobj = val.ToObject(penvGrid);
 
 #ifdef GFX_AS2_ENABLE_RECTANGLE
             if (pobj && pobj->GetObjectType() == Object_Rectangle)
             {
                 RectangleObject* prect = (RectangleObject*)pobj;
                 ASRect gr;
-                prect->GetProperties(penv, gr);
+                prect->GetProperties(penvGrid, gr);
                 RectF sg;
                 sg.x1 = PixelsToTwips(float(gr.x1));
                 sg.y1 = PixelsToTwips(float(gr.y1));
@@ -1174,10 +1357,10 @@ bool    AvmSprite::SetStandardMember(StandardMember member, const Value& origVal
                 pobj->GetConstMemberRaw(psc, "width", &params[2]);
                 pobj->GetConstMemberRaw(psc, "height", &params[3]);
                 RectF sg;
-                sg.x1 = PixelsToTwips(float(params[0].ToNumber(penv)));
-                sg.y2 = PixelsToTwips(float(params[1].ToNumber(penv)));
-                sg.SetWidth(PixelsToTwips(float(params[2].ToNumber(penv))));
-                sg.SetHeight(PixelsToTwips(float(params[3].ToNumber(penv))));
+                sg.x1 = PixelsToTwips(float(params[0].ToNumber(penvGrid)));
+                sg.y2 = PixelsToTwips(float(params[1].ToNumber(penvGrid)));
+                sg.SetWidth(PixelsToTwips(float(params[2].ToNumber(penvGrid))));
+                sg.SetHeight(PixelsToTwips(float(params[3].ToNumber(penvGrid))));
                 GetSprite()->SetScale9Grid(sg);
             }
 #endif
@@ -1190,8 +1373,8 @@ bool    AvmSprite::SetStandardMember(StandardMember member, const Value& origVal
         {
             if (GetASEnvironment()->GetVersion() >= 8)
             {
-                Environment* penv = GetASEnvironment();
-                Object* pobj = val.ToObject(penv);
+                Environment* penvRect = GetASEnvironment();
+                Object* pobj = val.ToObject(penvRect);
 #ifdef GFX_AS2_ENABLE_RECTANGLE
                 if (pobj)
                 {
@@ -1199,7 +1382,7 @@ bool    AvmSprite::SetStandardMember(StandardMember member, const Value& origVal
                     {
                         RectangleObject* prect = (RectangleObject*)pobj;
                         ASRect gr;
-                        prect->GetProperties(penv, gr);
+                        prect->GetProperties(penvRect, gr);
                         RectD sg;
                         sg.x1 = PixelsToTwips(gr.x1);
                         sg.y1 = PixelsToTwips(gr.y1);
@@ -1211,17 +1394,17 @@ bool    AvmSprite::SetStandardMember(StandardMember member, const Value& origVal
 #else
                 if (pobj)
                 {
-                    ASStringContext *psc = penv->GetSC();
+                    ASStringContext *psc = penvRect->GetSC();
                     Value params[4];
                     pobj->GetConstMemberRaw(psc, "x", &params[0]);
                     pobj->GetConstMemberRaw(psc, "y", &params[1]);
                     pobj->GetConstMemberRaw(psc, "width", &params[2]);
                     pobj->GetConstMemberRaw(psc, "height", &params[3]);
                     RectD sg;
-                    sg.x1 = PixelsToTwips(params[0].ToNumber(penv));
-                    sg.y2 = PixelsToTwips(params[1].ToNumber(penv));
-                    sg.SetWidth(PixelsToTwips(params[2].ToNumber(penv)));
-                    sg.SetHeight(PixelsToTwips(params[3].ToNumber(penv)));
+                    sg.x1 = PixelsToTwips(params[0].ToNumber(penvRect));
+                    sg.y2 = PixelsToTwips(params[1].ToNumber(penvRect));
+                    sg.SetWidth(PixelsToTwips(params[2].ToNumber(penvRect)));
+                    sg.SetHeight(PixelsToTwips(params[3].ToNumber(penvRect)));
                     GetSprite()->SetScrollRect(&sg);
                 }
 #endif
@@ -2996,15 +3179,15 @@ void AvmSprite::SpriteCreateGradient(const FnCall& fn, Render::ComplexFill* comp
                             }
                         }
 
-                        int   spreadMethod    = 0; // pad
+                        // int   spreadMethod    = 0; // pad
                         bool  linearRGB       = false;
                         float focalPointRatio = 0;
                         if (fn.NArgs > 5)
                         {
                             ASString str(fn.Arg(5).ToString(fn.Env));
 
-                            if(str == "reflect") spreadMethod = 1;
-                            else if(str == "repeat")  spreadMethod = 2;
+                            // if(str == "reflect") spreadMethod = 1;
+                            // else if(str == "repeat")  spreadMethod = 2;
 
                             if (fn.NArgs > 6)
                             {

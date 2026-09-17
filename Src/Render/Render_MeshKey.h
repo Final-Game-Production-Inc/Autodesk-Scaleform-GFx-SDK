@@ -6,6 +6,7 @@ Created     :   2005-2010
 Authors     :   Maxim Shemanarev, Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -116,6 +117,7 @@ class MeshKeySetHandle
 {
     friend class MeshKeyManager;
     friend class MeshKeySet;
+    friend class MeshProvider_KeySupport;
 
     AtomicPtr<MeshKeyManager> pManager;
     MeshKeySet* volatile      pKeySet;
@@ -139,6 +141,8 @@ class MeshProvider_KeySupport : public MeshProvider_RCImpl
     friend class MeshKeySet;
 
     MeshKeySetHandle hKeySet;
+protected:
+    inline void releaseKeySet();
 public:
     MeshProvider_KeySupport() { }
     ~MeshProvider_KeySupport() { }
@@ -228,6 +232,12 @@ private:
 
 inline bool MeshKeySetHandle::IsEmpty() const { return pKeySet == 0 || pKeySet->IsEmpty(); }
 inline bool MeshKeySetHandle::HasKeySet() const { return pKeySet != 0; }
+
+inline void MeshProvider_KeySupport::releaseKeySet()
+{
+    if (HasKeySet())
+        hKeySet.releaseCache();
+}
 
 
 //------------------------------------------------------------------------

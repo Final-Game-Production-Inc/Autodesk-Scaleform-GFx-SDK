@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,19 +33,22 @@ namespace Classes
 }
 //##protect##"methods"
 
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
-
 namespace InstanceTraits { namespace fl_events
 {
+    // const UInt16 NativeWindowBoundsEvent_tito[4] = {
+    //    0, 1, 2, 3, 
+    // };
+    const TypeInfo* NativeWindowBoundsEvent_tit[4] = {
+        &AS3::fl_geom::RectangleTI, 
+        &AS3::fl_geom::RectangleTI, 
+        &AS3::fl_events::EventTI, 
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo NativeWindowBoundsEvent_ti[4] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl_geom::RectangleTI, "afterBounds", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_geom::RectangleTI, "beforeBounds", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl_events::EventTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &NativeWindowBoundsEvent_tit[0], "afterBounds", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindowBoundsEvent_tit[1], "beforeBounds", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindowBoundsEvent_tit[2], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {ThunkInfo::EmptyFunc, &NativeWindowBoundsEvent_tit[3], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
 }} // namespace InstanceTraits
@@ -76,24 +80,27 @@ namespace ClassTraits { namespace fl_events
         {"RESIZING", NULL, OFFSETOF(Classes::fl_events::NativeWindowBoundsEvent, RESIZING), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
     };
 
-    NativeWindowBoundsEvent::NativeWindowBoundsEvent(VM& vm)
-    : Traits(vm, AS3::fl_events::NativeWindowBoundsEventCI)
+
+    NativeWindowBoundsEvent::NativeWindowBoundsEvent(VM& vm, const ClassInfo& ci)
+    : fl_events::Event(vm, ci)
     {
 //##protect##"ClassTraits::NativeWindowBoundsEvent::NativeWindowBoundsEvent()"
 //##protect##"ClassTraits::NativeWindowBoundsEvent::NativeWindowBoundsEvent()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_events::Event(vm, AS3::fl_events::NativeWindowBoundsEventCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Classes::fl_events::NativeWindowBoundsEvent(*this));
 
     }
 
     Pickable<Traits> NativeWindowBoundsEvent::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) NativeWindowBoundsEvent(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) NativeWindowBoundsEvent(vm, AS3::fl_events::NativeWindowBoundsEventCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_events::NativeWindowBoundsEventCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -104,6 +111,11 @@ namespace fl_events
 {
     const TypeInfo NativeWindowBoundsEventTI = {
         TypeInfo::CompileTime | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_events::NativeWindowBoundsEvent::InstanceType),
+        0,
+        ClassTraits::fl_events::NativeWindowBoundsEvent::MemberInfoNum,
+        4,
+        0,
         "NativeWindowBoundsEvent", "flash.events", &fl_events::EventTI,
         TypeInfo::None
     };
@@ -111,10 +123,6 @@ namespace fl_events
     const ClassInfo NativeWindowBoundsEventCI = {
         &NativeWindowBoundsEventTI,
         ClassTraits::fl_events::NativeWindowBoundsEvent::MakeClassTraits,
-        0,
-        ClassTraits::fl_events::NativeWindowBoundsEvent::MemberInfoNum,
-        4,
-        0,
         NULL,
         ClassTraits::fl_events::NativeWindowBoundsEvent::mi,
         InstanceTraits::fl_events::NativeWindowBoundsEvent_ti,

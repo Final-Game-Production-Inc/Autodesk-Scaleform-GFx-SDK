@@ -6,6 +6,7 @@ Created     :   October 2006
 Authors     :   Artyom Bolgar, Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -162,10 +163,10 @@ void SoundProto::Stop(const FnCall& fn)
     if (fn.NArgs > 0)
     {
         ASString id(fn.Arg(0).ToString(fn.Env));
-        SoundObject* pobj = static_cast<SoundObject*>(fn.ThisPtr);
-        SF_ASSERT(pobj);
+        SoundObject* spobj = static_cast<SoundObject*>(fn.ThisPtr);
+        SF_ASSERT(spobj);
         Ptr<MovieDefImpl> md = fn.Env->GetTarget()->GetResourceMovieDef();
-        if (pobj && md)
+        if (spobj && md)
         {
             // Get exported resource for linkageId and verify that it is a sound.
             ResourceBindData resBindData;

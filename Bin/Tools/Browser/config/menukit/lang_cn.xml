@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<language name="Simplified">
-	<translations>
-       <entry key="$MenuKitDesc" value="这工具箱显示了针对 PC及游戏机的AAA 用户界面解决方案。  更具体来说，这工具箱显示了针对游戏里内容流程的splash， 屏幕资源管理， 背景数据加载，串流视讯以及 PC/游戏机输入处理。" />
-	   <entry key="$MenuKitDesc2" value="这工具箱显示了针对 PC及游戏机的AAA 用户界面解决方案。  更具体来说，这工具箱显示了针对游戏里内容流程的splash， 屏幕资源管理， 背景数据加载，串流视讯以及 PC/游戏机输入处理。" />
-	</translations>
-</language>

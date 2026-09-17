@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -32,6 +33,7 @@ namespace Scaleform { namespace GFx { namespace AS3
 //##protect##"methods"
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -51,6 +53,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_geom::Matrix3D, Instances::fl_geom::Matrix3D::mid_determinantGet, Value::Number> TFunc_Instances_Matrix3D_determinantGet;
 typedef ThunkFunc0<Instances::fl_geom::Matrix3D, Instances::fl_geom::Matrix3D::mid_positionGet, SPtr<Instances::fl_geom::Vector3D> > TFunc_Instances_Matrix3D_positionGet;
 typedef ThunkFunc1<Instances::fl_geom::Matrix3D, Instances::fl_geom::Matrix3D::mid_positionSet, const Value, Instances::fl_geom::Vector3D*> TFunc_Instances_Matrix3D_positionSet;
@@ -238,7 +242,7 @@ namespace Instances { namespace fl_geom
 
         mat4.Append(Matrix4DDouble::Rotation(SF_DEGTORAD(degrees), sfaxis, sfpivot)); 
 
-        if (pDispObj)
+        if (pDispObj) 
         {
             Matrix3F m(mat4);
             pDispObj->SetMatrix3D(m);
@@ -262,13 +266,14 @@ namespace Instances { namespace fl_geom
     void Matrix3D::appendTranslation(const Value& result, Value::Number x, Value::Number y, Value::Number z)
     {
 //##protect##"instance::Matrix3D::appendTranslation()"
-        mat4.Append(Matrix4DDouble::Translation(x, y, z));
-
         if (pDispObj)
         {
+            mat4.Append(Matrix4DDouble::Translation(PixelsToTwips(x), PixelsToTwips(y), PixelsToTwips(z)));
             Matrix3F m(mat4);
             pDispObj->SetMatrix3D(m);
         }
+        else
+            mat4.Append(Matrix4DDouble::Translation(x, y, z));
 
         SF_UNUSED(result);
 //##protect##"instance::Matrix3D::appendTranslation()"
@@ -595,40 +600,73 @@ namespace Instances { namespace fl_geom
 
 namespace InstanceTraits { namespace fl_geom
 {
+    // const UInt16 Matrix3D::tito[Matrix3D::ThunkInfoNum] = {
+    //    0, 1, 2, 4, 5, 7, 9, 13, 17, 21, 22, 24, 26, 27, 31, 34, 35, 39, 41, 45, 49, 53, 56, 58, 61, 
+    // };
+    const TypeInfo* Matrix3D::tit[62] = {
+        &AS3::fl::NumberTI, 
+        &AS3::fl_geom::Vector3DTI, 
+        NULL, &AS3::fl_geom::Vector3DTI, 
+        NULL, 
+        NULL, NULL, 
+        NULL, &AS3::fl_geom::Matrix3DTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::Matrix3DTI, 
+        NULL, &AS3::fl::StringTI, 
+        &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        NULL, 
+        &AS3::fl_geom::Matrix3DTI, &AS3::fl_geom::Matrix3DTI, &AS3::fl_geom::Matrix3DTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl_geom::Matrix3DTI, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, 
+        NULL, &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        NULL, &AS3::fl_geom::Matrix3DTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        &AS3::fl::BooleanTI, NULL, &AS3::fl::StringTI, 
+        &AS3::fl_geom::Vector3DTI, &AS3::fl_geom::Vector3DTI, 
+        NULL, NULL, NULL, 
+        NULL, 
+    };
+    const Abc::ConstValue Matrix3D::dva[2] = {
+        {Abc::CONSTANT_Utf8, 9}, 
+        {Abc::CONSTANT_Utf8, 9}, 
+    };
     const ThunkInfo Matrix3D::ti[Matrix3D::ThunkInfoNum] = {
-        {TFunc_Instances_Matrix3D_determinantGet::Func, &AS3::fl::NumberTI, "determinant", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Matrix3D_positionGet::Func, &AS3::fl_geom::Vector3DTI, "position", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Matrix3D_positionSet::Func, NULL, "position", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Matrix3D_rawDataGet::Func, NULL, "rawData", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_Matrix3D_rawDataSet::Func, NULL, "rawData", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_Matrix3D_append::Func, NULL, "append", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Matrix3D_appendRotation::Func, NULL, "appendRotation", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_Matrix3D_appendScale::Func, NULL, "appendScale", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_Matrix3D_appendTranslation::Func, NULL, "appendTranslation", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_Matrix3D_clone::Func, &AS3::fl_geom::Matrix3DTI, "clone", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Matrix3D_decompose::Func, NULL, "decompose", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_Matrix3D_deltaTransformVector::Func, &AS3::fl_geom::Vector3DTI, "deltaTransformVector", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Matrix3D_identity::Func, NULL, "identity", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Matrix3D_interpolate::Func, &AS3::fl_geom::Matrix3DTI, "interpolate", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_Matrix3D_interpolateTo::Func, NULL, "interpolateTo", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Matrix3D_invert::Func, &AS3::fl::BooleanTI, "invert", NULL, Abc::NS_Public, CT_Method, 0, 0},
-        {TFunc_Instances_Matrix3D_pointAt::Func, NULL, "pointAt", NULL, Abc::NS_Public, CT_Method, 1, 3},
-        {TFunc_Instances_Matrix3D_prepend::Func, NULL, "prepend", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Matrix3D_prependRotation::Func, NULL, "prependRotation", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_Matrix3D_prependScale::Func, NULL, "prependScale", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_Matrix3D_prependTranslation::Func, NULL, "prependTranslation", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_Matrix3D_recompose::Func, &AS3::fl::BooleanTI, "recompose", NULL, Abc::NS_Public, CT_Method, 1, 2},
-        {TFunc_Instances_Matrix3D_transformVector::Func, &AS3::fl_geom::Vector3DTI, "transformVector", NULL, Abc::NS_Public, CT_Method, 1, 1},
-        {TFunc_Instances_Matrix3D_transformVectors::Func, NULL, "transformVectors", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_Matrix3D_transpose::Func, NULL, "transpose", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_Matrix3D_determinantGet::Func, &Matrix3D::tit[0], "determinant", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_positionGet::Func, &Matrix3D::tit[1], "position", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_positionSet::Func, &Matrix3D::tit[2], "position", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_rawDataGet::Func, &Matrix3D::tit[4], "rawData", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_rawDataSet::Func, &Matrix3D::tit[5], "rawData", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_append::Func, &Matrix3D::tit[7], "append", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_appendRotation::Func, &Matrix3D::tit[9], "appendRotation", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_appendScale::Func, &Matrix3D::tit[13], "appendScale", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_appendTranslation::Func, &Matrix3D::tit[17], "appendTranslation", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_clone::Func, &Matrix3D::tit[21], "clone", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_decompose::Func, &Matrix3D::tit[22], "decompose", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 1, &Matrix3D::dva[0]},
+        {TFunc_Instances_Matrix3D_deltaTransformVector::Func, &Matrix3D::tit[24], "deltaTransformVector", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_identity::Func, &Matrix3D::tit[26], "identity", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_interpolate::Func, &Matrix3D::tit[27], "interpolate", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_interpolateTo::Func, &Matrix3D::tit[31], "interpolateTo", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_invert::Func, &Matrix3D::tit[34], "invert", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_pointAt::Func, &Matrix3D::tit[35], "pointAt", NULL, Abc::NS_Public, CT_Method, 1, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_prepend::Func, &Matrix3D::tit[39], "prepend", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_prependRotation::Func, &Matrix3D::tit[41], "prependRotation", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_prependScale::Func, &Matrix3D::tit[45], "prependScale", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_prependTranslation::Func, &Matrix3D::tit[49], "prependTranslation", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_recompose::Func, &Matrix3D::tit[53], "recompose", NULL, Abc::NS_Public, CT_Method, 1, 2, 0, 1, &Matrix3D::dva[1]},
+        {TFunc_Instances_Matrix3D_transformVector::Func, &Matrix3D::tit[56], "transformVector", NULL, Abc::NS_Public, CT_Method, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_transformVectors::Func, &Matrix3D::tit[58], "transformVectors", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_Matrix3D_transpose::Func, &Matrix3D::tit[61], "transpose", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     Matrix3D::Matrix3D(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::Matrix3D::Matrix3D()"
 //##protect##"InstanceTraits::Matrix3D::Matrix3D()"
-        SetMemSize(sizeof(Instances::fl_geom::Matrix3D));
 
     }
 
@@ -645,24 +683,27 @@ namespace InstanceTraits { namespace fl_geom
 
 namespace ClassTraits { namespace fl_geom
 {
-    Matrix3D::Matrix3D(VM& vm)
-    : Traits(vm, AS3::fl_geom::Matrix3DCI)
+
+    Matrix3D::Matrix3D(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::Matrix3D::Matrix3D()"
 //##protect##"ClassTraits::Matrix3D::Matrix3D()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_geom::Matrix3D(vm, AS3::fl_geom::Matrix3DCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> Matrix3D::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) Matrix3D(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) Matrix3D(vm, AS3::fl_geom::Matrix3DCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_geom::Matrix3DCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -673,6 +714,11 @@ namespace fl_geom
 {
     const TypeInfo Matrix3DTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_geom::Matrix3D::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_geom::Matrix3D::ThunkInfoNum,
+        0,
         "Matrix3D", "flash.geom", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -680,10 +726,6 @@ namespace fl_geom
     const ClassInfo Matrix3DCI = {
         &Matrix3DTI,
         ClassTraits::fl_geom::Matrix3D::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_geom::Matrix3D::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_geom::Matrix3D::ti,

@@ -6,6 +6,7 @@ Created     :   December 9, 2009
 Authors     :   Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -417,18 +418,18 @@ void SimBotPlayerController::Update(float delta, HUDSimulation *psim, SimEntity 
         if (!bAttacking)
         {
             // Check for enemies (non-team members) in detectable range
-            float detectRange = 15.f;
+            float playerDetectRange = 15.f;
             Array<HUDSimulation::QueryResult> othersInDetectRange;
             psim->GetEntitiesInRadius(&othersInDetectRange, 
                 pplayer->GetTeamID() == SimEntity::TEAM_Red ? HUDSimulation::SIM_BluePlayer : HUDSimulation::SIM_RedPlayer,
                 pplayer->GetPosition(),
-                detectRange);
+                playerDetectRange);
             // Special case for user player
-            if (pplayer->GetTeamID() == SimEntity::TEAM_Red && pplayer->DistanceLessThan(psim->GetPlayer(), detectRange))
+            if (pplayer->GetTeamID() == SimEntity::TEAM_Red && pplayer->DistanceLessThan(psim->GetPlayer(), playerDetectRange))
             {
                 HUDSimulation::QueryResult res;
                 res.pEntity = psim->GetPlayer();
-                res.DistanceSquared = detectRange * detectRange;
+                res.DistanceSquared = playerDetectRange * playerDetectRange;
                 othersInDetectRange.PushBack(res);
             }
 
@@ -441,7 +442,7 @@ void SimBotPlayerController::Update(float delta, HUDSimulation *psim, SimEntity 
                 SimPlayerEntity* target = (SimPlayerEntity*)othersInDetectRange[rand() % othersInDetectRange.GetSize()].pEntity;
                 SimValueAction move(moveVal, SF_RANDF(25.f, 300.f));
                 pBehavior = new SimPlayerAttackBehavior(move, 
-                    (rand() % 2 == 0 ? -1.f : 1.f) * SF_RANDF(0.3f, 0.6f), target, detectRange);
+                    (rand() % 2 == 0 ? -1.f : 1.f) * SF_RANDF(0.3f, 0.6f), target, playerDetectRange);
                 bAttacking = true;
                 return;
             }

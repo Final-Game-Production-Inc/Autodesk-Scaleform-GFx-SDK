@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -47,6 +48,8 @@ namespace fl
     extern const ClassInfo int_CI;
     extern const TypeInfo NumberTI;
     extern const ClassInfo NumberCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
 } // namespace fl
 
 namespace ClassTraits { namespace fl_utils
@@ -65,6 +68,99 @@ namespace Classes { namespace fl_utils
 }}
 
 //##protect##"forward_declaration"
+namespace InstanceTraits
+{
+    namespace fl
+    {
+        class Date;
+        class XML;
+    }
+
+    namespace fl_utils
+    {
+        class Dictionary;
+    }
+
+    namespace fl_vec
+    {
+        class Vector_object;
+    }
+}
+
+namespace Instances
+{
+    namespace fl
+    {
+        class Date;
+        class XML;
+    }
+
+    namespace fl_utils
+    {
+        class Dictionary;
+    }
+
+    namespace fl_vec
+    {
+        class Vector_int;
+        class Vector_uint;
+        class Vector_double;
+        class Vector_String;
+        class Vector_object;
+    }
+}
+
+template <typename T>
+class ArrayHashLH
+{
+public:
+    void Add(const T& v)
+    {
+        ArrayM.PushBack(v);
+        HashM.Add(v, ArrayM.GetSize() - 1);
+    }
+    SInt32 Find(const T& k) const
+    {
+        UPInt result;
+
+        if (HashM.Get(k, &result))
+            return static_cast<SInt32>(result);
+
+        return -1;
+    }
+
+public:
+    typedef RefCountCollector<Mem_Stat> Collector;
+
+    void ForEachChild_GC(Collector* prcc, RefCountBaseGC<Mem_Stat>::GcOp op
+        SF_DEBUG_ARG(const RefCountBaseGC<Mem_Stat>& owner)) const
+    {
+        const UPInt size = ArrayM.GetSize();
+        for (UPInt i = 0; i < size; ++i)
+            AS3::ForEachChild_GC(prcc, ArrayM[i], op SF_DEBUG_ARG(owner));
+
+        typename HashLH<T, UPInt>::ConstIterator it = HashM.Begin();
+        for (; !it.IsEnd(); ++it)
+            AS3::ForEachChild_GC(prcc, it->First, op SF_DEBUG_ARG(owner));
+    }
+
+    void ForEachChild_GC_Const(Collector* prcc, RefCountBaseGC<Mem_Stat>::GcOp op
+        SF_DEBUG_ARG(const RefCountBaseGC<Mem_Stat>& owner)) const
+    {
+        const UPInt size = ArrayM.GetSize();
+        for (UPInt i = 0; i < size; ++i)
+            AS3::ForEachChild_GC_Const(prcc, ArrayM[i], op SF_DEBUG_ARG(owner));
+
+        typename HashLH<T, UPInt>::ConstIterator it = HashM.Begin();
+        for (; !it.IsEnd(); ++it)
+            AS3::ForEachChild_GC_Const(prcc, it->First, op SF_DEBUG_ARG(owner));
+    }
+
+private:
+    HashLH<T, UPInt>    HashM;
+    ArrayLH<T>          ArrayM;
+};
+
 //##protect##"forward_declaration"
 
 namespace Instances { namespace fl_utils
@@ -94,6 +190,10 @@ namespace Instances { namespace fl_utils
         ByteArray(InstanceTraits::Traits& t);
 
 //##protect##"instance$methods"
+        friend class Classes::fl_utils::ByteArray;
+        friend class SerializeArrSparse;
+        friend class SerializeArrDense;
+
     public:
         enum EncodingType { encAMF0 = 0, encAMF3 = 3 };
         enum EndianType { endianBig = 0, endianLittle = 1 };
@@ -172,11 +272,82 @@ namespace Instances { namespace fl_utils
             Write((void*)&v, sizeof(v));
         }
 
+        UInt8 ReadU8();
         UInt16 ReadU16();
         SInt16 ReadS16() { return static_cast<SInt16>(ReadU16()); }
         // !!! It doesn't check for EOF.
         // Return false in case of an error.
         CheckResult ReadUTFBytes(ASString& result, UInt32 len);
+
+    public:
+        // Can throw exceptions.
+        void WriteUInt29(UInt32 v);
+        // Can throw exceptions.
+        UInt32 ReadUInt29();
+
+        void WriteRef(UInt32 ref) { WriteUInt29(ref); }
+        UInt32 ReadRef() { return ReadUInt29(); }
+
+        void SerializeUInt32(UInt32 v);
+        UInt32 DeserializeUInt32();
+
+        void SerializeDouble(Value::Number v);
+        Value::Number DeserializeDouble();
+
+        void SerializeStr(const ASString& v);
+        ASString DeserializeStr();
+
+        void SerializeObj(AS3::Object& v);
+
+        void SerializeObjDefault(AS3::Object& v);
+        void DeserializeObjDefault(Value& result);
+
+        void SerializeArray(fl::Array& v);
+        SPtr<fl::Array> DeserializeArray();
+
+        void SerializeByteArray(ByteArray& v);
+        void DeserializeByteArray(Value& result);
+
+        void SerializeDate(fl::Date& v);
+        SPtr<fl::Date> DeserializeDate();
+
+        void SerializeDictionary(fl_utils::Dictionary& v);
+        SPtr<fl_utils::Dictionary> DeserializeDictionary();
+
+#ifdef GFX_ENABLE_XML
+        void SerializeXML(fl::XML& v);
+        SPtr<fl::XML> DeserializeXML();
+#endif
+
+        void SerializeVector_int(fl_vec::Vector_int& v);
+        SPtr<fl_vec::Vector_int> DeserializeVector_int();
+
+        void SerializeVector_uint(fl_vec::Vector_uint& v);
+        SPtr<fl_vec::Vector_uint> DeserializeVector_uint();
+
+        void SerializeVector_double(fl_vec::Vector_double& v);
+        SPtr<fl_vec::Vector_double> DeserializeVector_double();
+
+        void SerializeVector_String(fl_vec::Vector_String& v);
+
+        void SerializeVector_object(fl_vec::Vector_object& v);
+        void DeserializeVector_object(Value& result);
+
+        void AddToStrTable(const ASString& v) { StringTable.Add(v); }
+        void AddToObjTable(AS3::Object* v) { ObjectTable.Add(v); }
+        void AddToTraitsTable(InstanceTraits::Traits* v) { TraitsTable.Add(v); }
+
+        void StringListAdd(const ASString& v) { StringList.PushBack(v); }
+        void ObjectListAdd(AS3::Object* v) { ObjectList.PushBack(v); }
+        void TraitsListAdd(InstanceTraits::Traits* v) { TraitsList.PushBack(v); }
+
+        SInt32 FindInStrTable(const ASString& k) const { return StringTable.Find(k); }
+        SInt32 FindInObjTable(AS3::Object* k) const { return ObjectTable.Find(k); }
+        SInt32 FindInTraitsTable(InstanceTraits::Traits* k) const { return TraitsTable.Find(k); }
+
+        void StringListGet(ASString& result, UInt32 ref) const;
+        CheckResult ObjectListGet(AS3::Object*& result, UInt32 ref) const;
+        void TraitsListGet(InstanceTraits::Traits*& result, UInt32 ref) const;
 
     public:
         // Array-like access.
@@ -188,10 +359,14 @@ namespace Instances { namespace fl_utils
         void Set(const void* data, UPInt sz);
         UInt32 GetLength() const { return Length; }
         const void* GetDataPtr() const { return Data.GetDataPtr(); }
+		void* GetDataPtr() { return Data.GetDataPtr(); }
 
         virtual CheckResult SetProperty(const Multiname& prop_name, const Value& value);
         virtual CheckResult GetProperty(const Multiname& prop_name, Value& value);
         virtual void GetDynamicProperty(AbsoluteIndex ind, Value& value);
+        virtual bool HasProperty(const Multiname& prop_name, bool check_prototype);
+
+        virtual void ForEachChild_GC(Collector* prcc, GcOp op) const;
 
 //##protect##"instance$methods"
 
@@ -239,6 +414,7 @@ namespace Instances { namespace fl_utils
             mid_writeUnsignedInt, 
             mid_writeUTF, 
             mid_writeUTFBytes, 
+            mid_writeFile, 
         };
         void bytesAvailableGet(UInt32& result);
         void endianGet(ASString& result);
@@ -281,6 +457,7 @@ namespace Instances { namespace fl_utils
         void writeUnsignedInt(const Value& result, UInt32 value);
         void writeUTF(const Value& result, const ASString& value);
         void writeUTFBytes(const Value& result, const Value& value);
+        void writeFile(const Value& result, const ASString& filename);
 
         // C++ friendly wrappers for AS3 methods.
         UInt32 bytesAvailableGet()
@@ -469,6 +646,10 @@ namespace Instances { namespace fl_utils
         {
             writeUTFBytes(Value::GetUndefined(), value);
         }
+        void writeFile(const ASString& filename)
+        {
+            writeFile(Value::GetUndefined(), filename);
+        }
 
 //##protect##"instance$data"
     protected:
@@ -485,6 +666,15 @@ namespace Instances { namespace fl_utils
         // Data doesn't get truncated when Length get set to zero.
         UInt32 Length;
         ArrayLH_POD<UInt8> Data;
+
+        ArrayLH<ASString>       StringList;
+        ArrayHashLH<ASString>   StringTable;
+
+        ArrayLH<SPtr<AS3::Object> >         ObjectList;
+        ArrayHashLH<SPtr<AS3::Object> >     ObjectTable;
+
+        ArrayLH<SPtr<InstanceTraits::Traits> >      TraitsList;
+        ArrayHashLH<SPtr<InstanceTraits::Traits> >  TraitsTable;
 //##protect##"instance$data"
 
     };
@@ -492,7 +682,7 @@ namespace Instances { namespace fl_utils
 
 namespace InstanceTraits { namespace fl_utils
 {
-    class ByteArray : public CTraits
+    class ByteArray : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -516,12 +706,22 @@ namespace InstanceTraits { namespace fl_utils
 
         virtual void MakeObject(Value& result, Traits& t);
 
-        enum { ThunkInfoNum = 41 };
+        enum { ThunkInfoNum = 42 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[68];
 //##protect##"instance_traits$methods"
+        InstanceTraits::Traits& GetTraitsIExternalizable();
 //##protect##"instance_traits$methods"
 
 //##protect##"instance_traits$data"
+        fl::Date*               DateTR;
+#ifdef GFX_ENABLE_XML
+        fl::XML*                XMLTR;
+#endif
+        fl_utils::Dictionary*   DictionaryTR;
+        InstanceTraits::Traits* IExternalizableTR;
+        fl_vec::Vector_object*  VecObjectTR;
 //##protect##"instance_traits$data"
 
     };
@@ -530,7 +730,7 @@ namespace InstanceTraits { namespace fl_utils
     
 namespace ClassTraits { namespace fl_utils
 {
-    class ByteArray : public Traits
+    class ByteArray : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -538,12 +738,16 @@ namespace ClassTraits { namespace fl_utils
 #endif
     public:
         typedef Classes::fl_utils::ByteArray ClassType;
+        typedef InstanceTraits::fl_utils::ByteArray InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        ByteArray(VM& vm);
+        ByteArray(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
-        enum { ThunkInfoNum = 2 };
+        enum { ThunkInfoNum = 3 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[5];
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
 
@@ -584,9 +788,11 @@ namespace Classes { namespace fl_utils
         enum MethodID {
             mid_defaultObjectEncodingSet, 
             mid_defaultObjectEncodingGet, 
+            mid_readFile, 
         };
         void defaultObjectEncodingSet(const Value& result, UInt32 value);
         void defaultObjectEncodingGet(UInt32& result);
+        void readFile(SPtr<Instances::fl_utils::ByteArray>& result, const ASString& filename);
 
         // C++ friendly wrappers for AS3 methods.
         void defaultObjectEncodingSet(UInt32 value)
@@ -597,6 +803,12 @@ namespace Classes { namespace fl_utils
         {
             UInt32 result;
             defaultObjectEncodingGet(result);
+            return result;
+        }
+        SPtr<Instances::fl_utils::ByteArray> readFile(const ASString& filename)
+        {
+            SPtr<Instances::fl_utils::ByteArray> result;
+            readFile(result, filename);
             return result;
         }
 

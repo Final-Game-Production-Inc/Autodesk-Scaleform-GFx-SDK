@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -102,6 +103,7 @@ public:
 #endif // GFX_AS_ENABLE_TEXTSNAPSHOT
 //##protect##"methods"
 
+#ifndef SF_AS3_EMIT_DEF_ARGS
 // Values of default arguments.
 namespace Impl
 {
@@ -110,7 +112,7 @@ namespace Impl
     SF_INLINE
     Value::Number GetMethodDefArg<Instances::fl_text::TextSnapshot, Instances::fl_text::TextSnapshot::mid_hitTestTextNearPos, 2, Value::Number>(AS3::StringManager&)
     {
-        return 0;
+        return 0.0;
     }
 
     template <>
@@ -121,6 +123,8 @@ namespace Impl
     }
 
 } // namespace Impl
+#endif // SF_AS3_EMIT_DEF_ARGS
+
 typedef ThunkFunc0<Instances::fl_text::TextSnapshot, Instances::fl_text::TextSnapshot::mid_charCountGet, SInt32> TFunc_Instances_TextSnapshot_charCountGet;
 typedef ThunkFunc3<Instances::fl_text::TextSnapshot, Instances::fl_text::TextSnapshot::mid_findText, SInt32, SInt32, const ASString&, bool> TFunc_Instances_TextSnapshot_findText;
 typedef ThunkFunc2<Instances::fl_text::TextSnapshot, Instances::fl_text::TextSnapshot::mid_getSelected, bool, SInt32, SInt32> TFunc_Instances_TextSnapshot_getSelected;
@@ -269,24 +273,41 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
+    // const UInt16 TextSnapshot::tito[TextSnapshot::ThunkInfoNum] = {
+    //    0, 1, 5, 8, 10, 14, 17, 21, 23, 
+    // };
+    const TypeInfo* TextSnapshot::tit[27] = {
+        &AS3::fl::int_TI, 
+        &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::StringTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::BooleanTI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::StringTI, &AS3::fl::BooleanTI, 
+        &AS3::fl::StringTI, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::BooleanTI, 
+        &AS3::fl::ArrayTI, &AS3::fl::int_TI, &AS3::fl::int_TI, 
+        &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::uintTI, 
+        NULL, &AS3::fl::int_TI, &AS3::fl::int_TI, &AS3::fl::BooleanTI, 
+    };
+    const Abc::ConstValue TextSnapshot::dva[2] = {
+        {Abc::CONSTANT_Double, 0}, 
+        {Abc::CONSTANT_UInt, 6}, 
+    };
     const ThunkInfo TextSnapshot::ti[TextSnapshot::ThunkInfoNum] = {
-        {TFunc_Instances_TextSnapshot_charCountGet::Func, &AS3::fl::int_TI, "charCount", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_TextSnapshot_findText::Func, &AS3::fl::int_TI, "findText", NULL, Abc::NS_Public, CT_Method, 3, 3},
-        {TFunc_Instances_TextSnapshot_getSelected::Func, &AS3::fl::BooleanTI, "getSelected", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_TextSnapshot_getSelectedText::Func, &AS3::fl::StringTI, "getSelectedText", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_TextSnapshot_getText::Func, &AS3::fl::StringTI, "getText", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_TextSnapshot_getTextRunInfo::Func, &AS3::fl::ArrayTI, "getTextRunInfo", NULL, Abc::NS_Public, CT_Method, 2, 2},
-        {TFunc_Instances_TextSnapshot_hitTestTextNearPos::Func, &AS3::fl::NumberTI, "hitTestTextNearPos", NULL, Abc::NS_Public, CT_Method, 2, 3},
-        {TFunc_Instances_TextSnapshot_setSelectColor::Func, NULL, "setSelectColor", NULL, Abc::NS_Public, CT_Method, 0, 1},
-        {TFunc_Instances_TextSnapshot_setSelected::Func, NULL, "setSelected", NULL, Abc::NS_Public, CT_Method, 3, 3},
+        {TFunc_Instances_TextSnapshot_charCountGet::Func, &TextSnapshot::tit[0], "charCount", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_TextSnapshot_findText::Func, &TextSnapshot::tit[1], "findText", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
+        {TFunc_Instances_TextSnapshot_getSelected::Func, &TextSnapshot::tit[5], "getSelected", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_TextSnapshot_getSelectedText::Func, &TextSnapshot::tit[8], "getSelectedText", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 0, NULL},
+        {TFunc_Instances_TextSnapshot_getText::Func, &TextSnapshot::tit[10], "getText", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 0, NULL},
+        {TFunc_Instances_TextSnapshot_getTextRunInfo::Func, &TextSnapshot::tit[14], "getTextRunInfo", NULL, Abc::NS_Public, CT_Method, 2, 2, 0, 0, NULL},
+        {TFunc_Instances_TextSnapshot_hitTestTextNearPos::Func, &TextSnapshot::tit[17], "hitTestTextNearPos", NULL, Abc::NS_Public, CT_Method, 2, 3, 0, 1, &TextSnapshot::dva[0]},
+        {TFunc_Instances_TextSnapshot_setSelectColor::Func, &TextSnapshot::tit[21], "setSelectColor", NULL, Abc::NS_Public, CT_Method, 0, 1, 0, 1, &TextSnapshot::dva[1]},
+        {TFunc_Instances_TextSnapshot_setSelected::Func, &TextSnapshot::tit[23], "setSelected", NULL, Abc::NS_Public, CT_Method, 3, 3, 0, 0, NULL},
     };
 
     TextSnapshot::TextSnapshot(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::TextSnapshot::TextSnapshot()"
 //##protect##"InstanceTraits::TextSnapshot::TextSnapshot()"
-        SetMemSize(sizeof(Instances::fl_text::TextSnapshot));
 
     }
 
@@ -303,24 +324,27 @@ namespace InstanceTraits { namespace fl_text
 
 namespace ClassTraits { namespace fl_text
 {
-    TextSnapshot::TextSnapshot(VM& vm)
-    : Traits(vm, AS3::fl_text::TextSnapshotCI)
+
+    TextSnapshot::TextSnapshot(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::TextSnapshot::TextSnapshot()"
 //##protect##"ClassTraits::TextSnapshot::TextSnapshot()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_text::TextSnapshot(vm, AS3::fl_text::TextSnapshotCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> TextSnapshot::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) TextSnapshot(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) TextSnapshot(vm, AS3::fl_text::TextSnapshotCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_text::TextSnapshotCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -331,6 +355,11 @@ namespace fl_text
 {
     const TypeInfo TextSnapshotTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_text::TextSnapshot::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_text::TextSnapshot::ThunkInfoNum,
+        0,
         "TextSnapshot", "flash.text", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -338,10 +367,6 @@ namespace fl_text
     const ClassInfo TextSnapshotCI = {
         &TextSnapshotTI,
         ClassTraits::fl_text::TextSnapshot::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_text::TextSnapshot::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_text::TextSnapshot::ti,

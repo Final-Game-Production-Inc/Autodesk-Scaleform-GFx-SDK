@@ -8,6 +8,7 @@ Created     :   September 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -20,7 +21,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render/Render_Image.h"
 #include "Render/Render_TreeNode.h"
-#include "Render/Render_Filters.h"
 #include "Render/Render_ThreadCommandQueue.h"
 #include "Render/Render_Buffer.h"
 #include "Render/Render_Context.h"
@@ -53,28 +53,13 @@ public:
 
     // Fills in render interfaces on the render thread.
     // Current logic will use query the render thread for any non-default values.
-    void GetRenderInterfacesRT(Interfaces* p)
-    {
-        SF_DEBUG_ASSERT(pRTCommandQueue != NULL, "NULL pRTCommandQueue encountered, please ensure a valid ThreadCommandQueue is passed to MovieDef::CreateInstance before using BitmapData.\n");
-        pRTCommandQueue->GetRenderInterfaces(p);
-        if (IDefaults.pTextureManager)
-            p->pTextureManager = IDefaults.pTextureManager;
-        if (IDefaults.pHAL)
-            p->pHAL = IDefaults.pHAL;
-        if (IDefaults.pRenderer2D)
-            p->pRenderer2D = IDefaults.pRenderer2D;
-        if (IDefaults.RenderThreadID)
-            p->RenderThreadID = IDefaults.RenderThreadID;
-    }
+    void GetRenderInterfacesRT(Interfaces* p);
 
     // ContextCaptureNotify Implementation
     virtual void OnCapture();
     virtual void OnNextCapture(ContextImpl::RenderNotify* notify);
     virtual void OnShutdown(bool waitFlag);
     virtual void ExecuteNextCapture(ContextImpl::RenderNotify* notify);
-
-    void AddCaptureNotify(DICommandQueue* notify);
-    void RemoveCaptureNotify(DICommandQueue* notify);
 
     void AddTreeRootToKillList( TreeRoot* proot );
 	bool IsShutdownComplete() const { return !RContext || RContext->IsShutdownComplete(); }
@@ -99,7 +84,7 @@ protected:
     Lock*                   getLock() { return &TreeRootKillListLock; }
     Lock                    TreeRootKillListLock;
     ArrayLH<TreeRoot*>      TreeRootKillList;
-    List<DICommandQueue>    QueueList;
+    Ptr<DICommandQueue>     Queue;
 
 private:
     // Default interface to be used if none are provided by render thread.
@@ -155,7 +140,6 @@ public:
         DIState_MappedRead  = 0x00000002,   // Set if the image's texture data is mapped and readable only (ie. not writable).
         DIState_CPUDirty    = 0x00000008,   // Set if a CPU-command has modified the mapped data (implies in pCPUModified list).
         DIState_GPUDirty    = 0x00000010,   // Set if a GPU-command has modified the mapped data (implies in pGPUModified list).
-		DIState_ForceRemap  = 0x00000040,	// Set if the image's texture data should be re-mapped after updating staging data.
     };
 
     // Init with regular image
@@ -167,6 +151,7 @@ public:
     DrawableImage(ImageFormat format, ImageSize size, bool transparent,
                   Color fillColor, DrawableImageContext* drawableContext = 0);
 
+    virtual void            Release();
     ~DrawableImage();
 
     // ***** Data Accessors
@@ -222,7 +207,6 @@ public:
                      const Matrix2F& matrix = Matrix2F(), const Cxform& cform = Cxform(),
                      BlendMode blendMode = Blend_None, const Rect<SInt32>* clipRect = 0,
                      bool smoothing = false);
-
 
     void        FillRect(const Rect<SInt32>& rect, Color color);
 
@@ -334,7 +318,7 @@ protected:
 
     bool createTextureFromManager(HAL* phal, TextureManager* tmanager);
 
-    bool mapTextureRT(bool readOnly, bool forceRemap = false);
+    bool mapTextureRT(bool readOnly);
 
     bool ensureGPURenderable();
 
@@ -342,17 +326,11 @@ protected:
     void updateRenderTargetRT();
     void updateStagingTargetRT();
 
-    // Applies our queue to the 'other' image, which is typically a command source.
-    bool mergeQueueWith(Image* other);
-
     template<class C>
     void addCommand(const C& cmd);
 
     ImageData& getMappedData();
-    bool  isMapped() const               
-    { 
-        return (AtomicOps<unsigned>::Load_Acquire(&DrawableImageState) & (DIState_Mapped|DIState_MappedRead)) != 0; 
-    }
+    bool isMapped() const;
 
     void addToCPUModifiedList();
     void addToGPUModifiedListRT();
@@ -360,6 +338,8 @@ protected:
     bool isRenderableRT() const { return pRT != 0; }
     bool ensureRenderableRT();
     void initialize(ImageFormat format, const ImageSize &size, DrawableImageContext* dicontext);
+
+    void setViewProj3DHelper( TreeNode* subtree, TreeRoot* root );
 
 private:
 

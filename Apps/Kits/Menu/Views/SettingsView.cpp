@@ -6,6 +6,7 @@ Content     :  C++ implementation of the Settings view of the Menu Kit.
 Authors     :  Prasad Silva, Nate Mitchell
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -293,7 +294,7 @@ void    SettingsView::OnList_Change(UIView* pthis, const GFx::FunctionHandler::P
 {
     SettingsView* pview = (SettingsView*)pthis;
     EventData eventData = ConvertParamsToEventData(params);
-    unsigned selectedIndex = (eventData.Index >= 0) ? eventData.Index : 0;
+    unsigned selectedIndex = eventData.Index;
     pview->UpdateDescription(selectedIndex);
 }
 

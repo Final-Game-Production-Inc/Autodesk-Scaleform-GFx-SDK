@@ -6,6 +6,7 @@ Created     :   Jan 2011
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -287,7 +288,10 @@ void RenderThread::drawFrame1(DisplayWindow* pDispWin, bool capture)
 	Render::Viewport vp(pDispWin->ViewSize.Width, pDispWin->ViewSize.Height,
 		0, 0, pDispWin->ViewSize.Width, pDispWin->ViewSize.Height, ViewportFlags);
 
-    pHal->SetProfileViews(getProfileMode());
+    pHal->GetProfiler().SetProfileMode(getProfileMode());
+    pHal->GetProfiler().SetProfileFlags(getProfileFlags());
+    pHal->GetProfiler().SetHighlightedBatch(getProfileBatchHighlight());
+    pHal->SetRasterMode(!Wireframe ? Render::HAL::RasterMode_Solid : Render::HAL::RasterMode_Wireframe);
 
     // If prepass is required, render it now. Assume that overlays and cursor handles do
     // not require a prepass, and thus they will not be rendered here, only in the final pass.
@@ -313,7 +317,12 @@ void RenderThread::drawFrame1(DisplayWindow* pDispWin, bool capture)
     pHal->BeginScene();
 	{
 		if (!(ViewportFlags & Render::Viewport::View_Stereo_AnySplit) || pHal->GetMatrices()->S3DDisplay != Render::StereoRight)
-			pDevice->Clear(getBackgroundColor().ToColor32());
+        {
+            if (!(ViewportFlags & Render::Viewport::View_NoClear))
+            {
+                pDevice->Clear(getBackgroundColor().ToColor32());
+            }
+        }
 
 		// Normal handles
 		for (unsigned i = 0; i < pDispWin->NormalHandles.GetSize(); i++)
@@ -335,7 +344,8 @@ void RenderThread::drawFrame1(DisplayWindow* pDispWin, bool capture)
 	}
 
 	// Draw cursors and overlays (HUD).
-    pHal->SetProfileViews(0);
+    pHal->GetProfiler().SetProfileMode(Render::Profile_None);    // Do not apply profile views to the overlays.
+    pHal->SetRasterMode(Render::HAL::RasterMode_Solid);          // Always render overlays in solid.
 	pHal->BeginScene();
 	{
 		// Render cursors.
@@ -381,7 +391,6 @@ void RenderThread::drawDisplayHandle(DisplayHandleDesc& desc, const Render::View
         // BGColor alpha 0 => no clear in BeginDisplay().
         if ( !hasViewport )
             pRenderer->BeginDisplay(0, vp);
-        pDevice->SetWireframe(Wireframe);
         pRenderer->Display(desc.hRoot);
         if ( !hasViewport )
             pRenderer->EndDisplay();
@@ -389,7 +398,6 @@ void RenderThread::drawDisplayHandle(DisplayHandleDesc& desc, const Render::View
         if (desc.pOnDisplay)
         {
             pRenderer->BeginDisplay(0, vp);
-            pDevice->SetWireframe(false);
             desc.pOnDisplay->OnDisplay(pRenderer);
             pRenderer->EndDisplay();
         }
@@ -489,10 +497,10 @@ void RenderThread::createCursorPrimitives(Render::HAL* pHal )
         pshapeData->EndPath();
 
         FillStyleType cursorFill;
-        cursorFill.Color = (UInt32)(Color::Gray|Color::Alpha100);
+        cursorFill.Color = static_cast<UInt32>(Color::Gray) | static_cast<UInt32>(Color::Alpha100);
         cursorFill.pFill = 0;
         pshapeData->AddFillStyle(cursorFill);
-        pshapeData->AddStrokeStyle(1.0f, 0, 0, (UInt32)(Color::Red|Color::Alpha100));
+        pshapeData->AddStrokeStyle(1.0f, 0, 0, static_cast<UInt32>(Color::Red) | static_cast<UInt32>(Color::Alpha100));
         pshapeData->CountLayers();
 
         Ptr<Mesh> mesh = *SF_NEW Render::Mesh(pRenderer->GetImpl(), pshapeData, Matrix2F());
@@ -515,10 +523,14 @@ void RenderThread::ResetRasterizationCount()
 
 void RenderThread::GetRenderInterfaces(Render::Interfaces* p)
 {
+    p->Clear();
     p->pRenderer2D = pRenderer;
-    p->pHAL = pRenderer->GetHAL();
-    p->pTextureManager = p->pHAL->GetTextureManager();
-    p->RenderThreadID = p->pHAL->GetRenderThreadId();
+    if (pRenderer)
+    {
+        p->pHAL = pRenderer->GetHAL();
+        p->pTextureManager = p->pHAL->GetTextureManager();
+        p->RenderThreadID = p->pHAL->GetRenderThreadId();
+    }
 }
 
 }} // Scaleform::Platform

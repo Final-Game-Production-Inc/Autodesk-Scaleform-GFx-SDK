@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -52,7 +53,7 @@ namespace Classes { namespace fl_security
     
 namespace ClassTraits { namespace fl_security
 {
-    class ReferencesValidationSetting : public Traits
+    class ReferencesValidationSetting : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -60,9 +61,11 @@ namespace ClassTraits { namespace fl_security
 #endif
     public:
         typedef Classes::fl_security::ReferencesValidationSetting ClassType;
+        typedef InstanceTraits::fl::Object InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        ReferencesValidationSetting(VM& vm);
+        ReferencesValidationSetting(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
         enum { MemberInfoNum = 3 };
         static const MemberInfo mi[MemberInfoNum];

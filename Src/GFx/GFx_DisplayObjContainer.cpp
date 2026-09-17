@@ -6,6 +6,7 @@ Created     :
 Authors     :   Artem Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -152,12 +153,24 @@ void DisplayObjContainer::CreateAndReplaceDisplayObject
     }
     SF_ASSERT(ccinfo.pCharDef && ccinfo.pBindDefImpl);
 
+    // check if such object already exists; if it does, saves its visibility.
+    Ptr<DisplayObjectBase> existingCh = mDisplayList.GetCharacterAtDepth(pos.Depth, pos.CharacterId);
+    int vis = -1;
+    if (existingCh && !existingCh->IsUnloadQueuedUp())
+    {
+        vis = existingCh->GetVisible(); // save visibility
+    }
+
     Ptr<DisplayObjectBase> ch = *pASRoot->GetASSupport()->CreateCharacterInstance
         (GetMovieImpl(), ccinfo, this, pos.CharacterId);
+
     SF_ASSERT(ch);
     //SF_ASSERT(!ch->IsInteractiveObject()); //!AB: technically, AS chars shouldn't be used here
 
     ReplaceDisplayObject(pos, ch, name);
+
+    if (vis > -1) // restore visibility
+        ch->SetVisible(vis != 0);
 
     if (newChar)
         *newChar = (ch.GetPtr()->GetRefCount() > 1) ? ch.GetPtr() : NULL;
@@ -279,7 +292,7 @@ void    DisplayObjContainer::PropagateKeyEvent(const EventId& id, int* pkeyMask)
 }
 
 void    DisplayObjContainer::CalcDisplayListHitTestMaskArray(
-    Array<UByte> *phitTest, const Render::PointF &pt, bool testShape) const
+    ArrayPOD<UByte> *phitTest, const Render::PointF &pt, bool testShape) const
 {
     SF_UNUSED(testShape);
 
@@ -324,7 +337,7 @@ DisplayObject::TopMostResult DisplayObjContainer::GetTopMostMouseEntity(
 {
     SF_ASSERT(pdescr);
     Sprite* phitAreaHolder = GetHitAreaHolder();
-    
+
     // Invisible sprites/buttons don't receive mouse events (i.e. are disabled), unless it is a hitArea.
     // Masks also shouldn't receive mouse events (!AB)
     if (IsHitTestDisableFlagSet() || (!GetVisible() && !phitAreaHolder) || IsUsedAsMask())
@@ -381,210 +394,12 @@ DisplayObject::TopMostResult DisplayObjContainer::GetTopMostMouseEntity(
         }
     }
 
-    Array<UByte> hitTest;
+    ArrayPOD<UByte> hitTest;
     CalcDisplayListHitTestMaskArray(&hitTest, localPt, 1);
-    TopMostDescr    savedDescr;
-    TopMostResult   savedTe = TopMost_FoundNothing;
-    bool            foundButMouseDisabled = false;
 
-    Sprite* phitArea = GetHitArea();
-
-    // Go backwards, to check higher objects first.
-    SPInt i, n;
-    n = (SPInt)mDisplayList.GetCount();
-    for (i = n - 1; i >= 0; i--)
-    {
-        DisplayObjectBase* ch = mDisplayList.GetDisplayObject(i);
-
-        if (hitTest.GetSize() && (!hitTest[i] || ch->GetClipDepth()>0))
-            continue;
-
-        if (ch->IsTopmostLevelFlagSet()) // do not check children w/topmostLevel
-            continue;
-
-        // MA: This should consider submit masks in the display list,
-        // such masks can obscure/clip out buttons for the purpose of
-        // hit-testing as well.
-
-        if (ch != NULL)
-        {           
-            TopMostResult te = ch->GetTopMostMouseEntity(localPt, pdescr);
-
-            if (te == TopMost_Found)
-            {
-                //if (IsMouseChildrenDisabledFlagSet() || (pdescr->pResult && pdescr->pResult->IsMouseDisabledFlagSet()))
-                if (IsMouseChildrenDisabledFlagSet())
-                    pdescr->pResult = this;
-                if (pdescr->pResult && pdescr->pResult->IsMouseDisabledFlagSet())
-                {
-                    pdescr->pResult = this;
-                    foundButMouseDisabled = true;
-                    //return TopMost_Continue;
-                    continue;
-                }
-                if (pdescr->TestAll) 
-                    te = TopMost_Found;
-            }
-            else if (te == TopMost_Continue && pdescr->pResult)
-            {
-                // if continue,
-                savedTe     = TopMost_Found;
-                savedDescr  = *pdescr;
-            }
-
-            // If we found anything and we are in button mode, this refers to us.
-            if (ActsAsButton() || (phitAreaHolder && (pdescr->TestAll || phitAreaHolder->ActsAsButton())))
-            {   
-                // It is either child or us; no matter - button mode takes precedence.
-                // Note, if both - the hitArea and the holder of hitArea have button handlers
-                // then the holder (parent) takes precedence; otherwise, if only the hitArea has handlers
-                // it should be returned.
-                if (te == TopMost_Found || savedTe == TopMost_Found)
-                {
-                    if (phitAreaHolder && (pdescr->TestAll || phitAreaHolder->ActsAsButton()))
-                    {
-                        pdescr->pResult = phitAreaHolder;               
-                        pdescr->pHitArea = this;
-                        return TopMost_Found;
-                    }
-                    else 
-                    {
-                        // Sprites with hit area also shouldn't receive mouse events if this hit area is not the sprite's child
-                        // We need to check here if a hit area is our child  
-                        if (GetASMovieRoot()->GetAVMVersion() == 1)
-                        {
-                            // AS1.0 & 2.0 only.
-                            if (phitArea)
-                            {
-                                InteractiveObject* parent = phitArea;
-                                do {
-                                    parent = parent->GetParent();
-                                } while (parent && parent != this);
-                                if (!parent)
-                                {
-                                    // hit area is not our child so we should not receive mouse events
-                                    pdescr->pResult = NULL;
-                                    return TopMost_FoundNothing;
-                                }
-                                if (phitArea == pdescr->pHitArea)
-                                {
-                                    pdescr->pResult = this;
-                                    return TopMost_Found;
-                                }
-                                else
-                                {
-                                    pdescr->pResult = NULL;
-                                    savedTe = TopMost_FoundNothing;
-                                    continue;
-                                }
-                            }
-                            else
-                            { 
-                                pdescr->pResult = this;
-                                return TopMost_Found;
-                            }
-                        }
-                        else // AS3
-                        {
-                            // according to AS3 tests 'test_nested_rollover_events' & 'hitAreaTest.swf'
-                            // this code is not necessary should not be executed for AS3;
-                            // however, AS2 still needs it ('test_hitarea_event_handlers.swf').
-                            if (phitArea)
-                            {
-                                // hitArea must be ignored if hit occurred on a child that is InteractiveObject.
-                                // In this case the child still should get the event (test_hitarea_and_child_mc.swf).
-                                if (!pdescr->pResult || pdescr->pResult == this || !pdescr->pResult->IsInteractiveObject())
-                                {
-                                    if (phitArea == pdescr->pHitArea)
-                                    {
-                                        pdescr->pResult = this;
-                                        return TopMost_Found;
-                                    }
-                                    else
-                                    {
-                                        pdescr->pResult = NULL;
-                                        savedTe = TopMost_FoundNothing;
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (te == TopMost_Found && pdescr->TestAll) 
-                    return te;
-            }
-            else 
-            {
-                if (te == TopMost_Found && pdescr->TestAll) 
-                    return te;
-
-                if (te == TopMost_Found && pdescr->pResult != this)
-                {
-                    // Found one.
-                    // @@ TU: GetVisible() needs to be recursive here!
-
-                    // character could be _root, in which case it would have no parent.
-                    if (pdescr->pResult->GetParent() && pdescr->pResult->GetParent()->GetVisible())
-                        //if (te->GetVisible()) // TODO move this check to the base case(s) only
-                    {
-                        // @@
-                        // Vitaly suggests "return ch" here, but it breaks
-                        // samples/test_button_functions.swf
-                        //
-                        // However, it fixes samples/clip_as_button.swf
-                        //
-                        // What gives?
-                        //
-                        // Answer: a button event must be passed up to parent until
-                        // somebody handles it.
-                        //
-                        return te;
-                    }
-                    else
-                    {
-                        pdescr->pResult = NULL;
-                        return TopMost_FoundNothing;
-                    }
-                }           
-            }
-        }
-    }
-    // if we are here then we are going to return 'Continue'. But first, check
-    // if there is a hitArea, and if there is one check if we hit into it. Otherwise,
-    // return 'NotFound'. Refer to AS3 test_hitArea1.swf,test_hitArea2.swf,test_hitArea3.swf.
-    if (phitArea)
-    {
-        // hitArea must be ignored if hit occurred on a child that is InteractiveObject.
-        // In this case the child still should get the event (test_hitarea_and_child_mc.swf).
-        if (!pdescr->pResult || pdescr->pResult == this || !pdescr->pResult->IsInteractiveObject())
-        {
-            if (phitArea == pdescr->pHitArea)
-            {
-                pdescr->pResult = this;
-                return TopMost_Found;
-            }
-            else
-            {
-                pdescr->pResult = NULL;
-                return TopMost_FoundNothing;
-            }
-        }
-    }
-    if (savedTe == TopMost_Found)
-    {
-        *pdescr = savedDescr;
-        return TopMost_Found;
-    }
-    pdescr->LocalPt = localPt;
-    if (foundButMouseDisabled)
-    {
-        pdescr->pResult = this;
-        return TopMost_Found;
-    }
-    else
-        pdescr->pResult = NULL;
-    return TopMost_Continue;
+    if (HasAvmObject())
+        return GetAvmDispContainer()->GetTopMostEntity(localPt, pdescr, hitTest);
+    return TopMost_FoundNothing;
 }
 
 // Test if point is inside of the movieclip. Coordinate is in child's coordspace.
@@ -616,7 +431,7 @@ bool DisplayObjContainer::PointTestLocal(const Render::PointF &pt, UInt8 hitTest
         }
     }
 
-    Array<UByte> hitTest;
+    ArrayPOD<UByte> hitTest;
     CalcDisplayListHitTestMaskArray(&hitTest, pt, hitTestMask & HitTest_TestShape);
 
     Matrix2F m;
@@ -657,6 +472,30 @@ void DisplayObjContainer::PropagateFocusGroupMask(unsigned mask)
     }   
 }
 
+void DisplayObjContainer::GetChildDescTree(AmpMovieObjectDesc* parent, MemoryHeap* heap) const
+{
+    for (UPInt i = 0; i < mDisplayList.GetCount(); ++i)
+    {
+        DisplayObjectBase* child = mDisplayList.GetDisplayObject(i);
+
+        AmpMovieObjectDesc* objectDesc = SF_HEAP_NEW(heap) AmpMovieObjectDesc();
+        DisplayObject* dispObject = child->CharToScriptableObject();
+        if (dispObject != NULL)
+        {
+            objectDesc->Description = dispObject->GetName().ToCStr();
+        }
+        else
+        {
+            objectDesc->Description = "Unnamed";
+        }
+
+        parent->Children.PushBack(*objectDesc);
+        if (child->IsDisplayObjContainer())
+        {
+            child->CharToDisplayObjContainer()->GetChildDescTree(objectDesc, heap);
+        }
+    }
+}
 
 void DisplayObjContainer::FillTabableArray(FillTabableParams* params)
 {
@@ -666,13 +505,13 @@ void DisplayObjContainer::FillTabableArray(FillTabableParams* params)
 
 bool DisplayObjContainer::Contains(DisplayObjectBase* ch) const
 {
-    if (this == ch)
+    if (this == ch) // rule out self
+        return true;
+    if (ch && ch->GetParent() == this) // rule out immediate children
         return true;
     for (UPInt i = 0, n = mDisplayList.GetCount(); i < n; ++i)
     {
         DisplayObjectBase* pch = mDisplayList.GetDisplayObject(i);
-        if (ch == pch)
-            return true;
         DisplayObjContainer* cont = pch->CharToDisplayObjContainer();
         if (cont && cont->Contains(ch))
             return true;

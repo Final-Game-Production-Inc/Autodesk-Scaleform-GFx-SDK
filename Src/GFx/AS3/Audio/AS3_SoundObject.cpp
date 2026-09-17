@@ -6,6 +6,7 @@ Created     :   March 2011
 Authors     :   Vladislav Merker
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -31,7 +32,6 @@ namespace Scaleform { namespace GFx { namespace AS3 {
 
 SoundObject::SoundObject(ASVM& asvm, Instances::fl_media::Sound* psound) : Volume(100), Pan(0)
 {
-    SF_ASSERT(psound);
     pMovieRoot = asvm.GetMovieImpl();
     DisplayObjContainer* pobj = asvm.GetMovieRoot()->GetMainTimeline();
     if (pobj && pobj->IsSprite())
@@ -78,15 +78,13 @@ void SoundObject::ReleaseTarget()
 
 void SoundObject::ExecuteOnSoundComplete()
 {
-    pSound->DispatchEventSoundComplete();
+    if (pSound)
+        pSound->DispatchEventSoundComplete();
 }
 
 void* SoundObject::GetOwner()
 {
-    if (pSound)
-        return pSound->pMovieDef;
-    else
-        return NULL;
+    return (pSound ? pSound->pMovieDef : NULL);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -111,7 +109,8 @@ void SoundObject::LoadFile(const String& url, bool streaming)
     Sound::SoundRenderer* pplayer = pMovieRoot->GetSoundRenderer();
     if (!pplayer) return;
 
-    pSound->DispatchEventOpen();
+    if (pSound)
+        pSound->DispatchEventOpen();
 
     Ptr<LoadStates> ploadStates = *SF_NEW LoadStates(
         pMovieRoot->pMainMovieDef->pLoaderImpl,
@@ -126,14 +125,16 @@ void SoundObject::LoadFile(const String& url, bool streaming)
     Ptr<Sound::SoundSample> psample = *pplayer->CreateSampleFromFile(fileName.ToCStr(), streaming);
     if (!psample)
     {
-        pSound->DispatchEventIOError();
+        if (pSound)
+            pSound->DispatchEventIOError();
         return;
     }
 
     pSample = psample;
     pResource = NULL;
 
-    pSound->DispatchEventComplete();
+    if (pSound)
+        pSound->DispatchEventComplete();
 }
 
 void SoundObject::Play(int startTime, int loops)
@@ -175,6 +176,11 @@ void SoundObject::Stop()
         else
             psprite->StopActiveSounds(this);
     }
+}
+
+void SoundObject::Close()
+{
+    pSound = NULL;
 }
 
 void SoundObject::SetVolume(int volume)

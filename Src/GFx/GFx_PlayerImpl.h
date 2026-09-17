@@ -12,6 +12,7 @@ Notes       :   This file contains class declarations used in
                 in DisplayObjectBase.h.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -22,6 +23,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef INC_SF_GFX_PlayerImpl_H
 #define INC_SF_GFX_PlayerImpl_H
 
+#include "GFxConfig.h"
 #include "GFx/GFx_Sprite.h"
 #include "Render/Render_Math2D.h"
 #include "Kernel/SF_File.h"
@@ -61,7 +63,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #include "Render/Render_ScreenToWorld.h"
 
-#if defined(SF_SHOW_WATERMARK)
+#if defined(SF_BUILD_CONSUMER)
 #include "Render/Text/Text_FontManager.h"
 #include "Render/Render_TreeNode.h"
 #include "Render/Render_TreeText.h"
@@ -105,9 +107,11 @@ class SetBackgroundColorTag;
 // class GASDoAction;           - in GFxAction.cpp
 // class GFxStartSoundTag;      - in GFxSound.cpp
 
+/*
 #ifdef GFX_GESTURE_RECOGNIZE
-	class GestureRecognizer
+	class GestureRecognizer;
 #endif
+	*/
 
 // ***** External Classes
 class Loader;
@@ -171,10 +175,8 @@ public:
 
 class AutoTabSortFunctor
 {
-    enum
-    {
-        Epsilon = 20
-    };
+    static constexpr float Epsilon = 20.0f;
+
 public:
     inline bool operator()(const InteractiveObject* a, const InteractiveObject* b) const
     {
@@ -303,11 +305,11 @@ public:
         ASStringNode*   pNode;
         UByte           pData[1];
 
-        WideStringStorage(ASStringNode* pnode) : pNode(pnode) 
+        WideStringStorage(ASStringNode* pnode, UPInt dataSz) : pNode(pnode) 
         {
             pNode->AddRef();
             // NOTE: pData must be guaranteed to have enough space for (wchar_t * strLen+1)
-            UTF8Util::DecodeString((wchar_t*)pData, pNode->pData, pNode->Size);
+            UTF8Util::DecodeStringSafe((wchar_t*)pData, dataSz, pNode->pData, pNode->Size);
         }
         ~WideStringStorage()                { pNode->Release(); }
         SF_INLINE const wchar_t*  ToWStr()  { return (const wchar_t*)pData; }
@@ -393,6 +395,7 @@ public:
     {
     public:
         InteractiveObject*  pCharacter;
+        InteractiveObject*  pTopmostEntity;
         bool                LockCenter;
         bool                Bound;
         // Bound coordinates
@@ -404,7 +407,7 @@ public:
         unsigned            MouseIndex;
 
         DragState()
-            : pCharacter(0), LockCenter(0), Bound(0), 
+            : pCharacter(0), pTopmostEntity(0), LockCenter(0), Bound(0), 
               BoundLT(0.0), BoundRB(0.0), CenterDelta(0.0),
               MouseIndex(~0u)
             { }
@@ -500,8 +503,8 @@ public:
         Flag2_AcceptAnimMovesWith3D          = 0x0001,
         Flag2_RegisteredFontsChanged         = 0x0002,
         Flag2_Restarting                     = 0x0004,
-        Flag2_OptAdvListMarker               = 0x0008
-
+        Flag2_OptAdvListMarker               = 0x0008,
+        Flag2_BidirectionalTextEnabled       = 0x0010
     };
 
     struct IndirectTransPair
@@ -587,9 +590,19 @@ public:
     void                StopAllDrags();
     void                StopDrag(unsigned mouseIndex);
     bool                IsDragging(unsigned mi) const;
-    bool                IsDraggingCharacter(const InteractiveObject* ch, unsigned* pmouseIndex = 0) const;
+    const InteractiveObject* GetDraggingCharacter(unsigned mouseIndex = 0) const
+    {
+        SF_ASSERT(mouseIndex < GFX_MAX_MICE_SUPPORTED);
+        return CurrentDragStates[mouseIndex].pCharacter; 
+    }
+    InteractiveObject* GetDraggingCharacter(unsigned mouseIndex = 0)
+    {
+        SF_ASSERT(mouseIndex < GFX_MAX_MICE_SUPPORTED);
+        return CurrentDragStates[mouseIndex].pCharacter; 
+    }
     void                StopDragCharacter(const InteractiveObject* ch);
     bool                IsDraggingMouseIndex(unsigned mouseIndex) const;
+    void                SetDragStateTopmostEntity(unsigned mouseIndex, InteractiveObject* topmostEntity);
 
 	// Internal use by the AS3 VM to force Shapes into TreeShapes
 	void				UpdateAllRenderNodes();
@@ -644,6 +657,8 @@ public:
     UInt64              GetStartTickMs() const              { return StartTickMs; }
     UInt64              GetASTimerMs() const;
 
+    // Validation
+    virtual bool        IsValid();
     
     // Create new instance names for unnamed objects.
     ASString           CreateNewInstanceName();
@@ -833,7 +848,8 @@ public:
         bool testAll, const InteractiveObject* ignoreMC = NULL);  
 
     // Profiling
-    Ptr<AMP::ViewStats> AdvanceStats;
+    Ptr<AmpStats> AdvanceStats;
+    SF_AMP_CODE(AMP::ViewStats& GetAdvanceStats() const { return *static_cast<AMP::ViewStats*>(AdvanceStats.GetPtr()); })
 
     // Obtains statistics for the movie view.
     virtual void        GetStats(StatBag* pbag, bool reset);
@@ -862,7 +878,9 @@ public:
     // Prints out a report about objects and links between them.
     virtual void        PrintObjectsReport(UInt32 flags = 0, 
                                            Log* log = NULL,  
-                                           const char* swfName = NULL);
+                                           const char* swfName = NULL,
+                                           Ptr<AmpMovieObjectDesc>* root = NULL,
+                                           MemoryHeap* heap = NULL);
 
     // ***** GFxStateBag implementation
     
@@ -900,6 +918,10 @@ public:
     void                ClearContinueAnimationFlag()     { SetContinueAnimationFlag(false); }
     bool                IsContinueAnimationFlagSet() const { return G_IsFlagSet<Flag_ContinueAnimation>(Flags); }
 
+    void                SetBidirectionalTextEnabledFlag(bool f) { G_SetFlag<Flag2_BidirectionalTextEnabled>(Flags2, f); }
+    void                ClearBidirectionalTextEnabledFlag()     { SetBidirectionalTextEnabledFlag(false); }
+    bool                IsBidirectionalTextEnabled() const { return G_IsFlagSet<Flag2_BidirectionalTextEnabled>(Flags2); }
+
     bool                IsVerboseAction() const        { return G_IsFlagSet<Flag_VerboseAction>(Flags); }
     bool                IsSuppressActionErrors() const { return G_IsFlagSet<Flag_SuppressActionErrors>(Flags); }
     bool                IsLogRootFilenames() const  { return G_IsFlagSet<Flag_LogRootFilenames>(Flags); }
@@ -923,7 +945,7 @@ public:
     bool                IsDisableFocusKeysSet() const;
     void                SetDisableFocusKeys(bool f);
 
-#if defined(SF_SHOW_WATERMARK)
+#if defined(SF_BUILD_CONSUMER)
     bool                IsValidEval() const;
 #endif
 
@@ -955,6 +977,10 @@ public:
                                      ProcessFocusKeyInfo* focusKeyInfo);
     void                ProcessGesture(const InputEventsQueue::QueueEntry* qe);
 #endif
+    void                ProcessStatus(const InputEventsQueue::QueueEntry* qe);
+
+    void                ProcessAccelerometer(const InputEventsQueue::QueueEntry* qe);
+    void                ProcessGeolocation(const InputEventsQueue::QueueEntry* qe);
 
 #ifdef SF_BUILD_LOGO
     Ptr<ImageInfo>    pDummyImage;
@@ -1128,6 +1154,16 @@ public:
     void                AddMovieDefToKillList(MovieDefImpl*);
     void                ProcessMovieDefToKillList();
 
+#ifdef SF_ENABLE_ANE					
+    // Extension context
+    bool                Call(const char* extensionID, const char* contextID, const char* methodName, unsigned argc, const Value* const argv, Scaleform::GFx::Value* const result);
+    const               char* GetExtensionDirectory(const char* extensionID);
+    void                FinalizeExtensionContext(const char* extensionID, const char* contextID);
+    void                InitializeExtensionContext(const char* extensionID, const char* contextID);
+	GFx::Value*			GetActionScriptData(const char* extensionID, const char* contextID);
+	void				SetActionScriptData(const char* extensionID, const char* contextID, GFx::Value* data);
+#endif
+
     bool                DoesStageAutoOrients() const { return G_IsFlagSet<Flag_StageAutoOrients>(Flags); }
     virtual void        SetStageAutoOrients(bool v = true)
     {
@@ -1152,6 +1188,20 @@ public:
     void                SetMultitouchInputMode(MultitouchInputMode);
     unsigned            GetMaxTouchPoints() const;
     UInt32              GetSupportedGesturesMask() const; // ret combination of MTG_* flags
+
+    // accelerometer
+    bool                RegisterAccelerometer(int accelerometerId);
+    bool                UnregisterAccelerometer(int accelerometerId);
+    bool                IsAccelerometerMuted() const;
+    bool                IsAccelerometerSupported() const;
+    void                SetAccelerometerInterval(int accelerometerId, int interval);
+
+    // geolocation
+    bool                RegisterGeolocation(int geolocationId);
+    bool                UnregisterGeolocation(int geolocationId);
+    bool                IsGeolocationMuted() const;
+    bool                IsGeolocationSupported() const;
+    void                SetGeolocationInterval(int geolocationId, int interval);
 
     // 3D related methods
     static void MakeViewAndPersp3D(Matrix3F *matView, Matrix4F *matPersp, 
@@ -1264,6 +1314,10 @@ public: // data
     Ptr<FSCommandHandler>       pFSCommandHandler;
     Ptr<ExternalInterface>      pExtIntfHandler;
 
+#ifdef SF_ENABLE_ANE					
+    Ptr<ExtensionContextInterface>  pExtContextHandler;
+#endif
+
     Ptr<FontManagerStates>      pFontManagerStates;
 
 #ifdef GFX_ENABLE_SOUND
@@ -1288,9 +1342,11 @@ public: // data
 
     GFx::InputEventsQueue			InputEventsQueue;
 
+	/*
 #ifdef GFX_GESTURE_RECOGNIZE
 	GFx::GestureRecognizer			GestureRecognizer;
 #endif
+	*/
 
     Color                       BackgroundColor;
     MouseState                  mMouseState[GFX_MAX_MICE_SUPPORTED];
@@ -1361,9 +1417,8 @@ public:
     // Keeps registered fonts (by AS3 Font.registerFont).
     ArrayLH<FontDesc>                       RegisteredFonts;
 
-#if defined(SF_SHOW_WATERMARK)
-    Ptr<Render::TreeText>       pWMCopyrightText;
-    Ptr<Render::TreeText>       pWMWarningText;
+#if defined(SF_BUILD_CONSUMER)
+    Ptr<Render::TreeText>       pWMLicenseText;
     Ptr<Render::TreeText>       pWMDateText;
     Ptr<Render::FontProvider>   pWMFontProvider;
     Ptr<Render::Font>           pWMFont;
@@ -1522,8 +1577,11 @@ SF_INLINE   bool MovieImpl::Is3D() const
 // be 1.0123456789 with 53-bit mantissa mode and 1.012345671653 with 24-bit mode.
 class DoublePrecisionGuard
 {
+#if defined (SF_CC_MSVC) && defined(SF_CPU_X86)
     unsigned    fpc;
     //short       fpc;
+#endif
+
 public:
 
     DoublePrecisionGuard ()

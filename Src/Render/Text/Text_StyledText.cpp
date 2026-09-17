@@ -6,6 +6,7 @@ Created     :   April 29, 2008
 Authors     :   Artyom Bolgar
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -82,7 +83,7 @@ void Paragraph::TextBuffer::SetString
     if (len > 0)
     {
         SF_ASSERT(pText);
-        UTF8Util::DecodeString(pText, putf8Str, utf8length);
+        UTF8Util::DecodeStringSafe(pText, len, putf8Str, utf8length);
     }
     Size = len;
 }
@@ -491,7 +492,7 @@ void Paragraph::AppendPlainText(Allocator* pallocator, const char* putf8str, UPI
 
         if (p)
         {
-            UTF8Util::DecodeString(p, putf8str, utf8StrSize);
+            UTF8Util::DecodeStringSafe(p, length, putf8str, utf8StrSize);
             ++ModCounter;
         }
         //_dump(FormatInfo);
@@ -1050,6 +1051,11 @@ UPInt StyledText::AppendString(const char* putf8String, UPInt stringSize,
             // use existing paragraph
             ppara->RemoveTermNull();
             posInPara = ppara->GetLength();
+            if (posInPara == 0 && pdefParaFmt)
+            {
+                // Paragraph is empty - we can apply pdefParaFmt
+                ppara->SetFormat(pTextAllocator, *pdefParaFmt);
+            }
         }
         SF_ASSERT(ppara);
         UPInt paraLength = 0;
@@ -2083,9 +2089,9 @@ UPInt StyledText::InsertStyledText(const StyledText& text, UPInt pos, UPInt leng
         // now we can insert remaining paras
         for(; !srcParaIter.IsFinished() && remainedLen > 0; ++srcParaIter, ++destParaIter)
         {
-            const Paragraph* psrcPara = *srcParaIter;
-            SF_ASSERT(psrcPara);
-            UPInt lenInPara = psrcPara->GetLength();
+            const Paragraph* psrcParaGraph = *srcParaIter;
+            SF_ASSERT(psrcParaGraph);
+            UPInt lenInPara = psrcParaGraph->GetLength();
 
             // check, do we need to copy the remaining text to the last
             // paragraph, or we still need to create a new paragraph. 
@@ -2093,14 +2099,14 @@ UPInt StyledText::InsertStyledText(const StyledText& text, UPInt pos, UPInt leng
             // still just copy the whole paragraph. Another case, when length
             // are equal is when src paragraph contains term zero. In this case
             // we need to copy paragraph partially (w/o trailing zero).
-            if (lenInPara > remainedLen || (lenInPara == remainedLen && !psrcPara->HasNewLine()))
+            if (lenInPara > remainedLen || (lenInPara == remainedLen && !psrcParaGraph->HasNewLine()))
             {
                 // copy the part of the last paragraph
-                newPara.Copy(pTextAllocator, *psrcPara, 0, 0, lenInPara);
-                newPara.SetFormat(pTextAllocator, *psrcPara->GetFormat());
+                newPara.Copy(pTextAllocator, *psrcParaGraph, 0, 0, lenInPara);
+                newPara.SetFormat(pTextAllocator, *psrcParaGraph->GetFormat());
                 break;
             }
-            InsertCopyOfParagraph(destParaIter, *psrcPara);
+            InsertCopyOfParagraph(destParaIter, *psrcParaGraph);
             remainedLen -= lenInPara;
             nextParaStartingPos += lenInPara;
             SF_ASSERT(((SPInt)remainedLen) >= 0);

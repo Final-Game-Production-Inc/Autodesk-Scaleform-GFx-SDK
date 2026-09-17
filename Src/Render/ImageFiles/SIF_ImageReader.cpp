@@ -6,6 +6,7 @@ Created     :   July 2011
 Authors     :   Dmitry Polenur
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -99,11 +100,11 @@ bool SIFFileImageSource::Decode( ImageData* pdest, CopyScanlineFunc copyScanline
         UInt32 width = pFile->ReadUInt32();
         UInt32 height = pFile->ReadUInt32();
         ImageSize planeSize(width, height);
-        UInt32 pitch = pFile->ReadUInt32();
-        UInt32 dataSize = pFile->ReadUInt32();
-        SF_ASSERT (pdest->pPlanes[i].DataSize == dataSize);
-        SF_ASSERT (pdest->GetPitch() == pitch);
-        if (pdest->pPlanes[0].DataSize != dataSize || pdest->GetPitch() != pitch)
+        UInt32 imgPitch = pFile->ReadUInt32();
+        UInt32 imgDataSize = pFile->ReadUInt32();
+        SF_ASSERT (pdest->pPlanes[i].DataSize == imgDataSize);
+        SF_ASSERT (pdest->GetPitch() == imgPitch);
+        if (pdest->pPlanes[0].DataSize != imgDataSize || pdest->GetPitch() != imgPitch)
             return false;
         //UByte* pdata = (UByte*)SF_ALLOC(dataSize, Stat_Image_Mem);// plane data need to be freed by caller
         //pdest->SetPlane(i, planeSize, pitch, dataSize, pdata);

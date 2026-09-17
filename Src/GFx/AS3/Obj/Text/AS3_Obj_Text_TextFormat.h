@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -36,6 +37,8 @@ namespace fl
 {
     extern const TypeInfo StringTI;
     extern const ClassInfo StringCI;
+    extern const TypeInfo anyTI;
+    extern const ClassInfo anyCI;
     extern const TypeInfo ArrayTI;
     extern const ClassInfo ArrayCI;
 } // namespace fl
@@ -373,7 +376,7 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
-    class TextFormat : public CTraits
+    class TextFormat : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -399,6 +402,8 @@ namespace InstanceTraits { namespace fl_text
 
         enum { ThunkInfoNum = 36 };
         static const ThunkInfo ti[ThunkInfoNum];
+        // static const UInt16 tito[ThunkInfoNum];
+        static const TypeInfo* tit[54];
 //##protect##"instance_traits$methods"
 //##protect##"instance_traits$methods"
 
@@ -411,17 +416,19 @@ namespace InstanceTraits { namespace fl_text
     
 namespace ClassTraits { namespace fl_text
 {
-    class TextFormat : public Traits
+    class TextFormat : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::TextFormat"; }
 #endif
     public:
-        typedef Classes::fl_text::TextFormat ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_text::TextFormat InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        TextFormat(VM& vm);
+        TextFormat(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

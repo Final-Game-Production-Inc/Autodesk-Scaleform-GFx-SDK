@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -97,7 +98,7 @@ namespace Instances { namespace fl_text
 
 namespace InstanceTraits { namespace fl_text
 {
-    class TextLineMetrics : public CTraits
+    class TextLineMetrics : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
@@ -135,17 +136,19 @@ namespace InstanceTraits { namespace fl_text
     
 namespace ClassTraits { namespace fl_text
 {
-    class TextLineMetrics : public Traits
+    class TextLineMetrics : public fl::Object
     {
 #ifdef GFX_AS3_VERBOSE
     private:
         virtual const char* GetAS3ObjectType() const { return "ClassTraits::TextLineMetrics"; }
 #endif
     public:
-        typedef Classes::fl_text::TextLineMetrics ClassType;
+        typedef Class ClassType;
+        typedef InstanceTraits::fl_text::TextLineMetrics InstanceTraitsType;
+        typedef InstanceTraitsType::InstanceType InstanceType;
 
     public:
-        TextLineMetrics(VM& vm);
+        TextLineMetrics(VM& vm, const ClassInfo& ci);
         static Pickable<Traits> MakeClassTraits(VM& vm);
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"

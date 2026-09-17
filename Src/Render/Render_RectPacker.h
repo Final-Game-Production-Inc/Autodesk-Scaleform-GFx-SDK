@@ -8,6 +8,7 @@ Authors     :   Maxim Shemanarev
 Notes       :   Specialized simple containers and functions
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -103,7 +104,7 @@ private:
         unsigned x, y, Width, Height, Id, Node1, Node2;
     };
 
-    static bool cmpRects(const RectType& a, const RectType& b)
+    static bool cmpRectsY(const RectType& a, const RectType& b)
     {
         if(b.y != a.y) return b.y < a.y;
         return b.x < a.x;

@@ -7,6 +7,7 @@ Created     :   December 19, 2009
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -81,9 +82,9 @@ public:
         bool expandByFilterBounds(RectF* bounds, bool boundsEmpty) const;
         static void expandByFilterBounds( const Filter* filter, RectF* bounds );
 
-        // contractByFilterBounds - Helper function to contract the local bounds based on a node's FilterSet.
-        // Used to return bounds to their original state after having expandByFilterBounds called on them.
-        void contractByFilterBounds(RectF* bounds) const;
+        // This function compares the AproxLocalBounds with the input, and if they are different, saves the 
+        // input in an OrigNodeBoundsState object in this object.
+        void updateOriginalBoundState(const RectF& bounds);
 
         virtual void ReleaseNodes() const;
 
@@ -163,7 +164,8 @@ public:
         return GetReadOnlyData()->M3D();
     }
 
-    void        SetViewMatrix3D(const Matrix3F& m);
+    void SetViewMatrix3D(const Matrix3F& m);
+    void ClearViewMatrix3D();
     bool GetViewMatrix3D(Matrix3F *mat) const
     {        
         const ViewMatrix3DState* state = GetState<ViewMatrix3DState>();
@@ -173,7 +175,8 @@ public:
         return true;
     }
 
-    void        SetProjectionMatrix3D(const Matrix4F& m);
+    void SetProjectionMatrix3D(const Matrix4F& m);
+    void ClearProjectionMatrix3D();
     bool GetProjectionMatrix3D(Matrix4F *mat) const
     {        
         const ProjectionMatrix3DState* state = GetState<ProjectionMatrix3DState>();
@@ -304,6 +307,8 @@ public:
     float GetRendererFloat() const;
     void DisableBatching(bool b);
     bool IsBatchingDisabled() const;
+    void SetInvertedMask(bool b);
+    bool GetInvertedMask() const;
 
     // Internal CalcViewMatrix helper.
     void        appendAncestorMatrices(Matrix2F *m) const;

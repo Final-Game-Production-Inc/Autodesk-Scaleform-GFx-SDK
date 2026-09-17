@@ -6,6 +6,7 @@ Created     :   January 2010
 Authors     :   Michael Antonov
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -251,8 +252,8 @@ class TextureManager : public Render::TextureManager
 public:
     TextureManager(IDirect3DDevice9* pdevice,
                    D3DCapFlags caps,
-                   ThreadId renderThreadId = 0, 
-                   ThreadCommandQueue* commandQueue = 0,
+                   ThreadId renderThreadId, 
+                   ThreadCommandQueue* commandQueue,
                    TextureCache* texCache = 0);
     ~TextureManager();
 
@@ -262,6 +263,7 @@ public:
     void    Reset();
 
     IDirect3DDevice9* GetDevice() const { return pDevice; }
+    const D3DCapFlags& GetCaps() const { return Caps; }
 
     void            SetSamplerState( unsigned stage, IDirect3DTexture9* d3dtex, 
                                      D3DTEXTUREFILTERTYPE filter = D3DTEXF_POINT, 

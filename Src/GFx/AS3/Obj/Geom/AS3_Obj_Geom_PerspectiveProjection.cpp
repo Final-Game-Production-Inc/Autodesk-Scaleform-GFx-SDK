@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -35,12 +36,6 @@ namespace Classes
     class Matrix3D;
 }
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 typedef ThunkFunc0<Instances::fl_geom::PerspectiveProjection, Instances::fl_geom::PerspectiveProjection::mid_projectionCenterGet, SPtr<Instances::fl_geom::Point> > TFunc_Instances_PerspectiveProjection_projectionCenterGet;
 typedef ThunkFunc1<Instances::fl_geom::PerspectiveProjection, Instances::fl_geom::PerspectiveProjection::mid_projectionCenterSet, const Value, Instances::fl_geom::Point*> TFunc_Instances_PerspectiveProjection_projectionCenterSet;
 typedef ThunkFunc0<Instances::fl_geom::PerspectiveProjection, Instances::fl_geom::PerspectiveProjection::mid_focalLengthGet, Value::Number> TFunc_Instances_PerspectiveProjection_focalLengthGet;
@@ -223,7 +218,7 @@ namespace Instances { namespace fl_geom
                         return;
                     if (!argv[3].Convert2Number(y))
                         return;
-                    if (x != 0 && y != 0)
+                    if (!NumberUtil::IsNaN(x) && !NumberUtil::IsNaN(y))
                     {
                         projectionCenter.x = (float)x;
                         projectionCenter.y = (float)y;
@@ -239,22 +234,33 @@ namespace Instances { namespace fl_geom
 
 namespace InstanceTraits { namespace fl_geom
 {
+    // const UInt16 PerspectiveProjection::tito[PerspectiveProjection::ThunkInfoNum] = {
+    //    0, 1, 3, 4, 6, 7, 9, 
+    // };
+    const TypeInfo* PerspectiveProjection::tit[10] = {
+        &AS3::fl_geom::PointTI, 
+        NULL, &AS3::fl_geom::PointTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl::NumberTI, 
+        NULL, &AS3::fl::NumberTI, 
+        &AS3::fl_geom::Matrix3DTI, 
+    };
     const ThunkInfo PerspectiveProjection::ti[PerspectiveProjection::ThunkInfoNum] = {
-        {TFunc_Instances_PerspectiveProjection_projectionCenterGet::Func, &AS3::fl_geom::PointTI, "projectionCenter", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_PerspectiveProjection_projectionCenterSet::Func, NULL, "projectionCenter", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_PerspectiveProjection_focalLengthGet::Func, &AS3::fl::NumberTI, "focalLength", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_PerspectiveProjection_focalLengthSet::Func, NULL, "focalLength", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_PerspectiveProjection_fieldOfViewGet::Func, &AS3::fl::NumberTI, "fieldOfView", NULL, Abc::NS_Public, CT_Get, 0, 0},
-        {TFunc_Instances_PerspectiveProjection_fieldOfViewSet::Func, NULL, "fieldOfView", NULL, Abc::NS_Public, CT_Set, 1, 1},
-        {TFunc_Instances_PerspectiveProjection_toMatrix3D::Func, &AS3::fl_geom::Matrix3DTI, "toMatrix3D", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {TFunc_Instances_PerspectiveProjection_projectionCenterGet::Func, &PerspectiveProjection::tit[0], "projectionCenter", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_PerspectiveProjection_projectionCenterSet::Func, &PerspectiveProjection::tit[1], "projectionCenter", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_PerspectiveProjection_focalLengthGet::Func, &PerspectiveProjection::tit[3], "focalLength", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_PerspectiveProjection_focalLengthSet::Func, &PerspectiveProjection::tit[4], "focalLength", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_PerspectiveProjection_fieldOfViewGet::Func, &PerspectiveProjection::tit[6], "fieldOfView", NULL, Abc::NS_Public, CT_Get, 0, 0, 0, 0, NULL},
+        {TFunc_Instances_PerspectiveProjection_fieldOfViewSet::Func, &PerspectiveProjection::tit[7], "fieldOfView", NULL, Abc::NS_Public, CT_Set, 1, 1, 0, 0, NULL},
+        {TFunc_Instances_PerspectiveProjection_toMatrix3D::Func, &PerspectiveProjection::tit[9], "toMatrix3D", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
 
     PerspectiveProjection::PerspectiveProjection(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::PerspectiveProjection::PerspectiveProjection()"
 //##protect##"InstanceTraits::PerspectiveProjection::PerspectiveProjection()"
-        SetMemSize(sizeof(Instances::fl_geom::PerspectiveProjection));
 
     }
 
@@ -271,24 +277,27 @@ namespace InstanceTraits { namespace fl_geom
 
 namespace ClassTraits { namespace fl_geom
 {
-    PerspectiveProjection::PerspectiveProjection(VM& vm)
-    : Traits(vm, AS3::fl_geom::PerspectiveProjectionCI)
+
+    PerspectiveProjection::PerspectiveProjection(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::PerspectiveProjection::PerspectiveProjection()"
 //##protect##"ClassTraits::PerspectiveProjection::PerspectiveProjection()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_geom::PerspectiveProjection(vm, AS3::fl_geom::PerspectiveProjectionCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> PerspectiveProjection::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) PerspectiveProjection(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) PerspectiveProjection(vm, AS3::fl_geom::PerspectiveProjectionCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_geom::PerspectiveProjectionCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -299,6 +308,11 @@ namespace fl_geom
 {
     const TypeInfo PerspectiveProjectionTI = {
         TypeInfo::CompileTime,
+        sizeof(ClassTraits::fl_geom::PerspectiveProjection::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_geom::PerspectiveProjection::ThunkInfoNum,
+        0,
         "PerspectiveProjection", "flash.geom", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -306,10 +320,6 @@ namespace fl_geom
     const ClassInfo PerspectiveProjectionCI = {
         &PerspectiveProjectionTI,
         ClassTraits::fl_geom::PerspectiveProjection::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_geom::PerspectiveProjection::ThunkInfoNum,
-        0,
         NULL,
         NULL,
         InstanceTraits::fl_geom::PerspectiveProjection::ti,

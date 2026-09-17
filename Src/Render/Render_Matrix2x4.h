@@ -2,11 +2,12 @@
 
 PublicHeader:   Render
 Filename    :   Render_Matrix2x4.h
-Content     :   2D Matrix class 
+Content     :   2D Matrix class
 Created     :   November 3, 2010
 Authors     :   Michael Antonov, Brendan Iribe, Maxim Shemanarev, Mustafa Thamer
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -34,7 +35,7 @@ namespace Scaleform { namespace Render {
 //    This matrix is composed of 2 rows and 4 columns with translation in the 4th column.
 //    It is laid out in row-major order (rows are stored one after the other in memory)
 //
-//    This Matrix represents the matrix of type: 
+//    This Matrix represents the matrix of type:
 //
 //    | sx      shx     02      tx |    // this is row #1 which has 4 values
 //    | shy     sy      12      ty |    // this is row #2 which has 4 values
@@ -44,19 +45,19 @@ namespace Scaleform { namespace Render {
 //
 //    in memory it looks like this {00, 01, 02, 03, 10, 11, 12, 13},
 //    ((float *)M)[4] = 10, and ((float *)M)[7] = 13, in general M[row][col] = M[row * 4 + col] (since 4 is the number of columns)
-// 
+//
 //    The rotational matrix (2x2) for this kind of matrix is
 //    | cos   -sin |
 //    | sin    cos |
-// 
+//
 //    Scaling matrix:
 //    | sx     0  |
 //    | 0      sy |
-// 
+//
 //    Shearing matrix:
 //    | 0      shx |
 //    | shy     0  |
-// 
+//
 //    Flash (flash.geom.Matrix) uses the matrix of type:
 //    |    a   c   tx  |  ==  | sx  shx  tx |
 //    |    b   d   ty  |  ==  | shy sy   ty |
@@ -140,7 +141,7 @@ class Matrix2x4 : public Matrix2x4Data<T>
     SF_EXPORT void     SetInverse(const Matrix2x4& m);
     // Return the inverse matrix
     inline Matrix2x4    GetInverse() const;
-    
+
     // Set this matrix to a blend of m1 and m2, parameterized by t
     SF_EXPORT void     SetLerp(const Matrix2x4& m1, const Matrix2x4& m2, T t);
 
@@ -157,8 +158,8 @@ class Matrix2x4 : public Matrix2x4Data<T>
 
     // Initializes this matrix to the result of m0.Append(m1); more efficient
     // than assignment followed by Append.
-    void     SetToAppend(const Matrix2x4& m0, const Matrix2x4& m1);    
-    void     SetToAppend_NonOpt(const Matrix2x4& m0, const Matrix2x4& m1);    
+    void     SetToAppend(const Matrix2x4& m0, const Matrix2x4& m1);
+    void     SetToAppend_NonOpt(const Matrix2x4& m0, const Matrix2x4& m1);
     void     SetToAppend(const Matrix2x4& m0, const Matrix2x4& m1, const Matrix2x4& m2);
     void     SetToAppend_NonOpt(const Matrix2x4& m0, const Matrix2x4& m1, const Matrix2x4& m2);
 
@@ -179,10 +180,10 @@ class Matrix2x4 : public Matrix2x4Data<T>
     inline Matrix2x4&  AppendTranslation (T sx, T sy);
     inline Matrix2x4&  PrependTranslation(T sx, T sy);
 
-    // Matrices defined by parallelograms. Src and dst are 
-    // pointers to arrays of three points (T[6], x1,y1,...) that 
-    // identify three corners of the parallelograms assuming implicit 
-    // fourth point. The arguments are arrays of T[6] mapped 
+    // Matrices defined by parallelograms. Src and dst are
+    // pointers to arrays of three points (T[6], x1,y1,...) that
+    // identify three corners of the parallelograms assuming implicit
+    // fourth point. The arguments are arrays of T[6] mapped
     // to x1,y1, x2,y2, x3,y3  where the coordinates are:
     //        *-----------------*
     //       /          (x3,y3)/
@@ -190,9 +191,9 @@ class Matrix2x4 : public Matrix2x4Data<T>
     //     /(x1,y1)   (x2,y2)/
     //    *-----------------*
     Matrix2x4& SetParlToParl(const T* src, const T* dst);
-    Matrix2x4& SetRectToParl(T x1, T y1, T x2, T y2, 
+    Matrix2x4& SetRectToParl(T x1, T y1, T x2, T y2,
                             const T* parl);
-    Matrix2x4& SetParlToRect(const T* parl, 
+    Matrix2x4& SetParlToRect(const T* parl,
                             T x1, T y1, T x2, T y2);
     Matrix2x4& SetRectToRect(T srcX1, T srcY1, T srcX2, T srcY2,
                             T dstX1, T dstY1, T dstX2, T dstY2);
@@ -204,15 +205,15 @@ class Matrix2x4 : public Matrix2x4Data<T>
 
     // Return true if we flip handedness
     SF_EXPORT bool        DoesFlip() const;
-    
+
     // Determinant of the 2x2 rotation/scale part only
-    SF_EXPORT T       GetDeterminant() const;     
+    SF_EXPORT T       GetDeterminant() const;
 
     // Return the isotropic scale, proportional to the diagonal (0,0)-(1,1)
     SF_EXPORT T       GetScale() const;
 
     // Return the maximum scale factor that this transform applies
-    SF_EXPORT T       GetMaxScale() const;        
+    SF_EXPORT T       GetMaxScale() const;
 
     // Set x scale
     SF_EXPORT void    SetXScale(T x);
@@ -220,20 +221,20 @@ class Matrix2x4 : public Matrix2x4Data<T>
     SF_EXPORT void    SetYScale(T y);
 
     // Return the magnitude scale of our x coord output
-    SF_EXPORT T       GetXScale() const;          
+    SF_EXPORT T       GetXScale() const;
     // Return the magnitude scale of our y coord output
-    SF_EXPORT T       GetYScale() const;          
+    SF_EXPORT T       GetYScale() const;
     // Return our rotation component (in radians)
-    SF_EXPORT T       GetRotation() const;        
+    SF_EXPORT T       GetRotation() const;
 
     // Return the magnitude scale of our x coord output as double
-    SF_EXPORT Double  GetXScaleDouble() const;          
+    SF_EXPORT Double  GetXScaleDouble() const;
     // Return the magnitude scale of our y coord output as double
-    SF_EXPORT Double  GetYScaleDouble() const;          
+    SF_EXPORT Double  GetYScaleDouble() const;
     // Return our rotation component (in radians) as double
-    SF_EXPORT Double  GetRotationDouble() const;        
+    SF_EXPORT Double  GetRotationDouble() const;
 
-    // Check whether the matrix has arbitrary rotation, 
+    // Check whether the matrix has arbitrary rotation,
     // that is, NOT a multiple of 90 degrees.
     inline bool        IsFreeRotation(T epsilon=1e-6f) const;
 
@@ -259,6 +260,12 @@ class Matrix2x4 : public Matrix2x4Data<T>
     SF_EXPORT void     EncloseTransform_NonOpt(Rect<T> *pr, const Rect<T>& r) const;
     Rect<T>            EncloseTransform(const Rect<T>& r) const;
 
+#if defined(SF_ENABLE_SIMD) || ((defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG))
+    void     SetToAppend_Opt(const Matrix2x4& m0, const Matrix2x4& m1, float* mask);
+    void     SetToAppend_Opt(const Matrix2x4& m0, const Matrix2x4& m1, const Matrix2x4& m2, float* mask);
+    SF_EXPORT Matrix2x4&  Append_Opt (const Matrix2x4& m, float* mask);
+#endif
+
     // Formats Matrix2x4 message to a buffer, at least 512 bytes
     //SF_EXPORT void        Format(char *pbuffer) const;
 
@@ -267,14 +274,14 @@ class Matrix2x4 : public Matrix2x4Data<T>
 
     // Creates a translation matrix
     inline static Matrix2x4        Translation(const Point<T>& p);
-    inline static Matrix2x4        Translation(T dx, T dy);    
+    inline static Matrix2x4        Translation(T dx, T dy);
     // Creates a scaling matrix
     inline static Matrix2x4        Scaling(T scale);
     inline static Matrix2x4        Scaling(T sx, T sy);
     inline static Matrix2x4        Scaling(Size<T> scale);
     // Creates a shearing matrix
-    inline static Matrix2x4        Shearing(T sh, T sv);   
-    // Creates a rotation matrix 
+    inline static Matrix2x4        Shearing(T sh, T sv);
+    // Creates a rotation matrix
     inline static Matrix2x4        Rotation(T radians);
 
 
@@ -290,7 +297,7 @@ class Matrix2x4 : public Matrix2x4Data<T>
 	{
 		return Prepend(m);
 	}
-    
+
     // Matrix equality
     inline friend bool                operator == (const Matrix2x4 &m1, const Matrix2x4 &m2)
 	{
@@ -300,7 +307,7 @@ class Matrix2x4 : public Matrix2x4Data<T>
 	{
 		return  !(m1 == m2);
 	}
-    
+
     // Matrix multiplication (transform values)
     // - note that Matrix2x4 multiplication is not commutative
     inline friend const Matrix2x4      operator * (const Matrix2x4 &m1, const Matrix2x4 &m2)
@@ -463,7 +470,7 @@ inline void    Matrix2x4<T>::SetMatrix(const T *d)
 
 template<typename T>
 inline void Matrix2x4<T>::GetAsFloat2x4(float (*rows)[4]) const
-{        
+{
     rows[0][0] = (float)M[0][0];
     rows[0][1] = (float)M[0][1];
     rows[0][2] = (float)M[0][2];
@@ -510,19 +517,19 @@ inline Matrix2x4<T>       Matrix2x4<T>::GetInverse() const
 }
 
 template<typename T>
-inline Point<T> Matrix2x4<T>::Transform(const Point<T>& p) const    
-{ 
-    Point<T> pt; 
-    Transform(&pt, p); 
-    return pt; 
+inline Point<T> Matrix2x4<T>::Transform(const Point<T>& p) const
+{
+    Point<T> pt;
+    Transform(&pt, p);
+    return pt;
 }
 
 template<typename T>
-inline Point<T> Matrix2x4<T>::TransformByInverse(const Point<T>& p) const   
-{ 
-    Point<T> pt; 
-    TransformByInverse(&pt, p); 
-    return pt; 
+inline Point<T> Matrix2x4<T>::TransformByInverse(const Point<T>& p) const
+{
+    Point<T> pt;
+    TransformByInverse(&pt, p);
+    return pt;
 }
 
 template<typename T>
@@ -550,11 +557,11 @@ inline void Matrix2x4<T>::TransformByInverse(T* x, T* y) const
 }
 
 template<typename T>
-inline Rect<T>  Matrix2x4<T>::EncloseTransform(const Rect<T>& r) const      
-{ 
-    Rect<T> d(Rect<T>::NoInit); 
-    EncloseTransform(&d, r); 
-    return d; 
+inline Rect<T>  Matrix2x4<T>::EncloseTransform(const Rect<T>& r) const
+{
+    Rect<T> d(Rect<T>::NoInit);
+    EncloseTransform(&d, r);
+    return d;
 }
 
 template<typename T>
@@ -594,8 +601,8 @@ inline Matrix2x4<T>       Matrix2x4<T>::Scaling(Size<T> scale)
 template<typename T>
 inline Matrix2x4<T>       Matrix2x4<T>::Shearing(T sh, T sv)
 {
-    return Matrix2x4<T>(1.0,      _tan(sv), 0.0, 0.0,
-                        tan(sh), 1.0,       0.0, 0.0);
+    return Matrix2x4<T>(1.0f,      (float)(_tan(sv)), 0.0f, 0.0f,
+                        (float)(tan(sh)), 1.0f,       0.0f, 0.0f);
 }
 
 template<typename T>
@@ -743,7 +750,7 @@ void Matrix2x4<T>::SetZero()
     M[1][3] = 0.0f;
 }
 
-// Concatenate m and the current matrix.  When transforming points, 
+// Concatenate m and the current matrix.  When transforming points,
 // m happens first, then the original transformation.
 template<typename T>
 Matrix2x4<T>&  Matrix2x4<T>::Prepend(const Matrix2x4<T>& m)
@@ -776,14 +783,14 @@ void Matrix2x4<T>::SetToAppend_NonOpt(const Matrix2x4<T>& m0, const Matrix2x4<T>
     M[0][2] = 0;
     M[0][3] = m1.M[0][0] * m0.M[0][3] + m1.M[0][1] * m0.M[1][3] + m1.M[0][3];
 
-    M[1][0] = m1.M[1][0] * m0.M[0][0] + m1.M[1][1] * m0.M[1][0]; 
+    M[1][0] = m1.M[1][0] * m0.M[0][0] + m1.M[1][1] * m0.M[1][0];
     M[1][1] = m1.M[1][0] * m0.M[0][1] + m1.M[1][1] * m0.M[1][1];
     M[1][2] = 0;
     M[1][3] = m1.M[1][0] * m0.M[0][3] + m1.M[1][1] * m0.M[1][3] + m1.M[1][3];
 }
 
 template<typename T>
-void Matrix2x4<T>::SetToAppend(const Matrix2x4<T>& m0, const Matrix2x4<T>& m1, 
+void Matrix2x4<T>::SetToAppend(const Matrix2x4<T>& m0, const Matrix2x4<T>& m1,
                                const Matrix2x4<T>& m2)
 {
     // Call non-optimized version, in non-specialized case.
@@ -801,7 +808,7 @@ void Matrix2x4<T>::SetToAppend_NonOpt(const Matrix2x4<T>& m0,
     //    T m02 = 0;
     T m03 = m2.M[0][0] * m1.M[0][3] + m2.M[0][1] * m1.M[1][3] + m2.M[0][3];
 
-    T m10 = m2.M[1][0] * m1.M[0][0] + m2.M[1][1] * m1.M[1][0]; 
+    T m10 = m2.M[1][0] * m1.M[0][0] + m2.M[1][1] * m1.M[1][0];
     T m11 = m2.M[1][0] * m1.M[0][1] + m2.M[1][1] * m1.M[1][1];
     //    T m12 = 0;
     T m13 = m2.M[1][0] * m1.M[0][3] + m2.M[1][1] * m1.M[1][3] + m2.M[1][3];
@@ -820,7 +827,7 @@ void Matrix2x4<T>::SetToAppend_NonOpt(const Matrix2x4<T>& m0,
 
 
 
-// Concatenate the current matrix and m.  When transforming points, 
+// Concatenate the current matrix and m.  When transforming points,
 // the original transformation happens first, then m.
 template<typename T>
 Matrix2x4<T>&  Matrix2x4<T>::Append(const Matrix2x4<T>& m)
@@ -951,18 +958,18 @@ T   Matrix2x4<T>::GetMaxScale() const
 template<typename T>
 void    Matrix2x4<T>::SetXScale(T s)
 {
-    s /= GetXScale(); 
-    M[0][0] *= s; 
-    M[1][0] *= s; 
+    s /= GetXScale();
+    M[0][0] *= s;
+    M[1][0] *= s;
 }
 
 // Set y scale
 template<typename T>
 void    Matrix2x4<T>::SetYScale(T s)
 {
-    s /= GetYScale(); 
-    M[0][1] *= s; 
-    M[1][1] *= s; 
+    s /= GetYScale();
+    M[0][1] *= s;
+    M[1][1] *= s;
 }
 
 template<typename T>
@@ -1079,8 +1086,8 @@ void    Matrix2x4<T>::EncloseTransform_NonOpt(Rect<T> *pr, const Rect<T>& r) con
 
 //-------------------
 // The code of this functions was taken from the Anti-Grain Geometry
-// Project and modified for the use by Scaleform/Autodesk. 
-// Permission to use without restrictions is hereby granted to 
+// Project and modified for the use by Scaleform/Autodesk.
+// Permission to use without restrictions is hereby granted to
 // Scaleform/Autodesk by the author of Anti-Grain Geometry Project.
 // See http://antigrain.com for details.
 //------------------------------------------------------------------------
@@ -1098,7 +1105,7 @@ Matrix2x4<T>& Matrix2x4<T>::SetParlToParl(const T* src, const T* dst)
 
 //------------------------------------------------------------------------
 template<typename T>
-Matrix2x4<T>& Matrix2x4<T>::SetRectToParl(T x1, T y1, T x2, T y2, 
+Matrix2x4<T>& Matrix2x4<T>::SetRectToParl(T x1, T y1, T x2, T y2,
                                           const T* parl)
 {
     T src[6];
@@ -1110,7 +1117,7 @@ Matrix2x4<T>& Matrix2x4<T>::SetRectToParl(T x1, T y1, T x2, T y2,
 
 //------------------------------------------------------------------------
 template<typename T>
-Matrix2x4<T>& Matrix2x4<T>::SetParlToRect(const T* parl, 
+Matrix2x4<T>& Matrix2x4<T>::SetParlToRect(const T* parl,
                                           T x1, T y1, T x2, T y2)
 {
     T dst[6];
@@ -1138,7 +1145,7 @@ Matrix2x4<T>& Matrix2x4<T>::SetRectToRect(T srcX1, T srcY1, T srcX2, T srcY2,
 
 // ** End Inline Implementation
 
-typedef Matrix2x4<float> Matrix2F;      
+typedef Matrix2x4<float> Matrix2F;
 
 #ifdef SF_ENABLE_SIMD
 
@@ -1150,13 +1157,17 @@ public:
     static const unsigned Rows = 2;
     SF_SIMD_ALIGN( float M[Rows][4] );
 };
+#endif
 
-// Now pre-declare any explicit specializations found in source files. 
-template<> void Matrix2F::EncloseTransform(RectF *pr, const RectF& r) const;
+#if defined(SF_ENABLE_SIMD) || ((defined(SF_OS_WII) || defined(SF_OS_WIIU)) && !defined(SF_BUILD_DEBUG))
+// Now pre-declare any explicit specializations found in source files.
 template<> void Matrix2F::SetToAppend( const Matrix2F & m0, const Matrix2F & m1 );
 template<> void Matrix2F::SetToAppend( const Matrix2F & m0, const Matrix2F & m1, const Matrix2F & m2 );
 template<> Matrix2F& Matrix2F::Append( const Matrix2F & m );
+#endif
 
+#if defined(SF_ENABLE_SIMD)
+template<> void Matrix2F::EncloseTransform(RectF *pr, const RectF& r) const;
 #endif
 
 }} // Scaleform<T>::Render

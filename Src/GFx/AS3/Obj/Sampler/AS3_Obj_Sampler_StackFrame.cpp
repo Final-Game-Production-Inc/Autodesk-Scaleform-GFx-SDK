@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -27,12 +28,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_sampler
 {
@@ -56,8 +51,14 @@ namespace Instances { namespace fl_sampler
 
 namespace InstanceTraits { namespace fl_sampler
 {
+    // const UInt16 StackFrame::tito[StackFrame::ThunkInfoNum] = {
+    //    0, 
+    // };
+    const TypeInfo* StackFrame::tit[1] = {
+        &AS3::fl::StringTI, 
+    };
     const ThunkInfo StackFrame::ti[StackFrame::ThunkInfoNum] = {
-        {ThunkInfo::EmptyFunc, &AS3::fl::StringTI, "toString", NULL, Abc::NS_Public, CT_Method, 0, 0},
+        {ThunkInfo::EmptyFunc, &StackFrame::tit[0], "toString", NULL, Abc::NS_Public, CT_Method, 0, 0, 0, 0, NULL},
     };
     const MemberInfo StackFrame::mi[StackFrame::MemberInfoNum] = {
         {"file", NULL, OFFSETOF(Instances::fl_sampler::StackFrame, file), Abc::NS_Public, SlotInfo::BT_ConstChar, 1},
@@ -67,11 +68,10 @@ namespace InstanceTraits { namespace fl_sampler
 
 
     StackFrame::StackFrame(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"InstanceTraits::StackFrame::StackFrame()"
 //##protect##"InstanceTraits::StackFrame::StackFrame()"
-        SetMemSize(sizeof(Instances::fl_sampler::StackFrame));
 
     }
 
@@ -88,24 +88,27 @@ namespace InstanceTraits { namespace fl_sampler
 
 namespace ClassTraits { namespace fl_sampler
 {
-    StackFrame::StackFrame(VM& vm)
-    : Traits(vm, AS3::fl_sampler::StackFrameCI)
+
+    StackFrame::StackFrame(VM& vm, const ClassInfo& ci)
+    : fl::Object(vm, ci)
     {
 //##protect##"ClassTraits::StackFrame::StackFrame()"
 //##protect##"ClassTraits::StackFrame::StackFrame()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_sampler::StackFrame(vm, AS3::fl_sampler::StackFrameCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> StackFrame::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) StackFrame(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) StackFrame(vm, AS3::fl_sampler::StackFrameCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_sampler::StackFrameCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -116,6 +119,11 @@ namespace fl_sampler
 {
     const TypeInfo StackFrameTI = {
         TypeInfo::CompileTime | TypeInfo::Final | TypeInfo::NotImplemented,
+        sizeof(ClassTraits::fl_sampler::StackFrame::InstanceType),
+        0,
+        0,
+        InstanceTraits::fl_sampler::StackFrame::ThunkInfoNum,
+        InstanceTraits::fl_sampler::StackFrame::MemberInfoNum,
         "StackFrame", "flash.sampler", &fl::ObjectTI,
         TypeInfo::None
     };
@@ -123,10 +131,6 @@ namespace fl_sampler
     const ClassInfo StackFrameCI = {
         &StackFrameTI,
         ClassTraits::fl_sampler::StackFrame::MakeClassTraits,
-        0,
-        0,
-        InstanceTraits::fl_sampler::StackFrame::ThunkInfoNum,
-        InstanceTraits::fl_sampler::StackFrame::MemberInfoNum,
         NULL,
         NULL,
         InstanceTraits::fl_sampler::StackFrame::ti,

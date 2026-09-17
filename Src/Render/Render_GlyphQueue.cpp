@@ -6,6 +6,7 @@ Created     :
 Authors     :   Maxim Shemanarev
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -55,7 +56,6 @@ void GlyphQueue::Clear()
         while(!slot->TextFields.IsEmpty())
         {
             pEvictNotifier->Evict(slot->TextFields.GetFirst()->pText);
-            SF_AMP_CODE(AmpServer::GetInstance().IncrementFontThrashing();)
         }
         slot = slot->pNext;
     }
@@ -359,6 +359,9 @@ GlyphSlot* GlyphQueue::initNewSlot(GlyphBand* band, unsigned x, unsigned w)
 //------------------------------------------------------------------------
 GlyphNode* GlyphQueue::allocateNewSlot(unsigned w, unsigned h)
 {
+    // Moved down here so we don't count early returns
+    SF_AMP_SCOPE_RENDER_TIMER_ID("GlyphQueue::allocateNewSlot", Amp_Native_Function_Id_GlyphCache_RasterizeGlyph);
+
     // Allocate a new slot if available. First, check for the necessity
     // to initialize a new band. 
     //----------------------
@@ -441,7 +444,6 @@ void GlyphQueue::releaseSlot(GlyphSlot* slot)
     while(!slot->TextFields.IsEmpty())
     {
         pEvictNotifier->Evict(slot->TextFields.GetFirst()->pText);
-        SF_AMP_CODE(AmpServer::GetInstance().IncrementFontThrashing();)
     }
 
     if (slot->pRoot->Param.pFont)
@@ -708,6 +710,7 @@ GlyphNode* GlyphQueue::evictOldSlot(unsigned w, unsigned h, unsigned pass)
 //------------------------------------------------------------------------
 GlyphNode* GlyphQueue::evictOldSlot(unsigned w, unsigned h)
 {
+    SF_AMP_SCOPE_RENDER_TIMER_ID("GlyphQueue::evictOldSlot", Amp_Native_Function_Id_GlyphCache_EvictText);
     pEvictNotifier->ApplyInUseList();
     GlyphNode* node = evictOldSlot(w, h, 0);
     if (node == 0)
@@ -788,10 +791,10 @@ GlyphNode* GlyphQueue::AllocateGlyph(const GlyphParam& gp, unsigned w, unsigned 
         glyph->Origin.x   = 0;
         glyph->Origin.y   = 0;
         SlotQueue.SendToBack(glyph->pSlot);
-        GlyphParamHash h(&glyph->Param);
-        if(!GlyphHTable.Get(h))
+        GlyphParamHash hash(&glyph->Param);
+        if(!GlyphHTable.Get(hash))
         {
-            GlyphHTable.Add(h, glyph);
+            GlyphHTable.Add(hash, glyph);
         }
         return glyph;
     }

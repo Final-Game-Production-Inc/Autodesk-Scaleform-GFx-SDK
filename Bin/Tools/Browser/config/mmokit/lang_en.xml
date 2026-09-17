@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<language name="English">
-	<translations>
-       <entry key="$MMOKitDesc" value="The Scaleform MMO Kit, designed for optimum performance and memory savings, provides a foundation for massively multiplayer online game UI. The kit includes CLIK-based interface elements as well as frameworks for drag and drop, icon resource management, and data binding." />
-	</translations>
-</language>

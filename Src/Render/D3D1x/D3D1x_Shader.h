@@ -6,6 +6,7 @@ Created     :   Jun 2011
 Authors     :   Bart Muzzin
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -18,7 +19,11 @@ otherwise accompanies this software in either electronic or hard copy form.
 #pragma once
 
 #include "Render/D3D1x/D3D1x_Config.h"
-#include "Render/D3D1x/D3D1x_ShaderDescs.h"
+#if defined(_DURANGO)
+    #include "Render/D3D1x/XboxOne_ShaderDescs.h"
+#else
+    #include "Render/D3D1x/D3D1x_ShaderDescs.h"
+#endif
 #include "Render/Render_Shader.h"
 
 namespace Scaleform { namespace Render { namespace D3D1x {

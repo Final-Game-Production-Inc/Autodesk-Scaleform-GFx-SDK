@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<language name="Korean">
-	<translations>
-       <entry key="$HUDKitDesc" value="본 kit은 새로운 Scaleform GFx 복합 객체 API를 사용하여 고성능 게임/FPS UI를 제작하는 법을 보여줍니다. 이는 고성능의 완벽한 기능을 갖춘 AAA 품질 재사용이 가능한 Scaleform GFx UI 솔루션의 그 첫 번째 시리즈입니다."/>
-	    <entry key="$HUDKitDesc2" value="본 kit은 새로운 Scaleform GFx 복합 객체 API를 사용하여 고성능 게임/FPS UI를 제작하는 법을 보여줍니다. 이는 고성능의 완벽한 기능을 갖춘 AAA 품질 재사용이 가능한 Scaleform GFx UI 솔루션의 그 첫 번째 시리즈입니다." />
-	</translations>
-</language>

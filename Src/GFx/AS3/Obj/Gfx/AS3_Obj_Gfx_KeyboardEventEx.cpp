@@ -7,6 +7,7 @@ Created     :   Jan, 2010
 Authors     :   Sergey Sikorskiy
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -28,12 +29,6 @@ namespace Scaleform { namespace GFx { namespace AS3
 
 //##protect##"methods"
 //##protect##"methods"
-
-// Values of default arguments.
-namespace Impl
-{
-
-} // namespace Impl
 
 namespace Instances { namespace fl_gfx
 {
@@ -75,11 +70,10 @@ namespace InstanceTraits { namespace fl_gfx
 
 
     KeyboardEventEx::KeyboardEventEx(VM& vm, const ClassInfo& ci)
-    : CTraits(vm, ci)
+    : fl_events::KeyboardEvent(vm, ci)
     {
 //##protect##"InstanceTraits::KeyboardEventEx::KeyboardEventEx()"
 //##protect##"InstanceTraits::KeyboardEventEx::KeyboardEventEx()"
-        SetMemSize(sizeof(Instances::fl_gfx::KeyboardEventEx));
 
     }
 
@@ -96,24 +90,27 @@ namespace InstanceTraits { namespace fl_gfx
 
 namespace ClassTraits { namespace fl_gfx
 {
-    KeyboardEventEx::KeyboardEventEx(VM& vm)
-    : Traits(vm, AS3::fl_gfx::KeyboardEventExCI)
+
+    KeyboardEventEx::KeyboardEventEx(VM& vm, const ClassInfo& ci)
+    : fl_events::KeyboardEvent(vm, ci)
     {
 //##protect##"ClassTraits::KeyboardEventEx::KeyboardEventEx()"
 //##protect##"ClassTraits::KeyboardEventEx::KeyboardEventEx()"
-        MemoryHeap* mh = vm.GetMemoryHeap();
-
-        Pickable<InstanceTraits::Traits> it(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraits::fl_gfx::KeyboardEventEx(vm, AS3::fl_gfx::KeyboardEventExCI));
-        SetInstanceTraits(it);
-
-        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
-        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) Class(*this));
 
     }
 
     Pickable<Traits> KeyboardEventEx::MakeClassTraits(VM& vm)
     {
-        return Pickable<Traits>(SF_HEAP_NEW_ID(vm.GetMemoryHeap(), StatMV_VM_CTraits_Mem) KeyboardEventEx(vm));
+        MemoryHeap* mh = vm.GetMemoryHeap();
+        Pickable<Traits> ctr(SF_HEAP_NEW_ID(mh, StatMV_VM_CTraits_Mem) KeyboardEventEx(vm, AS3::fl_gfx::KeyboardEventExCI));
+
+        Pickable<InstanceTraits::Traits> itr(SF_HEAP_NEW_ID(mh, StatMV_VM_ITraits_Mem) InstanceTraitsType(vm, AS3::fl_gfx::KeyboardEventExCI));
+        ctr->SetInstanceTraits(itr);
+
+        // There is no problem with Pickable not assigned to anything here. Class constructor takes care of this.
+        Pickable<Class> cl(SF_HEAP_NEW_ID(mh, StatMV_VM_Class_Mem) ClassType(*ctr));
+
+        return ctr;
     }
 //##protect##"ClassTraits$methods"
 //##protect##"ClassTraits$methods"
@@ -124,6 +121,11 @@ namespace fl_gfx
 {
     const TypeInfo KeyboardEventExTI = {
         TypeInfo::CompileTime | TypeInfo::Final,
+        sizeof(ClassTraits::fl_gfx::KeyboardEventEx::InstanceType),
+        0,
+        0,
+        0,
+        InstanceTraits::fl_gfx::KeyboardEventEx::MemberInfoNum,
         "KeyboardEventEx", "scaleform.gfx", &fl_events::KeyboardEventTI,
         TypeInfo::None
     };
@@ -131,10 +133,6 @@ namespace fl_gfx
     const ClassInfo KeyboardEventExCI = {
         &KeyboardEventExTI,
         ClassTraits::fl_gfx::KeyboardEventEx::MakeClassTraits,
-        0,
-        0,
-        0,
-        InstanceTraits::fl_gfx::KeyboardEventEx::MemberInfoNum,
         NULL,
         NULL,
         NULL,

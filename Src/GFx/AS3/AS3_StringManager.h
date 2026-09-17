@@ -11,6 +11,7 @@ Notes       :   This built-in StringManager is separated from the one
                 ASStringManager instance.
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
@@ -140,6 +141,9 @@ enum BuiltinType
 #ifdef GFX_ENABLE_ANALOG_GAMEPAD
     AS3Builtin_gamePadAnalogChange,
 #endif
+
+    AS3Builtin_update,
+	AS3Builtin_status,
 
     AS3Builtin_textInput,
     AS3Builtin_change,
