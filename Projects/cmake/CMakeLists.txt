@@ -7,14 +7,14 @@ endif()
 
 # 3rdParty
 if (WIN32)
-add_subdirectory(3rdParty/expat-2.1.0)
+add_subdirectory(3rdParty/expat-2.7.5)
 else()
 # use CMakeLists.txt from dev/external/gfx4/3rdParty/expat-2.1.0
 endif()
 add_subdirectory(3rdParty/jpeg-10)
 add_subdirectory(3rdParty/libpng-1.6.53)
 add_subdirectory(3rdParty/pcre)
-add_subdirectory(3rdParty/zlib-1.3.1)
+add_subdirectory(3rdParty/zlib-1.3.2)
 
 # SDK
 add_subdirectory(SDK/AIR_SCU)
