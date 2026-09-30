@@ -48,7 +48,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include <stdlib.h>
 #include <stdio.h>
 #include <locale.h>
-#include "../../../3rdParty/zlib-1.3.1/zlib.h"
+#include "../../../3rdParty/zlib-1.3.2/zlib.h"
 
 #include "Render/ImageFiles/PNG_ImageFile.h"
 #include "Render/ImageFiles/DDS_ImageFile.h"
