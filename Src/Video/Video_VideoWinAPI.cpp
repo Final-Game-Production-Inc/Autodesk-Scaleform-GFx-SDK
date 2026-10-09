@@ -30,7 +30,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 **************************************************************************/
 
-#include "Video/Video_VideoPC.h"
+#include "Video/Video_VideoWinApi.h"
 
 #if defined(GFX_ENABLE_VIDEO) && defined(SF_OS_WIN32)
 
