@@ -20,8 +20,7 @@ Compared to the older 4.2 SDK version (Microsoft 2011), this version adds suppor
 
 ## Building
 
-- **.NET Framework 3.5** (as decompiled): install [.NET Framework 3.5](https://dotnet.microsoft.com/download/dotnet-framework/net35) and build with MSBuild or Visual Studio.
-- To use a newer SDK, change `TargetFramework` in `GFxShaderMaker.csproj` (e.g. `net48`) and fix any API differences.
+- **.NET 10** (.net framework 3.5 as decompiled): install [.NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) and build with MSBuild or Visual Studio.
 
 ```bash
 dotnet build
