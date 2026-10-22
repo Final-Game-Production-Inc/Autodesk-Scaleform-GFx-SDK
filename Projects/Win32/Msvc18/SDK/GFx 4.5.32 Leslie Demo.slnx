@@ -1,7 +1,7 @@
 <Solution>
   <Configurations>
-    <BuildType Name="DebugOpt_Static" />
-    <BuildType Name="Debug_Static" />
+    <BuildType Name="D3D10_DebugOpt_Static" />
+    <BuildType Name="D3D10_Debug_Static" />
     <BuildType Name="D3D10_Release_Static" />
     <BuildType Name="D3D10_Shipping" />
     <BuildType Name="D3D11_DebugOpt_Static" />
