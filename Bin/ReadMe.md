@@ -1,5 +1,7 @@
 Extract BinUtils.zip In Here.
 
+Data And Tools IN Here.
+
 Tools Folder Contains:
 
 GFxExport, GFxShaderMaker And ScaleformVideoEncoder Reborn-NET10
