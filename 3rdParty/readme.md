@@ -4,7 +4,7 @@ Extract And Drop The 3rdParty.7z File In Here.
 
 If You Wanna Build Scaleform GFx For FFMpeg Video,
 
-Download FFMpeg.7z.001 And FFMpeg.7z.002(Include Source Code)
+Download FFMpeg.7z.001, FFMpeg.7z.002 And FFMpeg.7z.003(Include Source Code And Binary Lib)
 
 And Extract In Here.
 
