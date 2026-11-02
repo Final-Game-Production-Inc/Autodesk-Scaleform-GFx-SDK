@@ -247,6 +247,25 @@ class RenderBufferManager : public RefCountBase<RenderBufferManager, StatRender_
     friend class RenderBuffer;
 public:
 
+    // Set by back ends that must keep a buffer alive past the end of the frame it was
+    // used in (Vulkan defers destruction until the framebuffers that reference the
+    // buffer's image views have actually been destroyed by a later frame). Such a
+    // buffer is still listed as 'in-use' at EndFrame(), so the debug consistency check
+    // there has to tolerate it; it is released deterministically on the next frame.
+    bool            AllowsDeferredBufferRelease;
+
+    // D3D12 and Vulkan cannot hand a temporary render target back out while the
+    // command list that used it is still recording/executing: earlier draws still
+    // reference that texture as a render target / shader resource, and re-rendering
+    // into it corrupts them (in the worst case the GPU hangs on a read/write
+    // hazard). When false, the buffer manager skips the "released earlier in this
+    // same frame" list and only reuses targets released in a previous frame.
+    // This is what made the 9-1-B feedback rebuild ("second generation" of the
+    // filtered clips) die on D3D12.
+    bool            AllowsSameFrameReuse;
+
+    RenderBufferManager() : AllowsDeferredBufferRelease(false), AllowsSameFrameReuse(true) { }
+
     virtual ~RenderBufferManager() { };
 
     // Initialize initialized the buffer manager to used specified TextureManager

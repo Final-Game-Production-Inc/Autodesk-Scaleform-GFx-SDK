@@ -46,7 +46,17 @@ public abstract class ShaderVersion_D3DCommon : ShaderVersion
 			string path = Path.Combine(base.SourceDirectory, GetShaderFilename(value) + ".h");
 			StreamReader streamReader = File.OpenText(path);
 			string text = streamReader.ReadToEnd();
-			text = ((!(base.Platform.PlatformBase != "D3D1x")) ? text.Replace("const BYTE", "extern const BYTE") : Regex.Replace(text, "const \\w+", "extern const " + ((base.Platform.PlatformName == "X360") ? "DWORD" : "BYTE")));
+			if (base.Platform.PlatformName == "D3D12")
+			{
+				// dxc -Fh emits "const unsigned char pBinary_..." while fxc
+				// emitted "const BYTE ...". Normalize both to the BYTE type
+				// expected by the D3D12 shader descriptor tables.
+				text = Regex.Replace(text, "const\\s+(?:unsigned\\s+)?char", "extern const BYTE");
+			}
+			else
+			{
+				text = ((!(base.Platform.PlatformBase != "D3D1x")) ? text.Replace("const BYTE", "extern const BYTE") : Regex.Replace(text, "const \\w+", "extern const " + ((base.Platform.PlatformName == "X360") ? "DWORD" : "BYTE")));
+			}
 			sourceFile.Write(text);
 			if (base.Platform.PlatformBase == "D3D1x" || base.Platform.PlatformBase == "D3D12")
 			{

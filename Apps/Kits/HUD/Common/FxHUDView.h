@@ -20,7 +20,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Kernel/SF_List.h"
 #include "GFx/GFx_Player.h"
 
-#include "FxGameDelegate.h"
+#include "../../../Samples/GameDelegate/FxGameDelegate.h"
 #include "FxMinimapView.h"
 #include "FxHUDKit.h"
 

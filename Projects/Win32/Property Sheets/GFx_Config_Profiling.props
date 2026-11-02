@@ -13,7 +13,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="ConfigShort">
-      <Value>$(ConfigShort)</Value>
+      <Value>$(Configuration)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

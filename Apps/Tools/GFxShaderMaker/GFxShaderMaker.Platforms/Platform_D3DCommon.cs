@@ -198,7 +198,18 @@ public abstract class Platform_D3DCommon : ShaderPlatformBinaryShaders
 				throw new Exception("Expected to find " + text + " shader source, but it did not exist.");
 			}
 			string shaderProfile = shaderVersion_D3DCommon.GetShaderProfile(source.Pipeline);
-			string text2 = "/nologo /E main /T " + shaderProfile + " /Fh \"" + text + "\".h /Vn pBinary_" + shaderVersion_D3DCommon.ID + "_" + source.ID + " " + platform_D3DCommon.D3DFXCExtraOptions + "  " + shaderVersion_D3DCommon.GetD3DFXCExtraOptions(exe, source) + " \"" + text + "\"";
+			bool useDxc = shaderProfile.Contains("_6_");
+			string text2;
+			if (useDxc)
+			{
+				// D3D12 pipeline states require DXIL (SM 6.x); fxc can only emit
+				// DXBC (SM 5.x) and D3D12 rejects it at PSO creation time.
+				text2 = "-nologo -E main -T " + shaderProfile + " -Fh \"" + text + "\".h -Vn pBinary_" + shaderVersion_D3DCommon.ID + "_" + source.ID + " " + platform_D3DCommon.D3DFXCExtraOptions + "  " + shaderVersion_D3DCommon.GetD3DFXCExtraOptions(exe, source) + " \"" + text + "\"";
+			}
+			else
+			{
+				text2 = "/nologo /E main /T " + shaderProfile + " /Fh \"" + text + "\".h /Vn pBinary_" + shaderVersion_D3DCommon.ID + "_" + source.ID + " " + platform_D3DCommon.D3DFXCExtraOptions + "  " + shaderVersion_D3DCommon.GetD3DFXCExtraOptions(exe, source) + " \"" + text + "\"";
+			}
 			ctdata.ExitCode = launchProcess(exe, text2, out ctdata.StdOutput, out ctdata.StdError);
 			ctdata.ShaderFilename = text;
 			ctdata.CommandLine = exe + " " + text2;

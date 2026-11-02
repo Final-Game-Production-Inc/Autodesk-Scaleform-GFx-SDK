@@ -157,7 +157,7 @@ class TextureManager : public Render::TextureManager
     MemoryKillList          MemoryKills[SF_VK_MAX_FRAMES_IN_FLIGHT];
     unsigned                KillSlot;
 
-    static const unsigned   SamplerTypeCount = (Sample_Count * Wrap_Count);
+    static const unsigned   SamplerTypeCount = (static_cast<int>(Sample_Count) * static_cast<int>(Wrap_Count));
     VkSampler               Samplers[SamplerTypeCount];
 
     static const int        MaximumStages = SF_VK_MAX_TEXTURE_STAGES;

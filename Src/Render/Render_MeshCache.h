@@ -246,6 +246,18 @@ public:
     }
     void    RemoveNode(MeshCacheItem* p)
     { 
+        // An item whose ListType is out of range was never pushed into a cache
+        // list (or its links were already wiped). Indexing Slots[] with that
+        // value wrote past the array and corrupted the MeshCache, which later
+        // showed up as an access violation inside MeshCacheListSet::RemoveNode.
+        // Guard it so a stale item can only cost a lost list update.
+        if ((unsigned)p->ListType >= (unsigned)MCL_ItemCount)
+        {
+            SF_DEBUG_WARNONCE(1, "MeshCacheListSet::RemoveNode: invalid ListType "
+                              "(mesh item was not in a cache list)");
+            p->pPrev = p->pNext = 0;
+            return;
+        }
         p->RemoveNode();
         Slots[p->ListType].Size -= p->AllocSize; 
     }

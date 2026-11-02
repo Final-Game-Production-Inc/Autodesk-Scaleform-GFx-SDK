@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 Filename    :   Vulkan_Texture.cpp
 Content     :   Vulkan texture implementation.
@@ -9,6 +9,7 @@ Authors     :   Scaleform Vulkan Backend
 
 #include "Render/Vulkan/Vulkan_Texture.h"
 #include "Render/Vulkan/Vulkan_HAL.h"
+#include "Render/Render_DebugEnv.h"
 #include "Kernel/SF_Debug.h"
 #include "Kernel/SF_HeapNew.h"
 #include "Render/Render_TextureCacheGeneric.h"
@@ -63,6 +64,15 @@ Texture::Texture(TextureManagerLocks* pmanagerLocks, VkImage image, VkImageView 
 
 Texture::~Texture()
 {
+    // Unlink from TextureManager::Textures. Without this every destroyed Texture
+    // stayed in the manager intrusive list, so the next Textures.PushBack() walked
+    // freed nodes. That is the same defect that caused random content loss and
+    // heap corruption in the D3D12 backend.
+    if (pManagerLocks && (State == State_Valid || State == State_Lost))
+    {
+        RemoveNode();
+        pNext = pPrev = 0;
+    }
     if ((State == State_Valid) || (State == State_Lost))
         ReleaseHWTextures();
     if (pTextures && pTextures != &Texture0)
@@ -194,6 +204,11 @@ void Texture::ApplyTexture(unsigned stageIndex, const ImageFillMode& fm)
     VkSampler sampler = pmgr->GetSampler(fm);
     for (unsigned i = 0; i < TextureCount; i++)
     {
+        static const bool sApplyTrace = IsDebugEnvSet("GFX_VKAPPLY");
+        if (sApplyTrace)
+            fprintf(stderr, "[VKAPPLY] stage=%u view=%p fmt=%d size=%dx%d use=0x%X\n",
+                    stageIndex + i, (void*)pTextures[i].View, (int)GetImageFormat(),
+                    pTextures[i].Size.Width, pTextures[i].Size.Height, (unsigned)Use), fflush(stderr);
         pmgr->SetSamplerState(stageIndex + i, 1, &pTextures[i].View, sampler);
     }
 }
@@ -230,7 +245,9 @@ bool Texture::Update(const UpdateDesc* updates, unsigned count, unsigned mipLeve
     for (unsigned i = 0; i < count; i++)
     {
         const UpdateDesc& ud = updates[i];
-        unsigned plane = 0;
+        // Honour the destination plane: a multi-plane (YUV) update must write to
+        // its own plane, not always plane 0.
+        unsigned plane = Alg::Min<unsigned>(ud.PlaneIndex, TextureCount - 1);
         ImageSize sz = pTextures[plane].Size;
         unsigned mipW = Alg::Max<unsigned>(1u, sz.Width >> mipLevel);
         unsigned mipH = Alg::Max<unsigned>(1u, sz.Height >> mipLevel);
@@ -258,13 +275,20 @@ bool Texture::Update(const UpdateDesc* updates, unsigned count, unsigned mipLeve
             goto cleanup_fail;
         vkBindBufferMemory(device, stagingEntries[i].buf, stagingEntries[i].mem, 0);
 
-        void* mapped;
-        vkMapMemory(device, stagingEntries[i].mem, 0, totalSize, 0, &mapped);
+        void* mapped = nullptr;
+        if (vkMapMemory(device, stagingEntries[i].mem, 0, totalSize, 0, &mapped) != VK_SUCCESS ||
+            !mapped)
+            goto cleanup_fail;
         const UByte* src = ud.SourcePlane.pData;
         UByte* dst = (UByte*)mapped;
+        // Never read past the source plane: a 24-bit (3 B/px) source copied into
+        // an RGBA staging buffer would otherwise over-read 33% on every row.
+        UPInt srcRowBytes = ud.SourcePlane.Pitch
+            ? Alg::Min<UPInt>(rowBytes, ud.SourcePlane.Pitch)
+            : rowBytes;
         for (unsigned row = 0; row < mipH; row++)
         {
-            memcpy(dst, src, rowBytes);
+            memcpy(dst, src, srcRowBytes);
             dst += rowBytes;
             src += ud.SourcePlane.Pitch;
         }
@@ -277,8 +301,9 @@ bool Texture::Update(const UpdateDesc* updates, unsigned count, unsigned mipLeve
         cbAI.commandPool = cmdPool;
         cbAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         cbAI.commandBufferCount = 1;
-        VkCommandBuffer cmd;
-        vkAllocateCommandBuffers(device, &cbAI, &cmd);
+        VkCommandBuffer cmd = VK_NULL_HANDLE;
+        if (vkAllocateCommandBuffers(device, &cbAI, &cmd) != VK_SUCCESS || cmd == VK_NULL_HANDLE)
+            goto cleanup_fail;
 
         VkCommandBufferBeginInfo beginInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -286,7 +311,7 @@ bool Texture::Update(const UpdateDesc* updates, unsigned count, unsigned mipLeve
 
         for (unsigned i = 0; i < count; i++)
         {
-            unsigned plane = 0;
+            unsigned plane = Alg::Min<unsigned>(updates[i].PlaneIndex, TextureCount - 1);
             ImageSize sz = pTextures[plane].Size;
             unsigned mipW = Alg::Max<unsigned>(1u, sz.Width >> mipLevel);
             unsigned mipH = Alg::Max<unsigned>(1u, sz.Height >> mipLevel);
@@ -358,7 +383,8 @@ DepthStencilSurface::~DepthStencilSurface()
     TextureManager* pmgr = (TextureManager*)pManagerLocks->pManager;
     VkDevice device = pmgr->GetDevice();
     if (pDepthStencilView != VK_NULL_HANDLE)
-        vkDestroyImageView(device, pDepthStencilView, nullptr);
+    {        vkDestroyImageView(device, pDepthStencilView, nullptr);
+    }
     if (pDepthStencilImage != VK_NULL_HANDLE)
         vkDestroyImage(device, pDepthStencilImage, nullptr);
     if (pDepthStencilMemory != VK_NULL_HANDLE)
@@ -499,7 +525,14 @@ bool MappedTexture::Map(Render::Texture* ptexture, unsigned mipLevel, unsigned l
     vkBindBufferMemory(device, pStagingBuffer, pStagingMemory, 0);
 
     void* mapped = nullptr;
-    vkMapMemory(device, pStagingMemory, 0, totalSize, 0, &mapped);
+    if (vkMapMemory(device, pStagingMemory, 0, totalSize, 0, &mapped) != VK_SUCCESS || !mapped)
+    {
+        vkDestroyBuffer(device, pStagingBuffer, nullptr);
+        pStagingBuffer = VK_NULL_HANDLE;
+        vkFreeMemory(device, pStagingMemory, nullptr);
+        pStagingMemory = VK_NULL_HANDLE;
+        return false;
+    }
 
     if (vktex->pShadowData && vktex->ShadowSize == totalSize)
         memcpy(mapped, vktex->pShadowData, totalSize);
@@ -513,10 +546,20 @@ bool MappedTexture::Map(Render::Texture* ptexture, unsigned mipLevel, unsigned l
     // Initialize Data once before the loop, using pre-allocated Planes array
     // (matches D3D11 pattern). Calling Initialize inside the loop would Clear()
     // previously set planes on each iteration, corrupting multi-plane textures (YUV).
-    if (levelCount <= PlaneReserveSize)
+    // One inline Planes[] slot is consumed per (texture plane, mip level) pair, so
+    // the *combined* count must fit PlaneReserveSize; checking levelCount alone let
+    // multi-plane/multi-level textures write past the end of Planes[] (heap corruption).
+    if (texPlaneCount * levelCount <= PlaneReserveSize)
         Data.Initialize(vktex->GetImageFormat(), levelCount, Planes, texPlaneCount * levelCount, true);
     else if (!Data.Initialize(vktex->GetImageFormat(), levelCount, true))
+    {
+        vkUnmapMemory(device, pStagingMemory);
+        vkDestroyBuffer(device, pStagingBuffer, nullptr);
+        pStagingBuffer = VK_NULL_HANDLE;
+        vkFreeMemory(device, pStagingMemory, nullptr);
+        pStagingMemory = VK_NULL_HANDLE;
         return false;
+    }
 
     UByte* pdata = (UByte*)mapped;
     unsigned planeIdx = 0;
@@ -591,8 +634,21 @@ void MappedTexture::Unmap(bool applyUpdate)
         cbAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         cbAI.commandBufferCount = 1;
 
-        VkCommandBuffer cmd;
-        VkResult vr = vkAllocateCommandBuffers(device, &cbAI, &cmd);
+        VkCommandBuffer cmd = VK_NULL_HANDLE;
+        if (vkAllocateCommandBuffers(device, &cbAI, &cmd) != VK_SUCCESS || cmd == VK_NULL_HANDLE)
+        {
+            // Out of command buffers: skip the upload but still release the
+            // staging resources and clear the mapped state.
+            vkDestroyBuffer(device, pStagingBuffer, nullptr);
+            vkFreeMemory(device, pStagingMemory, nullptr);
+            pStagingBuffer = VK_NULL_HANDLE;
+            pStagingMemory = VK_NULL_HANDLE;
+            pTexture->pMap = 0;
+            pTexture = 0;
+            StartMipLevel = 0;
+            LevelCount = 0;
+            return;
+        }
 
         VkCommandBufferBeginInfo beginInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -635,6 +691,7 @@ void MappedTexture::Unmap(bool applyUpdate)
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
         VkResult submitResult = vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+		SF_UNUSED(submitResult);
         vkQueueWaitIdle(queue);
         vkFreeCommandBuffers(device, cmdPool, 1, &cmd);
     }
@@ -741,7 +798,8 @@ void TextureManager::processTextureKillList()
         return;
 
     for (unsigned i = 0; i < ViewKills[KillSlot].GetSize(); i++)
-        vkDestroyImageView(pDevice, ViewKills[KillSlot][i], nullptr);
+    {        vkDestroyImageView(pDevice, ViewKills[KillSlot][i], nullptr);
+    }
     ViewKills[KillSlot].Clear();
 
     for (unsigned i = 0; i < ImageKills[KillSlot].GetSize(); i++)
@@ -1030,3 +1088,8 @@ void TextureManager::TransitionImageLayout(VkCommandBuffer cmd, VkImage image,
 }
 
 }}} // Scaleform::Render::Vulkan
+
+
+
+
+

@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 Filename    :   Render_Image.cpp
 Content     :   Image implementation
@@ -807,8 +807,6 @@ void Image::releaseTexture()
     Texture* ptexture = pTexture.Exchange_NoSync(0);
     if (ptexture)
     {
-     //   if (pTexture->GetTextureManager() == pUpdateSync)
-     //       pUpdateSync = 0;  // NTS?? What if user is calling Update() now?
         ptexture->ImageLost();
         ptexture->Release();
     }

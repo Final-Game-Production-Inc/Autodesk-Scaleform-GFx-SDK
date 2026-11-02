@@ -315,6 +315,15 @@ public:
 
     bool IsNull() const { return pHandle == &NullHandle; }
 
+    // True when this handle still refers to a live matrix header. A false result
+    // means the handle page was recycled (dangling handle), in which case calling
+    // a setter would write through a bogus header - that is what produced a
+    // write into .rdata (the shared default matrix) and the follow-up heap
+    // corruption. SetNull() resets the handle without touching the stale entry.
+    bool IsHandleValid() const;
+    void SetNull() { pHandle = &NullHandle; }
+    EntryHandle* GetHandle() const { return pHandle; }
+
     void operator = (const HMatrix& other);
     // Pointer value compares
     bool operator == (const HMatrix& other) const { return pHandle == other.pHandle; }

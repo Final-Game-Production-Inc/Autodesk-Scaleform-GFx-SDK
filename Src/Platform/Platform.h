@@ -777,14 +777,18 @@ public:
 #elif defined(SF_OS_WIN32)
     #if defined(SF_OS_WINMETRO)
 	    return "D3D11 Win32 Metro";
-    #elif (!defined(FXPLAYER_RENDER_DIRECT3D))
+    #elif (defined(FXPLAYER_RENDER_OPENGL))
             return "OpenGL Win32";
-    #elif (!defined(SF_D3D_VERSION) || (SF_D3D_VERSION == 9))
+    #elif (defined(SF_D3D_VERSION) && (SF_D3D_VERSION == 9))
             return "D3D9";
-    #elif (SF_D3D_VERSION == 10)
+    #elif (defined(SF_D3D_VERSION) && (SF_D3D_VERSION == 10))
             return "D3D10";
-    #elif (SF_D3D_VERSION == 11)
+    #elif (defined(SF_D3D_VERSION) && (SF_D3D_VERSION == 11))
             return "D3D11";
+    #elif (defined(SF_D3D_VERSION) && (SF_D3D_VERSION == 12))
+            return "D3D12";
+    #elif defined(FXPLAYER_RENDER_VULKAN)
+            return "Vulkan";
     #endif
 #elif defined(SF_OS_MAC)
         return "OpenGL Mac";

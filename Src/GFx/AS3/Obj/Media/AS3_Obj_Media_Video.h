@@ -23,7 +23,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 //##protect##"includes"
 #include "GFx/GFx_DisplayObject.h"
 #ifdef GFX_ENABLE_VIDEO
-#include "Video/Video_VideoCharacter.h"
+#include "Video/Common/Video_VideoCharacter.h"
 #endif
 //##protect##"includes"
 

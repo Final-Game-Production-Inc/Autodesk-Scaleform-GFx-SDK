@@ -40,12 +40,12 @@ public:
         pCmdBuf  = VK_NULL_HANDLE;
     }
 
-    virtual void Begin(String eventName)
+    virtual void Begin(const char* eventName)
     {
 #if !defined(SF_BUILD_SHIPPING)
         if (!pfnBegin || pCmdBuf == VK_NULL_HANDLE) return;
         VkDebugUtilsLabelEXT label = { VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT };
-        label.pLabelName = eventName.ToCStr();
+        label.pLabelName = eventName;
         label.color[0] = 0.0f;
         label.color[1] = 0.0f;
         label.color[2] = 0.0f;
@@ -55,6 +55,11 @@ public:
         SF_UNUSED(eventName);
 #endif
     }
+
+	void Begin(const Scaleform::String& eventName)
+	{
+		Begin(eventName.ToCStr());
+	}
 
     virtual void End()
     {

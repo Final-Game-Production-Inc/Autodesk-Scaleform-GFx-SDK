@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 Filename    :   Sound_SoundRendererFMOD.cpp
 Content     :   SoundRenderer FMOD Ex implementation
@@ -258,10 +258,9 @@ public:
 //(const char *name, unsigned int *filesize, void **handle, void *userdata);
 FMOD_RESULT F_CALL DecodeOpen(const char *sd, unsigned int *filesize, void **handle, void *userdata)
 {
-    SF_UNUSED(handle);
+    SF_UNUSED2(handle, userdata);
     AppendableSoundData* psd = (AppendableSoundData*)sd;
     psd->SeekPos(0);
-    userdata = psd;
     *filesize = 0x0FFFFFFF;
     return FMOD_OK;
 }
@@ -301,8 +300,6 @@ FMOD_RESULT CreateSubSound(SoundRendererFMODImpl* prenderer, AppendableSoundData
     FMOD_MODE flags = FMOD_OPENONLY | FMOD_IGNORETAGS;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
 	flags |= FMOD_OPENUSER;
-#else
-	flags |= FMOD_OPENUSER;
 #endif
     switch (psd->GetFormat() & SoundData::Sample_Format)
     {
@@ -324,6 +321,7 @@ FMOD_RESULT CreateSubSound(SoundRendererFMODImpl* prenderer, AppendableSoundData
     exinfo.fileuserclose= &DecodeClose;
     exinfo.fileuserread = &DecodeRead;
     exinfo.fileuserseek = &DecodeSeek;
+    exinfo.fileuserdata = psd;
     exinfo.decodebuffersize = 1024*8;
 
     FMOD_RESULT result = prenderer->pDevice->createStream((const char*)psd,flags, &exinfo, psound);
@@ -1011,8 +1009,6 @@ SoundSampleFMODImpl* SoundRendererFMODImpl::CreateSampleFromFile(const char* fna
     FMOD_MODE flags = FMOD_LOOP_OFF | FMOD_2D;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
 	flags |= FMOD_OPENUSER;
-#else
-	flags |= FMOD_OPENUSER;
 #endif
 #if defined(SF_OS_WINMETRO)
     flags |= FMOD_NONBLOCKING;
@@ -1184,11 +1180,11 @@ SoundChannelFMODImpl* SoundRendererFMODImpl::PlaySample(SoundSample* ps, bool pa
 }
 
 SoundRendererFMODImpl::SoundRendererFMODImpl() :
-    pDevice(NULL), 
+    pDevice(NULL),
 #if defined(GFX_SOUND_FMOD_DESIGNER) && (defined(SF_OS_WIN32) || defined(SF_OS_MAC))
     pEventSys(NULL),
 #endif
-    CallFMODUpdate(false), SystemBitRate(0.0f)
+    pChanCtl(NULL), CallFMODUpdate(false), SystemBitRate(0.0f)
 {
 #ifdef SF_ENABLE_THREADS
     StopThread = false;
@@ -1334,8 +1330,6 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(SoundData* psd, FMOD::Sound** ps
     FMOD_MODE flags = FMOD_LOWMEM | FMOD_IGNORETAGS;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
 	flags |= FMOD_OPENUSER;
-#else
-	flags |= FMOD_OPENUSER;
 #endif
 #if defined(SF_OS_IPHONE) || defined(SF_OS_ANDROID)
     flags |= FMOD_OPENMEMORY;
@@ -1372,12 +1366,11 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(AppendableSoundData* psd, FMOD::
     exinfo.fileuserclose = &DecodeClose;
     exinfo.fileuserread = &DecodeRead;
     exinfo.fileuserseek = &DecodeSeek;
+    exinfo.fileuserdata = psd;
     exinfo.decodebuffersize = 1024 * 4;
 
     FMOD_MODE flags = FMOD_LOWMEM | FMOD_CREATESTREAM | FMOD_IGNORETAGS;
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-	flags |= FMOD_OPENUSER;
-#else
 	flags |= FMOD_OPENUSER;
 #endif
     switch (psd->GetFormat() & SoundData::Sample_Format)
@@ -1407,7 +1400,7 @@ FMOD_RESULT SoundSampleFMODImpl::CreateSubSound(SoundFile* psd, FMOD::Sound** ps
 #if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
 	FMOD_MODE flags = FMOD_OPENUSER;
 #else
-	FMOD_MODE flags = FMOD_OPENUSER;
+	FMOD_MODE flags = FMOD_LOOP_OFF | FMOD_2D;
 #endif
     if (psd->IsStreamSample())
         flags |= FMOD_CREATESTREAM;
@@ -1432,23 +1425,25 @@ SoundChannelFMODImpl* SoundSampleFMODImpl::Start(bool paused)
         unsigned scount = pSoundData ? pSoundData->GetSampleCount() : 0;
         if (scount == 0)
             pSound->getLength(&scount, FMOD_TIMEUNIT_PCM);
+        // Prefer FMOD's own PCM length: the SWF sample count is stored in mixed units
+        // (e.g. 30093 for a clip that FMOD reports as 6912 PCM frames at 11025 Hz),
+        // which made the scheduled playback window several times too long.
+        {
+            unsigned fmodLen = 0;
+            if (pSound->getLength(&fmodLen, FMOD_TIMEUNIT_PCM) == FMOD_OK && fmodLen > 0)
+                scount = fmodLen;
+        }
 
         float sample_rate;
-        pSound->getDefaults(&sample_rate,NULL);
+        pSound->getDefaults(&sample_rate, NULL);
 
         FMOD::Channel* pchan;
         FMOD_RESULT    r;
         r = pPlayer->pDevice->playSound(pSound, NULL, paused, &pchan);
         if (r == FMOD_OK)
         {
-#if defined(GFX_SOUND_OUTPUT_DRC) && defined(SF_OS_WIIU)
-            FMOD_WiiU_SetControllerSpeaker((FMOD_CHANNEL *)pchan, FMOD_WIIU_CONTROLLER_DRC);
-#endif
-            unsigned long long current_dspclock = 0, parent_dspclock = 0;
-            r = pPlayer->pChanCtl->getDSPClock(&current_dspclock, &parent_dspclock);
-            scount = unsigned(scount * pPlayer->SystemBitRate/sample_rate);
-            unsigned long long target_clock = current_dspclock + scount;
-            r = pchan->setDelay(0, target_clock, false);
+            // A one-shot sound plays for its natural length: no setDelay() here.
+            // Scheduling an absolute DSP-clock window used to silence low-rate MP3 clips.
             if (latency > 0)
             {
                 r = pchan->setPosition(latency, FMOD_TIMEUNIT_PCM);
@@ -1605,10 +1600,10 @@ void SoundChannelFMODImpl::Loop(int count, float start, float end)
 
     unsigned long long current_dspclock = 0;   // 新版直接用64位时钟
     unsigned long long parent_dspclock = 0;
-    result = pPlayer->pChanCtl->getDSPClock(&current_dspclock, &parent_dspclock);
+    result = pChan->getDSPClock(&current_dspclock, &parent_dspclock);
     slen = unsigned((end_pcm - start_pcm) * count * (pPlayer->SystemBitRate/sample_rate));
     unsigned long long end_clock = current_dspclock + slen;
-    result = pChan->setDelay(0, end_clock, false);
+    result = pChan->setDelay(current_dspclock, end_clock, false);
     SF_UNUSED(result);
 }
 

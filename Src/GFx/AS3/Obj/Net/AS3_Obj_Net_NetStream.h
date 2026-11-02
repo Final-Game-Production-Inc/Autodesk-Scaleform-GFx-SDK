@@ -23,7 +23,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 //##protect##"includes"
 #ifdef GFX_ENABLE_VIDEO
 #include "GFx/AS3/AS3_MovieRoot.h"
-#include "Video/AS3/AS3_VideoProviderNetStream.h"
+#include "Video/Common/ActionScript/AS3/AS3_VideoProviderNetStream.h"
 #endif
 //##protect##"includes"
 

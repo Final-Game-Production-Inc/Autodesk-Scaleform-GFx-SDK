@@ -599,7 +599,7 @@ public:
 
         fdwConversion = fdwConversion & 0x0000000F;
         // Japanese Conversion modes
-        if (IMETag & GFxIME_Jp_Flag)
+        if ((UInt32)IMETag & GFxIME_Jp_Flag)
         {
             if ((fdwConversion & (~IME_CMODE_FULLSHAPE)) == IME_CMODE_NATIVE)
             {
@@ -629,7 +629,7 @@ public:
 
         // Korean Conversion Modes
 
-        if (IMETag & GFxIME_Kr_Flag)
+        if ((UInt32)IMETag & GFxIME_Kr_Flag)
         {
             if ((fdwConversion & (~IME_CMODE_FULLSHAPE)) == IME_CMODE_NATIVE)
             {
@@ -647,7 +647,7 @@ public:
         }
 
         // Chinese Conversion Modes
-        if ((IMETag & GFxIME_Ch_Simp_Flag) || (IMETag & GFxIME_Ch_Trad_Flag))
+        if (((UInt32)IMETag & GFxIME_Ch_Simp_Flag) || ((UInt32)IMETag & GFxIME_Ch_Trad_Flag))
         {
             if ((fdwConversion & (~IME_CMODE_FULLSHAPE)) == IME_CMODE_NATIVE)
             {

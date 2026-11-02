@@ -25,8 +25,6 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include <fmodiphone.h>
 #endif
 
-#include "..\..\include\iob_func_fix.h"
-
 namespace Scaleform { namespace GFx {
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,6 +117,12 @@ FMOD_RESULT F_CALL FileSeekCallback(void *handle, unsigned int pos, void *userda
 
 // Windows excluding Metro, Durango, and WPhone8; Mac OS X; Linux excluding Android
 #if (defined(SF_OS_WIN32) && !defined(SF_OS_WINMETRO)) || defined(SF_OS_MAC) || (defined(SF_OS_LINUX) && !defined(SF_OS_ANDROID))
+
+void FxSoundFMOD::Update()
+{
+    if (pSoundRenderer)
+        pSoundRenderer->Update();
+}
 
 bool FxSoundFMOD::Initialize()
 {

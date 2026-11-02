@@ -41,7 +41,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Render_ShapeMeshProvider.h"
 
 #ifdef GFX_ENABLE_VIDEO
-#include "Video/Video_VideoCharacter.h"
+#include "Video/Common/Video_VideoCharacter.h"
 #endif
 
 namespace Scaleform {

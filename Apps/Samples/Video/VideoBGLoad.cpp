@@ -22,13 +22,13 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "GFx/AS3/AS3_Global.h"
 #endif
 
-#include "Video/Video_Video.h"
+#include "Video/Common/Video_Video.h"
 #if defined(SF_OS_WIN32)
-#include "Video/Video_VideoPC.h"
+#include "Video/Sofdec2/CriPlatform/Video_CriVideoWinAPI.h"
 #elif defined(SF_OS_XBOX360)
-#include "Video/Video_VideoXbox360.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoXbox360.h"
 #elif defined(SF_OS_PS3)
-#include "Video/Video_VideoPS3.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoPS3.h"
 #endif
 
 using namespace Scaleform;

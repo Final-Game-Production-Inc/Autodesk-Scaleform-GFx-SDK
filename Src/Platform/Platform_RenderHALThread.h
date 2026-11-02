@@ -147,6 +147,14 @@ public:
     void    DrawFrame();
     void    WaitForOutstandingDrawFrame();
     void    FinishFrame();
+
+    // Blocks until every command queued so far (including an outstanding DrawFrame) has
+    // been executed on the render thread. Used on shutdown so the last frame finishes
+    // while the movie and the HAL are still alive.
+    void    Sync()
+    {
+        PushCallAndWait(&RenderHALThread::syncPending);
+    }
     
     void    ToggleWireframe()
     {
@@ -241,6 +249,7 @@ protected:
 
     virtual void drawFrame() = 0;
     virtual void finishFrame() = 0;
+    void         syncPending() { }
     virtual void createCursorPrimitives(Render::HAL*) {};
     virtual void updateCursor(const Point<int> mousePos, SystemCursorState state);
     virtual void getMeshCacheParams(Render::MeshCacheParams* params);

@@ -54,7 +54,7 @@ FxHUDDataProvider::FxHUDDataProvider(
 
     pTrackerHeap = Memory::GetHeapByAddress(this);
     pInfoProvider->GetHelpStr(&HelpStr);
-    MsgStr = "Drag and drop SWF/GFX/USM file here";
+    MsgStr = "Drag and drop SWF/GFX/Video file here";
 }
 
 void FxHUDDataProvider::SetMovie(Movie* pmovie)

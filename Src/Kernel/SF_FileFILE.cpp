@@ -22,6 +22,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 // Standard C library (Captain Obvious guarantees!)
 #include <stdio.h>
+#include <stdarg.h>
 #ifndef SF_OS_WINCE
 #include <sys/stat.h>
 #endif

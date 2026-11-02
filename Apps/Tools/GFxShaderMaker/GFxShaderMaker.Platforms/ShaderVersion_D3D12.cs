@@ -5,13 +5,26 @@ namespace GFxShaderMaker.Platforms;
 
 public class ShaderVersion_D3D12 : ShaderVersion_SM50
 {
-	public override string RootSignature => "#define ScaleformRS \"RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT),CBV(b0, visibility=SHADER_VISIBILITY_VERTEX),CBV(b1, visibility=SHADER_VISIBILITY_PIXEL),DescriptorTable(SRV(t0, numDescriptors=" + 4 + "), visibility=SHADER_VISIBILITY_PIXEL),DescriptorTable(Sampler(s0, numDescriptors=" + 4 + "), visibility=SHADER_VISIBILITY_PIXEL)\"\n\n";
+	public override string RootSignature => "#define ScaleformRS \"RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT),CBV(b0, visibility=SHADER_VISIBILITY_VERTEX),CBV(b1, visibility=SHADER_VISIBILITY_PIXEL),DescriptorTable(SRV(t0, numDescriptors=" + 8 + "), visibility=SHADER_VISIBILITY_PIXEL),DescriptorTable(Sampler(s0, numDescriptors=" + 8 + "), visibility=SHADER_VISIBILITY_PIXEL)\"\n\n";
 
 	public override string RootSignatureAttribute => "[RootSignature(ScaleformRS)]\n";
 
 	public ShaderVersion_D3D12(ShaderPlatform platform)
 		: base(platform, "D3D12")
 	{
+	}
+
+	public override string GetShaderProfile(ShaderPipeline pipeline)
+	{
+		return pipeline.Type switch
+		{
+			ShaderPipeline.PipelineType.Fragment => "ps_6_0",
+			ShaderPipeline.PipelineType.Geometry => "gs_6_0",
+			ShaderPipeline.PipelineType.Hull => "hs_6_0",
+			ShaderPipeline.PipelineType.Domain => "ds_6_0",
+			ShaderPipeline.PipelineType.Compute => "cs_6_0",
+			_ => "vs_6_0",
+		};
 	}
 
 	protected override void writeSourceUniforms(ref string shaderCode, ShaderLinkedSource src, List<ShaderVariable> uniforms)

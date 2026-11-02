@@ -27,7 +27,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "FxRenderThread.h"
 
 #ifdef GFX_ENABLE_VIDEO
-#include "Video/Video_Video.h"
+#include "Video/Common/Video_Video.h"
 #endif
 
 #ifdef GFX_ENABLE_SOUND

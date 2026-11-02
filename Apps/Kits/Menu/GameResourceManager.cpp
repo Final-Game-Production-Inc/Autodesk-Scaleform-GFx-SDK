@@ -27,24 +27,24 @@ otherwise accompanies this software in either electronic or hard copy form.
 
 #ifdef GFX_ENABLE_VIDEO
 // Core video support
-#include "Video/Video_Video.h"
+#include "Video/Common/Video_Video.h"
 #if   defined(SF_OS_WIN32)
-#include "Video/Video_VideoPC.h"
+#include "Video/Sofdec2/CriPlatForm/Video_CriVideoWinAPI.h"
 #elif defined(SF_OS_XBOX360)
-#include "Video/Video_VideoXbox360.h"
+#include "Video/Sofdec2/CriPlatForm/Video_CriVideoXbox360.h"
 #elif defined(SF_OS_PS3)
-#include "Video/Video_VideoPS3.h"
+#include "Video/Sofdec2/CriPlatForm/Video_CriVideoPS3.h"
 #endif
 // Video system sound interfaces
 #ifdef GFX_VIDEO_USE_SYSTEM_SOUND
 #if   defined(SF_OS_WIN32)
-#include "Video/Video_VideoSoundSystemDX8.h"
+#include "Video/Sound/SofdeVideo_VideoSoundSystemDX8.h"
 #elif defined(SF_OS_XBOX360)
-#include "Video/Video_VideoSoundSystemXA2.h"
+#include "Video/Sound/Video_VideoSoundSystemXA2.h"
 #elif defined(SF_OS_PS3)
-#include "Video/Video_VideoSoundSystemPS3.h"
+#include "Video/Sound/Video_VideoSoundSystemPS3.h"
 #elif defined(SF_OS_MAC)
-#include "Video/Video_VideoSoundSystemMac.h"
+#include "Video/Sound/Video_VideoSoundSystemMac.h"
 #endif
 #endif // GFX_VIDEO_USE_SYSTEM_SOUND
 #endif // GFX_ENABLE_VIDEO

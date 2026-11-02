@@ -19,7 +19,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define INC_SF_Render_ShaderHAL_H
 
 #include "Render/Render_HAL.h"
+#include "Render/Render_DebugEnv.h"
+
 namespace Scaleform { namespace Render {
+
 
 template <class ShaderManagerType, class ShaderInterfaceType>
 class ShaderHAL : public HAL
@@ -243,8 +246,20 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawUncachedFilte
             PushRenderTarget(viewRect, prt);
 
             Matrix2F mvp = Matrices->GetFullViewportMatrix(prt->GetBufferSize());
-            drawFilter(mvp, Cxform::Identity, filter, temporaryTextures, shaders, pass, passes, 
-                MappedXY16iAlphaTexture[PrimitiveBatch::DP_Batch], lowEndBlurState);
+            // Debug A/B: skip the intermediate filter passes / the final composite
+            // to isolate which draw actually warms up the GPU hang. For the blur
+            // family every pass except the last is a Box blur; the last one is the
+            // shadow/glow composite shader.
+            bool skipPass = IsDebugEnvSet("GFX_FILTER_SKIP_PASSES");
+            if (!skipPass && pass != passes-1 && IsDebugEnvSet("GFX_FILTER_SKIP_BLUR"))
+                skipPass = true;
+            if (!skipPass && pass == passes-1 && IsDebugEnvSet("GFX_FILTER_SKIP_SHADOW"))
+                skipPass = true;
+            if (!skipPass)
+            {
+                drawFilter(mvp, Cxform::Identity, filter, temporaryTextures, shaders, pass, passes, 
+                    MappedXY16iAlphaTexture[PrimitiveBatch::DP_Batch], lowEndBlurState);
+            }
 
             // If we require the original source, create a new target for the source.
             if ( requireSource && pass == 0)
@@ -277,7 +292,8 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawUncachedFilte
     SF_DEBUG_ASSERT(!cacheAsBitmap || filterCount == 1, "Expected exactly one cacheAsBitmap filter.");
 
     // Cache the 2nd last step so it might be available as a cached filter next time.
-    if (temporaryTextures[Target_Source] && (Profiler.IsFilterCachingEnabled() || cacheAsBitmap))
+    const bool filterCaching = Profiler.IsFilterCachingEnabled() && IsFilterCachingSupported();
+    if (temporaryTextures[Target_Source] && (filterCaching || cacheAsBitmap))
     {
         // If there were no passes, assume we were doing a cacheAsBitmap.
         RenderTarget* cacheResults[2] = { temporaryTextures[Target_Source], temporaryTextures[Target_Original] };        
@@ -311,12 +327,18 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawUncachedFilte
     applyRasterModeImpl(CurrentSceneRasterMode);
 
     // Now actually draw the filtered sub-scene to the target below.
-    if (passes != 0)
+    if (passes != 0 && !IsDebugEnvSet("GFX_FILTER_SKIP_COMPOSITE"))
     {
         // 'Real' filter.
         const Matrix2F& mvp = Matrices->UserView * e.pPrimitive->GetAreaMatrix().GetMatrix2D();
         const Cxform&   cx  = e.pPrimitive->GetAreaMatrix().GetCxform();
         applyBlendMode(getLastBlendModeOrDefault(), true, true);
+        if (IsDebugEnvSet("GFX_VKCOMP2"))
+            fprintf(stderr, "[VKCOMP2] mvp=%.4f,%.4f,%.4f,%.4f tex0=%p tex1=%p passes=%u pass=%u\n",
+                    mvp.M[0][0], mvp.M[0][1], mvp.M[1][0], mvp.M[1][1],
+                    (void*)(temporaryTextures[0] ? temporaryTextures[0]->GetTexture() : 0),
+                    (void*)(temporaryTextures[1] ? temporaryTextures[1]->GetTexture() : 0),
+                    passes, pass), fflush(stderr);
         drawFilter(mvp, cx, filter, temporaryTextures, shaders, pass, passes, MappedXY16iAlphaTexture[PrimitiveBatch::DP_Batch], lowEndBlurState);
         applyBlendMode(getLastBlendModeOrDefault(), false, (HALState&HS_InRenderTarget) != 0);
     }
@@ -333,12 +355,25 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawUncachedFilte
         if (temporaryTextures[i])
             temporaryTextures[i]->SetInUse(RTUse_Unused);
     }
+
+    // Do not let the filtered primitive's depth/stencil state leak into the draws that
+    // follow it. Masks applied while rendering into the offscreen target leave the
+    // stencil test/reference active; without this reset the next siblings (e.g. the
+    // check-mark animation on 9-1-B) were clipped away.
+    applyDepthStencilMode(DepthStencil_Disabled, 0);
+
     AccumulatedStats.Filters += filters->GetFilterCount();
 }
 
 template<class ShaderManagerType, class ShaderInterfaceType>
 inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawCachedFilter(FilterPrimitive* primitive)
 {
+    if (IsDebugEnvSet("GFX_VKCACHE"))
+    {
+        const FilterSet* fs = primitive->GetFilters();
+        fprintf(stderr, "[VKCACHE] state=%d filters=%d\n", (int)primitive->GetCacheState(),
+                fs ? (int)fs->GetFilterCount() : -1), fflush(stderr);
+    }
     setBatchUnitSquareVertexStream();
     applyBlendModeEnable(true);
     BlurFilterState lowEndBlurState;
@@ -349,6 +384,16 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawCachedFilter(
         case FilterPrimitive::Cache_PreTarget:
         {
             const FilterSet* filters = primitive->GetFilters();
+            if (!filters || filters->GetFilterCount() == 0)
+            {
+                // Degenerate cache state: the filter set has been emptied since the
+                // cached pass was recorded (filters can be removed from a live set,
+                // e.g. cacheAsBitmap toggled off). Indexing Filters[-1] below read
+                // out of bounds and crashed the render thread; drop the cached
+                // results instead so the filter is rebuilt from scratch next frame.
+                primitive->SetCacheResults(FilterPrimitive::Cache_Uncached, 0, 0);
+                break;
+            }
             UPInt filterIndex = filters->GetFilterCount()-1;
             const Filter* filter = filters->GetFilter(filterIndex);
             unsigned shaders[ShaderManagerType::MaximumFilterPasses];
@@ -408,6 +453,11 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::drawCachedFilter(
             ShaderData.SetUniform(pso, ShaderManagerType::UniformType::SU_mvp, &mvp.M[0][0], 8 );
             ShaderData.SetUniform(pso, ShaderManagerType::UniformType::SU_texgen, &texgen.M[0][0], 8 );
             ShaderData.SetTexture(pso, ShaderManagerType::UniformType::SU_tex, ptexture, ImageFillMode(Wrap_Clamp, Sample_Linear));
+            if (IsDebugEnvSet("GFX_VKCOMP"))
+                fprintf(stderr, "[VKCOMP] srect=%d,%d %dx%d tex=%dx%d mvp=%.3f,%.3f texgen=%.4f,%.4f\n",
+                        srect.x1, srect.y1, srect.Width(), srect.Height(),
+                        ptexture->GetSize().Width, ptexture->GetSize().Height,
+                        mvp.M[0][0], mvp.M[1][1], texgen.M[0][0], texgen.M[1][1]), fflush(stderr);
             ShaderData.Finish(1);
 
             // Reapply the current rasterization mode, as it may have been switched in PushFilters.
@@ -741,6 +791,7 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::DrawProcessedPrim
     SF_AMP_SCOPE_RENDER_TIMER("HAL::DrawProcessedPrimitive", Amp_Profile_Level_High);
     ScopedRenderEvent GPUEvent(GetEvent(Event_DrawPrimitive), "HAL::DrawProcessedPrimitive");
 
+
     if (!checkState(HS_InDisplay, "HAL::DrawProcessedPrimitive") ||
         !pprimitive->GetMeshCount() )
         return;
@@ -756,6 +807,7 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::DrawProcessedPrim
         MeshCacheItem* pmesh = (MeshCacheItem*)pbatch->GetCacheItem();
         unsigned       meshIndex = pbatch->GetMeshIndex();
         unsigned       batchMeshCount = pbatch->GetMeshCount();
+
 
         if (pmesh)
         {
@@ -778,6 +830,7 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::DrawProcessedPrim
                 setInstancedStreamSource(pbatch->GetMeshCount(), pmesh->IndexCount);
 
             ShaderData.Finish(batchMeshCount);
+
 
             if ((HALState & HS_ViewValid) && pShader) 
             {
@@ -1174,6 +1227,10 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::clearSolidRectang
 template<class ShaderManagerType, class ShaderInterfaceType>
 inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::profilerDrawCacheablePrimArea(const CacheablePrimitive* prim)
 {
+    // Cached primitives may not carry an area matrix; GetAreaMatrix() indexes the
+    // array without checking, which crashed the render thread in the profiler path.
+    if (!prim || prim->GetAreaMatrixCount() == 0)
+        return;
     Profiler.SetDrawMode(DrawMode_CachedPrim);
     unsigned fillflags = 0;
     float colorf[4];
@@ -1211,3 +1268,4 @@ inline void ShaderHAL<ShaderManagerType, ShaderInterfaceType>::profilerApplyUnif
 }}; // Scaleform::Render
 
 #endif // INC_SF_Render_ShaderHAL_H
+

@@ -3,7 +3,7 @@
 Filename    :   GFx_Renderer_D3D12.h
 Content     :   Convenience header collection for  
 Created     :   October 2026
-Authors     :   FINALZ-27980
+Authors     :   FINALZ
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
                      Copyright 2026 Final Game Production Inc. All Rights reserved.

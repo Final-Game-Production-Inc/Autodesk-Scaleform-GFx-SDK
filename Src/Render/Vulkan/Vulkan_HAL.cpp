@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 Filename    :   Vulkan_HAL.cpp
 Content     :   Vulkan HAL implementation.
@@ -10,18 +10,106 @@ Authors     :   Scaleform Vulkan Backend
 #include "Kernel/SF_Debug.h"
 #include "Kernel/SF_Random.h"
 #include "Render/Vulkan/Vulkan_HAL.h"
+#include "Render/Render_DebugEnv.h"
 #include "Render/Render_BufferGeneric.h"
 #include "Kernel/SF_HeapNew.h"
 #include "Render/Vulkan/Vulkan_Events.h"
 #include "Render/Render_TextureCacheGeneric.h"
 
+// NOTE: this translation unit must not include C++ standard-library headers
+// (<thread>, <mutex>, <string>, <vector>, ...). Every project here is compiled
+// with OmitDefaultLibName (/Zl) and links against release-built third-party
+// archives (FFmpeg/x265/CRI...), which works only because the engine's own
+// objects emit no CRT "#pragma detect_mismatch" records. The STL headers do
+// emit them (_ITERATOR_DEBUG_LEVEL / RuntimeLibrary), and that single object is
+// then flagged by the linker as LNK2038 against the release archives.
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <process.h>
 
 namespace Scaleform { namespace Render { namespace Vulkan {
 
+// *** Filter debugging helpers (VKFILTER project)
+
+namespace {
+
+// Maps the names accepted by GFX_VK_FILTER_ALLOW to FilterType values, so a filter
+// bisect can be driven from the environment instead of rebuilding per FilterType.
+struct VkFilterName
+{
+    const char* pName;
+    unsigned    Type;
+};
+
+static const VkFilterName VkFilterNames[] =
+{
+    { "blur",            Filter_Blur },
+    { "shadow",          Filter_Shadow },
+    { "glow",            Filter_Glow },
+    { "bevel",           Filter_Bevel },
+    { "gradientglow",    Filter_GradientGlow },
+    { "gradientbevel",   Filter_GradientBevel },
+    { "gradglow",        Filter_GradientGlow },
+    { "gradbevel",       Filter_GradientBevel },
+    { "colormatrix",     Filter_ColorMatrix },
+    { "cmatrix",         Filter_ColorMatrix },
+    { "convolution",     Filter_Convolution },
+    { "displacementmap", Filter_DisplacementMap },
+    { "displacement",    Filter_DisplacementMap },
+    { "cacheasbitmap",   Filter_CacheAsBitmap },
+};
+
+// Returns a bit mask of allowed FilterType values. All-ones means "every type allowed"
+// (the default); GFX_VK_FILTER_ALLOW=none yields 0, i.e. no filtered primitive is drawn.
+static unsigned GetVkFilterAllowMask()
+{
+    static unsigned sMask = 0xFFFFFFFFu;
+    static bool     sInit = false;
+    if (sInit)
+        return sMask;
+
+    sInit = true;
+
+    char envValue[256];
+    if (!GetDebugEnvValue("GFX_VK_FILTER_ALLOW", envValue, sizeof(envValue)) || !envValue[0])
+        return sMask;
+    const char* pEnv = envValue;
+
+    sMask = 0;
+    const char* p = pEnv;
+    while (*p)
+    {
+        const char* pEnd = p;
+        while (*pEnd && *pEnd != ',' && *pEnd != ';' && *pEnd != ' ')
+            ++pEnd;
+        const size_t len = (size_t)(pEnd - p);
+
+        if (len == 4 && !_strnicmp(p, "none", 4))
+            return sMask;
+
+        for (size_t i = 0; i < sizeof(VkFilterNames) / sizeof(VkFilterNames[0]); ++i)
+        {
+            if (strlen(VkFilterNames[i].pName) == len &&
+                !_strnicmp(p, VkFilterNames[i].pName, len))
+                sMask |= (1u << VkFilterNames[i].Type);
+        }
+
+        p = pEnd;
+        while (*p == ',' || *p == ';' || *p == ' ')
+            ++p;
+    }
+    return sMask;
+}
+
+} // anonymous namespace
+
+
 // Static members for deferred framebuffer deletion
 Array<VkFramebuffer> RenderTargetData::PendingDeletes[SF_VK_MAX_FRAMES_IN_FLIGHT];
+Array<Ptr<DepthStencilBuffer> > RenderTargetData::PendingDSDeletes[SF_VK_MAX_FRAMES_IN_FLIGHT];
 VkDevice             RenderTargetData::PendingDeleteDevice = VK_NULL_HANDLE;
+VkQueue              RenderTargetData::PendingDeleteQueue = VK_NULL_HANDLE;
 unsigned             RenderTargetData::PendingDeleteSlot = 0;
 
 
@@ -39,11 +127,15 @@ HAL::HAL(ThreadCommandQueue* commandQueue)
   pInstance(VK_NULL_HANDLE),
   pOffscreenRenderPass(VK_NULL_HANDLE),
   pOffscreenRenderPassDS(VK_NULL_HANDLE),
+  pOffscreenResumeRenderPass(VK_NULL_HANDLE),
+  pOffscreenResumeRenderPassDS(VK_NULL_HANDLE),
   InRenderPass(false),
+  MainPassActive(false),
   pMainRenderPass(VK_NULL_HANDLE),
   pMainResumeRenderPass(VK_NULL_HANDLE),
   pMainFramebuffer(VK_NULL_HANDLE),
   MainRenderExtent{0, 0},
+  FrameSlot(0),
   Cache(Memory::GetGlobalHeap(), MeshCacheParams::PC_Defaults),
   PrevBatchType(PrimitiveBatch::DP_None),
   pPipelineLayout(VK_NULL_HANDLE),
@@ -87,12 +179,16 @@ bool HAL::InitHAL(const Vulkan::HALInitParams& params)
     pCurrentRenderPass = params.pRenderPass;
     pMainRenderPass    = params.pRenderPass;
     pInstance          = params.pInstance;
+    MainPassActive     = false;
+    RenderTargetData::PendingDeleteQueue = pGraphicsQueue;
 
     Vulkan::RenderEvent::InitializeEvents(pInstance, pCommandBuffer);
 
     if (!createPipelineLayout()) { ShutdownHAL(); return false; }
     if (!createOffscreenRenderPass()) { ShutdownHAL(); return false; }
     if (!createOffscreenRenderPassDS()) { ShutdownHAL(); return false; }
+    if (!createOffscreenResumeRenderPass()) { ShutdownHAL(); return false; }
+    if (!createOffscreenResumeRenderPassDS()) { ShutdownHAL(); return false; }
     if (!createUBORing()) { ShutdownHAL(); return false; }
     if (!SManager.Initialize(this)) { ShutdownHAL(); return false; }
     if (!Cache.Initialize(pDevice, pPhysicalDevice, &Cache.RSync))
@@ -147,6 +243,14 @@ bool HAL::InitHAL(const Vulkan::HALInitParams& params)
         }
     }
 
+    // Vulkan destroys a temporary target's depth/stencil buffer one frame after it was
+    // detached (see HAL::PopRenderTarget / PendingTargetReleases): its image view is still
+    // referenced by a framebuffer that is only destroyed once the frame slot's fence
+    // has been waited on. Tell the buffer manager that such a buffer is legitimately
+    // still in its 'in-use' list at EndFrame().
+    if (pRenderBufferManager)
+        pRenderBufferManager->AllowsDeferredBufferRelease = true;
+
     if (pTextureManager && pRenderBufferManager)
     {
         HALState |= HS_ModeSet;
@@ -173,6 +277,8 @@ bool HAL::ShutdownHAL()
 
     // Drain all framebuffers queued for deferred deletion (all slots)
     RenderTargetData::DrainAllPendingDeletes();
+    RenderTargetData::DrainAllPendingDSDeletes();
+    PendingTargetReleases.Clear();
 
     // Destroy pipelines
     for (PipelineMap::Iterator it = Pipelines.Begin(); it != Pipelines.End(); ++it)
@@ -205,6 +311,7 @@ bool HAL::ShutdownHAL()
     // Final drain: ~RenderTargetData may have pushed framebuffers during
     // destroyRenderBuffers / pRenderBufferManager.Clear above.
     RenderTargetData::DrainAllPendingDeletes();
+    RenderTargetData::DrainAllPendingDSDeletes();
 
     pDevice = VK_NULL_HANDLE;
     return true;
@@ -232,27 +339,104 @@ bool HAL::RestoreAfterReset()
 
 // *** Rendering
 
-bool HAL::BeginScene()
+static void VkTrace(const char* what);
+
+// Debug watchdog: when GFX_VK_WATCHDOG is set and no frame has started for a few
+// seconds, break into the debugger so the (otherwise silent) render-thread hang can
+// be inspected. Only armed for the GFX_VK_FILTER debug sessions.
+static volatile LONG gVkFrameTick = 0;
+// _beginthreadex entry point: keeps the CRT's per-thread state valid without
+// pulling in <thread> (see the include comment at the top of this file).
+static unsigned __stdcall VkWatchdogMain(void*)
 {
-    if (!BaseHAL::BeginScene())
+    LONG last = 0;
+    int  strikes = 0;
+    for (;;)
+    {
+        Sleep(1000);
+        LONG now = gVkFrameTick;
+        if (now == last)
+        {
+            if (++strikes >= 5)
+            {
+                fprintf(stderr, "[WATCHDOG] no frame start for 5s - breaking\n");
+                fflush(stderr);
+                DebugBreak();
+                strikes = 0;
+            }
+        }
+        else
+        {
+            last = now;
+            strikes = 0;
+        }
+    }
+}
+
+bool HAL::BeginFrame()
+{
+    VkTrace("begin");
+    static const bool sWatchdogEnabled = IsDebugEnvSet("GFX_VK_WATCHDOG");
+    if (sWatchdogEnabled)
+    {
+        static bool sWatchdogStarted = false;
+        if (!sWatchdogStarted)
+        {
+            sWatchdogStarted = true;
+            // Detached: it only exists to break into the debugger on a render hang.
+            uintptr_t hThread = _beginthreadex(0, 0, VkWatchdogMain, 0, 0, 0);
+            if (hThread)
+                CloseHandle((HANDLE)hThread);
+        }
+        InterlockedIncrement(&gVkFrameTick);
+    }
+    if (!BaseHAL::BeginFrame())
         return false;
 
-    ScopedRenderEvent GPUEvent(GetEvent(Event_BeginScene), __FUNCTION__);
+    // Advance the frame counter once per presented frame, and switch to the GPU
+    // frame slot the platform is recording into. BeginFrame is called once per
+    // presented frame, whereas BeginScene/EndScene may run several times within
+    // it (prepass, normal, overlay). Using the platform's slot keeps the
+    // descriptor pool, UBO ring and deferred-delete queues in lock-step with the
+    // per-frame fences; using a counter of our own would lag by one frame and
+    // let the CPU overwrite resources the GPU is still reading.
+    ++CurrentFrame;
+    unsigned frameIdx = FrameSlot % SF_VK_MAX_FRAMES_IN_FLIGHT;
+    vkResetDescriptorPool(pDevice, FrameDescriptorPools[frameIdx], 0);
+    UBORingOffset = 0;
+    return true;
+}
 
-    // Set the current frame slot and drain framebuffer deletions for THIS slot.
-    // With N frames in flight the app waits on slot S's fence before reusing it,
-    // so only slot S's accumulated deletes are guaranteed safe to destroy here.
-    unsigned frameIdx = CurrentFrame % SF_VK_MAX_FRAMES_IN_FLIGHT;
+void HAL::DrainFrameResources()
+{
+    // Safe point: the platform has just waited on this frame slot fence.
+    unsigned frameIdx = FrameSlot % SF_VK_MAX_FRAMES_IN_FLIGHT;
     RenderTargetData::SetPendingDeleteSlot(frameIdx);
+
+    // 1) Framebuffers first: they reference the colour/depth image views of the targets
+    //    below, so they must be gone before those views may be destroyed. The delete
+    //    queue is per frame slot, and DrainPendingDeletes() has just waited for the
+    //    queue to go idle, so drain every slot here as well: a framebuffer queued for
+    //    slot S must not outlive a target retired from a different slot.
     RenderTargetData::DrainPendingDeletes();
+    RenderTargetData::DrainAllPendingDeletes();
 
-    // Return render targets used last frame back to the pool now that the GPU is done.
-    for (unsigned i = 0; i < PendingRTReleases.GetSize(); ++i)
-        PendingRTReleases[i]->SetInUse(RTUse_Unused);
-    PendingRTReleases.Clear();
+    // 2) Depth/stencil buffers that were detached by UpdateData() (or by a pop) while
+    //    their framebuffer was still pending. The framebuffers are gone now, so the
+    //    views may finally die.
+    RenderTargetData::DrainAllPendingDSDeletes();
 
-    // Drain VkImageView/VkImage/VkDeviceMemory kills for this slot.  The app
-    // waited on the in-flight fence for this slot, so its resources are safe.
+    // 3) Then retire the temporary targets themselves, in the same order the GPU saw
+    //    them: depth/stencil buffer, then the colour texture (dropped with the target).
+    for (unsigned i = 0; i < PendingTargetReleases.GetSize(); ++i)
+    {
+        DeferredTargetRelease& r = PendingTargetReleases[i];        r.pDepthStencil = 0;
+        if (r.pTarget)
+            r.pTarget->SetInUse(RTUse_Unused);
+        r.pTarget = 0;
+    }
+    PendingTargetReleases.Clear();
+
     Vulkan::TextureManager* ptm = (Vulkan::TextureManager*)pTextureManager.GetPtr();
     if (ptm)
     {
@@ -260,10 +444,14 @@ bool HAL::BeginScene()
         ptm->DrainDeferredKills();
         ptm->DeferKills = true;
     }
+}
 
-    vkResetDescriptorPool(pDevice, FrameDescriptorPools[frameIdx], 0);
-    UBORingOffset = 0;
+bool HAL::BeginScene()
+{
+    if (!BaseHAL::BeginScene())
+        return false;
 
+    ScopedRenderEvent GPUEvent(GetEvent(Event_BeginScene), __FUNCTION__);
     return true;
 }
 
@@ -271,17 +459,13 @@ bool HAL::EndScene()
 {
     ScopedRenderEvent GPUEvent(GetEvent(Event_Scene), 0, false);
 
-    // Release filter temp RTs from RBCL_InUse before the base class calls
-    // EndFrame() which asserts that list is empty.  The strong references in
-    // PendingRTReleases keep the underlying textures alive until BeginScene
-    // of a later frame (after the GPU fence has been waited on).
-    for (unsigned i = 0; i < PendingRTReleases.GetSize(); ++i)
-        PendingRTReleases[i]->SetInUse(RTUse_Unused);
-
+    // Temporary targets popped during this scene stay in the buffer manager's 'in-use'
+    // list until DrainFrameResources() (after the slot fence) - see
+    // PendingTargetReleases. RenderBufferManager::EndFrame() is told about that through
+    // AllowsDeferredBufferRelease.
     if (!BaseHAL::EndScene())
         return false;
 
-    CurrentFrame++;
     return true;
 }
 
@@ -335,6 +519,7 @@ void HAL::updateViewport()
 
 UPInt HAL::setVertexArray(PrimitiveBatch* pbatch, Render::MeshCacheItem* pmeshBase)
 {
+	SF_UNUSED(pbatch);
     Vulkan::MeshCacheItem* pmesh = reinterpret_cast<Vulkan::MeshCacheItem*>(pmeshBase);
 
     VkBuffer vb = pmesh->pVertexBuffer->GetHWBuffer();
@@ -350,6 +535,8 @@ UPInt HAL::setVertexArray(PrimitiveBatch* pbatch, Render::MeshCacheItem* pmeshBa
 
 UPInt HAL::setVertexArray(const ComplexMesh::FillRecord& fr, unsigned formatIndex, Render::MeshCacheItem* pmeshBase)
 {
+	SF_UNUSED(formatIndex);
+
     Vulkan::MeshCacheItem* pmesh = reinterpret_cast<Vulkan::MeshCacheItem*>(pmeshBase);
 
     VkBuffer vb = pmesh->pVertexBuffer->GetHWBuffer();
@@ -465,6 +652,8 @@ bool HAL::createPipelineLayout()
     // The layout must satisfy both: binding 2 as an array of MAX_STAGES covers (a),
     // and separate bindings 3+ cover (b).
     const unsigned numExtraBindings = (SF_VK_MAX_TEXTURE_STAGES > 1) ? SF_VK_MAX_TEXTURE_STAGES - 1 : 0;
+	SF_UNUSED(numExtraBindings);
+
     VkDescriptorSetLayoutBinding bindings[3 + SF_VK_MAX_TEXTURE_STAGES] = {};
     unsigned bindingCount = 0;
 
@@ -628,7 +817,9 @@ VkPipeline HAL::GetPipeline(ShaderDesc::ShaderType vsShader, ShaderDesc::ShaderT
     pipelineCI.subpass             = 0;
 
     VkPipeline pipeline = VK_NULL_HANDLE;
+    VkTrace("pipe");
     VkResult r = vkCreateGraphicsPipelines(pDevice, pPipelineCache, 1, &pipelineCI, nullptr, &pipeline);
+    VkTrace("pipe-done");
     if (r != VK_SUCCESS)
     {
         SF_DEBUG_WARNING1(1, "Vulkan: Failed to create graphics pipeline, VkResult=%d", (int)r);
@@ -739,7 +930,10 @@ RenderTarget* HAL::CreateRenderTarget(Render::Texture* texture, bool needsStenci
 
     if (needsStencil)
     {
-        DepthStencilBuffer* pdsb = pRenderBufferManager->CreateDepthStencilBuffer(pt->GetSize());
+        // Same ownership rule as CreateTempRenderTarget: the returned buffer already
+        // carries a reference, so it has to be held by a Ptr or the manager keeps it in
+        // its 'in-use' list forever.
+        Ptr<DepthStencilBuffer> pdsb = *pRenderBufferManager->CreateDepthStencilBuffer(pt->GetSize());
         if (pdsb)
         {
             Vulkan::DepthStencilSurface* pdss = (Vulkan::DepthStencilSurface*)pdsb->GetSurface();
@@ -761,6 +955,12 @@ RenderTarget* HAL::CreateTempRenderTarget(const ImageSize& size, bool needsStenc
     // extent (VUID-VkImageCreateInfo-extent-00944/00945).
     ImageSize safeSize(Alg::Max<UInt32>(1, size.Width), Alg::Max<UInt32>(1, size.Height));
 
+    // Bisect aid: GFX_VK_FILTER_NODS=1 renders filtered primitives without a
+    // depth/stencil attachment, to isolate problems in the masked-filter path.
+    static const bool sNoDS = IsDebugEnvSet("GFX_VK_FILTER_NODS");
+    if (sNoDS)
+        needsStencil = false;
+
     RenderTarget* prt = pRenderBufferManager->CreateTempRenderTarget(safeSize);
     if (!prt) return 0;
     Render::Texture* pt = prt->GetTexture();
@@ -768,7 +968,22 @@ RenderTarget* HAL::CreateTempRenderTarget(const ImageSize& size, bool needsStenc
 
     if (needsStencil)
     {
-        DepthStencilBuffer* pdsb = pRenderBufferManager->CreateDepthStencilBuffer(safeSize);
+        // Use the size the render buffer manager actually allocated for the color
+        // texture: it may round the extent up (e.g. 30x42 -> 32x64), and creating the
+        // depth buffer from the unrounded request made vkCreateFramebuffer fail with
+        // "depth attachment is smaller than the framebuffer" - the filter output then
+        // stayed black.
+        ImageSize rtSize = pt->GetSize();
+        if (rtSize.Width <= 0 || rtSize.Height <= 0)
+            rtSize = safeSize;
+        // Borrow the DS the same way D3D11 does (D3D1x_HAL::CreateTempRenderTarget):
+        // CreateDepthStencilBuffer returns an already-AddRef'ed buffer, and the caller
+        // owns that reference. Holding it in a plain raw pointer dropped the reference
+        // on the floor: a *reused* DS stays in RenderBufferManager's RBCL_InUse list
+        // forever, so the next RenderBufferManager::EndFrame trips the debug assert
+        // "there are render targets still 'in-use'" (and release builds recycle a
+        // buffer that is still attached to a live render target).
+        Ptr<DepthStencilBuffer> pdsb = *pRenderBufferManager->CreateDepthStencilBuffer(rtSize);
         if (pdsb)
         {
             Vulkan::DepthStencilSurface* pdss = (Vulkan::DepthStencilSurface*)pdsb->GetSurface();
@@ -803,8 +1018,34 @@ bool HAL::SetRenderTarget(RenderTarget* ptarget, bool setState)
     return true;
 }
 
+// Debug trace: enabled while the file named by GFX_VK_FP exists. Used to find the
+// exact HAL call the render thread is stuck in when the picture freezes.
+static bool VkTraceOn()
+{
+    // The path is constant for the process; the marker *file* is re-checked every call so
+    // a harness can arm/disarm the trace while the player is running.
+    static char sTracePath[512];
+    static const bool sConfigured = GetDebugEnvValue("GFX_VK_FP", sTracePath, sizeof(sTracePath));
+    if (!sConfigured || !sTracePath[0]) return false;
+    FILE* f = 0;
+    fopen_s(&f, sTracePath, "rb");
+    if (!f) return false;
+    fclose(f);
+    return true;
+}
+static void VkTrace(const char* what)
+{
+    if (!VkTraceOn()) return;
+    FILE* f = 0;
+    fopen_s(&f, "vktrace.log", "a");
+    if (f) { fprintf(f, "%s\n", what); fclose(f); }
+}
+
 void HAL::PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned flags, Color clearColor)
 {
+	SF_UNUSED(flags);
+
+    VkTrace("push");
     GetEvent(Event_RenderTarget).Begin(__FUNCTION__);
 
     HALState |= HS_InRenderTarget;
@@ -826,6 +1067,29 @@ void HAL::PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned f
 
     RenderTargetData* phd = (RenderTargetData*)prt->GetRenderTargetData();
 
+    // Refresh the color attachment from the render target's current texture.
+    // Temporary render targets are recycled from a pool, and their backing
+    // texture's VkImageView can be destroyed and recreated (deferred kills);
+    // a cached RenderTargetData would then hand a stale/nulled VkImageView to
+    // vkCreateFramebuffer ("Invalid VkImageView Object ..."), which the
+    // validation layer reports and can crash inside its own bookkeeping.
+    if (phd)
+    {
+        Render::Texture* ptex = prt->GetTexture();
+        if (ptex && ((Vulkan::Texture*)ptex)->pTextures)
+        {
+            VkImageView curView = ((Vulkan::Texture*)ptex)->pTextures[0].View;
+            if (curView != phd->pRenderSurface)
+            {
+                RenderTargetData::QueueFramebufferDelete(phd->pFramebuffer);
+                phd->pFramebuffer   = VK_NULL_HANDLE;
+                phd->pRenderSurface = curView;
+            }
+        }
+        if (phd->pRenderSurface == VK_NULL_HANDLE)
+            phd->pFramebuffer = VK_NULL_HANDLE;   // nothing to render into
+    }
+
     if (phd && phd->pRenderSurface != VK_NULL_HANDLE && pOffscreenRenderPass != VK_NULL_HANDLE)
     {
         if (InRenderPass)
@@ -843,12 +1107,27 @@ void HAL::PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned f
         bool hasDS = (phd->pDSSurface != VK_NULL_HANDLE);
         VkRenderPass selectedRP = hasDS ? pOffscreenRenderPassDS : pOffscreenRenderPass;
 
+        // The cached framebuffer is only valid for the render pass it was
+        // created with (the DS pass has an extra attachment), so recreate it if
+        // this target is now used with/without a depth-stencil buffer.
+        if (phd->pFramebuffer != VK_NULL_HANDLE && phd->FramebufferRenderPass != selectedRP)
+        {
+            RenderTargetData::QueueFramebufferDelete(phd->pFramebuffer);
+            phd->pFramebuffer = VK_NULL_HANDLE;
+        }
+
         if (phd->pFramebuffer == VK_NULL_HANDLE)
         {
             phd->pFramebuffer = createFramebuffer(phd->pRenderSurface, phd->pDSSurface,
                                                   bs.Width, bs.Height, selectedRP);
+            phd->FramebufferRenderPass = (phd->pFramebuffer != VK_NULL_HANDLE) ? selectedRP : VK_NULL_HANDLE;
         }
 
+        static const bool sRtTrace = IsDebugEnvSet("GFX_VKRT");
+    if (sRtTrace)
+            fprintf(stderr, "[VKRT] fb=%p rp=%p rect=%.0fx%.0f temp=%d\n",
+                    (void*)phd->pFramebuffer, (void*)selectedRP, frameRect.Width(), frameRect.Height(),
+                    (int)(prt->GetType() == RBuffer_Temporary)), fflush(stderr);
         if (phd->pFramebuffer != VK_NULL_HANDLE)
         {
             VkRenderPassBeginInfo rpBI = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
@@ -880,13 +1159,156 @@ void HAL::PushRenderTarget(const RectF& frameRect, RenderTarget* prt, unsigned f
     Matrices->UVPOChanged = true;
     HALState |= HS_ViewValid;
     updateViewport();
+    VkTrace("push-done");
+}
+
+// Debug-only helper: copy a render-target image (already in SHADER_READ_ONLY layout)
+// into a host buffer and write it as a 24-bit BMP. Used by GFX_VK_DUMP_RT to see what
+// a filter pass actually produced.
+static void DumpVkImageToBmp(VkDevice device, VkPhysicalDevice physDevice, VkQueue queue,
+                             VkCommandPool pool, VkImage image, UInt32 w, UInt32 h, const char* path)
+{
+    if (!w || !h) return;
+    fprintf(stderr, "[RTDUMP] writing %s (%ux%u) image=%p\n", path, w, h, (void*)image);
+    fflush(stderr);
+
+    VkBufferCreateInfo bci = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+    bci.size = (VkDeviceSize)w * h * 4;
+    bci.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+    bci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    VkBuffer buf = VK_NULL_HANDLE;
+    if (vkCreateBuffer(device, &bci, nullptr, &buf) != VK_SUCCESS) return;
+
+    VkMemoryRequirements req;
+    vkGetBufferMemoryRequirements(device, buf, &req);
+    VkMemoryAllocateInfo mai = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO };
+    mai.allocationSize = req.size;
+    mai.memoryTypeIndex = FindMemoryType(physDevice, req.memoryTypeBits,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    VkDeviceMemory mem = VK_NULL_HANDLE;
+    if (mai.memoryTypeIndex == UINT32_MAX ||
+        vkAllocateMemory(device, &mai, nullptr, &mem) != VK_SUCCESS)
+    {
+        vkDestroyBuffer(device, buf, nullptr);
+        return;
+    }
+    vkBindBufferMemory(device, buf, mem, 0);
+
+    VkCommandBufferAllocateInfo cai = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+    cai.commandPool = pool;
+    cai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cai.commandBufferCount = 1;
+    VkCommandBuffer cmd = VK_NULL_HANDLE;
+    if (vkAllocateCommandBuffers(device, &cai, &cmd) == VK_SUCCESS)
+    {
+        VkCommandBufferBeginInfo bi = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+        bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        vkBeginCommandBuffer(cmd, &bi);
+
+        VkImageMemoryBarrier b = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+        b.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        b.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        b.srcQueueFamilyIndex = b.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        b.image = image;
+        b.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+        b.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        b.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &b);
+
+        VkBufferImageCopy region = {};
+        region.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+        region.imageExtent = { w, h, 1 };
+        vkCmdCopyImageToBuffer(cmd, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buf, 1, &region);
+
+        b.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        b.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        b.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        b.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &b);
+        vkEndCommandBuffer(cmd);
+
+        VkSubmitInfo si = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
+        si.commandBufferCount = 1;
+        si.pCommandBuffers = &cmd;
+        vkQueueSubmit(queue, 1, &si, VK_NULL_HANDLE);
+        vkQueueWaitIdle(queue);
+        vkFreeCommandBuffers(device, pool, 1, &cmd);
+
+        void* pData = nullptr;
+        if (vkMapMemory(device, mem, 0, bci.size, 0, &pData) == VK_SUCCESS && pData)
+        {
+            const UInt32 rowSize = (w * 3 + 3) & ~3u;
+            unsigned char header[54] = { 0 };
+            const UInt32 fileSize = 54 + rowSize * h;
+            header[0] = 'B'; header[1] = 'M';
+            memcpy(header + 2, &fileSize, 4);
+            UInt32 off = 54;          memcpy(header + 10, &off, 4);
+            UInt32 dib = 40;          memcpy(header + 14, &dib, 4);
+            memcpy(header + 18, &w, 4); memcpy(header + 22, &h, 4);
+            unsigned short planes = 1, bpp = 24;
+            memcpy(header + 26, &planes, 2); memcpy(header + 28, &bpp, 2);
+
+            FILE* f = 0;
+            fopen_s(&f, path, "wb");
+            if (f)
+            {
+                fwrite(header, 1, 54, f);
+                Array<unsigned char> row;
+                row.Resize(rowSize);
+                const unsigned char* pSrc = (const unsigned char*)pData;
+                for (int y = (int)h - 1; y >= 0; --y)
+                {
+                    memset(row.GetDataPtr(), 0, rowSize);
+                    for (UInt32 x = 0; x < w; ++x)
+                    {
+                        const unsigned char* p = pSrc + ((size_t)y * w + x) * 4;
+                        row[x * 3 + 0] = p[2];
+                        row[x * 3 + 1] = p[1];
+                        row[x * 3 + 2] = p[0];
+                    }
+                    fwrite(row.GetDataPtr(), 1, rowSize, f);
+                }
+                fclose(f);
+            }
+            vkUnmapMemory(device, mem);
+        }
+    }
+
+    vkFreeMemory(device, mem, nullptr);
+    vkDestroyBuffer(device, buf, nullptr);
+}
+
+// GFX_VK_KEEP_DS=1 disables the pop-time detach of a temporary target's depth/stencil
+// buffer (bisect aid for DS lifetime problems).
+static bool KeepDsEnabled()
+{
+    static const bool sKeepDs = IsDebugEnvSet("GFX_VK_KEEP_DS");
+    return sKeepDs;
 }
 
 void HAL::PopRenderTarget(unsigned flags)
 {
     ScopedRenderEvent GPUEvent(GetEvent(Event_RenderTarget), 0, false);
+    VkTrace("pop");
 
     RenderTargetEntry& entry = RenderTargetStack.Back();
+    RenderTarget*      pPoppedRT = entry.pRenderTarget;
+
+    {   // temporary probe: confirm the dump path is reached and what it sees
+        static int sPopDbg = 0;
+        if (sPopDbg < 20)
+        {
+            ++sPopDbg;
+            const ImageSize dbgSize = pPoppedRT ? pPoppedRT->GetBufferSize() : ImageSize(0,0);
+            fprintf(stderr, "[POP] rt=%p type=%d size=%dx%d env=%d\n",
+                    (void*)pPoppedRT, pPoppedRT ? (int)pPoppedRT->GetType() : -1,
+                    (int)dbgSize.Width, (int)dbgSize.Height,
+                    IsDebugEnvSet("GFX_VK_DUMP_RT") ? 1 : 0);
+            fflush(stderr);
+        }
+    }
 
     if ((flags & PRT_NoSet) == 0)
     {
@@ -894,6 +1316,48 @@ void HAL::PopRenderTarget(unsigned flags)
         {
             vkCmdEndRenderPass(pCommandBuffer);
             InRenderPass = false;
+        }
+    }
+    VkTrace("pop-a");
+
+    // Debug: dump small temporary filter targets right after their pass ended, so the
+    // image is still in SHADER_READ_ONLY layout (the offscreen passes' finalLayout).
+    // GFX_VK_DUMP_RT names a marker file: dumping happens only while it exists, so the
+    // harness can arm the probe right after the click of interest.
+    static char sDumpMarker[512];
+    static const bool sDumpConfigured = GetDebugEnvValue("GFX_VK_DUMP_RT", sDumpMarker, sizeof(sDumpMarker));
+    const char* pDumpMarker = sDumpMarker;
+    bool bDumpArmed = false;
+    if (sDumpConfigured && pDumpMarker[0])
+    {
+        static bool sMarkerReported = false;
+        FILE* pMarker = 0;
+        fopen_s(&pMarker, pDumpMarker, "rb");
+        if (pMarker) { fclose(pMarker); bDumpArmed = true; }
+        if (!sMarkerReported)
+        {
+            sMarkerReported = true;
+            fprintf(stderr, "[RTDUMP] marker '%s' -> armed=%d\n", pDumpMarker, (int)bDumpArmed);
+            fflush(stderr);
+        }
+    }
+    if (bDumpArmed && pPoppedRT && pPoppedRT->GetType() == RBuffer_Temporary)
+    {
+        Render::Texture* ptex = pPoppedRT->GetTexture();
+        if (ptex)
+        {
+            Vulkan::Texture* pvt = (Vulkan::Texture*)ptex;
+            const ImageSize rtSize = pPoppedRT->GetBufferSize();
+            const UInt32 w = (UInt32)rtSize.Width;
+            const UInt32 h = (UInt32)rtSize.Height;
+            static int sDumped = 0;
+            if (w && h && w <= 512 && h <= 512 && sDumped < 600)
+            {
+                char path[128];
+                snprintf(path, sizeof(path), "rtdump_%03d_%ux%u.bmp", sDumped++, w, h);
+                DumpVkImageToBmp(pDevice, pPhysicalDevice, pGraphicsQueue, pCommandPool,
+                                 pvt->pTextures[0].Image, w, h, path);
+            }
         }
     }
 
@@ -909,20 +1373,97 @@ void HAL::PopRenderTarget(unsigned flags)
 
         // Resume the main swapchain render pass so that the caller can immediately
         // composite the filter result without drawing outside a render pass.
+        // Only valid when the platform has actually begun the main pass for this
+        // frame (MainPassActive); otherwise the swapchain image is still in
+        // PRESENT_SRC_KHR and beginning a pass whose initialLayout is
+        // COLOR_ATTACHMENT_OPTIMAL would violate the layout-tracking rules.
+        // The resume pass keeps LOAD_OP_LOAD for color, but its depth attachment
+        // is CLEAR, so a matching pClearValues array is mandatory.
         if ((flags & PRT_NoSet) == 0 &&
+            MainPassActive &&
             pMainResumeRenderPass != VK_NULL_HANDLE && pMainFramebuffer != VK_NULL_HANDLE)
         {
+            // No image layout transition is required here: the platform's main
+            // render pass ends in VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, which
+            // is exactly what pMainResumeRenderPass declares as its
+            // initialLayout. (Emitting a PRESENT_SRC_KHR -> COLOR_ATTACHMENT
+            // barrier here would report the wrong oldLayout to the driver and
+            // trip VUID-vkCmdBeginRenderPass-initialLayout-00900.)
+            VkClearValue resumeClear[2] = {};
+            resumeClear[1].depthStencil = { 1.0f, 0 };
+
             VkRenderPassBeginInfo rpBI = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
             rpBI.renderPass  = pMainResumeRenderPass;
             rpBI.framebuffer = pMainFramebuffer;
             rpBI.renderArea.extent = MainRenderExtent;
+            rpBI.clearValueCount = 2;
+            rpBI.pClearValues    = resumeClear;
             vkCmdBeginRenderPass(pCommandBuffer, &rpBI, VK_SUBPASS_CONTENTS_INLINE);
             InRenderPass = true;
-            // Use the main render pass as the pipeline key so pipelines are shared
-            // with those created during regular (non-filter) main-pass rendering.
-            pCurrentRenderPass = pMainRenderPass;
+            // Key pipelines by the pass that is actually recording. Using the main pass
+            // here made every draw after a filter resume bind a VkPipeline created for
+            // a different VkRenderPass (validation: color format / depth attachment /
+            // dependencyCount incompatible), which is undefined behaviour and made the
+            // driver report VK_ERROR_DEVICE_LOST on the first vkQueueSubmit.
+            pCurrentRenderPass = pMainResumeRenderPass;
         }
     }
+    else if ((flags & PRT_NoSet) == 0 && !InRenderPass && RenderTargetStack.GetSize() > 1)
+    {
+        // Back to a parent *temporary* target that already holds rendered content (e.g. a
+        // filter pass nested inside the full-scene blend target). The pass for that
+        // framebuffer was ended when the child was pushed, so it has to be re-opened -
+        // with the LOAD variant, or its content would be cleared. Without this the
+        // following composite draws were issued with no active render pass: the driver
+        // dropped them (validation: VUID-vkCmdDraw-renderpass), which is why e.g. the
+        // masked gradient text of the "顺利通过" banner disappeared.
+        RenderTarget* pParent = RenderTargetStack.Back().pRenderTarget;
+        RenderTargetData* phdParent = pParent ? (RenderTargetData*)pParent->GetRenderTargetData() : 0;
+        if (phdParent && phdParent->pFramebuffer != VK_NULL_HANDLE &&
+            phdParent->pRenderSurface != VK_NULL_HANDLE)
+        {
+            bool hasDS = (phdParent->pDSSurface != VK_NULL_HANDLE);
+            VkRenderPass rp = hasDS ? pOffscreenResumeRenderPassDS : pOffscreenResumeRenderPass;
+            if (rp != VK_NULL_HANDLE)
+            {
+                const ImageSize& bs = pParent->GetBufferSize();
+                VkClearValue resumeClear[2] = {};
+                resumeClear[1].depthStencil = { 1.0f, 0 };
+                VkRenderPassBeginInfo rpBI = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
+                rpBI.renderPass        = rp;
+                rpBI.framebuffer       = phdParent->pFramebuffer;
+                rpBI.renderArea.extent = { bs.Width, bs.Height };
+                rpBI.clearValueCount   = hasDS ? 2 : 1;
+                rpBI.pClearValues      = resumeClear;
+                vkCmdBeginRenderPass(pCommandBuffer, &rpBI, VK_SUBPASS_CONTENTS_INLINE);
+                InRenderPass = true;
+                pCurrentRenderPass = rp;
+            }
+        }
+    }
+
+    VkTrace("pop-b");
+    // Pop-time cleanup of a temporary target: detach its depth/stencil buffer (a fresh
+    // one is attached when the target is next used with stencil content), then park the
+    // whole target - target + DS - in PendingTargetReleases. Everything that the
+    // framebuffer for this target references stays alive until DrainFrameResources()
+    // has destroyed that framebuffer, so no image view can die under a framebuffer that
+    // is still bound to the recording command buffer.
+    if (pPoppedRT && pPoppedRT->GetType() == RBuffer_Temporary)
+    {
+        Ptr<DepthStencilBuffer> pDs;
+        RenderTargetData* phd  = (RenderTargetData*)pPoppedRT->GetRenderTargetData();
+        Render::Texture*  ptex = pPoppedRT->GetTexture();
+        if (phd && phd->pDepthStencilBuffer && ptex && ((Vulkan::Texture*)ptex)->pTextures &&
+            !KeepDsEnabled())
+        {
+            pDs = phd->pDepthStencilBuffer;
+            RenderTargetData::UpdateData(pPoppedRT, pDevice,
+                ((Vulkan::Texture*)ptex)->pTextures[0].View, 0, VK_NULL_HANDLE, VK_NULL_HANDLE);
+        }
+        PendingTargetReleases.PushBack(DeferredTargetRelease(pPoppedRT, pDs));
+    }
+    VkTrace("pop-c");
 
     ++AccumulatedStats.RTChanges;
     StencilChecked = false;
@@ -932,6 +1473,7 @@ void HAL::PopRenderTarget(unsigned flags)
         HALState |= HS_ViewValid;
         updateViewport();
     }
+    VkTrace("pop-done");
 }
 
 
@@ -986,8 +1528,19 @@ void HAL::setBatchUnitSquareVertexStream()
     vkCmdBindVertexBuffers(pCommandBuffer, 0, 1, &vb, &offset);
 }
 
+void HAL::setBatchUnitSquareVertexStreamPerDraw()
+{
+    // Same binding as above: shared code calls only this variant right before
+    // drawPrimitive(6,1) for filter quads, and the base implementation is empty.
+    setBatchUnitSquareVertexStream();
+}
+
 void HAL::drawPrimitive(unsigned indexCount, unsigned meshCount)
 {
+    // Every draw must be inside a render pass; the mask/filter passes re-open the
+    // parent target's pass on pop (see PopRenderTarget), so this should never fire.
+    SF_DEBUG_ASSERT(InRenderPass, "Vulkan: draw issued without an active render pass.");
+    VkTrace("drawprim");
     vkCmdDraw(pCommandBuffer, indexCount, meshCount, 0, 0);
     SF_UNUSED(meshCount);
     AccumulatedStats.Meshes += meshCount;
@@ -1017,15 +1570,97 @@ void HAL::drawIndexedInstanced(unsigned indexCount, unsigned vertexCount, unsign
 
 void HAL::drawScreenQuad()
 {
+    VkTrace("quad");
     // Pipeline is bound by ShaderInterface::Finish, which is called before drawScreenQuad.
     setBatchUnitSquareVertexStream();
     drawPrimitive(6, 1);
+    VkTrace("quad-done");
 }
 
 
+bool HAL::IsFilterCachingSupported() const
+{
+    // Cached filter results are not recycled correctly on Vulkan yet: the cached
+    // render targets are re-acquired every frame by the cacheable prepare pass, but
+    // the cached draw (ShaderHAL::drawCachedFilter) never consumes them, so they are
+    // still 'in use' at RenderBufferManager::EndFrame (debug assert) - and in release
+    // builds those targets are moved back into the frame cache and recycled while the
+    // FilterPrimitive still references them.
+    //
+    // Rebuilding filters every frame is correct and costs one extra pass per filtered
+    // primitive. Set GFX_VK_FILTER_CACHE=1 to re-enable the cached path when debugging it.
+    static const bool sFilterCache = IsDebugEnvSet("GFX_VK_FILTER_CACHE");
+    return sFilterCache;
+}
 bool HAL::shouldRenderFilters(const FilterPrimitive* prim) const
 {
-    SF_UNUSED(prim);
+    // Filters are on by default: the temp-RT/framebuffer lifetime and the nested-pass
+    // resume were fixed (see PopRenderTarget / PendingTargetReleases), and all four
+    // reference SWFs run with a clean validation log. Set GFX_VK_NOFILTERS=1 to fall
+    // back to the old "no filters" baseline.
+    static const bool sNoFilters = IsDebugEnvSet("GFX_VK_NOFILTERS");
+    if (sNoFilters)
+        return false;
+
+    const FilterSet* pFilters = prim ? prim->GetFilters() : 0;
+    const unsigned   filterCount = pFilters ? (unsigned)pFilters->GetFilterCount() : 0u;
+
+    // Optional per-type whitelist, used for the E2 bisect:
+    //   GFX_VK_FILTER_ALLOW=shadow            -> only shadow-filtered primitives
+    //   GFX_VK_FILTER_ALLOW=shadow,blur       -> either of the two
+    //   GFX_VK_FILTER_ALLOW=none              -> no filters at all
+    // A primitive is rendered filtered only if *every* filter it carries is allowed;
+    // otherwise the content is drawn unfiltered (the normal "profile has no filters" path).
+    const unsigned allowMask = GetVkFilterAllowMask();
+    if (allowMask != 0xFFFFFFFFu)
+    {
+        for (unsigned i = 0; i < filterCount; ++i)
+        {
+            const unsigned type = (unsigned)pFilters->GetFilter(i)->GetFilterType();
+            if (type < 32 && (allowMask & (1u << type)) == 0)
+                return false;
+        }
+    }
+
+    // Temporary bisect aid: keep only filters whose area width falls inside
+    // [GFX_VK_FILTER_MINW, GFX_VK_FILTER_MAXW]. Used to find which filtered primitive
+    // breaks the frame; remove once the remaining issue is fixed.
+    if (prim && prim->GetAreaMatrixCount() > 0)
+    {
+        const float areaW = prim->GetAreaMatrix().GetMatrix2D().Sx();
+        static char sMinWBuf[32];
+        static const bool sHasMinW = GetDebugEnvValue("GFX_VK_FILTER_MINW", sMinWBuf, sizeof(sMinWBuf));
+        if (sHasMinW && areaW < (float)atoi(sMinWBuf)) return false;
+        static char sMaxWBuf[32];
+        static const bool sHasMaxW = GetDebugEnvValue("GFX_VK_FILTER_MAXW", sMaxWBuf, sizeof(sMaxWBuf));
+        if (sHasMaxW && areaW > (float)atoi(sMaxWBuf)) return false;
+    }
+
+    // One line per filtered primitive (capped), to see which filter type / area is in
+    // play and whether a single filter covers the whole stage - the prime suspect for
+    // a "whole screen is black" symptom. Cached primitives may not carry an area
+    // matrix, so only read it when present (GetAreaMatrix() indexes without a check).
+    static const bool sFilterLog = IsDebugEnvSet("GFX_VK_FLTLOG");
+    if (sFilterLog && prim)
+    {
+        static unsigned sLogged = 0;
+        if (sLogged < 20000)
+        {
+            const bool      hasArea = prim->GetAreaMatrixCount() > 0;
+            const Matrix2F* pArea   = hasArea ? &prim->GetAreaMatrix().GetMatrix2D() : 0;
+            fprintf(stderr, "[VKFLT] n=%u t0=%d t1=%d t2=%d area=%.0fx%.0f at=%.0f,%.0f cache=%d\n",
+                    filterCount,
+                    (filterCount > 0) ? (int)pFilters->GetFilter(0)->GetFilterType() : -1,
+                    (filterCount > 1) ? (int)pFilters->GetFilter(1)->GetFilterType() : -1,
+                    (filterCount > 2) ? (int)pFilters->GetFilter(2)->GetFilterType() : -1,
+                    pArea ? pArea->Sx() : 0.0f, pArea ? pArea->Sy() : 0.0f,
+                    pArea ? pArea->Tx() : 0.0f, pArea ? pArea->Ty() : 0.0f,
+                    (int)prim->GetCacheState());
+            fflush(stderr);
+            ++sLogged;
+        }
+    }
+
     return true;
 }
 
@@ -1191,6 +1826,151 @@ void HAL::destroyOffscreenRenderPass()
         vkDestroyRenderPass(pDevice, pOffscreenRenderPassDS, nullptr);
         pOffscreenRenderPassDS = VK_NULL_HANDLE;
     }
+    if (pOffscreenResumeRenderPass != VK_NULL_HANDLE)
+    {
+        vkDestroyRenderPass(pDevice, pOffscreenResumeRenderPass, nullptr);
+        pOffscreenResumeRenderPass = VK_NULL_HANDLE;
+    }
+    if (pOffscreenResumeRenderPassDS != VK_NULL_HANDLE)
+    {
+        vkDestroyRenderPass(pDevice, pOffscreenResumeRenderPassDS, nullptr);
+        pOffscreenResumeRenderPassDS = VK_NULL_HANDLE;
+    }
+}
+
+// Resume variants of the offscreen passes: LOAD_OP_LOAD, entering from the layout the
+// clear pass leaves behind (SHADER_READ_ONLY / DEPTH_STENCIL_ATTACHMENT). They are used
+// when a nested pass is popped and drawing continues in a parent temporary target that
+// already holds content (e.g. a masked gradient drawn into the full-scene blend target).
+// Framebuffers created for the CLEAR passes are compatible with these (same formats and
+// attachment layouts), so no second framebuffer cache is needed.
+bool HAL::createOffscreenResumeRenderPass()
+{
+    VkAttachmentDescription colorAtt = {};
+    colorAtt.format         = VK_FORMAT_R8G8B8A8_UNORM;
+    colorAtt.samples        = VK_SAMPLE_COUNT_1_BIT;
+    colorAtt.loadOp         = VK_ATTACHMENT_LOAD_OP_LOAD;
+    colorAtt.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAtt.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAtt.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAtt.initialLayout  = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    colorAtt.finalLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+    VkAttachmentReference colorRef = {};
+    colorRef.attachment = 0;
+    colorRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass = {};
+    subpass.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments    = &colorRef;
+
+    VkSubpassDependency deps[2] = {};
+    deps[0].srcSubpass    = VK_SUBPASS_EXTERNAL;
+    deps[0].dstSubpass    = 0;
+    // Dependencies must match createOffscreenRenderPass() exactly: render-pass
+    // compatibility (VUID-VkRenderPassBeginInfo-renderPass-00904) includes them, so the
+    // resume pass may only differ in loadOp/initialLayout.
+    deps[0].srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    deps[0].dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    deps[0].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    deps[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+
+    deps[1].srcSubpass    = 0;
+    deps[1].dstSubpass    = VK_SUBPASS_EXTERNAL;
+    deps[1].srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    deps[1].dstStageMask  = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    deps[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    deps[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+    VkRenderPassCreateInfo rpCI = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO };
+    rpCI.attachmentCount = 1;
+    rpCI.pAttachments    = &colorAtt;
+    rpCI.subpassCount    = 1;
+    rpCI.pSubpasses      = &subpass;
+    rpCI.dependencyCount = 2;
+    rpCI.pDependencies   = deps;
+
+    SF_VK_CHECK_RETURN(vkCreateRenderPass(pDevice, &rpCI, nullptr, &pOffscreenResumeRenderPass), false);
+    return true;
+}
+
+bool HAL::createOffscreenResumeRenderPassDS()
+{
+    VkFormat dsCandidates[] = { VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT_S8_UINT };
+    VkFormat dsFormat = VK_FORMAT_UNDEFINED;
+    for (auto fmt : dsCandidates)
+    {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(pPhysicalDevice, fmt, &props);
+        if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+        {
+            dsFormat = fmt;
+            break;
+        }
+    }
+    if (dsFormat == VK_FORMAT_UNDEFINED)
+        return false;
+
+    VkAttachmentDescription attachments[2] = {};
+    attachments[0].format         = VK_FORMAT_R8G8B8A8_UNORM;
+    attachments[0].samples        = VK_SAMPLE_COUNT_1_BIT;
+    attachments[0].loadOp         = VK_ATTACHMENT_LOAD_OP_LOAD;
+    attachments[0].storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
+    attachments[0].stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    attachments[0].initialLayout  = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    attachments[0].finalLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+    attachments[1].format         = dsFormat;
+    attachments[1].samples        = VK_SAMPLE_COUNT_1_BIT;
+    attachments[1].loadOp         = VK_ATTACHMENT_LOAD_OP_LOAD;
+    attachments[1].storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
+    attachments[1].stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_LOAD;
+    attachments[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    attachments[1].initialLayout  = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    attachments[1].finalLayout    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    VkAttachmentReference colorRef = {};
+    colorRef.attachment = 0;
+    colorRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkAttachmentReference dsRef = {};
+    dsRef.attachment = 1;
+    dsRef.layout     = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass = {};
+    subpass.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount    = 1;
+    subpass.pColorAttachments       = &colorRef;
+    subpass.pDepthStencilAttachment = &dsRef;
+
+    VkSubpassDependency deps[2] = {};
+    deps[0].srcSubpass    = VK_SUBPASS_EXTERNAL;
+    deps[0].dstSubpass    = 0;
+    deps[0].srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    deps[0].dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    deps[0].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    deps[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+
+    deps[1].srcSubpass    = 0;
+    deps[1].dstSubpass    = VK_SUBPASS_EXTERNAL;
+    deps[1].srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    deps[1].dstStageMask  = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    deps[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    deps[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+    VkRenderPassCreateInfo rpCI = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO };
+    rpCI.attachmentCount = 2;
+    rpCI.pAttachments    = attachments;
+    rpCI.subpassCount    = 1;
+    rpCI.pSubpasses      = &subpass;
+    rpCI.dependencyCount = 2;
+    rpCI.pDependencies   = deps;
+
+    SF_VK_CHECK_RETURN(vkCreateRenderPass(pDevice, &rpCI, nullptr, &pOffscreenResumeRenderPassDS), false);
+    return true;
 }
 
 VkFramebuffer HAL::createFramebuffer(VkImageView colorView, VkImageView dsView,
@@ -1219,8 +1999,7 @@ VkFramebuffer HAL::createFramebuffer(VkImageView colorView, VkImageView dsView,
     fbCI.layers          = 1;
 
     VkFramebuffer fb = VK_NULL_HANDLE;
-    VkResult r = vkCreateFramebuffer(pDevice, &fbCI, nullptr, &fb);
-    if (r != VK_SUCCESS)
+    VkResult r = vkCreateFramebuffer(pDevice, &fbCI, nullptr, &fb);    if (r != VK_SUCCESS)
         SF_DEBUG_WARNING1(1, "Vulkan: Failed to create framebuffer, VkResult=%d", (int)r);
     return fb;
 }
@@ -1357,3 +2136,22 @@ void HAL::initDepthStencilDescriptions()
 }
 
 }}} // Scaleform::Render::Vulkan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

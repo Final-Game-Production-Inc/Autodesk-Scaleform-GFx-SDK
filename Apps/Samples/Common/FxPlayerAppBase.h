@@ -30,7 +30,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifdef GFX_ENABLE_VIDEO
 #include "../Bin/Data/AS2/FxPlayer/fxvideoplayer.swf.h"
 #ifdef GFX_VIDEO_USE_WWISE
-#include "Video/Video_SystemSoundInterface.h"
+#include "Video/Sound/Video_SystemSoundInterface.h"
 #endif
 #endif
 
@@ -468,7 +468,38 @@ public:
     virtual bool            IsImeEnabled() const;
 
 #ifdef GFX_ENABLE_VIDEO
-    bool                    IsVideoFile(const char* pfn) const { return strstr(pfn, ".usm") != 0; }
+    bool                    IsVideoFile(const char* pfn) const
+    {
+    #if defined(GFX_ENABLE_FFMPEGVIDEO)
+        // The FFmpeg video backend demuxes through libavformat, so every
+        // container it knows about can be passed straight to the player.
+        static const char* videoExts[] = {
+            ".mp4", ".m4v", ".mkv", ".avi", ".mov", ".flv", ".webm",
+            ".ts", ".m2ts", ".mpg", ".mpeg", ".wmv", ".usm" };
+        const char* pdot = strrchr(pfn, '.');
+        if (!pdot)
+            return false;
+        for (unsigned i = 0; i < sizeof(videoExts) / sizeof(videoExts[0]); ++i)
+        {
+            const char* pext = videoExts[i];
+            const char* pcur = pdot;
+            while (*pext && *pcur)
+            {
+                char a = *pcur, b = *pext;
+                if (a >= 'A' && a <= 'Z') a = (char)(a - 'A' + 'a');
+                if (b >= 'A' && b <= 'Z') b = (char)(b - 'A' + 'a');
+                if (a != b)
+                    break;
+                ++pcur; ++pext;
+            }
+            if (!*pcur && !*pext)
+                return true;
+        }
+        return false;
+    #else
+        return strstr(pfn, ".usm") != 0;
+    #endif
+    }
 #endif
 
     // Restarts the current movie and registers variables before first advance0

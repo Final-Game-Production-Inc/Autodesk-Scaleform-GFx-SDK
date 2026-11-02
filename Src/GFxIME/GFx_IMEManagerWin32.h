@@ -56,6 +56,9 @@ public:
     /************************************************/
 
     virtual UInt32  Init(Log* plog = 0, FileOpener* pfileOpener = NULL, const char* xmlFileName = NULL, bool bCheckIMEExists = true);
+    // Make the base class Init overloads visible next to the derived one
+    // (the derived signature uses the more specific FileOpener*).
+    using IMEManagerBase::Init;
 
     virtual void	SetActiveMovie(Movie*);
 

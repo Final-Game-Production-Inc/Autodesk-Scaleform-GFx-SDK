@@ -1550,5 +1550,8 @@
     <ClInclude Include="..\..\..\..\..\Include\GFxConfigVideo.windows.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Render\Render_DebugEnv.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

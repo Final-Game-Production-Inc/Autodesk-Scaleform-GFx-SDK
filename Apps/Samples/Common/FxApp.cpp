@@ -181,7 +181,9 @@ int FxApp::AppMain( int argc, char* argv[] )
 
         if (!cont_prog)
             return -1;
+        { FILE* g_d = fopen("C:\\fmod_diag.txt", "a"); if (g_d) { fprintf(g_d, "[diag] AppMain about to Run\n"); fclose(g_d); } }
         ret = Run();
+        { FILE* g_d = fopen("C:\\fmod_diag.txt", "a"); if (g_d) { fprintf(g_d, "[diag] AppMain Run returned ret=%d\n", ret); fclose(g_d); } }
         Exit();
     }
     return ret;

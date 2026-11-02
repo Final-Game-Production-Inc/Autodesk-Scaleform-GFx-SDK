@@ -735,6 +735,19 @@ public:
     // for filters.
     virtual bool shouldRenderFilters(const FilterPrimitive*) const { return true; }
 
+    // Backends whose cached filter results cannot be safely reused between frames
+    // override this and return false; filters are then rebuilt every frame instead of
+    // being kept alive in the render-buffer cache.
+    virtual bool IsFilterCachingSupported() const { return true; }
+
+    // D3D12-only: the render-buffer manager promotes/evicts temporary targets in
+    // EndFrame, which destroys their GPU resources. That is unsafe while the
+    // frame's command list is recorded but not yet executed (the debug layer
+    // reports id=921 and the resource can be recycled under the GPU). Backends
+    // that need the GPU fence first return true here; the buffers are then
+    // promoted at the start of the next frame instead (see D3D12::HAL::BeginFrame).
+    virtual bool DefersBufferManagerEndFrame() const { return false; }
+
 
 protected:
 

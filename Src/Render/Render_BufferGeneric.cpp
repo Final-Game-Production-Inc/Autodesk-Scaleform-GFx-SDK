@@ -125,8 +125,12 @@ void RenderBufferManager::EndFrame()
     evictOverReuseLimit(RBCL_LRU);
 
     SF_DEBUG_ASSERT(BufferCache[RBCL_Uncached].IsEmpty(), "RenderBufferManager::EndFrame - there are render targets still 'uncached'.");
-    SF_DEBUG_ASSERT(BufferCache[RBCL_InUse].IsEmpty(), "RenderBufferManager::EndFrame - there are render targets still 'in-use'.");
-    if (!BufferCache[RBCL_Uncached].IsEmpty() || !BufferCache[RBCL_InUse].IsEmpty())
+    // Deferred back ends (Vulkan) intentionally keep a depth/stencil buffer referenced
+    // until the framebuffers that use its image view are destroyed next frame.
+    SF_DEBUG_ASSERT(BufferCache[RBCL_InUse].IsEmpty() || AllowsDeferredBufferRelease,
+                    "RenderBufferManager::EndFrame - there are render targets still 'in-use'.");
+    if (!BufferCache[RBCL_Uncached].IsEmpty() ||
+        (!BufferCache[RBCL_InUse].IsEmpty() && !AllowsDeferredBufferRelease))
         DumpUsage();
     BufferCache[RBCL_ThisFrame].PushListToFront(BufferCache[RBCL_InUse]);
     BufferCache[RBCL_LRU].PushListToFront(BufferCache[RBCL_PrevFrame]);
@@ -359,7 +363,7 @@ RenderBufferManager::reserveSpace(CacheData **pdata,
     // 1. Try to find available compatible-size buffer for reuse.
 
     *pdata = findMatch(RBCL_Reuse_LRU, size, type, format);
-    if (!*pdata)
+    if (!*pdata && AllowsSameFrameReuse)
         *pdata = findMatch(RBCL_Reuse_ThisFrame, size, type, format);
     if (*pdata)
         return RS_Match;
@@ -497,7 +501,12 @@ void RenderTarget::SetInUse(RenderTargetUse inUse)
         return;
     }
 
-    SF_DEBUG_ASSERT1(RTStatus != RTS_Lost, "Cannot call RenderTarget::SetInUse on a lost RenderTarget (ptr=%p)", this);
+    // A lost target has already been evicted, so it is no longer linked into any cache
+    // list; touching a list here would corrupt it. Vulkan keeps temporaries referenced
+    // one frame past their use (the framebuffers that read them are destroyed after the
+    // frame slot's fence), so it legitimately reaches this point with a lost target.
+    if (RTStatus == RTS_Lost)
+        return;
 
     switch(inUse)
     {
@@ -598,3 +607,7 @@ void DepthStencilBuffer::onEvict()
 
 
 }}} // namespace Scaleform::Render::RBGenericImpl
+
+
+
+

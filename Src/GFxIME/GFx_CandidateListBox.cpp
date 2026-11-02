@@ -15,6 +15,10 @@ otherwise accompanies this software in either electronic or hard copy form.
 **************************************************************************/
 
 
+// GFx_TaskManager.h uses uint32_t; make sure it is declared before any
+// GFx header pulls that file in.
+#include <stdint.h>
+
 #include "GFx_CandidateListBox.h"
 
 #ifndef SF_NO_IME_SUPPORT

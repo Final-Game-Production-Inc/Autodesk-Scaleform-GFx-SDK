@@ -22,8 +22,12 @@ Authors     :   Scaleform Vulkan Backend
 #define SF_VK_UBO_RING_SIZE (8 * 1024 * 1024)
 #endif
 
+// Per-frame descriptor pool capacity. ShaderInterface::Finish() allocates one set per
+// draw and, on failure, logs and returns - the draw is silently dropped (visible as
+// missing content, not as an error). 2048 was too close to the per-frame set count of
+// heavy scenes once filters add their multi-pass draws, so keep a wide margin.
 #ifndef SF_VK_DESCRIPTOR_POOL_MAX_SETS
-#define SF_VK_DESCRIPTOR_POOL_MAX_SETS 2048
+#define SF_VK_DESCRIPTOR_POOL_MAX_SETS 8192
 #endif
 
 #ifndef SF_VK_MAX_TEXTURE_STAGES

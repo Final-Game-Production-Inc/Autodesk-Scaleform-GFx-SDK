@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 Filename    :   Vulkan_MeshCache.cpp
 Content     :   Vulkan mesh cache implementation.
@@ -124,6 +124,7 @@ MeshCache::~MeshCache()
 
 bool MeshCache::Initialize(VkDevice device, VkPhysicalDevice physDevice, RenderSync* psync)
 {
+	SF_UNUSED(psync);
     pDevice = device;
     pPhysicalDevice = physDevice;
     pRQCaches = 0;
@@ -258,6 +259,12 @@ bool MeshCache::createMaskEraseBatchVertexBuffer()
     void* pdata = nullptr;
     SF_VK_CHECK_RETURN(vkMapMemory(pDevice, MaskEraseBatchVertexMemory, 0, bufSize, 0, &pdata), false);
 
+    // Must match the vertex format the unit-square/filter pipelines expect. D3D1x
+    // fills this same buffer with VertexXY16fAlpha (float coords); filling it with the
+    // 16-bit integer mask format made every filter/quad draw read garbage positions,
+    // so filters rendered nothing at all (black) with no validation errors.
+    // The filter/quad pipelines use MappedXY16iAlphaTexture (VertexXY16iAlpha), so this
+    // buffer must be filled with the same int16 format - matching D3D1x behaviour.
     fillMaskEraseVertexBuffer<VertexXY16iAlpha>((VertexXY16iAlpha*)pdata, MaxEraseBatchCount);
     vkUnmapMemory(pDevice, MaskEraseBatchVertexMemory);
 
@@ -287,7 +294,7 @@ MeshCache::AllocResult MeshCache::AllocCacheItem(
     unsigned vertexCount, unsigned indexCount,
     bool waitForCache, const VertexFormat* pDestFormat)
 {
-    SF_UNUSED(waitForCache);
+    SF_UNUSED2(waitForCache, pDestFormat);
 
     if (!pDevice)
         return Alloc_StateError;

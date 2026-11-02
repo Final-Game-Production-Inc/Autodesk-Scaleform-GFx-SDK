@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "ScaleformVideoEncoder/1.0.0": {
+        "dependencies": {
+          "Sofdec2EncoderControl": "1.0.0"
+        },
+        "runtime": {
+          "ScaleformVideoEncoder.dll": {}
+        }
+      },
+      "Sofdec2EncoderControl/1.0.0": {
+        "runtime": {
+          "Sofdec2EncoderControl.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ScaleformVideoEncoder/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Sofdec2EncoderControl/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

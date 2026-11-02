@@ -140,7 +140,7 @@ enum GFxIMETag
 
 struct StringToTagDef
 {
-    char*   String;
+    const char* String;
     GFxIMETag  Tag;
 };
 
@@ -153,8 +153,8 @@ struct ProfileInfo
 // This structure defines the properties of Installed Input languages and IME's.
 struct InputLangProps
 {
-    char*			ItemNameOnSystem; // The name of the entry (input language/ime) on the system
-    char*			ItemNameCommon;       // Common name of the entry     
+    const char*		ItemNameOnSystem; // The name of the entry (input language/ime) on the system
+    const char*		ItemNameCommon;       // Common name of the entry     
     GFxIMETag		ItemTag;
     SPInt			Id;                 // can be HKL or Pointer to profileInfo struct.
 };
@@ -172,8 +172,8 @@ struct InputLangProps2: public ListNode<InputLangProps2>
 // This structure defines the properties of Installed Input languages and IME's.
 struct HKlLayoutName
 {
-    char*   ImeFileName;
-    char*   LayoutName; 
+    const char* ImeFileName;
+    const char* LayoutName; 
     UInt32    hkl;
     UInt32    IsInstalled;
 };
@@ -230,7 +230,7 @@ struct GImeStringKey
     GImeStringKey(const GImeStringKey &src)
         : str(src.str), HashValue(src.HashValue), Length(src.Length)
     { }
-    GImeStringKey(char* _pstr, size_t hashValue, size_t length)
+    GImeStringKey(const char* _pstr, size_t hashValue, size_t length)
         : str(_pstr), HashValue(hashValue), Length(length)
     { }
 };
@@ -350,7 +350,7 @@ public:
 
 	int						CheckForSupportedIME(const char* layoutTextName, const char* imeFileName);
 
-	virtual bool			SwitchIME(String imeName) {return false;};
+	virtual bool			SwitchIME(String imeName) { SF_UNUSED(imeName); return false;};
 	
 	/* This function is the fallback option for filling in supported IME list in case the user doesn't specify
 	the xml file for the supported IME's or there is some problem opening the xml file */

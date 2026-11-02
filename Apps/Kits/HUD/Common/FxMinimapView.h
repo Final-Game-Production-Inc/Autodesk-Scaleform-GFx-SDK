@@ -21,7 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "GFx/GFx_Player.h"
 
 #include "FxMinimap.h"
-#include "FxGameDelegate.h"
+#include "../../../Samples/GameDelegate/FxGameDelegate.h"
 
 
 //

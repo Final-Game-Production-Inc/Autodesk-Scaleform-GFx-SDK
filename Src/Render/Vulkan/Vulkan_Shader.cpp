@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 Filename    :   Vulkan_Shader.cpp
 Content     :   Vulkan shader implementation.
@@ -9,6 +9,7 @@ Authors     :   Scaleform Vulkan Backend
 
 #include "Render/Vulkan/Vulkan_Shader.h"
 #include "Render/Vulkan/Vulkan_HAL.h"
+#include "Render/Render_DebugEnv.h"
 #include "Kernel/SF_Debug.h"
 #include "Kernel/SF_HeapNew.h"
 
@@ -232,6 +233,11 @@ void ShaderInterface::SetTexture(Shader, unsigned var, Render::Texture* ptexture
 {
     Vulkan::Texture* pvkTexture = (Vulkan::Texture*)ptexture;
     SF_ASSERT(CurShaders.pFDesc->Uniforms[var].Location >= 0);
+    static const bool sLocTrace = IsDebugEnvSet("GFX_VKLOC");
+    if (sLocTrace)
+        fprintf(stderr, "[VKLOC] var=%u loc=%d index=%u -> stage=%d\n", var,
+                (int)CurShaders.pFDesc->Uniforms[var].Location, index,
+                (int)CurShaders.pFDesc->Uniforms[var].Location + (int)index), fflush(stderr);
     pvkTexture->ApplyTexture(CurShaders.pFDesc->Uniforms[var].Location + index, fm);
 }
 
@@ -288,13 +294,21 @@ void ShaderInterface::Finish(unsigned meshCount)
     // Allocate descriptor set from per-frame pool
     VkDescriptorSet descSet;
     VkDescriptorSetAllocateInfo dsAI = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
-    dsAI.descriptorPool     = hal->FrameDescriptorPools[hal->CurrentFrame % SF_VK_MAX_FRAMES_IN_FLIGHT];
+    dsAI.descriptorPool     = hal->FrameDescriptorPools[hal->FrameSlot % SF_VK_MAX_FRAMES_IN_FLIGHT];
     dsAI.descriptorSetCount = 1;
     dsAI.pSetLayouts        = &hal->pDescriptorSetLayout;
 
     VkResult r = vkAllocateDescriptorSets(hal->pDevice, &dsAI, &descSet);
     if (r != VK_SUCCESS)
     {
+        // Exhausting the frame's descriptor pool silently drops this draw (no set gets
+        // bound for it), which reads as "missing content" rather than as an error.
+        // Count it, so capacity problems are measured instead of guessed at.
+        static unsigned sAllocFailures = 0;
+        ++sAllocFailures;
+        if (sAllocFailures <= 8 || (sAllocFailures % 500) == 0)
+            fprintf(stderr, "[VKSET] vkAllocateDescriptorSets failed n=%u res=%d\n",
+                    sAllocFailures, (int)r);
         SF_DEBUG_WARNING(1, "Vulkan: Failed to allocate descriptor set");
         return;
     }
@@ -381,6 +395,9 @@ void ShaderInterface::Finish(unsigned meshCount)
 
     // Bind the Vulkan graphics pipeline matching the current shader/blend/stencil state.
     // In Vulkan, unlike D3D11, the pipeline must be explicitly bound before each draw call.
+    static const bool sFinTrace = IsDebugEnvSet("GFX_VKFIN");
+    if (sFinTrace)
+        fprintf(stderr, "[VKFIN] vs=%p fs=%p inRP=%d pass=%u\n", (void*)CurShaders.pVDesc, (void*)CurShaders.pFDesc, (int)hal->InRenderPass, meshCount), fflush(stderr);
     if (hal->InRenderPass && CurShaders.pVDesc && CurShaders.pFDesc)
     {
         SysVertexFormat* pvf = 0;
@@ -471,3 +488,5 @@ void ShaderManager::BeginScene() {}
 void ShaderManager::EndScene() {}
 
 }}} // Scaleform::Render::Vulkan
+
+

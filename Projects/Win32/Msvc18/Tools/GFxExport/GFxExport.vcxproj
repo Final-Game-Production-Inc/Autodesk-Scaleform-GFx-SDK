@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugOpt_Static|x64">
@@ -56,7 +56,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
+        <Import Project="..\..\..\Property Sheets\GFx_App.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
   </ImportGroup>
@@ -64,7 +64,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
+        <Import Project="..\..\..\Property Sheets\GFx_App.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
   </ImportGroup>
@@ -72,7 +72,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
+        <Import Project="..\..\..\Property Sheets\GFx_App.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
   </ImportGroup>
@@ -80,7 +80,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_App.props" />
+        <Import Project="..\..\..\Property Sheets\GFx_App.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
     <Import Project="..\..\..\Property Sheets\GPA.props" />

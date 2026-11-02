@@ -21,6 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #define INC_SF_Render_StateBag_H
 
 #include "Kernel/SF_RefCount.h"
+#include <stdio.h>
 
 namespace Scaleform { namespace Render {
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <_PropertySheetDisplayName>GFx_Video_FFMpeg_VS26</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\3rdParty\FFMpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GFX_ENABLE_FFMPEGVIDEO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libgfx_ffmpegvideo.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;aom.lib;dav1d.lib;fdk-aac.lib;mp3lame.lib;libx264.lib;libx265.lib;hdr10plus.lib;opus.lib;PPA.lib;vpl.lib;vpx.lib;zimg.lib;z.lib;libbz2.lib;SDL2-static.lib;swresample.lib;swscale.lib;bcrypt.lib;ncrypt.lib;crypt32.lib;secur32.lib;setupapi.lib;cfgmgr32.lib;strmiids.lib;mfuuid.lib;vfw32.lib;psapi.lib;version.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\$(MsvcVer)\$(Configuration);..\..\..\..\..\3rdParty\FFMpeg\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

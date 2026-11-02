@@ -354,7 +354,7 @@ CheckResult XMLParser::Parse(const StringDataPtr& str, UPInt& pos, bool isList)
 
     if (shouldAdvancePos)
     {
-        pos += XML_GetCurrentByteIndex(Parser);
+        pos += XML_GetCurrentByteIndex64(Parser);
     }
 
     SetNodeKind(kNone);

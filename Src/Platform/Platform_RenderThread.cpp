@@ -221,6 +221,11 @@ void RenderThread::finishFrame()
     pRenderer->FinishFrame();
 }
 
+// Tracks whether Renderer2D::EndFrame() has already run for the current frame.
+// For the non-stereo case it is invoked from drawFrame(DisplayWindow*) just
+// before the device is asked to present.
+static bool sRendererFrameEnded = false;
+
 void RenderThread::drawFrame()
 {
     {   // Scope timer should not include AmpServer::AdvanceFrame, where stats are reported
@@ -235,13 +240,15 @@ void RenderThread::drawFrame()
         pDevice->BeginFrame();
         pRenderer->BeginFrame();
 
+        sRendererFrameEnded = false;
         for (unsigned j = 0; j < Windows.GetSize(); j++)
         {
             PresentMode = (j == Windows.GetSize()-1) ? Present_LastWindow : 0;
             drawFrame((DisplayWindow*)Windows[j]);
         }
 
-        pRenderer->EndFrame();
+        if (!sRendererFrameEnded)
+            pRenderer->EndFrame();
 
         Frames++;
     }
@@ -275,6 +282,21 @@ void RenderThread::drawFrame(DisplayWindow* pDispWin)
     {
         PresentMode |= Render::StereoCenter;
         drawFrame1(pDispWin, false);
+
+        // End the renderer frame *before* handing the buffer to the device.
+        //
+        // Renderer2DImpl::EndFrame() performs HAL::EndFrame(), which rotates the
+        // mesh cache and reclaims GPU resources based on the RenderSync fences.
+        // The reference Vulkan player (GFxPlayerTinyVulkan.cpp) ends the frame
+        // before it ends the render pass / submits / presents; presenting first
+        // meant the mesh cache was rotated against work the GPU already had,
+        // allowing buffers and MeshCacheItems (Scaleform heap objects) to be
+        // recycled while still referenced.
+        if (!sRendererFrameEnded)
+        {
+            pRenderer->EndFrame();
+            sRendererFrameEnded = true;
+        }
     }
 
     // Present the back buffer contents to the display.

@@ -65,6 +65,10 @@ public:
 
     void Finalize();
 
+    // Must be called once per frame: advances the FMOD system (channel callbacks,
+    // playback positions, SOUND_COMPLETE events used by the AS3 Sound API).
+    void Update();
+
     bool IsInitialized() const                  { return Initialized; }
     Sound::SoundRenderer* GetSoundRenderer()    { return pSoundRenderer; }
     FMOD::System *GetFMOD()                     { return pFMOD; }

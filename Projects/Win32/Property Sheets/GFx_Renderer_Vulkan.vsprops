@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="18.00"
+	Name="GFx_Renderer_Vulkan"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="FXPLAYER_RENDER_VULKAN"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="vulkan-1.lib libgfxrender_vulkan.lib"
+	/>
+</VisualStudioPropertySheet>

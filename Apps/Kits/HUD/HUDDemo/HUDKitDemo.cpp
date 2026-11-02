@@ -21,7 +21,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 //#define SF_NO_IME_SUPPORT
 
 #include "Kernel/SF_KeyCodes.h"
-#include "FxGameDelegate.h"
+#include "../../../Samples/GameDelegate/FxGameDelegate.h"
 #include "HUDSimulation.h"
 #include "HUDEntityController.h"
 #include "HUDAdapter.h"

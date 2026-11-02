@@ -20,6 +20,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Render_Queue.h"
 #include "Render/Render_DrawableImage.h"
 #include "Render/Render_DrawableImage_Queue.h"
+#include "Render/Render_DebugEnv.h"
+#include <stdio.h>
 
 namespace Scaleform { namespace Render {
 
@@ -418,7 +420,7 @@ void HAL::EndFrame()
         GetRenderSync()->EndFrame();
 
     RenderBufferManager* prbm = GetRenderBufferManager();
-    if ( prbm )
+    if ( prbm && !DefersBufferManagerEndFrame() )
         prbm->EndFrame();
     GetMeshCache().EndFrame();
     GetTextureManager()->EndFrame();
@@ -1273,6 +1275,18 @@ void HAL::PushFilters(FilterPrimitive* prim)
         return;
     }
 
+    // Cached/degenerate primitives do not necessarily carry an area matrix (the
+    // cacheable prepare pass can build one without it). GetAreaMatrix() indexes
+    // the array without a check, so treat such a primitive as "not filtered" and
+    // let the queue draw its content directly. Enabling all filter types made
+    // this reachable on 9-1-B (crash in HAL::PushFilters via GetAreaMatrix).
+    if (prim->GetCacheState() == CacheablePrimitive::Cache_Uncached &&
+        prim->GetAreaMatrixCount() == 0)
+    {
+        FilterStack.PushBack(e);
+        return;
+    }
+
     // Disable masking from previous target, if this filter primitive doesn't have any masking.
     if ( MaskStackTop != 0 && !prim->GetMaskPresent() && prim->GetCacheState() != CacheablePrimitive::Cache_Target )
         applyDepthStencilMode(HAL::DepthStencil_Disabled, MaskStackTop);
@@ -1286,7 +1300,32 @@ void HAL::PushFilters(FilterPrimitive* prim)
     {
         // Draw the filter from scratch.
         const Matrix2F& m = e.pPrimitive->GetAreaMatrix().GetMatrix2D();
-        e.pRenderTarget = *CreateTempRenderTarget(ImageSize((UInt32)m.Sx(), (UInt32)m.Sy()), prim->GetMaskPresent());
+        // Debug A/B: GFX_FILTER_NODS=1 drops the depth/stencil attachment from the
+        // filter target, to isolate the DS lifetime from the rest of the path.
+        bool needsStencil = prim->GetMaskPresent();
+        if (IsDebugEnvSet("GFX_FILTER_NODS"))
+            needsStencil = false;
+        e.pRenderTarget = *CreateTempRenderTarget(ImageSize((UInt32)m.Sx(), (UInt32)m.Sy()), needsStencil);
+        if (!e.pRenderTarget)
+        {
+            // Temp-target allocation can fail (e.g. a large filtered area under
+            // memory/descriptor pressure). The old code dereferenced the null
+            // target below and crashed the render thread. Degrade to the
+            // unfiltered path instead: the queue then draws the content
+            // directly into the current target, exactly as it does when the
+            // profile has no filter support.
+            static int sWarned = 0;
+            if (sWarned++ < 16)
+            {
+                fprintf(stderr, "[FILTER] CreateTempRenderTarget failed %.0fx%.0f mask=%d -> unfiltered\n",
+                        m.Sx(), m.Sy(), (int)prim->GetMaskPresent());
+                fflush(stderr);
+            }
+            HALState &= ~HS_DrawingFilter;
+            applyRasterModeImpl(CurrentSceneRasterMode);
+            FilterStack.PushBack(e);
+            return;
+        }
         RectF frameRect(m.Tx(), m.Ty(), m.Tx() + m.Sx(), m.Ty() + m.Sy());
         PushRenderTarget(frameRect, e.pRenderTarget);
         applyBlendMode(Blend_Normal, false, true);

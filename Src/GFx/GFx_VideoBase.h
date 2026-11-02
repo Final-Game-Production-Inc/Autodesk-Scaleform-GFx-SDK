@@ -94,7 +94,8 @@ public:
     virtual AS3VideoSupport* GetAS3Support() const = 0;
 
     // Create an instance of a video player.
-    virtual VideoPlayer*    CreateVideoPlayer(MemoryHeap*, TaskManager*, FileOpenerBase*, Log*) = 0;
+    virtual VideoPlayer*    CreateVideoPlayer(MemoryHeap*, TaskManager*, FileOpenerBase*, Log*,
+                                              const char* purl = NULL) = 0;
 
     // Callback interface for notifying the application then video a read operation
     // is required and when it has finished.

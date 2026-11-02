@@ -221,10 +221,12 @@ void    Renderer2DImpl::EntryDestroy(Context::Entry* p)
     TreeCacheNode* pcache = (TreeCacheNode*)p->GetRenderData();
     if (pcache)
     {
-        delete pcache;
-        // Must clear pRenderData, as it is used to check for node validity
-        // in RenderContext::FinishRendering.
+        // Clear the entry's render data *before* deleting the cache node. The
+        // clear marks the entry as invalid for the rest of the frame and makes it
+        // impossible for a second EntryDestroy (or a concurrent root walk) to
+        // touch the deleted node.
         p->SetRenderData(0);
+        delete pcache;
     }
 
 }
@@ -346,15 +348,31 @@ void    Renderer2DImpl::EntryChanges(Context& context, Context::ChangeBuffer& cb
     TreeCacheRoot* proot = (TreeCacheRoot*)RenderRoots.GetFirst();
     while(!RenderRoots.IsNull(proot))
     {
+        // Remember the next root before updating: UpdateTreeData() may relink
+        // cache nodes, and the capture thread can retire a root while the render
+        // thread is walking this list.
+        TreeCacheRoot* pnext = (TreeCacheRoot*)proot->pNext;
+        TreeRoot*      pnode = proot->GetNode();
+
+        // A root whose captured TreeNode is gone (or is not a real pointer) must
+        // not be updated: doing so dereferences a stale node and corrupts the
+        // render tree. EntryDestroy() retires such roots, but that notification is
+        // processed after this loop, so skip them defensively here.
+        if (!pnode || ((UPInt)pnode & (sizeof(void*) - 1)) != 0)
+        {
+            proot = pnext;
+            continue;
+        }
+
         //AB: if "forceUpdateImages" -> updateSortKey recursively for proot
-        if (forceUpdateImages && proot->GetNode()->GetContext() == &context)
+        if (forceUpdateImages && pnode->GetContext() == &context)
             proot->forceUpdateImages();
 
         proot->ChainUpdatesByDepth();
         // TBD: Check context pointer?
 
         proot->UpdateTreeData();
-        proot = (TreeCacheRoot*)proot->pNext;
+        proot = pnext;
     }
 
 #ifdef RENDER_TRACE_FRAME_CHANGE_TIMING
@@ -369,16 +387,27 @@ void Renderer2DImpl::ForceUpdateImages(Context* pcontext)
 
     // Apply matrix changes.
     TreeCacheRoot* proot = (TreeCacheRoot*)RenderRoots.GetFirst();
-    for(; !RenderRoots.IsNull(proot); proot = (TreeCacheRoot*)proot->pNext)
+    while (!RenderRoots.IsNull(proot))
     {
-        if (pcontext && pcontext != proot->GetNode()->GetContext())
+        TreeCacheRoot* pnext = (TreeCacheRoot*)proot->pNext;
+        TreeRoot*      pnode = proot->GetNode();
+        if (!pnode || ((UPInt)pnode & (sizeof(void*) - 1)) != 0)
+        {
+            proot = pnext;
             continue;
+        }
+        if (pcontext && pcontext != pnode->GetContext())
+        {
+            proot = pnext;
+            continue;
+        }
         proot->forceUpdateImages();
 
         proot->ChainUpdatesByDepth();
         // TBD: Check context pointer?
 
         proot->UpdateTreeData();
+        proot = pnext;
     }
 }
 
@@ -414,7 +443,8 @@ void Renderer2DImpl::OnHALEvent(HALNotifyType type)
         break;
 
     case HAL_PrepareForReset:
-        pGlyphCache->Destroy();
+        // A swap-chain resize (PrepareForReset/RestoreAfterReset) does not
+        // invalidate the glyph atlas; keep it so text survives maximize.
         break;
 
     case HAL_FinalPassBegin:

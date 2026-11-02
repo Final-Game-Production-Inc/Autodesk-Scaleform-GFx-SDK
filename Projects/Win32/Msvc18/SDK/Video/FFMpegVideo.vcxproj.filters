@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="AS2">
+      <UniqueIdentifier>{94e7adec-439a-435e-bb2d-bc54fac95021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AS3">
+      <UniqueIdentifier>{d69e1014-5aa8-4f04-9640-1fe83f952969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image">
+      <UniqueIdentifier>{74e870a7-8f88-4001-be7c-8b071ae80bdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FFMpeg">
+      <UniqueIdentifier>{40f5b530-312d-4b56-a5ed-b4bcec7c6011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FFMpeg\ATVBase">
+      <UniqueIdentifier>{6e7d9c7a-4ab1-4a06-bd8a-6fd13e0a8450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FFMpeg\ATVPlatForm">
+      <UniqueIdentifier>{daa0e4bb-1f72-4ab2-82a2-22b9b43cfa7d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\Video_VideoAS2.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\Video_VideoAS3.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetConnection.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetStream.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_VideoObject.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoCharacter.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoProviderNetStream.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\Video_Video.cpp">
+      <Filter>Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\Video_VideoCharacter.cpp">
+      <Filter>Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVHeap.cpp">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVMvFileReader.cpp">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVMvSoundGateway.cpp">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVMvSystemTimer.cpp">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVideoImage.cpp">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVVideoPlayerImpl.cpp">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\FFMpeg\ATVPlatForm\Video_ATVVideoWinAPI.cpp">
+      <Filter>FFMpeg\ATVPlatForm</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetConnection.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetStream.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_VideoObject.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoCharacter.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoProviderNetStream.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\Video_Video.h">
+      <Filter>Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\Video_VideoCharacter.h">
+      <Filter>Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVHeap.h">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVMvFileReader.h">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVMvSoundGateway.h">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVMvSystemTimer.h">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVideoImage.h">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVBase\Video_ATVVideoPlayerImpl.h">
+      <Filter>FFMpeg\ATVBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\FFMpeg\ATVPlatForm\Video_ATVVideoWinAPI.h">
+      <Filter>FFMpeg\ATVPlatForm</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

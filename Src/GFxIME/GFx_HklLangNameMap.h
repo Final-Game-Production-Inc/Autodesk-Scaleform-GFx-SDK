@@ -1,9 +1,10 @@
+
 struct KeybCodes
 {
-    char* StatusSymbol;
-    char* LocaleName;
-    int   LocaleId;
-    char* Unused;
+    const char* StatusSymbol;
+    const char* LocaleName;
+    unsigned int LocaleId;
+    const char* Unused;
 };
 static const KeybCodes KeybCodesList[] = {
     {"SQ", "Albanian"                               , 0x0000041c, NULL}, 

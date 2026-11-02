@@ -17,7 +17,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifndef INC_FxHUDKit_H
 #define INC_FxHUDKit_H
 
-#include "FxGameDelegate.h"
+#include "../../../Samples/GameDelegate/FxGameDelegate.h"
 #include "FxMinimap.h"
 
 //

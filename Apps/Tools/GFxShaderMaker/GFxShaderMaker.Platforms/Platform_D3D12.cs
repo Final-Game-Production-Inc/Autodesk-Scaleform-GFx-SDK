@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -14,6 +15,26 @@ public class Platform_D3D12 : Platform_D3DCommon
 
 	protected override string D3DSDKEnvironmentVariable => "DXSDK_DIR";
 
+	protected override string LocateShaderCompiler()
+	{
+		// D3D12 needs DXIL (SM 6.x), so use dxc.exe from the Windows SDK.
+		string kits = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+		                           "Windows Kits", "10", "bin");
+		if (Directory.Exists(kits))
+		{
+			string dxc = Directory.GetFiles(kits, "dxc.exe", SearchOption.AllDirectories)
+				.Where(p => p.IndexOf("\\x64\\", StringComparison.OrdinalIgnoreCase) >= 0)
+				.OrderByDescending(p => p)
+				.FirstOrDefault();
+			if (!string.IsNullOrEmpty(dxc))
+			{
+				Console.WriteLine("Using dxc.exe: {0}\n", dxc);
+				return dxc;
+			}
+		}
+		throw new Exception("Could not locate dxc.exe in the Windows SDK (Windows Kits\\10\\bin\\*\\x64).");
+	}
+
 	protected override string D3DFXCExtraOptions
 	{
 		get
@@ -23,11 +44,11 @@ public class Platform_D3D12 : Platform_D3DCommon
 			{
 			case "Debug":
 			case "DebugOpt":
-				return "/Zi";
+				return "-Zi";
 			case "Release":
-				return "/Zi /O3";
+				return "-Zi -O3";
 			case "Shipping":
-				return "/O3 /Qstrip_reflect /Qstrip_debug";
+				return "-O3 -Qstrip_reflect -Qstrip_debug";
 			default:
 				throw new Exception("Unsupported configuration type: " + option);
 			}

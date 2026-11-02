@@ -9,7 +9,7 @@
     </ClCompile>
 	<Link>
       <AdditionalDependencies>d3d9.lib;libgfxrender_d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-		<AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(PlatformName)\$(MsvcVer)\$(ConfigShort);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+		<AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(PlatformName)\$(MsvcVer)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>

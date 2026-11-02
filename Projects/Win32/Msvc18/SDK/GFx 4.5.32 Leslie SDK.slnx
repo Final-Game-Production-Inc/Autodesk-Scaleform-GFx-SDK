@@ -8,6 +8,10 @@
     <BuildType Name="D3D11_Debug_Static" />
     <BuildType Name="D3D11_Release_Static" />
     <BuildType Name="D3D11_Shipping" />
+    <BuildType Name="D3D12_DebugOpt_Static" />
+    <BuildType Name="D3D12_Debug_Static" />
+    <BuildType Name="D3D12_Release_Static" />
+    <BuildType Name="D3D12_Shipping" />
     <BuildType Name="D3D9_DebugOpt_Static" />
     <BuildType Name="D3D9_Debug_Static" />
     <BuildType Name="D3D9_Release_Static" />
@@ -16,67 +20,13 @@
     <BuildType Name="GL_Debug_Static" />
     <BuildType Name="GL_Release_Static" />
     <BuildType Name="GL_Shipping" />
+    <BuildType Name="Vulkan_DebugOpt_Static" />
+    <BuildType Name="Vulkan_Debug_Static" />
+    <BuildType Name="Vulkan_Release_Static" />
+    <BuildType Name="Vulkan_Shipping" />
     <Platform Name="x64" />
   </Configurations>
-
-
-  <Folder Name="/SCU/">
-    <Project Path="GFx/AIR_SCU.vcxproj" Id="ca4f4145-ff6c-4957-805e-89a79597b55d">
-      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
-      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
-      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
-      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="GL_Release_Static|*" Project="Release" />
-      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
-    </Project>
-    <Project Path="GFx/AS2_SCU.vcxproj" Id="b22effe2-25c9-44ad-983b-2e48c2cfee8d">
-      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
-      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
-      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
-      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="GL_Release_Static|*" Project="Release" />
-      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
-    </Project>
-    <Project Path="GFx/AS3_SCU.vcxproj" Id="38850824-1c19-45b2-82cb-ba2fc108df3d">
-      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
-      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
-      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
-      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
-      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
-      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
-      <BuildType Solution="GL_Release_Static|*" Project="Release" />
-      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
-    </Project>
-  </Folder>
-  <Folder Name="/SDKMain/">
+  <Folder Name="/Base/">
     <Project Path="Expat/Expat.vcxproj" Id="bd51b3f4-af58-4113-bd01-1630b80d0a81">
       <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
@@ -86,6 +36,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -94,6 +48,10 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
     </Project>
     <Project Path="GFx/AIR.vcxproj" Id="d1fd171c-9781-41bc-a42e-86e01515fa90">
       <BuildDependency Project="GFx/GFx.vcxproj" />
@@ -105,6 +63,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -113,6 +75,10 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
       <Build Project="false" />
     </Project>
     <Project Path="GFx/AS2.vcxproj" Id="521d6a5e-21e0-4715-8087-76347f4c74d1">
@@ -125,6 +91,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -133,6 +103,10 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
       <Build Project="false" />
     </Project>
     <Project Path="GFx/AS3.vcxproj" Id="59006e75-d61d-4137-8c36-431d3638c50d">
@@ -145,6 +119,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -153,6 +131,10 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
       <Build Project="false" />
     </Project>
     <Project Path="GFx/GFx.vcxproj" Id="dc7569c0-4f5f-4852-86ed-9392044502b9">
@@ -164,6 +146,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -172,89 +158,36 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
     </Project>
-    <Project Path="Platform/Platform.vcxproj" Id="f245741e-0aec-4e93-bbee-4980490fab66" />
-    <Project Path="Render/Render_D3D1x.vcxproj" Id="74139640-2624-4bbc-aa15-c4c6730e3665">
-      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="D3D10_DebugOpt" />
-      <BuildType Solution="D3D10_Debug_Static|*" Project="D3D10_Debug" />
-      <BuildType Solution="D3D10_Release_Static|*" Project="D3D10_Release" />
-      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="D3D11_DebugOpt" />
-      <BuildType Solution="D3D11_Debug_Static|*" Project="D3D11_Debug" />
-      <BuildType Solution="D3D11_Release_Static|*" Project="D3D11_Release" />
-      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D9_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D9_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D9_Shipping|*" Project="NoLink" />
-      <BuildType Solution="GL_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="GL_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="GL_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="GL_Shipping|*" Project="NoLink" />
-      <Build Solution="D3D9_DebugOpt_Static|*" Project="false" />
-      <Build Solution="D3D9_Debug_Static|*" Project="false" />
-      <Build Solution="D3D9_Release_Static|*" Project="false" />
-      <Build Solution="D3D9_Shipping|*" Project="false" />
-      <Build Solution="GL_DebugOpt_Static|*" Project="false" />
-      <Build Solution="GL_Debug_Static|*" Project="false" />
-      <Build Solution="GL_Release_Static|*" Project="false" />
-      <Build Solution="GL_Shipping|*" Project="false" />
-    </Project>
-    <Project Path="Render/Render_D3D9.vcxproj" Id="f42830aa-2eee-472f-a622-f1aa1391106c">
-      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D10_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D10_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D10_Shipping|*" Project="NoLink" />
-      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D11_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D11_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D11_Shipping|*" Project="NoLink" />
-      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="D3D9_DebugOpt" />
-      <BuildType Solution="D3D9_Debug_Static|*" Project="D3D9_Debug" />
-      <BuildType Solution="D3D9_Release_Static|*" Project="D3D9_Release" />
-      <BuildType Solution="GL_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="GL_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="GL_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="GL_Shipping|*" Project="NoLink" />
-      <Build Solution="D3D10_DebugOpt_Static|*" Project="false" />
-      <Build Solution="D3D10_Debug_Static|*" Project="false" />
-      <Build Solution="D3D10_Release_Static|*" Project="false" />
-      <Build Solution="D3D10_Shipping|*" Project="false" />
-      <Build Solution="D3D11_DebugOpt_Static|*" Project="false" />
-      <Build Solution="D3D11_Debug_Static|*" Project="false" />
-      <Build Solution="D3D11_Release_Static|*" Project="false" />
-      <Build Solution="D3D11_Shipping|*" Project="false" />
-      <Build Solution="GL_DebugOpt_Static|*" Project="false" />
-      <Build Solution="GL_Debug_Static|*" Project="false" />
-      <Build Solution="GL_Release_Static|*" Project="false" />
-      <Build Solution="GL_Shipping|*" Project="false" />
-    </Project>
-    <Project Path="Render/Render_GL.vcxproj" Id="22d59080-83f0-4a1a-b203-72f51b0a3417">
-      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D10_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D10_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D10_Shipping|*" Project="NoLink" />
-      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D11_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D11_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D11_Shipping|*" Project="NoLink" />
-      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D9_Debug_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D9_Release_Static|*" Project="NoLink" />
-      <BuildType Solution="D3D9_Shipping|*" Project="NoLink" />
-      <BuildType Solution="GL_DebugOpt_Static|*" Project="GL_DebugOpt" />
-      <BuildType Solution="GL_Debug_Static|*" Project="GL_Debug" />
-      <BuildType Solution="GL_Release_Static|*" Project="GL_Release" />
-      <Build Solution="D3D10_DebugOpt_Static|*" Project="false" />
-      <Build Solution="D3D10_Debug_Static|*" Project="false" />
-      <Build Solution="D3D10_Release_Static|*" Project="false" />
-      <Build Solution="D3D10_Shipping|*" Project="false" />
-      <Build Solution="D3D11_DebugOpt_Static|*" Project="false" />
-      <Build Solution="D3D11_Debug_Static|*" Project="false" />
-      <Build Solution="D3D11_Release_Static|*" Project="false" />
-      <Build Solution="D3D11_Shipping|*" Project="false" />
-      <Build Solution="D3D9_DebugOpt_Static|*" Project="false" />
-      <Build Solution="D3D9_Debug_Static|*" Project="false" />
-      <Build Solution="D3D9_Release_Static|*" Project="false" />
-      <Build Solution="D3D9_Shipping|*" Project="false" />
+    <Project Path="GFx/IME.vcxproj" Id="9ebd1501-08b8-47ed-89ae-437281e0215c">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
     </Project>
     <Project Path="Sound/Sound.vcxproj" Id="04c83899-0000-0000-0000-000000000000">
       <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
@@ -265,6 +198,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -273,8 +210,12 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
     </Project>
-    <Project Path="Video/Video.vcxproj" Id="f4675621-0026-403d-a8a9-a24ab677599a">
+    <Project Path="Video/FFMpegVideo.vcxproj" Id="d41b98bc-92e7-4dbf-90b2-5d76a44c3782">
       <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
@@ -283,6 +224,10 @@
       <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
       <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
       <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
       <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
       <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
@@ -291,6 +236,339 @@
       <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
       <BuildType Solution="GL_Release_Static|*" Project="Release" />
       <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
+    </Project>
+    <Project Path="Video/SofdecVideo.vcxproj" Id="f4675621-0026-403d-a8a9-a24ab677599a">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
+    </Project>
+  </Folder>
+  <Folder Name="/Renderer/">
+    <Project Path="Platform/Platform.vcxproj" Id="f245741e-0aec-4e93-bbee-4980490fab66" />
+    <Project Path="Render/Render_D3D12.vcxproj" Id="13dca965-69e2-427d-bdd0-15ed730eaa6c">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="D3D12_DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="D3D12_Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="D3D12_Release" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Shipping|*" Project="NoLink" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="D3D12_DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="D3D12_DebugOpt" />
+      <BuildType Solution="GL_Release_Static|*" Project="D3D12_DebugOpt" />
+      <BuildType Solution="GL_Shipping|*" Project="D3D12_Release" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="NoLink" />
+      <Build Solution="D3D9_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D9_Debug_Static|*" Project="false" />
+      <Build Solution="D3D9_Release_Static|*" Project="false" />
+      <Build Solution="D3D9_Shipping|*" Project="false" />
+      <Build Solution="D3D10_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D10_Debug_Static|*" Project="false" />
+      <Build Solution="D3D10_Release_Static|*" Project="false" />
+      <Build Solution="D3D10_Shipping|*" Project="false" />
+      <Build Solution="D3D11_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D11_Debug_Static|*" Project="false" />
+      <Build Solution="D3D11_Release_Static|*" Project="false" />
+      <Build Solution="D3D11_Shipping|*" Project="false" />
+      <Build Solution="GL_DebugOpt_Static|*" Project="false" />
+      <Build Solution="GL_Debug_Static|*" Project="false" />
+      <Build Solution="GL_Release_Static|*" Project="false" />
+      <Build Solution="GL_Shipping|*" Project="false" />
+      <Build Solution="Vulkan_DebugOpt_Static|*" Project="false" />
+      <Build Solution="Vulkan_Debug_Static|*" Project="false" />
+      <Build Solution="Vulkan_Release_Static|*" Project="false" />
+      <Build Solution="Vulkan_Shipping|*" Project="false" />
+    </Project>
+    <Project Path="Render/Render_D3D1x.vcxproj" Id="74139640-2624-4bbc-aa15-c4c6730e3665">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="D3D10_DebugOpt" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="D3D10_Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="D3D10_Release" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="D3D11_DebugOpt" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="D3D11_Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="D3D11_Release" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Shipping|*" Project="NoLink" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Shipping|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="NoLink" />
+      <Build Solution="D3D9_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D9_Debug_Static|*" Project="false" />
+      <Build Solution="D3D9_Release_Static|*" Project="false" />
+      <Build Solution="D3D9_Shipping|*" Project="false" />
+      <Build Solution="D3D12_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D12_Debug_Static|*" Project="false" />
+      <Build Solution="D3D12_Release_Static|*" Project="false" />
+      <Build Solution="D3D12_Shipping|*" Project="false" />
+      <Build Solution="GL_DebugOpt_Static|*" Project="false" />
+      <Build Solution="GL_Debug_Static|*" Project="false" />
+      <Build Solution="GL_Release_Static|*" Project="false" />
+      <Build Solution="GL_Shipping|*" Project="false" />
+      <Build Solution="Vulkan_DebugOpt_Static|*" Project="false" />
+      <Build Solution="Vulkan_Debug_Static|*" Project="false" />
+      <Build Solution="Vulkan_Release_Static|*" Project="false" />
+      <Build Solution="Vulkan_Shipping|*" Project="false" />
+    </Project>
+    <Project Path="Render/Render_D3D9.vcxproj" Id="f42830aa-2eee-472f-a622-f1aa1391106c">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="D3D9_DebugOpt" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="D3D9_Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="D3D9_Release" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Shipping|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="NoLink" />
+      <Build Solution="D3D10_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D10_Debug_Static|*" Project="false" />
+      <Build Solution="D3D10_Release_Static|*" Project="false" />
+      <Build Solution="D3D10_Shipping|*" Project="false" />
+      <Build Solution="D3D11_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D11_Debug_Static|*" Project="false" />
+      <Build Solution="D3D11_Release_Static|*" Project="false" />
+      <Build Solution="D3D11_Shipping|*" Project="false" />
+      <Build Solution="D3D12_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D12_Debug_Static|*" Project="false" />
+      <Build Solution="D3D12_Release_Static|*" Project="false" />
+      <Build Solution="D3D12_Shipping|*" Project="false" />
+      <Build Solution="GL_DebugOpt_Static|*" Project="false" />
+      <Build Solution="GL_Debug_Static|*" Project="false" />
+      <Build Solution="GL_Release_Static|*" Project="false" />
+      <Build Solution="GL_Shipping|*" Project="false" />
+      <Build Solution="Vulkan_DebugOpt_Static|*" Project="false" />
+      <Build Solution="Vulkan_Debug_Static|*" Project="false" />
+      <Build Solution="Vulkan_Release_Static|*" Project="false" />
+      <Build Solution="Vulkan_Shipping|*" Project="false" />
+    </Project>
+    <Project Path="Render/Render_GL.vcxproj" Id="22d59080-83f0-4a1a-b203-72f51b0a3417">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Shipping|*" Project="NoLink" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="GL_DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="GL_Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="GL_Release" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="NoLink" />
+      <Build Solution="D3D10_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D10_Debug_Static|*" Project="false" />
+      <Build Solution="D3D10_Release_Static|*" Project="false" />
+      <Build Solution="D3D10_Shipping|*" Project="false" />
+      <Build Solution="D3D11_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D11_Debug_Static|*" Project="false" />
+      <Build Solution="D3D11_Release_Static|*" Project="false" />
+      <Build Solution="D3D11_Shipping|*" Project="false" />
+      <Build Solution="D3D12_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D12_Debug_Static|*" Project="false" />
+      <Build Solution="D3D12_Release_Static|*" Project="false" />
+      <Build Solution="D3D12_Shipping|*" Project="false" />
+      <Build Solution="D3D9_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D9_Debug_Static|*" Project="false" />
+      <Build Solution="D3D9_Release_Static|*" Project="false" />
+      <Build Solution="D3D9_Shipping|*" Project="false" />
+      <Build Solution="Vulkan_DebugOpt_Static|*" Project="false" />
+      <Build Solution="Vulkan_Debug_Static|*" Project="false" />
+      <Build Solution="Vulkan_Release_Static|*" Project="false" />
+      <Build Solution="Vulkan_Shipping|*" Project="false" />
+    </Project>
+    <Project Path="Render/Render_Vulkan.vcxproj" Id="320b1683-c51c-4df4-9475-e1955ed6bbc4">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D10_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D11_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D12_Shipping|*" Project="NoLink" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="D3D9_Shipping|*" Project="NoLink" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Debug_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Release_Static|*" Project="NoLink" />
+      <BuildType Solution="GL_Shipping|*" Project="NoLink" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="Vulkan_DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Vulkan_Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Vulkan_Release" />
+      <Build Solution="D3D10_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D10_Debug_Static|*" Project="false" />
+      <Build Solution="D3D10_Release_Static|*" Project="false" />
+      <Build Solution="D3D10_Shipping|*" Project="false" />
+      <Build Solution="D3D11_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D11_Debug_Static|*" Project="false" />
+      <Build Solution="D3D11_Release_Static|*" Project="false" />
+      <Build Solution="D3D11_Shipping|*" Project="false" />
+      <Build Solution="D3D12_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D12_Debug_Static|*" Project="false" />
+      <Build Solution="D3D12_Release_Static|*" Project="false" />
+      <Build Solution="D3D12_Shipping|*" Project="false" />
+      <Build Solution="D3D9_DebugOpt_Static|*" Project="false" />
+      <Build Solution="D3D9_Debug_Static|*" Project="false" />
+      <Build Solution="D3D9_Release_Static|*" Project="false" />
+      <Build Solution="D3D9_Shipping|*" Project="false" />
+      <Build Solution="GL_DebugOpt_Static|*" Project="false" />
+      <Build Solution="GL_Debug_Static|*" Project="false" />
+      <Build Solution="GL_Release_Static|*" Project="false" />
+      <Build Solution="GL_Shipping|*" Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/SCU/">
+    <Project Path="GFx/AIR_SCU.vcxproj" Id="ca4f4145-ff6c-4957-805e-89a79597b55d">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
+    </Project>
+    <Project Path="GFx/AS2_SCU.vcxproj" Id="b22effe2-25c9-44ad-983b-2e48c2cfee8d">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
+    </Project>
+    <Project Path="GFx/AS3_SCU.vcxproj" Id="38850824-1c19-45b2-82cb-ba2fc108df3d">
+      <BuildType Solution="D3D10_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D10_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D10_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D10_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D11_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D11_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D11_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D11_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D12_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D12_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D12_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D12_Shipping|*" Project="Shipping" />
+      <BuildType Solution="D3D9_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="D3D9_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="D3D9_Release_Static|*" Project="Release" />
+      <BuildType Solution="D3D9_Shipping|*" Project="Shipping" />
+      <BuildType Solution="GL_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="GL_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="GL_Release_Static|*" Project="Release" />
+      <BuildType Solution="GL_Shipping|*" Project="Shipping" />
+      <BuildType Solution="Vulkan_DebugOpt_Static|*" Project="DebugOpt" />
+      <BuildType Solution="Vulkan_Debug_Static|*" Project="Debug" />
+      <BuildType Solution="Vulkan_Release_Static|*" Project="Release" />
+      <BuildType Solution="Vulkan_Shipping|*" Project="Shipping" />
     </Project>
   </Folder>
 </Solution>

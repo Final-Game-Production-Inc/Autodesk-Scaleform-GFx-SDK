@@ -23,7 +23,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #ifdef SF_ENABLE_LIBPNG
 
 #ifdef SF_OS_WIN32
-#include "../3rdParty/libpng-1.6.53/png.h"
+#include "../3rdParty/libpng-1.6.59/png.h"
 
 #else
 #include <png.h>
@@ -193,7 +193,11 @@ public:
 
         // first check the eight byte PNG signature
 
-        if (pin->Read(pbSig, 8) != 8 || !png_check_sig(pbSig, 8))
+        // In LibPng 1.6.59,The function
+        // png_check_sig(sig, num)
+        // was replaced with
+        // png_sig_cmp(sig, 0, num) == 0
+        if (pin->Read(pbSig, 8) != 8 || png_sig_cmp(pbSig, 0, 8) != 0)
         {
             SF_DEBUG_WARNING1(1, "Image::ReadPng failed - Can't read signature from file %s\n", 
                 Context.filePath);
@@ -494,7 +498,7 @@ bool FileReader::MatchFormat(File* file, UByte* headerArg, UPInt headerArgSize) 
     FileHeaderReader<8> header(file, headerArg, headerArgSize);
     if (!header)
         return false;
-    if (!png_check_sig((png_byte*)header.GetPtr(), 8))
+    if (png_sig_cmp((png_byte*)header.GetPtr(), 0, 8) != 0)
         return false;
     return true;
 

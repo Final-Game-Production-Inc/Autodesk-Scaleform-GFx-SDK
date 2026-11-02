@@ -1334,15 +1334,78 @@ void InvalidParameterHandler(const wchar_t * expression,
 
 // Writes minidump files when -dump is passed on the command line.
 static char MinidumpFilename[_MAX_PATH];
+
+// Prints a symbolized stack for an unhandled exception to stderr. Used together
+// with -Minidump so a crash in the render thread (which normally dies silently)
+// can be located without an attached debugger. gfx/D3D12 debugging aid only.
+static void PrintCrashStack(struct _EXCEPTION_POINTERS* pEp)
+{
+    if (!pEp || !pEp->ExceptionRecord || !pEp->ContextRecord)
+        return;
+
+    fprintf(stderr, "[CRASH] code=0x%08lX addr=%p\n",
+            (unsigned long)pEp->ExceptionRecord->ExceptionCode,
+            pEp->ExceptionRecord->ExceptionAddress);
+    fflush(stderr);
+
+    char modulePath[_MAX_PATH];
+    GetModuleFileNameA(0, modulePath, _MAX_PATH);
+    char* pSlash = strrchr(modulePath, '\\');
+    if (pSlash)
+        *pSlash = 0;
+
+    HANDLE hProcess = GetCurrentProcess();
+    HANDLE hThread  = GetCurrentThread();
+    SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+    if (!SymInitialize(hProcess, modulePath, TRUE))
+        return;
+
+    CONTEXT ctx = *pEp->ContextRecord;
+    STACKFRAME64 frame;
+    memset(&frame, 0, sizeof(frame));
+    frame.AddrPC.Mode      = AddrModeFlat;
+    frame.AddrFrame.Mode   = AddrModeFlat;
+    frame.AddrStack.Mode   = AddrModeFlat;
+    frame.AddrPC.Offset    = ctx.Rip;
+    frame.AddrFrame.Offset = ctx.Rbp;
+    frame.AddrStack.Offset = ctx.Rsp;
+
+    for (int i = 0; i < 48; ++i)
+    {
+        if (!StackWalk64(IMAGE_FILE_MACHINE_AMD64, hProcess, hThread, &frame, &ctx,
+                         NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
+            break;
+        if (!frame.AddrPC.Offset)
+            break;
+
+        DWORD64 disp = 0;
+        char symbolBuf[sizeof(SYMBOL_INFO) + 256];
+        SYMBOL_INFO* pSym = (SYMBOL_INFO*)symbolBuf;
+        memset(symbolBuf, 0, sizeof(symbolBuf));
+        pSym->SizeOfStruct = sizeof(SYMBOL_INFO);
+        pSym->MaxNameLen   = 255;
+        const char* pName = SymFromAddr(hProcess, frame.AddrPC.Offset, &disp, pSym)
+                          ? pSym->Name : "?";
+        IMAGEHLP_LINE64 lineObj;
+        memset(&lineObj, 0, sizeof(lineObj));
+        lineObj.SizeOfStruct = sizeof(lineObj);
+        DWORD lineDisp = 0;
+        if (SymGetLineFromAddr64(hProcess, frame.AddrPC.Offset, &lineDisp, &lineObj))
+            fprintf(stderr, "  #%02d %s+0x%llx  (%s:%lu)\n", i, pName,
+                    (unsigned long long)disp, lineObj.FileName, (unsigned long)lineObj.LineNumber);
+        else
+            fprintf(stderr, "  #%02d %s+0x%llx\n", i, pName, (unsigned long long)disp);
+        fflush(stderr);
+    }
+}
+
 LONG WINAPI WriteMinidumpUnhandledExceptionFilter( __in struct _EXCEPTION_POINTERS* ExceptionInfo )
 {
     // Construct the dump filename, and open the handle.
     HANDLE dumpFile = INVALID_HANDLE_VALUE;
-    if ( SFstrlen(MinidumpFilename) == 0)
-    {
-        GetModuleFileName(0, MinidumpFilename, _MAX_PATH );
-        SFstrcat(MinidumpFilename, _MAX_PATH, ".dmp");
-    }
+    PrintCrashStack(ExceptionInfo);
+    if (SFstrlen(MinidumpFilename) == 0)
+        return EXCEPTION_CONTINUE_SEARCH;
 
     // Now actually write the dump file.
     dumpFile = CreateFile(MinidumpFilename, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0 );
@@ -1379,6 +1442,20 @@ bool AppImpl::OnArgs(const Args& args, Args::ParseResult parseResult)
         String minidumpName = args.GetString("Minidump"); 
         SFstrcpy(MinidumpFilename, _MAX_PATH, minidumpName.ToCStr());
         SetUnhandledExceptionFilter(WriteMinidumpUnhandledExceptionFilter);
+    }
+
+    // Debug aid: GFX_CRASH_LOG=1 installs the same filter without a command line
+    // option. It only prints a symbolized stack of the faulting thread to stderr
+    // (no dump file), which is enough to locate a render-thread crash when no
+    // debugger is available.
+    {
+        char crashEnv[8];
+        if (GetEnvironmentVariableA("GFX_CRASH_LOG", crashEnv, sizeof(crashEnv)) > 0)
+        {
+            MinidumpFilename[0] = 0;
+            SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+            SetUnhandledExceptionFilter(WriteMinidumpUnhandledExceptionFilter);
+        }
     }
     
     // Test various ways the program can exit with an error dialog/minidump.

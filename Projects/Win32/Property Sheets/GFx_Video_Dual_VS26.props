@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Combined CRI + FFmpeg video link set.
+       SofdecVideo.vcxproj owns the shared video layer (Video::CreateVideoPlayer,
+       VideoCharacter, ActionScript) plus the CRI/Sofdec2 backend and is built with
+       GFX_ENABLE_CRIVIDEO + GFX_ENABLE_FFMPEGVIDEO so that layer can dispatch to
+       either backend. The FFmpeg backend itself is only in FFMpegVideo.vcxproj, so
+       its archive has to be on the link line as well - the dispatch layer calls
+       avHeap_Register/avHeap_Unregister, ATVVideoDecoderSmp, ATVVideoPlayerImpl and
+       VideoPlayer::LoadVideoInfo, all of which live in libgfx_ffmpegvideo.lib.
+       Keep libgfx_sfd2video.lib first so the dual-backend dispatch object is the
+       one extracted into the executable. -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\3rdParty\cri2019\pc\include;..\..\..\..\..\3rdParty\FFMpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GFX_ENABLE_CRIVIDEO;GFX_ENABLE_FFMPEGVIDEO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libgfx_sfd2video.lib;libgfx_ffmpegvideo.lib;cri_mana_pcx64.lib;cri_atom_pcx64.lib;cri_file_system_pcx64.lib;cri_base_pcx64.lib;cri_framework_pcx64.lib;mfplat.lib;mfuuid.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;aom.lib;dav1d.lib;fdk-aac.lib;mp3lame.lib;libx264.lib;libx265.lib;hdr10plus.lib;opus.lib;PPA.lib;vpl.lib;vpx.lib;zimg.lib;z.lib;libbz2.lib;SDL2-static.lib;swresample.lib;swscale.lib;bcrypt.lib;ncrypt.lib;crypt32.lib;secur32.lib;setupapi.lib;cfgmgr32.lib;strmiids.lib;vfw32.lib;psapi.lib;version.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\Lib\$(Platform)\$(MsvcVer)\$(Configuration);..\..\..\..\..\3rdParty\cri2019\pc\libs\$(Platform);..\..\..\..\..\3rdParty\FFMpeg\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

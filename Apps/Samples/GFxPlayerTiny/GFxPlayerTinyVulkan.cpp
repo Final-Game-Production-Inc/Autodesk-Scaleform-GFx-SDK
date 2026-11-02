@@ -28,9 +28,9 @@ Authors     :   Scaleform Vulkan Backend
 #include "Render/Renderer2D.h"
 
 #ifdef GFX_ENABLE_VIDEO
-#include "Video/Video_Video.h"
-#include "Video/Video_VideoPC.h"
-#include "Video/Video_VideoSoundSystemDX8.h"
+#include "Video/Common/Video_Video.h"
+#include "Video/Sofdec2/CriPlatform/Video_CriVideoWinAPI.h"
+#include "Video/Sound/Video_VideoSoundSystemDX8.h"
 #endif
 
 using namespace Scaleform;
@@ -279,7 +279,11 @@ static void CaptureScreenshot(const char* filename, uint32_t imageIdx)
     // Map staging buffer and write binary PPM (P6)
     void* mapped = nullptr;
     vkMapMemory(vkDevice, stagingMem, 0, bufSize, 0, &mapped);
-    FILE* ppm = fopen(filename, "wb");
+    FILE* ppm = NULL;
+    if (fopen_s(&ppm, filename, "wb") != 0 || ppm == NULL) {
+        // 打开失败，处理错误（ppm 此时保证为 NULL）
+        return; // 或 return false;
+    }
     if (ppm)
     {
         fprintf(ppm, "P6\n%u %u\n255\n", w, h);
@@ -945,7 +949,8 @@ static void WriteStackTrace(FILE* f, CONTEXT* ctx)
 static LONG WINAPI CrashFilter(EXCEPTION_POINTERS* ep)
 {
     FILE* f = vkLogFile;
-    if (!f) f = fopen("vulkan_crash.log", "w");
+    if (!f) f = NULL;
+    fopen_s(&f, "vulkan_crash.log", "w");
     if (f)
     {
         fprintf(f, "=== CRASH ===\nException 0x%08lX at address 0x%p\n\nStack trace:\n",
@@ -968,7 +973,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR lpCmdLine, int)
     freopen_s(&conOut, "CONOUT$", "w", stdout);
     freopen_s(&conOut, "CONOUT$", "w", stderr);
     printf("=== Scaleform Vulkan Demo (Debug Console) ===\n");
-    vkLogFile = fopen("vulkan_debug.log", "w");
+    vkLogFile = NULL;
+    fopen_s(&vkLogFile, "vulkan_debug.log", "w");
 #endif
     SetUnhandledExceptionFilter(CrashFilter);
     return AppMain(lpCmdLine);

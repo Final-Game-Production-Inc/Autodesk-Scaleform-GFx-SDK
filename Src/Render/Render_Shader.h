@@ -34,6 +34,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Render_Primitive.h"
 #include "Render/Render_Gradients.h"
 #include "Render/Render_Vertex.h"
+#include "Render/Render_DebugEnv.h"
 #include "Render/Render_Types2D.h"
 #include "Render/Render_Math2D.h"
 #include "Render/Render_Twips.h"
@@ -41,6 +42,8 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "Render/Render_FiltersLE.h"
 
 namespace Scaleform { namespace Render {
+
+
 
 enum StandardShaderFlags
 {
@@ -823,6 +826,21 @@ public:
             float fsize[4];
             float blurx = Alg::Max( 1.0f, floorf(TwipsToPixels(params.BlurX)));
             float blury = Alg::Max( 1.0f, floorf(TwipsToPixels(params.BlurY)));
+
+            // Debug A/B aid: clamp the blur radius to bound the GPU work of the
+            // dynamic Box1/Box2 loops. GFX_FILTER_MAXBLUR=<pixels>.
+            static char  sMaxBlurBuf[32];
+            static const bool sMaxBlurSet =
+                GetDebugEnvValue("GFX_FILTER_MAXBLUR", sMaxBlurBuf, sizeof(sMaxBlurBuf));
+            if (sMaxBlurSet)
+            {
+                const float maxBlur = (float)atof(sMaxBlurBuf);
+                if (maxBlur > 0.0f)
+                {
+                    blurx = Alg::Min(blurx, maxBlur);
+                    blury = Alg::Min(blury, maxBlur);
+                }
+            }
             if ( shaders[pass] == ShaderDesc::ST_Box1Blur || shaders[pass] == ShaderDesc::ST_Box1BlurMul)
             {
                 // On even passes, do the X blur, on odd passes, do the Y blur.
@@ -904,6 +922,10 @@ public:
         }
         else if (filter->GetFilterType() == Filter_ColorMatrix)
         {
+            // Single pass: passCount must be set here, otherwise the value returned
+            // below is uninitialised (MSVC Run-Time Check Failure #3) and the caller
+            // iterates over a garbage pass count - which crashed in SetupFilter.
+            passCount = 1;
             ColorMatrixFilter& matrixFilter = *(ColorMatrixFilter*)filter;
 
             // If there is a color transform, in addition to the filter, embed that directly into the matrix.
@@ -928,6 +950,7 @@ public:
         }
         else if (filter->GetFilterType() == Filter_DisplacementMap)
         {
+            passCount = 1;   // single pass, see the ColorMatrix note above
             const DisplacementMapFilter* dmFilter = reinterpret_cast<const DisplacementMapFilter*>(filter);
 
             // DisplacementMap may specify a different fill mode to achieve its effect.
@@ -1010,9 +1033,31 @@ public:
             else
                 passCount = params.Passes;
 
+            // Defensive clamp: a stale/destroyed BlurFilter yields a garbage Passes
+            // count, which used to run the loop below far past the caller-provided
+            // array (Vulkan crashed with an access violation at pass ~2400).
+            // A zero pass count underflowed passCount-1 to 0xFFFFFFFF, so the loop
+            // below ran ~4 billion times and smashed the caller stack buffer
+            // (caught as a GS cookie failure in GetFilterPasses on Vulkan).
+            if (passCount > (unsigned)MaximumFilterPasses)
+                passCount = (unsigned)MaximumFilterPasses;
+
+            // Debug A/B: GFX_FILTER_FORCE_PASSES=1 renders the whole blur in the
+            // single shadow pass (no intermediate Box passes / extra temp targets),
+            // to isolate the multi-pass path from the shader itself.
+            static const bool sForceSinglePass = IsDebugEnvSet("GFX_FILTER_FORCE_PASSES");
+            if (sForceSinglePass)
+            {
+                passCount = 1;
+                box1 = false;
+            }
+
             // Every pass except the last is simply a blur
             unsigned pass;
-            for ( pass = 0; pass < Alg::Max<unsigned>(0,passCount-1); ++pass )
+            // (passCount-1) underflows to 0xFFFFFFFF for passCount==0, which ran the
+            // loop ~4 billion times and smashed the caller stack buffer (GS failure).
+            unsigned passLimit = (passCount > 0) ? (passCount - 1) : 0;
+            for ( pass = 0; pass < passLimit; ++pass )
                 passes[pass] = box1 ? ShaderDesc::ST_Box1Blur : ShaderDesc::ST_Box2Blur;
 
             FilterType type = (FilterType)(params.Mode & BlurFilterParams::Mode_FilterMask);
@@ -1093,6 +1138,9 @@ public:
         }
         else if (filter->GetFilterType() == Filter_ColorMatrix)
         {
+            // Single pass: passCount must be set here, otherwise the value returned
+            // below is uninitialised (MSVC Run-Time Check Failure #3) and the caller
+            // iterates over a garbage pass count - which crashed in SetupFilter.
             passCount = 1;
             ColorMatrixFilter* matrixFilter = (ColorMatrixFilter*)filter;
             float* params = &((float&)matrixFilter[0]);
@@ -1103,7 +1151,7 @@ public:
         }
         else if (filter->GetFilterType() == Filter_DisplacementMap)
         {
-            passCount = 1;
+            passCount = 1;   // single pass, see the ColorMatrix note above
             passes[0] = ShaderDesc::ST_start_DisplacementMap;
             const DisplacementMapFilter* dmFilter = reinterpret_cast<const DisplacementMapFilter*>(filter);
             switch(dmFilter->Mode)

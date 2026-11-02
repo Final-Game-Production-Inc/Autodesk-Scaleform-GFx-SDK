@@ -79,43 +79,47 @@ otherwise accompanies this software in either electronic or hard copy form.
 #endif
 #include "Render/Render_GlyphCacheConfig.h"
 
-#ifdef GFX_ENABLE_VIDEO
+#if defined(GFX_ENABLE_VIDEO)
 // Core video support
-#include "Video/Video_Video.h"
+#include "Video/Common/Video_Video.h"
 #if   defined(SF_OS_WIN32) && !defined(_DURANGO)
-#include "Video/Video_VideoPC.h"
+    #if defined(GFX_ENABLE_FFMPEGVIDEO)
+#include "Video/FFMpeg/ATVPlatForm/Video_ATVVideoWinAPI.h"
+    #else
+#include "Video/Sofdec2/CriPlatform/Video_CRIVideoWinAPI.h"
+    #endif
 #elif defined(SF_OS_XBOX360)
-#include "Video/Video_VideoXbox360.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoXbox360.h"
 #elif defined(SF_OS_PS3)
 //#define CRIMV_SPU_TRHEADS
-#include "Video/Video_VideoPS3.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoPS3.h"
 #elif defined(_DURANGO)
-#include "Video/Video_VideoXboxOne.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoXboxOne.h"
 #elif defined(SF_OS_ORBIS)
-#include "Video/Video_VideoPS4.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoPS4.h"
 #elif defined(SF_OS_WIIU)
-#include "Video/Video_VideoWiiU.h"
+#include "Video/Sofdec2/CriPlatform/Video_VideoWiiU.h"
 #endif
 // Video system sound interfaces
 #ifdef GFX_VIDEO_USE_SYSTEM_SOUND
 #if   defined(SF_OS_WIN32) && !defined(_DURANGO)
-#include "Video/Video_VideoSoundSystemDX8.h"
+#include "Video/Sound/Video_VideoSoundSystemDX8.h"
 #elif defined(SF_OS_MAC)
-#include "Video/Video_VideoSoundSystemMac.h"
+#include "Video/Sound/Video_VideoSoundSystemMac.h"
 #elif defined(SF_OS_XBOX360) || defined(_DURANGO)
-#include "Video/Video_VideoSoundSystemXA2.h"
+#include "Video/Sound/Video_VideoSoundSystemXA2.h"
 #elif defined(SF_OS_PS3)
-#include "Video/Video_VideoSoundSystemPS3.h"
+#include "Video/Sound/Video_VideoSoundSystemPS3.h"
 #elif defined(SF_OS_WII)
-#include "Video/Video_VideoSoundSystemWii.h"
+#include "Video/Sound/Video_VideoSoundSystemWii.h"
 #elif defined(SF_OS_WIIU)
-#include "Video/Video_VideoSoundSystemWiiU.h"
+#include "Video/Sound/Video_VideoSoundSystemWiiU.h"
 #endif
 // FMOD and Wwise system sound interfaces
 #elif defined(GFX_VIDEO_USE_FMOD)
-#include "Video/Video_VideoSoundSystemFMOD.h"
+#include "Video/Sound/Video_VideoSoundSystemFMOD.h"
 #elif defined(GFX_VIDEO_USE_WWISE)
-#include "Video/Video_VideoSoundSystemWwise.h"
+#include "Video/Sound/Video_VideoSoundSystemWwise.h"
 #endif
 #endif // GFX_ENABLE_VIDEO
 
@@ -927,10 +931,10 @@ public:
             } 
             else
             {
-                app->SoundVolume += 10;
-                if (app->SoundVolume > 100)
+                app->SoundVolume += 0.1f;
+                if (app->SoundVolume > 1.0f)
                 {
-                    app->SoundVolume = 100;
+                    app->SoundVolume = 1.0f;
                 }
                 psoundRenderer->SetMasterVolume(app->SoundVolume);
             }
@@ -961,10 +965,10 @@ public:
             } 
             else
             {
-                app->SoundVolume-=10;
-                if (app->SoundVolume < 0)
+                app->SoundVolume -= 0.1f;
+                if (app->SoundVolume < 0.0f)
                 {
-                    app->SoundVolume = 0;
+                    app->SoundVolume = 0.0f;
                 }
                 psoundRenderer->SetMasterVolume(app->SoundVolume);
             }
@@ -2061,11 +2065,15 @@ bool FxPlayerAppBase::OnArgs(const Platform::Args& args, Platform::Args::ParseRe
     PlayOnce = args.GetBool("PlayOnce");
     NoControlKeys = args.GetBool("NoControlKeys");
     NoCtrlKey = NoControlKeys;
-    SoundVolume = args.GetInt("SoundVolume") / 100.0f;
-    if(SoundVolume < 0.0f)
-        SoundVolume = 0.0f;
-    else if (SoundVolume > 1.0f)
-        SoundVolume = 1.0f;
+    {
+        // The -sv option defaults to 0 when not given, which muted everything.
+        int sv = args.GetInt("SoundVolume");
+        SoundVolume = (sv > 0 ? sv : 100) / 100.0f;
+        if (SoundVolume < 0.0f)
+            SoundVolume = 0.0f;
+        else if (SoundVolume > 1.0f)
+            SoundVolume = 1.0f;
+    }
 
     IsMute     = args.GetBool("SoundMute");
     bCLIKSound = args.GetBool("CLIKSound");
@@ -2376,7 +2384,12 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
 #endif
 
     // Video system sound interfaces
-#ifdef GFX_VIDEO_USE_SYSTEM_SOUND
+#if defined(GFX_ENABLE_FFMPEGVIDEO) && defined(SF_OS_WIN32) && !defined(_DURANGO)
+    // The FFmpeg (ATV) gateway owns its native audio pipeline: compressed
+    // packets are decoded by fdk-aac/libopus/libavcodec and played through
+    // SDL2 audio, independently of the SoundRenderer used for SWF audio.
+    // No VideoSoundSystem needs to be installed for this backend.
+#elif defined(GFX_VIDEO_USE_SYSTEM_SOUND)
 #if   defined(SF_OS_WIN32)  && !defined(_DURANGO)
     pvideo->SetSoundSystem(Ptr<Video::VideoSoundSystem>(*new Video::VideoSoundSystemDX8(0)));
 #elif defined(SF_OS_MAC)
@@ -2413,7 +2426,8 @@ bool FxPlayerAppBase::OnInit(Platform::ViewConfig& config)
         psoundRenderer->SetMasterVolume(SoundVolume);
         psoundRenderer->Mute(IsMute);
 
-#if defined(GFX_ENABLE_VIDEO) && !defined(GFX_VIDEO_USE_SYSTEM_SOUND) && \
+#if defined(GFX_ENABLE_VIDEO) && !defined(GFX_ENABLE_FFMPEGVIDEO) && \
+                                 !defined(GFX_VIDEO_USE_SYSTEM_SOUND) && \
                                  !defined(GFX_VIDEO_USE_FMOD) && !defined(GFX_VIDEO_USE_WWISE)
         // if a video has audio tracks and you want to play them through SoundRenderer 
         // object you need to set this object to Video::Video state
@@ -2744,6 +2758,16 @@ void FxPlayerAppBase::OnShutdown()
     AmpServer::GetInstance().CloseConnection();
 #endif
 
+    // The render thread may still be executing the frame queued by the loop, and that
+    // frame draws from the movie's display list. Releasing the movie first removes filter
+    // primitives mid-frame, so the temporary render targets they pushed are never popped
+    // and HAL::EndFrame trips "render targets still 'in-use'". Stop queueing new frames,
+    // then round-trip through the render-thread command queue (FIFO), so the outstanding
+    // frame has executed before the movie below is released.
+    Rendering = false;
+    if (pRenderThread)
+        pRenderThread->Sync();
+
     pMovie = 0;
     pMovieDef = 0;
 
@@ -2947,6 +2971,12 @@ void FxPlayerAppBase::OnUpdateFrame(bool needRepaint)
     pWwise->Update();
 #endif
 
+#if defined(GFX_ENABLE_SOUND) && defined(GFX_SOUND_FMOD) && !defined(GFX_SOUND_WWISE)
+    // FMOD needs a per-frame update: channel callbacks (SOUND_COMPLETE),
+    // playback positions and the mixer state are advanced there.
+    if (pSoundFMODSystem && pSoundFMODSystem->IsInitialized())
+        pSoundFMODSystem->Update();
+#endif
     // Record the advance.
     if (AutoTest)
         AutoTest->OnAdvanceMovie((float)delta / 1000000.f);
@@ -3294,8 +3324,16 @@ void FxPlayerAppBase::OnSize(const Size<unsigned>& newSize)
     SizingSize = newSize;
     if (!SizingEntered) 
     {
-        // Commit sizing immediately if it was due to maximize.
-        OnSizeEnter(0);
+        // Instant resize (maximize/restore): OnSize arrives after the window
+        // has already reached its new client size, so SizingSize ==
+        // GetViewSize() and the old OnSizeEnter(0) path skipped the swap-chain
+        // resize. Reconfigure explicitly here.
+        Platform::ViewConfig cfg;
+        GetViewConfig(&cfg);
+        cfg.ViewSize = SizingSize;
+        cfg.ViewSize.Height += FXPLAYER_LOGO_BORDER;
+        ReconfigureGraphics(cfg);
+        UpdateViewSize();
     } 
     else
     {

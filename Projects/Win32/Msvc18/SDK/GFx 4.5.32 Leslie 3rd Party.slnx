@@ -15,10 +15,10 @@
   <Folder Name="/nvidia/Solution Items/">
     <File Path="../../../../3rdParty/nvtt-2.1.2/gfx_projects/Win32/Msvc18/nvconfig.h" />
   </Folder>
-  <Project Path="../../../../3rdParty/curl-8.22.0/gfx_projects/Win32/Msvc18/libcurl.vcxproj" Id="87ee9da4-de1e-4448-8324-183c98dca588" />
-  <Project Path="../../../../3rdParty/expat-2.8.4/gfx_projects/Win32/Msvc18/expat.vcxproj" Id="00dc2ded-4eeb-4fce-8913-155560dc304c" />
+  <Project Path="../../../../3rdParty/curl-8.23.0/gfx_projects/Win32/Msvc18/libcurl.vcxproj" Id="87ee9da4-de1e-4448-8324-183c98dca588" />
+  <Project Path="../../../../3rdParty/expat-2.9.0/gfx_projects/Win32/Msvc18/expat.vcxproj" Id="00dc2ded-4eeb-4fce-8913-155560dc304c" />
   <Project Path="../../../../3rdParty/jpeg-10/gfx_projects/Win32/Msvc18/libjpeg.vcxproj" Id="d79287e6-7ed3-47c9-b62a-f5af6dc70b08" />
-  <Project Path="../../../../3rdParty/libpng-1.6.53/gfx_projects/Win32/Msvc18/libpng.vcxproj" Id="78950b2a-8fd2-4411-a5bd-872ee6199507" />
-  <Project Path="../../../../3rdParty/pcre2-10.48/gfx_projects/Win32/Msvc18/pcre.vcxproj" Id="9b67605d-834b-4ae0-94fd-0516502768dc" />
+  <Project Path="../../../../3rdParty/libpng-1.6.59/gfx_projects/Win32/Msvc18/libpng.vcxproj" Id="78950b2a-8fd2-4411-a5bd-872ee6199507" />
+  <Project Path="../../../../3rdParty/pcre2-10.49/gfx_projects/Win32/Msvc18/pcre.vcxproj" Id="9b67605d-834b-4ae0-94fd-0516502768dc" />
   <Project Path="../../../../3rdParty/zlib-1.3.2/gfx_projects/win32/Msvc18/zlib.vcxproj" Id="b4bc0d6c-6e0b-4fe1-be3e-82f93b78d138" />
 </Solution>

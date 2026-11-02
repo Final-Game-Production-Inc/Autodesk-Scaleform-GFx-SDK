@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMEManagerWin32.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMETSF.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_CandidateListBox.cpp">
+      <Filter>Candidate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_CandidateListInterface.cpp">
+      <Filter>Candidate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_HklLangNameMap.cpp">
+      <Filter>Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMEIdMap.cpp">
+      <Filter>Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_Command.cpp">
+      <Filter>Define</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMEManagerWin32.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMENamesManagerXP.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMENamesManagerVista.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMEWin32Impl.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMETSF.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_CandidateListBox.h">
+      <Filter>Candidate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_CandidateListInterface.h">
+      <Filter>Candidate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_HklLangNameMap.h">
+      <Filter>Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMEIdMap.h">
+      <Filter>Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_RomajiToKana.h">
+      <Filter>Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_IMEUnicodeMap.h">
+      <Filter>Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_Command.h">
+      <Filter>Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_TSFUIElementDef.h">
+      <Filter>Define</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{1cb953b8-7c68-4ee0-a433-a0708c880cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Candidate">
+      <UniqueIdentifier>{566971ad-b531-4d6a-9c27-eea41ef8f824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Define">
+      <UniqueIdentifier>{8b7406a8-1c2f-4ed1-99f6-d42c15075ceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mapping">
+      <UniqueIdentifier>{910afe08-0064-4e40-b21a-5e36277bc22b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -18,7 +18,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="ConfigShort">
-      <Value>$(ConfigShort)</Value>
+      <Value>$(Configuration)</Value>
     </BuildMacro>
     <BuildMacro Include="ConfigLetter">
       <Value>$(ConfigLetter)</Value>

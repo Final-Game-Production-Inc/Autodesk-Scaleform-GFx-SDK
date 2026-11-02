@@ -3,10 +3,11 @@
     PublicHeader:   Render
     Filename    :   Vulkan_ShaderDescs.h
     Content     :   Vulkan Shader descriptors
-    Created     :   10.03.2026
+    Created     :   2026/10/28
     Authors     :   Automatically generated.
 
     Copyright   :   Copyright 2026 Autodesk, Inc. All Rights reserved.
+                     Copyright 2026 Final Game Production Inc. All Rights Reserved.
 
     Use of this software is subject to the terms of the Autodesk license
     agreement provided at the time of installation or download, or which
@@ -32,7 +33,7 @@
 
 namespace Scaleform { namespace Render { namespace Vulkan {
 
-const static SInt64 SF_GFXSHADERMAKER_TIMESTAMP = -8584284630604050302LL;
+const static SInt64 SF_GFXSHADERMAKER_TIMESTAMP = -8584084519574411089LL;
 
 struct Uniform
 {

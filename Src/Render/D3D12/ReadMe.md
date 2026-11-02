@@ -1,11 +1,14 @@
-Extract D3D12_Unfinished.zip In Here.
+Now Is Support D3D12 Version, But It's Imperfect
 
-This Is Unfinished Version For D3D12, D3D12 Render Is Independent Of
 
-D3D1x And D3D9
 
-For More Information And Someone Want To Complement This Full Render Code, Visit For Help:
+Shader Binaries Is See In Release By D3D12\_ShaderBinary.zip, Exract It In This Folder
 
-https://help.autodesk.com/view/SCLFRM/ENU/?guid=\_\_cpp\_ref\_03227\_html
 
-D3D12_Unfinished.zip Download Link In [Release](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-Leslie-Real-Final-Update).
+
+Or You Can Generate It By GFxShaderMaker, See BinUtils.zip
+
+
+
+For Information To Fix, See In Report/Proj\_D3D12Fix
+

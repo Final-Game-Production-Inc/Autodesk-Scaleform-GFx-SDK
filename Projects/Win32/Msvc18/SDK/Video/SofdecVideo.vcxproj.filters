@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\Video_VideoCharacter.cpp">
+      <Filter>Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetConnection.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetStream.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_VideoObject.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoCharacter.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoProviderNetStream.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\Video_VideoAS2.cpp">
+      <Filter>AS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\ActionScript\Video_VideoAS3.cpp">
+      <Filter>AS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriHeap.cpp">
+      <Filter>Sofdec2\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriMvFileReader.cpp">
+      <Filter>Sofdec2\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriMvSoundGateway.cpp">
+      <Filter>Sofdec2\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriMvSystemTimer.cpp">
+      <Filter>Sofdec2\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriVideoImage.cpp">
+      <Filter>Sofdec2\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriVideoPlayerImpl.cpp">
+      <Filter>Sofdec2\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Sofdec2\CriPlatForm\Video_CrIVideoWinAPI.cpp">
+      <Filter>Sofdec2\PlatForm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Src\Video\Common\Video_Video.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Media\AS3_Obj_Media_Video.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\GFx\AS3\Obj\Net\AS3_Obj_Net_NetStream.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\Video_VideoCharacter.h">
+      <Filter>Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetConnection.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_NetStream.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS2\AS2_VideoObject.h">
+      <Filter>AS2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoProviderNetStream.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\ActionScript\AS3\AS3_VideoCharacter.h">
+      <Filter>AS3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriVideoImage.h">
+      <Filter>Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriHeap.h">
+      <Filter>Sofdec2\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriMvFileReader.h">
+      <Filter>Sofdec2\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriMvSoundGateway.h">
+      <Filter>Sofdec2\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriMvSystemTimer.h">
+      <Filter>Sofdec2\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriBase\Video_CriVideoPlayerImpl.h">
+      <Filter>Sofdec2\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Sofdec2\CriPlatForm\Video_CriVideoWinAPI.h">
+      <Filter>Sofdec2\PlatForm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Src\Video\Common\Video_Video.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="AS2">
+      <UniqueIdentifier>{29239f68-b3f9-4a50-909d-dbdc1617da90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AS3">
+      <UniqueIdentifier>{f740564b-9ca6-4fca-abcd-d4132271b652}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sofdec2">
+      <UniqueIdentifier>{49913681-8ed1-4532-a0b3-45ca7c21b042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image">
+      <UniqueIdentifier>{9f651b0f-e7f3-448c-b5b5-604a7e9468f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sofdec2\Base">
+      <UniqueIdentifier>{43da0adf-3e64-4fec-af75-d3299b3e698e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sofdec2\PlatForm">
+      <UniqueIdentifier>{eec1f4c6-c3c7-44c4-875b-a987ce005d32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{78437d11-15ed-41bb-abee-fd290687154c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -401,9 +401,9 @@ void ExpatCallbackHandler::FillLocator(ExpatHandlerArg* pha)
     // Column is an offset from begining of line (0 based)
     // For readability, increment by 1 to make it a true
     // column number (1 based)
-    pLocator->Column = XML_GetCurrentColumnNumber(pParser) + 1;
-    pLocator->Line = XML_GetCurrentLineNumber(pParser);
-    pLocator->LoadedBytes = XML_GetCurrentByteIndex(pParser);
+    pLocator->Column = static_cast<int>(XML_GetCurrentColumnNumber64(pParser) + 1);
+    pLocator->Line = static_cast<int>(XML_GetCurrentLineNumber64(pParser));
+    pLocator->LoadedBytes = static_cast<int>(XML_GetCurrentByteIndex64(pParser));
 
 }
 

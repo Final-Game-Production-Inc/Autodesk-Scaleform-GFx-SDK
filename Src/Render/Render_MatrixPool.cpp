@@ -133,6 +133,8 @@ inline HandlePage* EntryHandle::GetHandlePage()
     return (HandlePage*)(UPInt(this) & ~UPInt(Pool_HandlePageMask));
 }
 
+
+
 void EntryHandle::ReleaseHandle()
 {    
     HandlePage* page = GetHandlePage();
@@ -245,6 +247,7 @@ void DataHeader::Release()
 {
     SF_COMPILER_ASSERT(sizeof(DataHeader) <= Pool_DataUnitSize);
 
+
     SF_ASSERT(RefCount >= 1);
     if (--RefCount == 0)
     {
@@ -311,6 +314,33 @@ struct DefaultMatrixData
 DefaultMatrixData HMatrix_DefaultMatrixData;
 EntryHandle       HMatrix::NullHandle = {{ &HMatrix_DefaultMatrixData.Data }};
 
+
+// TEMP (GFX_MATRIX_TRACE): validate that the handle still points at a live
+// matrix header. Reading through a recycled handle page is expected here, so the
+// access is guarded; callers use a false result to drop the stale handle.
+bool HMatrix::IsHandleValid() const
+{
+    if (!pHandle || pHandle == &NullHandle)
+        return false;
+    __try
+    {
+        const DataHeader* h = pHandle->pHeader;
+        if (!h)
+            return false;
+        unsigned ref = h->RefCount;
+        if (ref == 0 || ref > 0x7FFF)
+            return false;
+        if (h->UnitSize == 0 || h->UnitSize > 64)
+            return false;
+        if ((h->Format & ~(unsigned)Has_TableMask) != 0)
+            return false;
+        return true;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return false;
+    }
+}
 
 void HMatrix::SetMatrix2D(const Matrix2F& m)
 {

@@ -854,6 +854,7 @@ if(SF_RENDERER_D3D12)
         ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_Shader.cpp
         ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_ShaderDescs.cpp
         ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_ShaderBinary.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_Sync.cpp
         ${CMAKE_SOURCE_DIR}/Src/Render/D3D12/D3D12_Texture.cpp
     )
     sf_apply_compile_flags(gfxrender_d3d12)
@@ -953,7 +954,7 @@ set(SF_PLATFORM_COMMON_SOURCES
 # D3D12 platform
 if(SF_RENDERER_D3D12)
     set(_d3d12_platform_sources ${SF_PLATFORM_COMMON_SOURCES}
-        ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_D3D1x.cpp
+        ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_D3D12.cpp
     )
     # Platform_WinAPI_GL.cpp instantiates GL::HAL — only include when GL renderer is available
     if(SF_RENDERER_GL)
@@ -966,6 +967,22 @@ if(SF_RENDERER_D3D12)
         target_link_libraries(gfxplatform_d3d12 INTERFACE opengl32 gfxrender_gl)
     endif()
     set_target_properties(gfxplatform_d3d12 PROPERTIES OUTPUT_NAME "libgfxplatform_d3d12")
+endif()
+
+# Vulkan platform
+if(SF_RENDERER_VULKAN)
+    set(_vulkan_platform_sources ${SF_PLATFORM_COMMON_SOURCES}
+        ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_Vulkan.cpp
+    )
+    # Platform_WinAPI_GL.cpp instantiates GL::HAL — only include when GL renderer is available
+    if(SF_RENDERER_GL)
+        list(APPEND _vulkan_platform_sources ${CMAKE_SOURCE_DIR}/Src/Platform/Platform_WinAPI_GL.cpp)
+    endif()
+    add_library(gfxplatform_vulkan STATIC ${_vulkan_platform_sources})
+    sf_apply_compile_flags(gfxplatform_vulkan)
+    target_compile_definitions(gfxplatform_vulkan PUBLIC FXPLAYER_RENDER_VULKAN)
+    target_link_libraries(gfxplatform_vulkan PUBLIC Vulkan::Vulkan)
+    set_target_properties(gfxplatform_vulkan PROPERTIES OUTPUT_NAME "libgfxplatform_vulkan")
 endif()
 
 # D3D11 platform

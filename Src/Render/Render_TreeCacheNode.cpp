@@ -982,7 +982,17 @@ void TreeCacheContainer::UpdateTransform(const TreeNode::NodeData* pbaseData,
     // later may have nodes with no cache (in case we are in destroying phase).
     TreeCacheNode* child = Children.GetFirst();
     while(!Children.IsNull(child))
-    {        
+    {
+        // Guard against broken lists: GetFirst() returns 0 (not the sentinel)
+        // when the list head was cleared, and a child unlinked during recursion
+        // has pNext == 0; both used to be dereferenced below (crash in
+        // TreeCacheNode::GetNode() reading offset of pNode from a null 'this').
+        if (!child)
+            break;
+        // Fetch the successor before recursing, because the recursive update may
+        // unlink this node from the list.
+        TreeCacheNode* pnext = child->pNext;
+
         const TreeNode::NodeData* pchildData = child->GetNodeData();
         TransformFlags            childFlags = (TransformFlags)
                                     (flags | (child->UpdateFlags & (Change_CxForm|Change_Matrix)));
@@ -1067,7 +1077,7 @@ void TreeCacheContainer::UpdateTransform(const TreeNode::NodeData* pbaseData,
             args.Cx = pchildData->Cx;
 
         child->UpdateTransform(pchildData, args, childFlags);
-        child = child->pNext;
+        child = pnext;
     }
 }
 
@@ -2061,6 +2071,16 @@ TreeCacheMeshBase::~TreeCacheMeshBase()
 void TreeCacheMeshBase::ComputeFinalMatrix(const TransformArgs& t, TransformFlags flags)
 {
     // Initialize HW Matrix/Cxform.
+    // A cache node can still hold a matrix handle whose control block has been
+    // recycled; writing through it landed in .rdata (the shared default matrix)
+    // and corrupted the heap afterwards. Detect that and drop the stale handle
+    // instead of writing through it.
+    if (!M.IsNull() && !M.IsHandleValid())
+    {
+        // Stale/dangling handle (control block recycled): drop it so a fresh
+        // matrix is created below instead of writing through freed memory.
+        M.SetNull();
+    }
     if (M.IsNull())
     {   // Don't allocate Cxform data initially if not used.
         unsigned matrixFormatBits = HMatrix::Has_2D;

@@ -732,7 +732,8 @@
       fcolor       = float4(0, 0, 0, 0);
       float4 color = float4(0, 0, 0, 0);
       float  i = 0;
-      for (i = -fsize.x; i &lt;= fsize.x; i++)
+      float  fsizeX = clamp(fsize.x, -32.0, 32.0);
+      for (i = -fsizeX; i &lt;= fsizeX; i++)
       {{
     }
   </ShaderSource>
@@ -748,9 +749,10 @@
     fcolor       = float4(0, 0, 0, 0);
     float4 color = float4(0, 0, 0, 0);
     float2 i = float2(0, 0);
-    for (i.x = -fsize.x; i.x &lt;= fsize.x; i.x++)
+    float2 fsizeXY = clamp(fsize.xy, float2(-32.0, -32.0), float2(32.0, 32.0));
+    for (i.x = -fsizeXY.x; i.x &lt;= fsizeXY.x; i.x++)
     {
-      for (i.y = -fsize.y; i.y &lt;= fsize.y; i.y++)
+      for (i.y = -fsizeXY.y; i.y &lt;= fsizeXY.y; i.y++)
       {
     }
   </ShaderSource>

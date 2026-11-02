@@ -64,6 +64,11 @@ DEFINE_GUID(IID_ITfInputProcessorProfileMgr_GFx,
 class GFxIMEVista;
 class GFxIMEWin32Impl;
 
+// C4265 is a false positive here: CTSF instances are always destroyed through
+// their own Release() (refcounted delete this), never polymorphically.
+#pragma warning(push)
+#pragma warning(disable : 4265)
+
 class CTSF : public ITfThreadMgrEventSink, 
              public ITfUIElementSink, 
 		//	 public ITfContextOwnerCompositionSink,
@@ -149,6 +154,8 @@ public:
 	wchar_t					m_wstr[50];
     
 };
+
+#pragma warning(pop)
 
 }}}
 

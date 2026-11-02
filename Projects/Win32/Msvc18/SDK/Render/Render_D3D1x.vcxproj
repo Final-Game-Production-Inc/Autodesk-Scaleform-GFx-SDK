@@ -1,76 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="D3D10_DebugOpt|Win32">
-      <Configuration>D3D10_DebugOpt</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="D3D10_DebugOpt|x64">
       <Configuration>D3D10_DebugOpt</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D10_Debug|Win32">
-      <Configuration>D3D10_Debug</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="D3D10_Debug|x64">
       <Configuration>D3D10_Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D10_Release|Win32">
-      <Configuration>D3D10_Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="D3D10_Release|x64">
       <Configuration>D3D10_Release</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D10_Shipping|Win32">
-      <Configuration>D3D10_Shipping</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="D3D10_Shipping|x64">
       <Configuration>D3D10_Shipping</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D11_DebugOpt|Win32">
-      <Configuration>D3D11_DebugOpt</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="D3D11_DebugOpt|x64">
       <Configuration>D3D11_DebugOpt</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D11_Debug|Win32">
-      <Configuration>D3D11_Debug</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="D3D11_Debug|x64">
       <Configuration>D3D11_Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D11_Release|Win32">
-      <Configuration>D3D11_Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="D3D11_Release|x64">
       <Configuration>D3D11_Release</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="D3D11_Shipping|Win32">
-      <Configuration>D3D11_Shipping</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="D3D11_Shipping|x64">
       <Configuration>D3D11_Shipping</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="NoLink|Win32">
-      <Configuration>NoLink</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="NoLink|x64">
       <Configuration>NoLink</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -81,51 +49,6 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v145</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
@@ -142,6 +65,11 @@
     <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v145</PlatformToolset>
@@ -174,77 +102,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_DebugOpt.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Shipping.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Define_x86.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Config_Release.props" />
-    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX10.props" />
+    <Import Project="..\..\..\Property Sheets\GPA.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -274,6 +140,15 @@
     <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_Msvc18.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Config_Debug.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Define_x64.props" />
+    <Import Project="..\..\..\Property Sheets\GFx_Renderer_DX11.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\..\Property Sheets\GFx_Lib_Msvc18.props" />
@@ -321,50 +196,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\DebugOpt\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">.\..\..\..\..\..\Lib\$(Platform)\Msvc18\Shipping\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">.\..\..\..\..\..\Obj\$(Platform)\Msvc18\$(Configuration)\$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|Win32'">libgfxrender_d3d11</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|Win32'">libgfxrender_d3d11</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|Win32'">libgfxrender_d3d11</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">libgfxrender_d3d11</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|x64'">libgfxrender_d3d11</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|x64'">libgfxrender_d3d11</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|x64'">libgfxrender_d3d11</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|x64'">libgfxrender_d3d11</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|Win32'">libgfxrender_d3d10</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|Win32'">libgfxrender_d3d10</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|Win32'">libgfxrender_d3d10</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">libgfxrender_d3d10</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|x64'">libgfxrender_d3d10</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|x64'">libgfxrender_d3d10</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|x64'">libgfxrender_d3d10</TargetName>
@@ -374,27 +225,6 @@
     <OutDir>.\..\..\..\..\..\Lib\$(Platform)\Msvc18\NoLink\</OutDir>
     <IntDir>.\..\..\..\..\..\Obj\$(Platform)\Msvc18\NoLink\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level4</WarningLevel>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Release|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -416,27 +246,6 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Shipping|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level4</WarningLevel>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -469,24 +278,6 @@
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level4</WarningLevel>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='NoLink|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -510,27 +301,6 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <TreatWarningAsError>false</TreatWarningAsError>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_Debug|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -551,27 +321,6 @@
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D10_DebugOpt|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -603,26 +352,6 @@
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Debug|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -648,15 +377,17 @@
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_DebugOpt|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>
       </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -664,6 +395,8 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <OmitDefaultLibName>true</OmitDefaultLibName>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -695,28 +428,6 @@
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <TreatWarningAsError>false</TreatWarningAsError>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Release|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -739,27 +450,6 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-    </ClCompile>
-    <Lib>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='D3D11_Shipping|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(VS100COMNTOOLS)..\..\VC\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level4</WarningLevel>
-      <CompileAs>Default</CompileAs>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
