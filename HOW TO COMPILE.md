@@ -30,3 +30,5 @@ If You Wanna Start Quickly, You Can Download [Lib.7z](https://github.com/Final-G
 And Extract In Lib Folder.
 
 Scaleform Docs 4.1-4.4.zip Can Help You How To Start For Scaleform SDK Development.
+And Release Has "Video.FFMpeg.Reference.Manual.md" Or "Video.FFMpeg.Reference.Manual.EN.md"
+Can Help You How To Use Scaleform FFMpeg Video.
