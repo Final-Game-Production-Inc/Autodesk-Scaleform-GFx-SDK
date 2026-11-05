@@ -7,7 +7,7 @@ Before Compile, You Need
 4. Data Folder, Is Included In BinUtils.zip, Download in [Here](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
 And Extract In Bin Folder.
 
-If You Want To Build FFMpeg Video, Download In [Release](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
+Viedo Default Is Sofdec2, If You Want To Build FFMpeg Video, Download In [Release](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
 <p>
 FFMpeg.7z.001<br>
 FFMpeg.7z.002<br>
