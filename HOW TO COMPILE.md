@@ -29,6 +29,8 @@ Build Tools, Choice 4. (GFxShaderMaker Should Be Set In Bin/Tools/GFxShaderMaker
 If You Wanna Start Quickly, You Can Download [Lib.7z](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/download/v4.5.32-November-Rain-Update/Lib.7z)
 And Extract In Lib Folder.
 
-Scaleform Docs 4.1-4.4.zip Can Help You How To Start For Scaleform SDK Development.
-And Release Has "Video.FFMpeg.Reference.Manual.md" Or "Video.FFMpeg.Reference.Manual.EN.md"
+<p>
+Scaleform Docs 4.1-4.4.zip Can Help You How To Start For Scaleform SDK Development.<br>
+And Release Has "Video.FFMpeg.Reference.Manual.md" Or "Video.FFMpeg.Reference.Manual.EN.md"<br>
 Can Help You How To Use Scaleform FFMpeg Video.
+</p>
