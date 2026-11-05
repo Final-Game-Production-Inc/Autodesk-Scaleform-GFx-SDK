@@ -1,10 +1,11 @@
 Let Me Teach You How To Compile Scaleform GFx SDK.
 
 Before Compile, You Need
-1. Microsoft DirectX SDK (June 2010)
-2. Vulkan SDK
-3. 3rdParty.7z, Download in [Here](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
-4. Data Folder, Is Included In BinUtils.zip, Download in [Here](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
+1. Visual Studio 2026
+2. Microsoft DirectX SDK (June 2010)
+3. Vulkan SDK
+4. 3rdParty.7z, Download in [Here](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
+5. Data Folder, Is Included In BinUtils.zip, Download in [Here](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
 And Extract In Bin Folder.
 
 Viedo Default Is Sofdec2, If You Want To Build FFMpeg Video, Download In [Release](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/tag/v4.5.32-November-Rain-Update)
