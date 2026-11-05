@@ -2,7 +2,7 @@
 
 Filename    :   D3D12_HAL.h
 Content     :   D3D12 Hardware Abstraction Layer.
-Created     :   Mar 2026
+Created     :   Oct 2026
 Authors     :   FINALZ-27980
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
