@@ -28,7 +28,7 @@ Next, Go Projects/Win32/Msvc18/SDK, You Can See
 <p>
 If You Want To Rebuild 3rdparty, Choice 1.<br>
 If You Want To Build SDK Or SDK And Demo, Choice 2 or 3.<br>
-Build Tools, Choice 4. (GFxShaderMaker Should Be Set In Bin/Tools/GFxShaderMaker, Can Using Command Easily, For More Information, See ReadMe.txt For GFxShaderMaker)
+Build Tools, Choice 4. (GFxShaderMaker Should Be Set In Bin/Tools/GFxShaderMaker(Copy GFxShaderMaker Full Application In Bin/Tools/GFxShaderMaker), Can Using Command Easily, For More Information, See ReadMe.txt For GFxShaderMaker)
 </p>
 
 If You Wanna Start Quickly, You Can Download [Lib.7z](https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK/releases/download/v4.5.32-November-Rain-Update/Lib.7z)
