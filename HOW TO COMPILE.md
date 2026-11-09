@@ -19,16 +19,25 @@ Or Download In [Here](https://drive.google.com/file/d/1FF0WjH0TK6Z0KfTwBefRSZAee
 
 Then Extract In 3rdparty.
 
-Next, Go Projects/Win32/Msvc18/SDK, You Can See
+<p>
+Next, clone this code<br>
+
+```bash
+git clone --depth=1 https://github.com/Final-Game-Production-Inc/Autodesk-Scaleform-GFx-SDK
+
+</p>
+
+Then Go Projects/Win32/Msvc18/SDK, You Can See
+
 1. GFx 4.5.32 Leslie 3rd Party.slnx
 2. GFx 4.5.32 Leslie SDK And Demo.slnx
 3. GFx 4.5.32 Leslie SDK.slnx
 4. GFx 4.5.32 Leslie Tools.slnx
 
 <p>
-If You Want To Rebuild 3rdparty, Choice 1.<br>
-If You Want To Build SDK Or SDK And Demo, Choice 2 or 3.<br>
-Build Tools, Choice 4.<br>
+If You Want To Rebuild 3rdparty, Pick 1.<br>
+If You Want To Build SDK Or SDK And Demo, Pick 2 or 3.<br>
+Build Tools, Pick 4.<br>
 TIPS:<br>
 GFxShaderMaker Should Be Set In Bin/Tools/GFxShaderMaker(Copy GFxShaderMaker Full Application In Bin/Tools/GFxShaderMaker),<br>
 Can Using Command Easily, For More Information, See ReadMe.txt For GFxShaderMaker In BinUtils.zip)
