@@ -4,9 +4,7 @@ Content     :   Used to include Addon support in applications
 Created     :   April 21, 2026
 Authors     :   FINALZ-27980
 
-Notes       :   Scaleform 5.0 Will Disabled Criware SDK Update, Changes To FFMpeg Video.
-                FOR AVOID CHINA AND JAPAN HAS POLITICS AND GROPOLITICS CONFLICT.
-                "GOD DOESN'T BLESS YOU, TAKAICHI SANAE".
+Notes       :   Scaleform 5.0 Will Disabled Criware SDK Maintenance, And Go all out To FFMpeg Video.
                 
 History     :
 Copyright   :   Copyright 2026 Final Game Production Inc. All Rights reserved.
