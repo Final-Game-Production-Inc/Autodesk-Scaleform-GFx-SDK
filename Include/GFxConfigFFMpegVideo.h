@@ -5,8 +5,7 @@ Created     :   April 21, 2026
 Authors     :   FINALZ-27980
 
 Notes       :   Scaleform 5.0 Will Disabled Criware SDK Maintenance, And Go All Out To FFMpeg Video.
-                
-History     :
+
 Copyright   :   Copyright 2026 Final Game Production Inc. All Rights reserved.
 
 PLEASE OBEY GPL-3.0 LICENSE.
