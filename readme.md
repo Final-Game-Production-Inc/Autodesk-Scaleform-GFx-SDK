@@ -49,7 +49,7 @@ See In [This](https://www.pcgamingwiki.com/wiki/Scaleform_GFx) And [That](https:
 <p style="margin:0; line-height:1.2;"> · The Elder Scrolls V: Skyrim - Scaleform 3.x.xx</p>
 <p style="margin:0; line-height:1.2;"> · Monster Jam Steel Titans 2 - Scaleform 4.6.34</p>
 <b><p style="margin:0; line-height:1.2;"> · Ducktales Remastered - Scaleform 4.1.19/4.2.22(Source Code Exist For Wayforward Database Leaked[Abandoned hard drive Leaks Event].)</p></b>
-<b><p style="margin:0; line-height:1.2;"> · Legend Of Mir Eternal - Scaleform 4.0.16(HAS GFxIME)</p></b>
+<b><p style="margin:0; line-height:1.2;"> · Legend Of Mir Eternal - Scaleform 4.0.16(HAS GFxIME), See In [This](https://github.com/x-dev8/CQYH)</p></b>
 
 # In The Future In 203X-204X...
 
