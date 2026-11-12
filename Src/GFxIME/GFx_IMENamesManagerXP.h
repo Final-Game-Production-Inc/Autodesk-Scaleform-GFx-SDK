@@ -1,3 +1,5 @@
+#ifndef INC_GFXIMENAMESMANAGERXP_H
+#define INC_GFXIMENAMESMANAGERXP_H
 
 /**************************************************************************
 
@@ -15,8 +17,6 @@ agreement provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
 
 **************************************************************************/
-#ifndef INC_GFXIMENAMESMANAGERXP_H
-#define INC_GFXIMENAMESMANAGERXP_H
 
 #include "GFx_IMEIdMap.h"
 #include <msctf.h>

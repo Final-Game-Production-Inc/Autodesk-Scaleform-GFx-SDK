@@ -1,4 +1,3 @@
-
 struct KeybCodes
 {
     const char* StatusSymbol;

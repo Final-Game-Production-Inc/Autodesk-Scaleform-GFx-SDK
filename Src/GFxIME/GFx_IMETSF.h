@@ -8,7 +8,7 @@ Authors     :   Ankur Mohan
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
                      Copyright 2026 Final Game Production Inc. All Rights reserved.
-					 
+
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
@@ -64,11 +64,10 @@ DEFINE_GUID(IID_ITfInputProcessorProfileMgr_GFx,
 class GFxIMEVista;
 class GFxIMEWin32Impl;
 
-// C4265 is a false positive here: CTSF instances are always destroyed through
-// their own Release() (refcounted delete this), never polymorphically.
+// CTSF implements COM interfaces and releases through Release(); suppressing
+// C4265 ("class has virtual functions but non-virtual destructor") is intentional.
 #pragma warning(push)
-#pragma warning(disable : 4265)
-
+#pragma warning(disable: 4265)
 class CTSF : public ITfThreadMgrEventSink, 
              public ITfUIElementSink, 
 		//	 public ITfContextOwnerCompositionSink,
@@ -154,7 +153,6 @@ public:
 	wchar_t					m_wstr[50];
     
 };
-
 #pragma warning(pop)
 
 }}}

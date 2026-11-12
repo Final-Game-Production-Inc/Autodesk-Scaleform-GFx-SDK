@@ -7,7 +7,7 @@ Authors     :   Ankur Mohan
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
                      Copyright 2026 Final Game Production Inc. All Rights reserved.
-					 
+
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
@@ -599,7 +599,7 @@ public:
 
         fdwConversion = fdwConversion & 0x0000000F;
         // Japanese Conversion modes
-        if ((UInt32)IMETag & GFxIME_Jp_Flag)
+        if (IMETag & (UInt32)GFxIME_Jp_Flag)
         {
             if ((fdwConversion & (~IME_CMODE_FULLSHAPE)) == IME_CMODE_NATIVE)
             {
@@ -629,7 +629,7 @@ public:
 
         // Korean Conversion Modes
 
-        if ((UInt32)IMETag & GFxIME_Kr_Flag)
+        if (IMETag & (UInt32)GFxIME_Kr_Flag)
         {
             if ((fdwConversion & (~IME_CMODE_FULLSHAPE)) == IME_CMODE_NATIVE)
             {
@@ -647,7 +647,7 @@ public:
         }
 
         // Chinese Conversion Modes
-        if (((UInt32)IMETag & GFxIME_Ch_Simp_Flag) || ((UInt32)IMETag & GFxIME_Ch_Trad_Flag))
+        if ((IMETag & (UInt32)GFxIME_Ch_Simp_Flag) || (IMETag & (UInt32)GFxIME_Ch_Trad_Flag))
         {
             if ((fdwConversion & (~IME_CMODE_FULLSHAPE)) == IME_CMODE_NATIVE)
             {
@@ -782,8 +782,11 @@ public:
     ~GFxIMEVista();
 
 	String		ReadinStringBuffer;
-	bool			StartCompositionReceived;
-	bool			DrawCandidateList;
+	bool		StartCompositionReceived;
+	bool		DrawCandidateList;
+	bool		CandListOpen;	
+
+	String		TypingStringBuffer;	// zhaojun@snda
 
 	virtual void    DisplayReadingWindow(wchar_t* pReadingStr);
 	virtual void    RepositionCandidateList(UInt32 offset);
@@ -988,6 +991,7 @@ private:
     HIMC                hSavedIMC;
     int                 CandidateListIndex;
 	bool				DrawCandidateList;
+	bool				CandListOpen;	// zhaojun@snda
 }; 
 }}}
 #endif //INC_GFXIMEWIN32IMPL_H

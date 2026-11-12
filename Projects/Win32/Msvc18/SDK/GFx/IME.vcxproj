@@ -55,9 +55,14 @@
     <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_CandidateListInterface.cpp" />
     <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_Command.cpp" />
     <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_HklLangNameMap.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMECommands.cpp" />
     <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMEIdMap.cpp" />
     <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMEManagerWin32.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMENamesManagerVista.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMENamesManagerXP.cpp" />
     <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMETSF.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMEVista.cpp" />
+    <ClCompile Include="..\..\..\..\..\Src\GFxIME\GFx_IMEXP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Src\GFxIME\GFx_CandidateListBox.h" />

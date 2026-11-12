@@ -1,3 +1,6 @@
+#ifndef INC_GFXIMEIDMAP_H
+#define INC_GFXIMEIDMAP_H
+
 /**********************************************************************
 
 Filename    :   GFxIMEIdMap.h
@@ -10,15 +13,12 @@ History     :
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
                      Copyright 2026 Final Game Production Inc. All Rights reserved.
-					 
+
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
 
 **********************************************************************/
-#ifndef INC_GFXIMEIDMAP_H
-#define INC_GFXIMEIDMAP_H
-
 #ifndef SF_NO_IME_SUPPORT
 //#include <windows.h>
 #include <stdio.h>
@@ -128,6 +128,8 @@ enum GFxIMETag
     GFxIME_Ch_Simp_WuBi86       = 0x00A10000,
     GFxIME_Ch_Simp_WuBi98       = 0x00B10000,
     GFxIME_Ch_Simp_JJ           = 0x00C10000,
+	GFxIME_Ch_Simp_Other		= 0x00D10000,	// zhaojun@snda
+
     // Both third party and traditional.
 	GFxIME_Ch_Trad_NewChewing	= 0x00D00002,
 	GFxIME_Ch_Trad_WuXia        = 0x00D00001,
@@ -359,7 +361,7 @@ public:
 
 #endif
 
-    virtual void            LogError(DWORD err, char*);
+    virtual void            LogError(DWORD err, const char*);
 	virtual void			LogError(const char* error, const char* context);
 
     friend struct GImeStringNode;
@@ -404,11 +406,12 @@ public:
 	UInt32                  NumIme;
 protected:
 
-    UInt32                  fdwConversion;
+    // Cached IME conversion mode (named to avoid shadowing locals in the
+    // SetConversionMode implementations).
+    UInt32                  CachedConversionMode;
     GImeStringNode          EmptyStringNode;
     GImeStringNode          *Current;
     GImeStringNode          Root;
-    HKEY                    hKey;
     Array<HKlLayoutName>	HklLayoutTextMap;
     int                     ImeVersionId;
 	int*					ImeFileNameOrLayoutText;

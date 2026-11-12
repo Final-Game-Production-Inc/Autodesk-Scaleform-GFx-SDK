@@ -7,7 +7,7 @@ Authors     :   Ankur Mohan
 
 Copyright   :   Copyright 2011 Autodesk, Inc. All Rights reserved.
                      Copyright 2026 Final Game Production Inc. All Rights reserved.
-					 
+
 Use of this software is subject to the terms of the Autodesk license
 agreement provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
@@ -55,10 +55,10 @@ public:
     // Implementations of GFxIMEManager's methods
     /************************************************/
 
-    virtual UInt32  Init(Log* plog = 0, FileOpener* pfileOpener = NULL, const char* xmlFileName = NULL, bool bCheckIMEExists = true);
-    // Make the base class Init overloads visible next to the derived one
-    // (the derived signature uses the more specific FileOpener*).
-    using IMEManagerBase::Init;
+    // Scaleform 4.5's IMEManagerBase::Init takes a FileOpenerBase*; matching the
+    // base signature makes this a real override (otherwise calls through
+    // Ptr<IMEManagerBase> would silently land in the base stub).
+    virtual UInt32  Init(Log* plog = 0, FileOpenerBase* pfileOpener = NULL, const char* xmlFileName = NULL, bool bCheckIMEExists = true);
 
     virtual void	SetActiveMovie(Movie*);
 
