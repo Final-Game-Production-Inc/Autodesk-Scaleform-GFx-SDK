@@ -18,21 +18,22 @@ public class Platform_D3D12 : Platform_D3DCommon
 	protected override string LocateShaderCompiler()
 	{
 		// D3D12 needs DXIL (SM 6.x), so use dxc.exe from the Windows SDK.
-		string kits = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-		                           "Windows Kits", "10", "bin");
-		if (Directory.Exists(kits))
+		// The locator only returns binaries whose architecture can run on this machine
+		// (x64 / ARM64 native, x86 through emulation) and prefers the newest SDK.
+		int verbosity = CommandLineParser.GetOption<int>(CommandLineParser.Options.Verbosity);
+		string overridePath = Environment.GetEnvironmentVariable(ShaderCompilerLocator.DxcOverrideEnvironmentVariable);
+		if (!string.IsNullOrEmpty(overridePath) && File.Exists(overridePath)
+		    && ShaderCompilerLocator.CanExecute(ShaderCompilerLocator.ReadMachineType(overridePath)))
 		{
-			string dxc = Directory.GetFiles(kits, "dxc.exe", SearchOption.AllDirectories)
-				.Where(p => p.IndexOf("\\x64\\", StringComparison.OrdinalIgnoreCase) >= 0)
-				.OrderByDescending(p => p)
-				.FirstOrDefault();
-			if (!string.IsNullOrEmpty(dxc))
-			{
-				Console.WriteLine("Using dxc.exe: {0}\n", dxc);
-				return dxc;
-			}
+			return overridePath;
 		}
-		throw new Exception("Could not locate dxc.exe in the Windows SDK (Windows Kits\\10\\bin\\*\\x64).");
+
+		string dxc = ShaderCompilerLocator.FindInWindowsKits("dxc.exe", verbosity);
+		if (string.IsNullOrEmpty(dxc))
+		{
+			throw new Exception("Could not locate dxc.exe in the Windows SDK (Windows Kits\\10\\bin\\<version>\\x64\\dxc.exe).");
+		}
+		return dxc;
 	}
 
 	protected override string D3DFXCExtraOptions

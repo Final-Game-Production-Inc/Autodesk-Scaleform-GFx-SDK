@@ -92,7 +92,7 @@ public abstract class Platform_D3DCommon : ShaderPlatformBinaryShaders
 		}
 		if (CommandLineParser.GetOption<int>(CommandLineParser.Options.Verbosity) > 1)
 		{
-			Console.WriteLine("Using fxc.exe: {0}\n", text);
+			Console.WriteLine("Using shader compiler: {0}\n", text);
 		}
 		List<CompileThreadData> list = new List<CompileThreadData>();
 		foreach (ShaderVersion requestedShaderVersion in RequestedShaderVersions)
@@ -109,79 +109,40 @@ public abstract class Platform_D3DCommon : ShaderPlatformBinaryShaders
 
 	protected virtual string LocateShaderCompiler()
 	{
-		string text = "";
-		string text2 = Environment.GetEnvironmentVariable(D3DSDKEnvironmentVariable);
-		try
+		int verbosity = CommandLineParser.GetOption<int>(CommandLineParser.Options.Verbosity);
+		string overridePath = Environment.GetEnvironmentVariable(ShaderCompilerLocator.FxcOverrideEnvironmentVariable);
+		if (!string.IsNullOrEmpty(overridePath))
 		{
-			if (PreferWindowsKitsFXC)
+			if (File.Exists(overridePath) && ShaderCompilerLocator.CanExecute(ShaderCompilerLocator.ReadMachineType(overridePath)))
 			{
-				List<string> list = new List<string>();
-				RegistryKey localMachine = Registry.LocalMachine;
-				localMachine = localMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots");
-				string[] valueNames = localMachine.GetValueNames();
-				foreach (string text3 in valueNames)
+				if (verbosity > 1)
 				{
-					if (Regex.IsMatch(text3, "KitsRoot"))
-					{
-						list.Add(localMachine.GetValue(text3) as string);
-					}
+					Console.WriteLine("Using {0} from ${1}.", overridePath, ShaderCompilerLocator.FxcOverrideEnvironmentVariable);
 				}
-				list.Sort(delegate(string s0, string s1)
-				{
-					s0 = s0.TrimEnd(Path.DirectorySeparatorChar);
-					s1 = s1.TrimEnd(Path.DirectorySeparatorChar);
-					string[] array = s0.Split(Path.DirectorySeparatorChar);
-					string[] array2 = s1.Split(Path.DirectorySeparatorChar);
-					return Convert.ToDouble(array2[array2.Length - 1]).CompareTo(Convert.ToDouble(array[array.Length - 1]));
-				});
-				foreach (string item in list)
-				{
-					if (CommandLineParser.GetOption<int>(CommandLineParser.Options.Verbosity) > 1)
-					{
-						Console.WriteLine("Attempting to use '{1}' as Windows Kits root.", item);
-					}
-					if (string.IsNullOrEmpty(item))
-					{
-						throw new Exception("Could not locate Windows Kits root directory. Check 'HKLM\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots' for proper installation.");
-					}
-					string text4 = Path.Combine(item, "Bin\\x64");
-					IEnumerable<string> files = Directory.GetFiles(text4, "fxc.exe", SearchOption.AllDirectories);
-					if (files.Count() > 0)
-					{
-						text = files.First();
-						text2 = null;
-						break;
-					}
-					if (string.IsNullOrEmpty(text))
-					{
-						if (CommandLineParser.GetOption<int>(CommandLineParser.Options.Verbosity) != 0)
-						{
-							Console.WriteLine("fxc.exe did not exist in expected location ({0}). Attempting to locate alternate.", text4);
-						}
-						files = Directory.GetFiles(item, "fxc.exe", SearchOption.AllDirectories);
-						if (files.Count() > 0)
-						{
-							text = files.First();
-							text2 = null;
-							break;
-						}
-					}
-					Console.WriteLine("Warning: no fxc.exe found within {0}. Trying next Windows Kit.", item);
-				}
+				return overridePath;
+			}
+			if (verbosity != 0)
+			{
+				Console.WriteLine("Warning: ${0} = '{1}' is missing or cannot run on this machine. Ignoring it.", ShaderCompilerLocator.FxcOverrideEnvironmentVariable, overridePath);
 			}
 		}
-		catch (Exception)
+
+		string compiler = null;
+		if (PreferWindowsKitsFXC)
 		{
+			// <KitsRoot>\Bin\<version>\<arch>\fxc.exe, newest SDK / native architecture first.
+			compiler = ShaderCompilerLocator.FindInWindowsKits("fxc.exe", verbosity);
 		}
-		if (!string.IsNullOrEmpty(text2))
+		if (compiler == null)
 		{
-			IEnumerable<string> files2 = Directory.GetFiles(text2, "fxc.exe", SearchOption.AllDirectories);
-			if (files2.Count() > 0)
-			{
-				text = files2.First();
-			}
+			// DirectX SDK (DXSDK_DIR), XDK (XEDK) and DurangoXDK still ship usable fxc.exe.
+			compiler = ShaderCompilerLocator.FindInRoot(Environment.GetEnvironmentVariable(D3DSDKEnvironmentVariable), "fxc.exe", verbosity);
 		}
-		return text;
+		if (compiler == null && !PreferWindowsKitsFXC)
+		{
+			compiler = ShaderCompilerLocator.FindInWindowsKits("fxc.exe", verbosity);
+		}
+		return compiler;
 	}
 
 	protected override void CompileSingleShaderImpl(CompileThreadData ctdata)
