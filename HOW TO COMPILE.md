@@ -48,6 +48,7 @@ And Extract In Lib Folder.
 
 <p>
 Scaleform Docs 4.1-4.4.zip Can Help You How To Start For Scaleform SDK Development.<br>
+Or See <a href=https://github.com/x-dev8/CQYH> Shengda Games Legacy Tutorial Document For Help </a> For Information
 And Release Has "Video.FFMpeg.Reference.Manual.md" Or "Video.FFMpeg.Reference.Manual.EN.md"<br>
 Can Help You How To Use Scaleform FFMpeg Video.
 </p>
